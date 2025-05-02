@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "module": "esnext",
     "strict": true,
     "paths": {
       "@/*": [
@@ -8,6 +9,7 @@
       ]
     }
   },
+  "noImplicitAny": true,
   "include": [
     "**/*.ts",
     "**/*.tsx",

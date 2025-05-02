@@ -1,0 +1,52 @@
+import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
+import getColor from "@/src/styles/Color";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Text, TouchableOpacity, View, StyleSheet } from "react-native"
+import Icon from "react-native-vector-icons/MaterialIcons";
+
+const Color = getColor();
+type ExploreNavigation = StackNavigationProp<ExploreStackParamList, "Discovery">;
+
+const HeaderProvice = () => {
+    const navigation = useNavigation<ExploreNavigation>();
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.button} onPress={() => {navigation.goBack()}}>
+                <Icon name={"chevron-left"} size={30} color={Color.white_homologous}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+                <Icon name={"near-me"} size={20} color={Color.white_homologous}/>
+                <Text style={styles.textButton}>2.5km</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        position: 'absolute',
+        top: 50,
+        zIndex: 10
+    },
+    button: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 5,
+        borderRadius: 50,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.6)'
+    },
+    textButton: {
+        paddingLeft: 10,
+        color: Color.white_homologous
+    }
+})
+
+export default HeaderProvice;

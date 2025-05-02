@@ -1,0 +1,128 @@
+import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { ButtonActionsProps } from "../../components/CardActionsDetails";
+import { Conversation, UserDisplay } from "@/src/interface/interface_flex";
+import { useState } from "react";
+import restClient from "@/src/shared/services/RestClient";
+import { Alert } from "react-native";
+import useMessages from "../useMessage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "Details">;
+
+interface DisplayProps {
+    name: string;
+    avt: string;
+}
+
+const useDetails = (defaultConversationId: Conversation) => {
+    const navigation = useNavigation<ChatNavigationProp>();
+    const { getShortNames } = useMessages();
+
+    const [conversation, setConversation] = useState<Conversation>(defaultConversationId);
+    const [listActionUser, setListActionUser] = useState<ButtonActionsProps[] | null>(null);
+    const [listActionMessage, setListActionMessage] = useState<ButtonActionsProps[] | null>(null);
+    const [display, setDisplay] = useState<DisplayProps | null>(null);
+
+    const [openEditName, setOpenEditName] = useState<boolean>(false);
+    const [newName, setNewName] = useState<string>(conversation.groupName?conversation.groupName:"");
+
+    const getDataAction = async () => {
+        const userId = await AsyncStorage.getItem("userId");
+        if (!userId) return alert("Bạn cần xác nhận thông tin người dùng");
+        if (conversation.type == "private"){
+            const otherUser = firstOtherParticipant(conversation, userId);
+            setDisplay({
+                name: otherUser?otherUser.displayName : "Không xác định",
+                avt: otherUser && otherUser.avt.length > 0 ? otherUser.avt[otherUser.avt.length - 1] : "https://picsum.photos/200"
+            })
+            setListActionUser([
+                {text: 'Xem trang cá nhân', showIcon: true, onPress:()=>{}},
+                {text: `Tạo nhóm với ${otherUser?.displayName}`, showIcon: true, onPress:()=>{navigation.navigate("NewGroupChat", {defaultChoose: otherUser? [otherUser] : []})}},
+            ])
+            setListActionMessage([
+                {text: 'Xem file và phương tiện', showIcon: true, onPress:()=>{navigation.navigate("PhotoAndFile", {conversationId: conversation._id})}},
+                {text: 'Thông báo', showIcon: true, onPress:()=>{navigation.navigate("SettingsNotify", {conversation: conversation})}}
+            ])
+        } else if (conversation.type == "group"){
+            setDisplay({
+                name: conversation.groupName?conversation.groupName: getShortNames(conversation),
+                avt: conversation.avtGroup ? conversation.avtGroup : "https://picsum.photos/200"
+            })
+            setListActionUser([
+                {text: 'Đổi tên nhóm', showIcon: true, onPress:()=>{setOpenEditName(true)}},
+                {text: 'Xem thành viên', showIcon: true, onPress:()=>{navigation.navigate("ListMember", { listUser: conversation.participants})}},
+            ])
+            setListActionMessage([
+                {text: 'Xem file và phương tiện', showIcon: true, onPress:()=>{navigation.navigate("PhotoAndFile", {conversationId: conversation._id})}},
+                {text: 'Thông báo', showIcon: true, onPress:()=>{navigation.navigate("SettingsNotify", {conversation: conversation})}},
+                {text: 'Rời nhóm', showIcon: true, onPress: LeaveGroup}
+            ])
+        } else {
+            setDisplay({
+                name: conversation.pageId? conversation.pageId.name: "Trang không xác định",
+                avt: conversation.pageId && conversation.pageId.avt ? conversation.pageId.avt : "https://picsum.photos/200"
+            })
+            if (conversation.participants.some(participant => participant._id === userId)){
+                setListActionUser([
+                    {text: 'Xem trang', showIcon: true, onPress:()=>{}}
+                ])
+            } else {
+                setListActionUser([
+                    {text: 'Xem trang cá nhân', showIcon: true, onPress:()=>{}},
+                ])
+            }
+            setListActionMessage([
+                {text: 'Xem file và phương tiện', showIcon: true, onPress:()=>{navigation.navigate("PhotoAndFile", {conversationId: conversation._id})}},
+                {text: 'Thông báo', showIcon: true, onPress:()=>{navigation.navigate("SettingsNotify", {conversation: conversation})}}
+            ])
+        }
+    }
+
+    const firstOtherParticipant = (conversation: Conversation, userId: string): UserDisplay | null => {
+        return conversation.participants.filter(participant => participant._id !== userId)[0] || null;
+    };
+
+    const onPressHeaderLeft = () => {
+        navigation.goBack();
+    }
+
+    const LeaveGroup = () => {
+
+    }
+
+    const changeNameGroup = (value: string) => {
+        setNewName(value);
+        setOpenEditName(false);
+        changeGroupAPI(value);
+        if (display){
+            setDisplay({
+                avt: display.avt,
+                name: value
+            })
+        }
+    }
+
+    const changeGroupAPI = async (nameGroup: string) => {
+        const conversationAPI = restClient.apiClient.service(`apis/conversations`);
+        const result = await conversationAPI.patch(conversation._id, {groupName: nameGroup})
+        if (result.success){
+            Alert.alert("Cập nhật thành công")
+        } else {
+            Alert.alert("Cập nhật thất bại")
+        }
+    }
+    
+    return {
+        conversation, display,
+        onPressHeaderLeft,
+        listActionUser,
+        listActionMessage,
+        getDataAction,
+        openEditName, setOpenEditName,
+        newName, changeNameGroup
+    }
+}
+
+export default useDetails;

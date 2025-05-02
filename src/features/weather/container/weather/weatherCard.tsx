@@ -1,0 +1,88 @@
+import React from "react";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import getColor from "@/src/styles/Color";
+const Color = getColor();
+
+interface WeatherCardProps {
+  city: string;
+  temperature: number;
+  description: string;
+  high: number;
+  low: number;
+}
+
+const getBackgroundImage = (description: string) => {
+  if (description.toLowerCase().includes("mưa")) {
+    return require("../../../../assets/images/Weather/backgourdRain.jpg");
+  } else if (description.toLowerCase().includes("mây")) {
+    return require("../../../../assets/images/Weather/backgroudCloud.jpg");
+  } else if (description.toLowerCase().includes("nắng")) {
+    return require("../../../../assets/images/Weather/backgroudSun.jpg");
+  }
+};
+
+const WeatherCard: React.FC<WeatherCardProps> = ({ city, temperature, description, high, low }) => {
+  return (
+    <ImageBackground source={getBackgroundImage(description)} style={styles.card} imageStyle={{ borderRadius: 12 }}>
+      <View style={styles.overlay}>
+        <View style={styles.leftColumn}>
+          <Text style={styles.city}>{city}</Text>
+          <Text style={styles.description}>{description}</Text>
+        </View>
+        <View style={styles.rightColumn}>
+          <Text style={styles.temperature}>{temperature}°</Text>
+          <Text style={styles.range}>H:{high}° L:{low}°</Text>
+        </View>
+      </View>
+    </ImageBackground>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: {
+    marginTop:10,
+    height: 120,
+    padding: 16,
+    borderRadius: 12,
+    justifyContent: "center",
+  },
+  overlay: {
+    flex: 1,
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  leftColumn: {
+    flex: 1,
+    gap:15,
+    justifyContent: "center",
+  },
+  rightColumn: {
+    alignItems: "flex-end",
+    gap:15,
+    justifyContent: "center",
+  },
+  city: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: Color.white_homologous,
+  },
+  description: {
+    fontSize: 17,
+    color: Color.white_homologous,
+    marginTop: 8,
+  },
+  temperature: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: Color.white_homologous,
+  },
+  range: {
+    fontSize: 16,
+    color: Color.white_homologous,
+    marginTop: 8,
+  },
+});
+
+export default WeatherCard;

@@ -1,0 +1,77 @@
+import getColor from "@/src/styles/Color";
+import { useEffect, useState } from "react";
+import { Image, Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
+const Color = getColor();
+export interface CardUserProps {
+    _id: string;
+    avt: string;
+    name: string;
+    selected?: boolean;
+    onPress: () => void;
+    onPressIcon?: (_id: string) => void;
+    icon?: string;
+    radio: boolean;
+}
+const CardUser = ({_id, avt, name, selected, onPress, onPressIcon, icon, radio} : CardUserProps) => {
+    const [isChoose, setIsChoose] = useState<boolean>(false);
+
+    const handlePress = () => {
+        setIsChoose(!isChoose);
+        onPress();
+    }
+
+    const handlePressIcon = () => {
+        setIsChoose(!isChoose);
+        if (onPressIcon){
+            onPressIcon(_id);
+        }
+    }
+
+    useEffect(()=> {
+        if (selected !== undefined){
+            setIsChoose(selected);
+        }
+    }, [selected]);
+
+    return (
+        <TouchableOpacity style={styles.container} onPress={handlePress}>
+            <View style={styles.boxContent}>
+                <Image source={{uri:avt}} style={styles.images}/>
+                <Text style={styles.text}>{name}</Text>
+            </View>
+            {radio && <TouchableOpacity style={styles.radio} onPress={handlePressIcon}>
+                <Icon 
+                    name={icon?icon: (isChoose? "radio-button-on": "radio-button-off")} 
+                    size={24} color={Color.white_contrast} 
+                />    
+            </TouchableOpacity>}
+        </TouchableOpacity>
+    )
+}
+
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10
+    },
+    boxContent: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    images: {
+        width: 50, height: 50,
+        borderRadius: 50
+    },
+    text: {
+        paddingHorizontal: 20
+    },
+    radio: {
+
+    }
+})
+export default CardUser;

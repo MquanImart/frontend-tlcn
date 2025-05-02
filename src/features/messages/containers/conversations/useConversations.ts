@@ -1,0 +1,283 @@
+import { Conversation, Message } from "@/src/interface/interface_flex";
+import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useEffect, useState } from "react";
+import useMessages from "../useMessage";
+import restClient from "@/src/shared/services/RestClient";
+import { Alert } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import { result } from "lodash";
+import socket from "@/src/shared/services/socketio";
+
+const PAGE_SIZE = 20; // Số tin nhắn tải mỗi lần
+type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "NewChat">;
+
+const useConversations = (
+    conversationId: string | null, 
+    friend?: {
+        _id: string;
+        displayName: string;
+        avt: string;
+    }
+) => {
+    const navigation = useNavigation<ChatNavigationProp>();
+    const currUser = '67d2e8e01a29ef48e08a19f4';
+
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true); // Kiểm tra còn tin nhắn không
+    const [text, setText] = useState<string>("");
+    const [sending, setSending] = useState<boolean>(false);
+
+    const [conversation, setConversation] = useState<Conversation | null>(null);
+    const [messages, setMessages] = useState<Message[] | null>(null);
+    const {
+        getShortNames, 
+        getOtherParticipantById
+    } = useMessages();
+    
+    useEffect(() => {
+        socket.emit("joinChat", conversationId);
+
+        socket.on("newMessage", (newMessage) => {
+            if (newMessage.sender !== currUser){
+                setMessages(messages?[newMessage, ...messages]: [newMessage])
+            }
+        });
+    
+        return () => {
+            socket.emit("leaveChat", conversationId);
+            socket.off("newMessage");
+        };
+    }, [conversationId]);
+      
+    
+    const getNameChat = () => {
+        if (conversation){
+            if (conversation.type === "private"){
+                const userData = getOtherParticipantById(conversation, currUser);
+                return userData?userData.displayName:"Người dùng không xác định";
+            } else if (conversation.type === "group"){
+                return conversation.groupName !== null? conversation.groupName : getShortNames(conversation);
+            } else {
+                return conversation.pageId?conversation.pageId.name : "Page không xác định";
+            }
+        }
+        else if (friend){
+            return friend.displayName
+        } else {
+            return "Loading..."
+        }
+    }
+    
+    const getConversation = async () => {
+        if (conversationId){
+            const conversationAPI = restClient.apiClient.service(`apis/conversations`);
+            const result = await conversationAPI.get(conversationId);
+            if (result.success){
+                setConversation(result.data);
+            }
+        }
+    }
+
+    const getMessages = async () => {
+        if (conversationId){
+            const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversationId}`);
+            const result = await conversationAPI.find({limit: PAGE_SIZE, skip: 0});
+            if (result.success){
+                setMessages(result.data);
+                const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversationId}/seen-all`);
+                await conversationAPI.patch("", { userId: currUser});
+            }
+        }
+    }
+
+    const loadMoreMessages = async () => {
+        if (messages && conversation){
+            if (loadingMore || !hasMore) return;
+            setLoadingMore(true);
+            try {
+                const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversation._id}`);
+                const result = await conversationAPI.find({limit: PAGE_SIZE, skip: messages.length});
+                if (result.success){
+                    setMessages((prev) => {
+                        const newMessages = result.data.filter(
+                          (newMsg: Message) => !prev?.some((msg) => msg._id === newMsg._id)
+                        );
+                        return prev ? [...prev, ...newMessages] : newMessages;
+                      });
+                      
+                    setHasMore(result.data.length === PAGE_SIZE);
+                }
+            } catch (error) {
+              console.error("Lỗi tải thêm tin nhắn", error);
+            } finally {
+              setLoadingMore(false);
+            }
+        }
+    };
+    
+    const openImagePicker = async () => {
+        // Yêu cầu quyền truy cập thư viện ảnh
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Bạn cần cấp quyền để chọn ảnh hoặc video!');
+          return null;
+        }
+      
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All, // Cho phép chọn cả ảnh và video
+          allowsEditing: false,
+          quality: 1,
+        });
+      
+        if (!result.canceled) {
+          const asset = result.assets[0];
+          const fileType = asset.type === 'video' ? 'video' : 'img';
+      
+          createMessage(fileType, asset)
+        }
+
+    };  
+    
+    const openCamera = async () => {
+        // Yêu cầu quyền truy cập camera
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Bạn cần cấp quyền để chụp ảnh hoặc quay video!');
+          return null;
+        }
+      
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All, // Cho phép cả ảnh và video
+          allowsEditing: true,
+          quality: 1,
+        });
+      
+        if (!result.canceled) {
+          const asset = result.assets[0]; // Lấy file đầu tiên được chụp/quay
+          const fileType = asset.type === 'video' ? 'video' : 'img';
+      
+          createMessage(fileType, asset)
+        }
+    };
+
+    const handleOpenImagePicker = () => {
+        Alert.alert(
+          "Chọn ảnh",
+          "Bạn muốn chọn ảnh từ đâu?",
+          [
+            { text: "Bộ sưu tập", onPress: openImagePicker },
+            { text: "Camera", onPress: openCamera },
+            { text: "Hủy", style: "cancel" }
+          ]
+        );
+    };
+
+    const sendMessage = async ( currConversationId: string, type: string, source: ImagePicker.ImagePickerAsset | null) => {
+        if (type !== 'text' && !source) return;
+        try {
+            const formData = new FormData();
+        
+            formData.append("conversationId", currConversationId);
+            formData.append("sender", currUser);
+            formData.append("type", type);
+            if (type === "text") {
+                formData.append("message", text);
+            } else if (source) {
+                const fileName = source.uri.split('/').pop();
+                const fileType = source.type === "video" ? "video/mp4" : "image/jpeg";
+                    
+                const file = {
+                    uri: source.uri,
+                    name: fileName,
+                    type: fileType,
+                } as any;
+        
+                formData.append("file", file);
+            }
+        
+            // Gửi FormData qua articlesClient.create
+            const messageAPI = restClient.apiClient.service(`apis/messages`);
+            const result = await messageAPI.create(formData);
+        
+            if (result.success) {
+                if (type === 'text'){
+                    setText("");
+                }
+                setMessages((prev) => {
+                    return prev ? [result.data, ...prev] : [result.data];
+                });
+            } else {
+              throw new Error(result.message);
+              }
+        } catch (error) {
+          console.error("❌ Lỗi khi gửi tin nhắn:", error);
+          alert("Đã xảy ra lỗi khi gửi tin nhắn!");
+        }
+    }
+    const createMessage = async ( type: string, source: ImagePicker.ImagePickerAsset | null) => {
+        if (type === 'text' && text === "") {
+            return;
+        }
+        if (sending){
+            return;
+        }
+        setSending(true);
+        if (conversation){
+            sendMessage(conversation._id, type, source);
+        } else {
+            if (friend){
+                const conversationAPI = restClient.apiClient.service(`apis/conversations`);
+                const participants = [currUser, friend._id]
+                
+                const result = await conversationAPI.create({
+                    participants: participants,
+                    lastMessage: {
+                        sender: currUser,
+                        contentType: "text",
+                        message: type === 'text' ? text : "Xin chào",
+                      }
+                });
+                if (result.success){
+                    const conversationAPI = restClient.apiClient.service(`apis/conversations`);
+                    const newConversation = await conversationAPI.get(result.data._id);
+                    if (newConversation.success){
+                        setConversation(newConversation.data);
+                    }
+                    const messageAPI = restClient.apiClient.service(`apis/messages`);
+                    const messages = await messageAPI.get(result.data.lastMessage);
+                    if (messages.success){
+                        setMessages((prev) => {
+                            return prev ? [messages.data, ...prev] : [messages.data];
+                        });
+                    }
+                    if (type === 'text'){
+                        setText(""); 
+                    }
+                    else {
+                        sendMessage(result.data._id, type, source);
+                    }
+                }
+            }
+        }
+        setSending(false);
+    }
+
+    const navigationDetails = () => {
+        if (conversation){
+            navigation.navigate("Details", {defaultConversation: conversation})
+        }
+    }
+
+    return {
+        navigation, text, setText,
+        conversation, messages, getNameChat,
+        getConversation, getMessages,
+        loadMoreMessages, loadingMore,
+        currUser, handleOpenImagePicker,
+        createMessage, navigationDetails
+    }
+}
+
+export default useConversations;

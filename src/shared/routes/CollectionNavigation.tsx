@@ -1,0 +1,24 @@
+import Collections from "@/src/features/collections/containers/Collections";
+import DetailsCollections from "@/src/features/collections/containers/post/DetailsCollections";
+import { createStackNavigator } from "@react-navigation/stack";
+import React from "react";
+
+export type CollectionStackParamList = {
+    Collections: undefined;
+    DetailsCollections: {collectionId: string};
+};
+
+const Stack = createStackNavigator<CollectionStackParamList>();
+
+export function CollectionNavigation() {
+  return (
+        <Stack.Navigator initialRouteName="Collections" screenOptions={{
+           headerShown: false,
+        }}>
+          {/* Màn hình hướng dẫn sử dụng tabbar. Màn hình nào cần thì làm theo */}
+          <Stack.Screen name="Collections" component={Collections} />
+          <Stack.Screen name="DetailsCollections" component={DetailsCollections} />
+          {/* <Stack.Screen name="Register" component={Resgister} /> */}
+      </Stack.Navigator>
+  );
+}

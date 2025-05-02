@@ -1,0 +1,257 @@
+// PageScreen.tsx
+import React, { useEffect } from "react";
+import { View, StyleSheet, FlatList, ActivityIndicator, Text } from "react-native";
+import PageHeader from "../../components/PageHeader";
+import TabBarCustom from "@/src/features/group/components/TabBarCustom";
+import LocationInfo from "./tabs/LocationInfo";
+import PageHome from "./tabs/PageHome";
+import PageTickets from "./tabs/PageTickets";
+import PageMembers from "./tabs/PageMembers";
+import { Page } from "@/src/interface/interface_reference";
+import getColor from "@/src/styles/Color";
+import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
+import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
+import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
+import CTabbar from "@/src/shared/components/tabbar/CTabbar";
+import PageInvitations from "./tabs/PageInvitations";
+import usePageScreen from "./usePageScreen";
+import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
+import PostDialog from "@/src/features/newfeeds/components/PostDialog/PostDialog";
+import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePostDialog";
+
+const Color = getColor();
+
+interface PageScreenProps {
+  route: RouteProp<ExploreStackParamList, "PageScreen">;
+}
+
+const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
+  const navigation = useNavigation<NavigationProp<ExploreStackParamList>>(); 
+  const pageId = route.params?.pageId;
+
+  if (!pageId) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: "red" }}>Lỗi: Không tìm thấy pageId</Text>
+      </View>
+    );
+  }
+
+  const {
+    page,
+    role,
+    loading,
+    error,
+    selectedTab,
+    setSelectedTab,
+    filteredTabs,
+    fetchPage,
+    avatar,
+    address,
+    modalVisible,
+    setModalVisible,
+    handleMorePress,
+    pendingInvites,
+    acceptAdminInvite,
+    declineAdminInvite,
+    getUserId,
+    currentUserId, setCurrentUserId
+  } = usePageScreen(pageId, navigation);
+
+    useEffect(() => {
+      getUserId();
+  }, []);
+
+  const {
+    isModalVisible: isPostDialogVisible,
+    postContent,
+    setPostContent,
+    toggleModal: togglePostDialog,
+    handlePost,
+    privacy,
+    setPrivacy,
+    handlePickImage,
+    handleTakePhoto,
+    handleRemoveImage,
+    selectedImages,
+    hashtags,
+    setHashtagInput,
+    handleAddHashtag,
+    handleRemoveHashtag,
+    hashtagInput,
+    isLoading,
+    location,
+    getCurrentLocation,
+    handleMapPointSelect,
+    clearLocation,
+    openMapPicker,
+    isLocationLoading,
+    setPageID,
+    setGroupID,
+    MapPickerDialog, 
+    isMapPickerVisible,
+    setMapPickerVisible, 
+  } = usePostDialog(currentUserId || "");
+
+  useEffect(() => {
+    setPageID(pageId);
+  }, [pageId, setPageID]);
+
+  const { tabbarPosition, handleScroll } = useScrollTabbar();
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <Text>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
+
+  if (error || !page) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: "red" }}>Lỗi: {error || "Không tìm thấy trang"}</Text>
+      </View>
+    );
+  }
+
+  const renderContent = () => {
+    switch (selectedTab) {
+      case "Trang chủ":
+        return (
+          <LocationInfo
+            page={page}
+            currentUserId={currentUserId || ""}
+            role={role}
+            onMessagePress={() => alert("Bạn đã nhấn vào Nhắn Tin!")}
+          />
+        );
+      case "Bài viết":
+        return <PageHome page={page} currentUserId={currentUserId || ""} role={role} />;
+      case "Quản lý lời mời":
+        return (
+          <PageInvitations
+            page={page}
+            currentUserId={currentUserId || ""}
+            role={role}
+            updatePage={fetchPage}
+          />
+        );
+      case "Quản trị viên":
+        return (
+          <PageMembers
+            page={page}
+            currentUserId={currentUserId || ""}
+            role={role}
+            updatePage={fetchPage}
+          />
+        );
+      case "Vé":
+        return <PageTickets page={page} currentUserId={currentUserId || ""} role={role} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={[{ key: "content" }]}
+        renderItem={() => (
+          <>
+            <View style={styles.headerContainer}>
+              <PageHeader
+                page={page}
+                currentUserId={currentUserId || ""}
+                role={role}
+                updatePage={fetchPage}
+                avatar={avatar}
+                address={address}
+                modalVisible={modalVisible}
+                setModalVisible={setModalVisible}
+                handleMorePress={handleMorePress}
+                pendingInvites={pendingInvites}
+                acceptAdminInvite={acceptAdminInvite}
+                declineAdminInvite={declineAdminInvite}
+              />
+            </View>
+            <View style={styles.tabBarContainer}>
+              <TabBarCustom
+                tabs={filteredTabs}
+                selectedTab={selectedTab}
+                onSelectTab={setSelectedTab}
+              />
+            </View>
+            {renderContent()}
+          </>
+        )}
+        keyExtractor={(item) => item.key}
+        onScroll={handleScroll}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+      />
+      <CTabbar tabbarPosition={tabbarPosition} />
+
+      {(role === "isOwner" || role === "isAdmin") && (
+        <BubbleButton onPress={togglePostDialog} />
+      )}
+
+      <PostDialog
+        isModalVisible={isPostDialogVisible}
+        postContent={postContent}
+        setPostContent={setPostContent}
+        toggleModal={togglePostDialog}
+        handlePost={handlePost}
+        privacy={privacy}
+        setPrivacy={setPrivacy}
+        handlePickImage={handlePickImage}
+        handleTakePhoto={handleTakePhoto}
+        handleRemoveImage={handleRemoveImage}
+        selectedImages={selectedImages.map((media) => media.uri)}
+        hashtags={hashtags}
+        setHashtagInput={setHashtagInput}
+        handleAddHashtag={handleAddHashtag}
+        handleRemoveHashtag={handleRemoveHashtag}
+        hashtagInput={hashtagInput}
+        isLoading={isLoading}
+        location={location}
+        handleMapPointSelect={handleMapPointSelect}
+        getCurrentLocation={getCurrentLocation}
+        clearLocation={clearLocation}
+        isLocationLoading={isLocationLoading}
+        MapPickerDialog = {MapPickerDialog}
+        isMapPickerVisible = {isMapPickerVisible}
+        openMapPicker = {openMapPicker}
+        setMapPickerVisible = {setMapPickerVisible}
+      />
+    </View>
+  );
+};
+
+export default PageScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Color.backGround,
+  },
+  headerContainer: {
+    position: "absolute",
+    width: "100%",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: Color.backGround,
+  },
+  tabBarContainer: {
+    marginTop: 380,
+    zIndex: 9,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

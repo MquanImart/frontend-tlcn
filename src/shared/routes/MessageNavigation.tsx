@@ -1,0 +1,94 @@
+import React from "react";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import Messages from "@/src/features/messages/containers/list-messages/Messages";
+import { createStackNavigator } from "@react-navigation/stack";
+import NewChat from "@/src/features/messages/containers/list-messages/NewChat";
+import NewGroupChat from "@/src/features/messages/containers/list-messages/NewGroupChat";
+import SettingsMessages from "@/src/features/messages/containers/settings/SettingsMessages";
+import StrangeMessages from "@/src/features/messages/containers/strange-messages/StrangeMessages";
+import Conversations from "@/src/features/messages/containers/conversations/Conversations";
+import DetailsConversations from "@/src/features/messages/containers/conversations/DetailsConversations";
+import PhotoAndFile from "@/src/features/messages/containers/conversations/PhotoAndFile";
+import SettingsNotify from "@/src/features/messages/containers/conversations/SettingsNotify";
+import { Conversation, UserDisplay } from "@/src/interface/interface_flex";
+import ListMember from "@/src/features/messages/containers/conversations/ListMember";
+
+export type MessagesDrawerParamList = {
+    "Tin nhắn": undefined;
+    "Cài đặt": undefined;
+    "Tin nhắn lạ": undefined;
+};
+
+const Drawer = createDrawerNavigator<MessagesDrawerParamList>();
+
+const MessagesDrawerWrapper = () => {
+  return (
+    <Drawer.Navigator 
+    initialRouteName="Tin nhắn"
+        screenOptions={{
+          headerShown: false, 
+        }}>
+      <Drawer.Screen name="Tin nhắn" component={MessageNavigation} />
+      <Drawer.Screen name="Cài đặt" component={SettingsMessages} />
+      <Drawer.Screen name="Tin nhắn lạ" component={StrangeMessageNavigation} />
+    </Drawer.Navigator>
+  );
+};
+
+export default MessagesDrawerWrapper;
+
+export type ChatStackParamList = {
+  ListMessages: undefined;
+  NewChat: undefined;
+  NewGroupChat: {defaultChoose?: UserDisplay[]};
+  BoxChat: { conversationId: string | null, friend? : {
+    _id: string;
+    displayName: string;
+    avt: string;
+  }};
+  Details: { defaultConversation: Conversation };
+  PhotoAndFile: { conversationId: string };
+  SettingsNotify: { conversation: Conversation };
+  ListMember: {listUser: UserDisplay[]};
+};
+
+const Stack = createStackNavigator<ChatStackParamList>();
+
+export function MessageNavigation() {
+return (
+    <Stack.Navigator initialRouteName="ListMessages" screenOptions={{
+       headerShown: false,
+    }}>
+        <Stack.Screen name="ListMessages" component={Messages} />
+        <Stack.Screen name="NewChat" component={NewChat} />
+        <Stack.Screen name="NewGroupChat" component={NewGroupChat} />
+        <Stack.Screen name="BoxChat" component={Conversations} />
+        <Stack.Screen name="Details" component={DetailsConversations} />
+        <Stack.Screen name="PhotoAndFile" component={PhotoAndFile} />
+        <Stack.Screen name="SettingsNotify" component={SettingsNotify} />
+        <Stack.Screen name="ListMember" component={ListMember} />
+    </Stack.Navigator>
+);
+}
+
+export type StrangeChatStackParamList = {
+  StrangeMessages: undefined;
+  BoxChat: { conversationId: string | null, friend? : {
+    _id: string;
+    displayName: string;
+    avt: string;
+  }};
+};
+
+const StackStrange = createStackNavigator<StrangeChatStackParamList>();
+
+export function StrangeMessageNavigation() {
+return (
+    <StackStrange.Navigator initialRouteName="StrangeMessages" screenOptions={{
+       headerShown: false,
+    }}>
+        <StackStrange.Screen name="BoxChat" component={Conversations} />
+        <StackStrange.Screen name="StrangeMessages" component={StrangeMessages} />
+    </StackStrange.Navigator>
+);
+}
