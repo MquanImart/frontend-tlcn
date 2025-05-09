@@ -1,24 +1,32 @@
-import { useNavigation } from "@react-navigation/native";
 import CInput from "@/src/features/authentication/components/CInput";
-import { 
-    View, Text, TouchableOpacity, StyleSheet, Image, Keyboard, TouchableWithoutFeedback, 
-    Platform, KeyboardAvoidingView, ScrollView, TextInput, 
-    Alert
-} from "react-native";
-import { useState, useRef } from "react";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useRef, useState } from "react";
+import {
+    Alert,
+    Image, Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 const accountClient = restClient.apiClient.service("apis/accounts");
 const Color = getColor();
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-    const [emailOrPhone, setEmailOrPhone] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [emailOrPhone, setEmailOrPhone] = useState<string>("21110741@student.hcmute.edu.vn");
+    const [password, setPassword] = useState<string>("21110741");
     const navigation = useNavigation<AuthNavigationProp>();
 
     // Ref để focus vào ô mật khẩu sau khi nhập xong email/số điện thoại

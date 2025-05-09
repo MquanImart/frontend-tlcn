@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import restClient from "@/src/shared/services/RestClient";
 import { Article } from "@/src/features/newfeeds/interface/article";
+import restClient from "@/src/shared/services/RestClient";
+import { useCallback, useEffect, useState } from "react";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 
@@ -9,29 +9,56 @@ export const useGroupHome = (groupId: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const fetchApprovedArticles = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await groupsClient.get(`${groupId}/approved-articles`);
-      if (response.success) {
-        setArticles(response.data);
-      } else {
-        setError(response.messages || "Không thể lấy danh sách bài viết.");
+  const fetchApprovedArticles = useCallback(
+    async (newPage = 1, append = false) => {
+      if (newPage > totalPages && totalPages !== 0) return;
+
+      setLoading(!append);
+      setIsLoadingMore(append);
+      setError(null);
+
+      try {
+        const groupSpecificClient = restClient.apiClient.service(`apis/groups/${groupId}/approved-articles`);
+
+        const response = await groupSpecificClient.find({
+          page: newPage,
+          limit: 5, // Phù hợp với backend
+        });
+
+        if (response.success) {
+          const validArticles = (response.data || []).filter(
+            (article: Article) => article && article._id
+          );
+          setArticles((prev) => (append ? [...prev, ...validArticles] : validArticles));
+          setTotalPages(response.totalPages || 1);
+          setPage(newPage);
+        } else {
+          setError(response.messages || "Không thể lấy danh sách bài viết.");
+        }
+      } catch (error) {
+        setError("Lỗi khi gọi API bài viết.");
+        console.error("Lỗi lấy bài viết đã duyệt:", error);
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
       }
-    } catch (error) {
-      setError("Lỗi khi gọi API bài viết.");
-      console.error("Lỗi lấy bài viết đã duyệt:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [groupId, totalPages]
+  );
 
-  // Handle refresh action
+  const loadMoreArticles = useCallback(() => {
+    if (!isLoadingMore && page < totalPages) {
+      fetchApprovedArticles(page + 1, true);
+    }
+  }, [page, totalPages, isLoadingMore, fetchApprovedArticles]);
+
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchApprovedArticles();
+    await fetchApprovedArticles(1);
     setRefreshing(false);
   };
 
@@ -39,7 +66,7 @@ export const useGroupHome = (groupId: string) => {
     if (groupId) {
       fetchApprovedArticles();
     }
-  }, [groupId]);
+  }, [groupId, fetchApprovedArticles]);
 
   return {
     articles,
@@ -48,5 +75,8 @@ export const useGroupHome = (groupId: string) => {
     error,
     refreshing,
     onRefresh,
+    loadMoreArticles,
+    isLoadingMore,
+    fetchApprovedArticles,
   };
 };

@@ -1,23 +1,31 @@
-import React from "react";
-import { View, StyleSheet, FlatList, Text } from "react-native";
-import GroupCard from "@/src/features/group/components/GroupCard"; // Đường dẫn chính xác
+import GroupCard from "@/src/features/group/components/GroupCard";
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useJoinedGroups } from "./useJoinedGroups";
 
 const Color = getColor();
 
 interface JoinedGroupsTabProps {
   userId: string;
-  handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
+  handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
-
-  const { savedGroups, loading, error } = useJoinedGroups(userId);
+  const { savedGroups, loading, error, loadMoreGroups, isLoadingMore, fetchSavedGroups } =
+    useJoinedGroups(userId);
 
   const handleViewGroup = (groupId: string) => {
     navigation.navigate("GroupDetailsScreen", {
@@ -38,6 +46,9 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
     return (
       <View style={styles.centered}>
         <Text style={styles.emptyText}>{error}</Text>
+        <TouchableOpacity onPress={() => fetchSavedGroups(1)}>
+          <Text style={styles.retryText}>Thử lại</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -59,6 +70,22 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
           )}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          onEndReached={loadMoreGroups}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={styles.footer}>
+                <ActivityIndicator size="large" color={Color.mainColor1} />
+              </View>
+            ) : null
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchSavedGroups(1)}
+              colors={[Color.mainColor1]}
+            />
+          }
         />
       ) : (
         <View style={styles.emptyContainer}>
@@ -91,5 +118,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
+  },
+  retryText: {
+    fontSize: 16,
+    color: Color.mainColor1,
+    marginTop: 10,
+    fontWeight: "bold",
   },
 });

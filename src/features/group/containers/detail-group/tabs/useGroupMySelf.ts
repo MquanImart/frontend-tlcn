@@ -1,5 +1,4 @@
-// useGroupMySelf.ts
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import restClient from "@/src/shared/services/RestClient";
 import { Article } from "@/src/features/newfeeds/interface/article";
 import { Alert } from "react-native";
@@ -11,44 +10,86 @@ const notificationsClient = restClient.apiClient.service("apis/notifications");
 export const useGroupMySelf = (groupId: string, currentUserId: string) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [adminInvite, setAdminInvite] = useState<{
     groupName: string;
     inviterName: string;
     inviteDate: string;
     inviterAvatar: string;
-    inviterId: string; // Thêm inviterId để gửi thông báo
+    inviterId: string;
     hasInvite: boolean;
   } | null>(null);
-  const [currentUserDisplayName, setCurrentUserDisplayName] = useState<string | null>(null); // Thêm state cho displayName của người chấp nhận
+  const [currentUserDisplayName, setCurrentUserDisplayName] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const getCurrentUserDisplayName = async () => {
-    const name = await AsyncStorage.getItem("displayName");
-    setCurrentUserDisplayName(name);
-  };
-
-  // Fetch articles for the user in the group
-  const fetchUserArticles = async () => {
-    setLoading(true);
     try {
-      const response = await groupsClient.get(`${groupId}/members/${currentUserId}/articles`);
-      setArticles(response.success ? response.data : []);
+      const name = await AsyncStorage.getItem("displayName");
+      setCurrentUserDisplayName(name);
     } catch (error) {
-      console.error("❌ Lỗi khi lấy bài viết của user:", error);
-      setArticles([]);
-    } finally {
-      setLoading(false);
+      console.error("❌ Lỗi khi lấy displayName:", error);
     }
   };
 
-  // Check if user has an invite to become an admin
+  const fetchUserArticles = useCallback(
+    async (newPage = 1, append = false) => {
+      if (newPage > totalPages && totalPages !== 0) return;
+
+      setLoading(!append);
+      setIsLoadingMore(append);
+      setError(null);
+
+      try {
+        const userSpecificClient = restClient.apiClient.service(`apis/groups/${groupId}/members/${currentUserId}/articles`);
+
+        const response = await userSpecificClient.find({
+          query: {
+            page: newPage,
+            limit: 5, // Phù hợp với backend
+          },
+        });
+
+        if (response.success) {
+          const validArticles = (response.data || []).filter((article: Article) => article && article._id);
+          setArticles((prev) => (append ? [...prev, ...validArticles] : validArticles));
+          setTotalPages(response.totalPages || 1);
+          setPage(newPage);
+        } else {
+          setError(response.message || "Không thể lấy danh sách bài viết.");
+          setArticles([]);
+        }
+      } catch (error) {
+        console.error("❌ Lỗi khi lấy bài viết của user:", error);
+        setError("Có lỗi xảy ra khi lấy danh sách bài viết.");
+        setArticles([]);
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [groupId, currentUserId, totalPages]
+  );
+
+  const loadMoreArticles = useCallback(() => {
+    if (!isLoadingMore && page < totalPages) {
+      fetchUserArticles(page + 1, true);
+    }
+  }, [page, totalPages, isLoadingMore, fetchUserArticles]);
+
   const fetchAdminInvite = async () => {
     try {
       const response = await groupsClient.get(`${groupId}/administrators/${currentUserId}`);
       if (response.success && response.data) {
         setAdminInvite({
-          ...response.data,
-          inviterId: response.data.inviterId, // Giả định API trả về inviterId
+          groupName: response.data.groupName || "",
+          inviterName: response.data.inviterName || "Unknown",
+          inviteDate: response.data.inviteDate || new Date().toISOString(),
+          inviterAvatar: response.data.inviterAvatar || "",
+          inviterId: response.data.inviterId || "",
+          hasInvite: !!response.data.hasInvite,
         });
       } else {
         setAdminInvite(null);
@@ -59,27 +100,17 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
     }
   };
 
-  useEffect(() => {
-    getCurrentUserDisplayName(); // Lấy displayName khi mount
-    if (groupId) {
-      fetchAdminInvite();
-      fetchUserArticles();
-    }
-  }, [groupId, currentUserId]);
-
-  // Accept the admin invite
   const handleAcceptInvite = async () => {
     if (!adminInvite) return;
 
     try {
       const response = await groupsClient.patch(`${groupId}/members/${currentUserId}`, { state: "accept-admin" });
       if (response.success) {
-        // Gửi thông báo đến người mời
         if (adminInvite.inviterId && adminInvite.inviterId !== currentUserId) {
           try {
             await notificationsClient.create({
-              senderId: currentUserId, 
-              receiverId: adminInvite.inviterId, 
+              senderId: currentUserId,
+              receiverId: adminInvite.inviterId,
               message: `${currentUserDisplayName || "Một người dùng"} đã chấp nhận lời mời làm quản trị viên của ${adminInvite.groupName}`,
               status: "unread",
             });
@@ -100,7 +131,6 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
     }
   };
 
-  // Reject the admin invite
   const handleRejectInvite = async () => {
     if (!adminInvite) return;
 
@@ -119,14 +149,26 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
     }
   };
 
+  useEffect(() => {
+    getCurrentUserDisplayName();
+    if (groupId && currentUserId) {
+      fetchAdminInvite();
+      fetchUserArticles();
+    }
+  }, [groupId, currentUserId, fetchUserArticles]);
+
   return {
     articles,
     setArticles,
     loading,
+    error,
     modalVisible,
     setModalVisible,
     adminInvite,
     handleAcceptInvite,
     handleRejectInvite,
+    loadMoreArticles,
+    isLoadingMore,
+    fetchUserArticles,
   };
 };

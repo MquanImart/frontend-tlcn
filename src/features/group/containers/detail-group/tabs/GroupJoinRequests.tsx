@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
 import MemberRequestItem from "@/src/features/group/components/MemberRequestItem";
 import getColor from "@/src/styles/Color";
-import restClient from "@/src/shared/services/RestClient";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useGroupJoinRequests } from "./useGroupJoinRequests";
 
 const Color = getColor();
-const groupsClient = restClient.apiClient.service("apis/groups");
 
 interface GroupJoinRequestsProps {
   groupId: string;
@@ -40,14 +39,18 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
     searchText,
     setSearchText,
     loading,
+    error,
     filteredRequests,
     handleAccept,
     handleReject,
+    loadMoreRequests,
+    isLoadingMore,
+    fetchPendingMembers,
   } = useGroupJoinRequests(groupId);
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"} 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.innerContainer}>
@@ -60,7 +63,14 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
         />
 
         {loading ? (
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
+        ) : error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity onPress={() => fetchPendingMembers(1)}>
+              <Text style={styles.retryText}>Thử lại</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <FlatList
             data={filteredRequests}
@@ -80,6 +90,22 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
             )}
             ListEmptyComponent={
               <Text style={styles.emptyText}>Không có yêu cầu nào</Text>
+            }
+            onEndReached={loadMoreRequests}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              isLoadingMore ? (
+                <View style={styles.footer}>
+                  <ActivityIndicator size="large" color={Color.mainColor1} />
+                </View>
+              ) : null
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={() => fetchPendingMembers(1)}
+                colors={[Color.mainColor1]}
+              />
             }
           />
         )}
@@ -114,5 +140,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Color.textColor3,
     marginTop: 20,
+  },
+  loading: {
+    marginTop: 20,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+  },
+  retryText: {
+    fontSize: 16,
+    color: Color.mainColor1,
+    marginTop: 10,
+    fontWeight: "bold",
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
   },
 });

@@ -1,8 +1,7 @@
-// useExploreGroups.ts
-import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import restClient from "@/src/shared/services/RestClient";
 import { Group } from "@/src/features/newfeeds/interface/article";
+import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useState } from "react";
 
 const usersClient = restClient.apiClient.service("apis/users");
 const groupsClient = restClient.apiClient.service("apis/groups");
@@ -13,32 +12,56 @@ export const useExplore = (currentUserId: string) => {
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const getUserDisplayName = async () => {
     const name = await AsyncStorage.getItem("displayName");
     setDisplayName(name);
   };
 
-  useEffect(() => {
-    getUserDisplayName(); // Lấy displayName khi mount
-    fetchGroups();
-  }, [currentUserId]);
+  const fetchGroups = useCallback(
+    async (newPage = 1, append = false) => {
+      if (newPage > totalPages && totalPages !== 0) return;
 
-  const fetchGroups = async () => {
-    try {
-      const response = await usersClient.get(`${currentUserId}/not-joined-groups`);
-      if (response.success) {
-        setGroupsNotJoined(response.data);
-      } else {
-        setError("Không thể lấy danh sách nhóm chưa tham gia.");
+      setLoading(!append);
+      setIsLoadingMore(append);
+
+      try {
+        const userSpecificClient = restClient.apiClient.service(`apis/users/${currentUserId}/not-joined-groups`);
+
+        const response = await userSpecificClient.find({
+          page: newPage,
+          limit: 5, // Phù hợp với backend
+        });
+
+        if (response.success) {
+          const validGroups = (response.data || []).filter(
+            (group: Group) => group && group._id
+          );
+          setGroupsNotJoined((prev) => (append ? [...prev, ...validGroups] : validGroups));
+          setTotalPages(response.totalPages || 1);
+          setPage(newPage);
+        } else {
+          setError("Không thể lấy danh sách nhóm chưa tham gia.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gọi API lấy nhóm chưa tham gia:", error);
+        setError("Có lỗi xảy ra khi lấy dữ liệu.");
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
       }
-    } catch (error) {
-      console.error("Lỗi khi gọi API lấy nhóm chưa tham gia:", error);
-      setError("Có lỗi xảy ra khi lấy dữ liệu.");
-    } finally {
-      setLoading(false);
+    },
+    [currentUserId, totalPages]
+  );
+
+  const loadMoreGroups = useCallback(() => {
+    if (!isLoadingMore && page < totalPages) {
+      fetchGroups(page + 1, true);
     }
-  };
+  }, [page, totalPages, isLoadingMore, fetchGroups]);
 
   const handleJoinGroup = async (groupId: string) => {
     try {
@@ -46,11 +69,11 @@ export const useExplore = (currentUserId: string) => {
       if (response.success) {
         const joinedGroup = groupsNotJoined.find((group) => group._id === groupId);
         if (joinedGroup) {
-          if (currentUserId !== joinedGroup.idCreater._id) {
+          if (currentUserId !== joinedGroup.idCreater) {
             try {
               await notificationsClient.create({
                 senderId: currentUserId,
-                receiverId: joinedGroup.idCreater._id,
+                receiverId: joinedGroup.idCreater,
                 message: `${displayName || "Một người dùng"} đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
                 status: "unread",
               });
@@ -77,7 +100,7 @@ export const useExplore = (currentUserId: string) => {
           }
         }
 
-        fetchGroups(); // Fetch lại danh sách nhóm sau khi tham gia
+        fetchGroups(1); // Làm mới danh sách nhóm từ trang 1
       } else {
         console.error("Lỗi khi gửi yêu cầu tham gia nhóm:", response.messages);
       }
@@ -86,5 +109,18 @@ export const useExplore = (currentUserId: string) => {
     }
   };
 
-  return { groupsNotJoined, loading, error, handleJoinGroup };
+  useEffect(() => {
+    getUserDisplayName();
+    fetchGroups();
+  }, [currentUserId, fetchGroups]);
+
+  return {
+    groupsNotJoined,
+    loading,
+    error,
+    handleJoinGroup,
+    loadMoreGroups,
+    isLoadingMore,
+    fetchGroups,
+  };
 };

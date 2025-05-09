@@ -1,30 +1,53 @@
-// GroupPostApproval.tsx
-import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
 import PostApproval from "@/src/features/group/components/PostApproval";
-import { useGroupPostApproval } from "./useGroupPostApproval"; 
 import getColor from "@/src/styles/Color";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useGroupPostApproval } from "./useGroupPostApproval";
 
 const Color = getColor();
 
 interface GroupPostApprovalProps {
   groupId: string;
   currentUserId: string;
-  role: "Guest" | "Member" | "Admin" | "Owner"; 
+  role: "Guest" | "Member" | "Admin" | "Owner";
 }
 
 const GroupPostApproval: React.FC<GroupPostApprovalProps> = ({ groupId, role }) => {
-  const { pendingPosts, loading, handleApprove, handleReject } = useGroupPostApproval(groupId); 
+  const {
+    pendingPosts,
+    loading,
+    error,
+    handleApprove,
+    handleReject,
+    loadMorePosts,
+    isLoadingMore,
+    fetchPendingArticles,
+  } = useGroupPostApproval(groupId);
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Danh sách bài viết cần duyệt</Text>
       {loading ? (
-        <Text style={styles.loadingText}>Đang tải...</Text>
+        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity onPress={() => fetchPendingArticles(1)}>
+            <Text style={styles.retryText}>Thử lại</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <FlatList
           data={pendingPosts}
-          keyExtractor={  (item) => item._id}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <PostApproval
               article={item}
@@ -33,6 +56,22 @@ const GroupPostApproval: React.FC<GroupPostApprovalProps> = ({ groupId, role }) 
             />
           )}
           ListEmptyComponent={<Text style={styles.emptyText}>Không có bài viết nào cần duyệt</Text>}
+          onEndReached={loadMorePosts}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={styles.footer}>
+                <ActivityIndicator size="large" color={Color.mainColor1} />
+              </View>
+            ) : null
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchPendingArticles(1)}
+              colors={[Color.mainColor1]}
+            />
+          }
         />
       )}
     </View>
@@ -53,16 +92,33 @@ const styles = StyleSheet.create({
     color: Color.textColor1,
     marginBottom: 10,
   },
-  loadingText: {
-    textAlign: "center",
-    fontSize: 16,
-    color: Color.textColor3,
+  loading: {
     marginTop: 20,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+  },
+  retryText: {
+    fontSize: 16,
+    color: Color.mainColor1,
+    marginTop: 10,
+    fontWeight: "bold",
   },
   emptyText: {
     textAlign: "center",
     fontSize: 16,
     color: Color.textColor3,
     marginTop: 20,
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
   },
 });

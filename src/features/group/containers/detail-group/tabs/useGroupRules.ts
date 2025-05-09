@@ -1,7 +1,7 @@
 // useGroupRules.ts
-import { useState, useEffect } from "react";
-import { Alert } from "react-native";
 import restClient from "@/src/shared/services/RestClient";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 

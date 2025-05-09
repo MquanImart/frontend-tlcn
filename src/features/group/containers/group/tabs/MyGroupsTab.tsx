@@ -1,23 +1,30 @@
-import React from "react";
-import { View, StyleSheet, FlatList, Text } from "react-native";
 import GroupCard from "@/src/features/group/components/GroupCard";
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
-import { useMyGroups } from "./useMyGroups"; // Import the custom hook
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useMyGroups } from "./useMyGroups";
 
 const Color = getColor();
 
 interface MyGroupsTabProps {
   userId: string;
-  handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
+  handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const MyGroupTab = ({ userId, handleScroll }: MyGroupsTabProps) => {
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
-
-  const { myGroups, loading, error } = useMyGroups(userId);
+  const { myGroups, loading, error, loadMoreGroups, isLoadingMore, fetchMyGroups } = useMyGroups(userId);
 
   const handleViewGroup = (groupId: string) => {
     navigation.navigate("GroupDetailsScreen", {
@@ -38,6 +45,9 @@ const MyGroupTab = ({ userId, handleScroll }: MyGroupsTabProps) => {
     return (
       <View style={styles.centered}>
         <Text style={styles.emptyText}>{error}</Text>
+        <TouchableOpacity onPress={() => fetchMyGroups(1)}>
+          <Text style={styles.retryText}>Thử lại</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -58,6 +68,22 @@ const MyGroupTab = ({ userId, handleScroll }: MyGroupsTabProps) => {
           )}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          onEndReached={loadMoreGroups}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={styles.footer}>
+                <ActivityIndicator size="large" color={Color.mainColor1} />
+              </View>
+            ) : null
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchMyGroups(1)}
+              colors={[Color.mainColor1]}
+            />
+          }
         />
       ) : (
         <View style={styles.emptyContainer}>
@@ -90,5 +116,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
+  },
+  retryText: {
+    fontSize: 16,
+    color: Color.mainColor1,
+    marginTop: 10,
+    fontWeight: "bold",
   },
 });

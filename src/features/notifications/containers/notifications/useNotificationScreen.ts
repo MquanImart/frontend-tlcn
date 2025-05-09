@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
-import { Notification } from "../../interface/INotification";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
 import restClient from "@/src/shared/services/RestClient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import socket from "@/src/shared/services/socketio";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useState } from "react";
+import { Notification } from "../../interface/INotification";
 
 const notificationsClient = restClient.apiClient.service("apis/notifications");
 
@@ -13,6 +13,9 @@ const useNotificationScreen = () => {
   const [isSwiping, setIsSwiping] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -20,7 +23,7 @@ const useNotificationScreen = () => {
     socket.emit("joinUser", userId);
 
     socket.on("newNotification", ({ notification }) => {
-      setNotifications((prev) => [notification, ...prev]); 
+      setNotifications((prev) => [notification, ...prev]);
     });
 
     return () => {
@@ -28,45 +31,60 @@ const useNotificationScreen = () => {
       socket.off("newNotification");
     };
   }, [userId]);
-  
+
   const getUserId = async () => {
     const id = await AsyncStorage.getItem("userId");
     setUserId(id);
   };
 
-    useEffect(() => {
-        getUserId();
-    }, []);
+  useEffect(() => {
+    getUserId();
+  }, []);
 
   const tabs = ["Tất cả", "Chưa đọc", "Đã đọc"];
 
-  const fetchNotifications = useCallback(async () => {
-    setLoading(true);
-    try {
-      if (!userId) {
-        console.error("Không tìm thấy userId");
-        return;
+  const fetchNotifications = useCallback(
+    async (newPage = 1, append = false) => {
+      if (!userId || (newPage > totalPages && totalPages !== 0)) return;
+
+      setLoading(!append);
+      setIsLoadingMore(append);
+
+      try {
+        const status =
+          selectedTab === "Chưa đọc" ? "unread" : selectedTab === "Đã đọc" ? "read" : "";
+
+        const result = await notificationsClient.find({
+          receiverId: userId,
+          status,
+          page: newPage,
+          limit: 10,
+        });
+
+        if (result.success) {
+          setNotifications((prev) =>
+            append ? [...prev, ...result.data] : result.data
+          );
+          setTotalPages(result.totalPages);
+          setPage(newPage);
+        } else {
+          console.error("Lỗi khi lấy thông báo:", result.message);
+        }
+      } catch (error) {
+        console.error("Lỗi xảy ra:", error);
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
       }
+    },
+    [userId, selectedTab, totalPages]
+  );
 
-      const status =
-        selectedTab === "Chưa đọc" ? "unread" : selectedTab === "Đã đọc" ? "read" : "";
-
-      const result = await notificationsClient.find({
-        receiverId: userId,
-        status,
-      });
-
-      if (result.success) {
-        setNotifications(result.data);
-      } else {
-        console.error("Lỗi khi lấy thông báo:", result.message);
-      }
-    } catch (error) {
-      console.error("Lỗi xảy ra:", error);
-    } finally {
-      setLoading(false);
+  const loadMoreNotifications = useCallback(() => {
+    if (!isLoadingMore && page < totalPages) {
+      fetchNotifications(page + 1, true);
     }
-  }, [userId, selectedTab]); // Depend on userId and selectedTab
+  }, [page, totalPages, isLoadingMore, fetchNotifications]);
 
   const handleSwipe = useCallback(
     (direction: string) => {
@@ -102,14 +120,19 @@ const useNotificationScreen = () => {
     []
   );
 
-  const handleDelete = useCallback(async (id: string) => {
-    try {
-      await notificationsClient.remove(id);
-      setNotifications((prev) => prev.filter((notification) => notification._id !== id));
-    } catch (error) {
-      console.error("Lỗi khi xóa thông báo:", error);
-    }
-  }, []);
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await notificationsClient.remove(id);
+        setNotifications((prev) =>
+          prev.filter((notification) => notification._id !== id)
+        );
+      } catch (error) {
+        console.error("Lỗi khi xóa thông báo:", error);
+      }
+    },
+    []
+  );
 
   const handleOptions = useCallback(
     (onMarkAsRead: () => void, onMarkAsUnread: () => void, onDelete: () => void) => {
@@ -131,7 +154,7 @@ const useNotificationScreen = () => {
     if (userId) {
       fetchNotifications();
     }
-  }, [userId, selectedTab, fetchNotifications]); 
+  }, [userId, selectedTab]);
 
   return {
     notifications,
@@ -145,6 +168,8 @@ const useNotificationScreen = () => {
     handleSwipe,
     loading,
     getUserId,
+    loadMoreNotifications,
+    isLoadingMore,
   };
 };
 

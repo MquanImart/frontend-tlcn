@@ -1,36 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { 
-  View, 
-  FlatList, 
-  StyleSheet, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ActivityIndicator,
-  RefreshControl
-} from "react-native";
-import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import Post from "@/src/features/newfeeds/components/post/Post";
-import Modal from "react-native-modal";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
-import { Ionicons } from "@expo/vector-icons";
+import Post from "@/src/features/newfeeds/components/post/Post";
+import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import getColor from "@/src/styles/Color";
-import { Article } from "@/src/features/newfeeds/interface/article";
-import restClient from "@/src/shared/services/RestClient";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Modal from "react-native-modal";
 import { useGroupHome } from "./useGroupHome";
 
 const colors = getColor();
 
 interface GroupHomeProps {
-  groupId: string; 
+  groupId: string;
   currentUserId: string;
-  role: "Guest" | "Member" | "Admin" | "Owner"; // ✅ Thêm role để kiểm soát quyền hạn
+  role: "Guest" | "Member" | "Admin" | "Owner";
 }
 
-
 const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) => {
+  const {
+    articles,
+    setArticles,
+    loading,
+    error,
+    refreshing,
+    onRefresh,
+    loadMoreArticles,
+    isLoadingMore,
+    fetchApprovedArticles,
+  } = useGroupHome(groupId);
 
-  const { articles, setArticles, loading, error, refreshing, onRefresh } = useGroupHome(groupId);
   const {
     isModalVisible,
     currentArticle,
@@ -50,31 +57,42 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
   return (
     <View style={[styles.container, { backgroundColor: colors.backGround }]}>
       {loading ? (
-          <ActivityIndicator size="large" color={colors.mainColor1} style={styles.loading} />
-        ) : error ? (
+        <ActivityIndicator size="large" color={colors.mainColor1} style={styles.loading} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
-        ) : articles.length === 0 ? (
-          <Text style={styles.noArticlesText}>Chưa có bài viết nào</Text>
-        ) : (
-          <FlatList
-            data={articles}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <Post
-                article={item}
-                userId = {currentUserId}
-                onCommentPress={() => openComments(item)}
-                onLike={() => likeArticle(item._id, item.createdBy._id)}
-                deleteArticle={deleteArticle}
-                editArticle={editArticle}
-              />
-            )}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        )}
-
+          <TouchableOpacity onPress={() => fetchApprovedArticles(1)}>
+            <Text style={styles.retryText}>Thử lại</Text>
+          </TouchableOpacity>
+        </View>
+      ) : articles.length === 0 ? (
+        <Text style={styles.noArticlesText}>Chưa có bài viết nào</Text>
+      ) : (
+        <FlatList
+          data={articles}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <Post
+              article={item}
+              userId={currentUserId}
+              onCommentPress={() => openComments(item)}
+              onLike={() => likeArticle(item._id, item.createdBy._id)}
+              deleteArticle={deleteArticle}
+              editArticle={editArticle}
+            />
+          )}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          onEndReached={loadMoreArticles}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={styles.footer}>
+                <ActivityIndicator size="large" color={colors.mainColor1} />
+              </View>
+            ) : null
+          }
+        />
+      )}
 
       {/* 🗨️ Modal hiển thị bình luận */}
       <Modal
@@ -100,7 +118,7 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <CommentItem
-                userId = {currentUserId}
+                userId={currentUserId}
                 comment={item}
                 onLike={likeComment}
                 onReply={replyToComment}
@@ -142,10 +160,21 @@ const styles = StyleSheet.create({
   loading: {
     marginTop: 20,
   },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   errorText: {
     color: "red",
     textAlign: "center",
-    marginTop: 20,
+    fontSize: 16,
+  },
+  retryText: {
+    fontSize: 16,
+    color: colors.mainColor1,
+    marginTop: 10,
+    fontWeight: "bold",
   },
   modal: {
     justifyContent: "flex-end",
@@ -189,5 +218,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textColor3,
     marginTop: 20,
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
   },
 });

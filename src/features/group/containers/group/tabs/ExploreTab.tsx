@@ -1,28 +1,35 @@
-import React from "react";
-import { View, StyleSheet, FlatList, Text } from "react-native";
 import GroupCard from "@/src/features/group/components/GroupCard";
-import { useExplore } from "./useExplore";
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useExplore } from "./useExplore";
 
 const Color = getColor();
 
 interface ExploreTabProps {
   userId: string;
-  handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
+  handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
-
-  // Use the custom hook
-  const { groupsNotJoined, loading, error, handleJoinGroup } = useExplore(userId);
+  const { groupsNotJoined, loading, error, handleJoinGroup, loadMoreGroups, isLoadingMore, fetchGroups } =
+    useExplore(userId);
 
   const handleViewGroup = (groupId: string) => {
     navigation.navigate("GroupDetailsScreen", {
-      groupId: groupId,
+      groupId,
       currentUserId: userId,
     });
   };
@@ -39,27 +46,52 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>{error}</Text>
+        <TouchableOpacity onPress={() => fetchGroups(1)}>
+          <Text style={styles.retryText}>Thử lại</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={groupsNotJoined}
-        keyExtractor={(item) => item._id}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <GroupCard
-            group={item}
-            currentUserId={userId}
-            onJoinGroup={() => handleJoinGroup(item._id)} // Join the group
-            onViewGroup={() => handleViewGroup(item._id)} // View group details
-          />
-        )}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      />
+      {groupsNotJoined.length > 0 ? (
+        <FlatList
+          data={groupsNotJoined}
+          keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <GroupCard
+              group={item}
+              currentUserId={userId}
+              onJoinGroup={() => handleJoinGroup(item._id)}
+              onViewGroup={() => handleViewGroup(item._id)}
+            />
+          )}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          onEndReached={loadMoreGroups}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={styles.footer}>
+                <ActivityIndicator size="large" color={Color.mainColor1} />
+              </View>
+            ) : null
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchGroups(1)}
+              colors={[Color.mainColor1]}
+            />
+          }
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Không có nhóm nào để khám phá!</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -82,5 +114,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Color.textColor3,
     fontStyle: "italic",
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
+  },
+  retryText: {
+    fontSize: 16,
+    color: Color.mainColor1,
+    marginTop: 10,
+    fontWeight: "bold",
   },
 });

@@ -1,22 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
-import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import Post from "@/src/features/newfeeds/components/post/Post";
-import Modal from "react-native-modal";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
-import { Ionicons } from "@expo/vector-icons";
+import Post from "@/src/features/newfeeds/components/post/Post";
+import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Modal from "react-native-modal";
 import { useFeed } from "./useFeed";
 
 const colors = getColor();
 
 interface FeedTabProps {
   userId: string;
-  handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
+  handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
-const FeedTab = ({userId, handleScroll}: FeedTabProps) => {
-  const { articleGroups, setArticleGroups, loading, error } = useFeed(userId);
+const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
+  const { articleGroups, setArticleGroups, loading, error, loadMoreArticles, isLoadingMore } =
+    useFeed(userId);
   const {
     isModalVisible,
     currentArticle,
@@ -32,7 +41,6 @@ const FeedTab = ({userId, handleScroll}: FeedTabProps) => {
     deleteArticle,
     editArticle,
   } = useNewFeed(articleGroups, setArticleGroups);
-
 
   if (loading) {
     return (
@@ -50,17 +58,16 @@ const FeedTab = ({userId, handleScroll}: FeedTabProps) => {
     );
   }
 
-
   return (
     <View style={[styles.container, { backgroundColor: colors.backGround }]}>
       {/* Danh sách bài viết */}
       <FlatList
         data={articleGroups}
         keyExtractor={(item) => item._id}
-        showsVerticalScrollIndicator = {false}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <Post
-            userId = {userId}
+            userId={userId}
             article={item}
             onCommentPress={() => openComments(item)}
             onLike={() => likeArticle(item._id, item.createdBy._id)}
@@ -68,8 +75,17 @@ const FeedTab = ({userId, handleScroll}: FeedTabProps) => {
             editArticle={editArticle}
           />
         )}
-        onScroll={handleScroll}  
+        onScroll={handleScroll}
         scrollEventThrottle={16}
+        onEndReached={loadMoreArticles}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View style={styles.footer}>
+              <ActivityIndicator size="large" color={colors.mainColor1} />
+            </View>
+          ) : null
+        }
       />
       <Modal
         isVisible={isModalVisible}
@@ -94,7 +110,7 @@ const FeedTab = ({userId, handleScroll}: FeedTabProps) => {
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <CommentItem
-                userId = {userId}
+                userId={userId}
                 comment={item}
                 onLike={likeComment}
                 onReply={replyToComment}
@@ -179,5 +195,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     marginRight: 10,
+  },
+  footer: {
+    padding: 10,
+    alignItems: "center",
   },
 });

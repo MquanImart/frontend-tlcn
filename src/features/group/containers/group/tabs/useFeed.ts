@@ -1,7 +1,6 @@
-// useArticleGroups.ts
-import { useState, useEffect } from "react";
-import restClient from "@/src/shared/services/RestClient";
 import { Article } from "@/src/features/newfeeds/interface/article";
+import restClient from "@/src/shared/services/RestClient";
+import { useCallback, useEffect, useState } from "react";
 
 const usersClient = restClient.apiClient.service("apis/users");
 
@@ -9,14 +8,34 @@ export const useFeed = (currentUserId: string) => {
   const [articleGroups, setArticleGroups] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  useEffect(() => {
-    const fetchArticleGroups = async () => {
+  const fetchArticleGroups = useCallback(
+    async (newPage = 1, append = false) => {
+      if (newPage > totalPages && totalPages !== 0) return;
+
+      setLoading(!append);
+      setIsLoadingMore(append);
+
       try {
-        const response = await usersClient.get(`${currentUserId}/group-articles`);
+        // Tạo client với path chứa userId
+        const userSpecificClient = restClient.apiClient.service(`apis/users/${currentUserId}/group-articles`);
+
+        // Gọi API với tham số phân trang
+        const response = await userSpecificClient.find({
+          page: newPage,
+          limit: 10,
+        });
+        console.log("Phản hồi từ API:", response);
 
         if (response.success) {
-          setArticleGroups(response.data);
+          setArticleGroups((prev) =>
+            append ? [...prev, ...response.data] : response.data
+          );
+          setTotalPages(response.totalPages || 1);
+          setPage(newPage);
         } else {
           setError("Không thể lấy danh sách nhóm bài viết.");
         }
@@ -25,11 +44,30 @@ export const useFeed = (currentUserId: string) => {
         setError("Có lỗi xảy ra khi lấy dữ liệu.");
       } finally {
         setLoading(false);
+        setIsLoadingMore(false);
       }
-    };
+    },
+    [currentUserId, totalPages]
+  );
 
-    fetchArticleGroups();
-  }, [currentUserId]);
+  const loadMoreArticles = useCallback(() => {
+    if (!isLoadingMore && page < totalPages) {
+      fetchArticleGroups(page + 1, true);
+    }
+  }, [page, totalPages, isLoadingMore, fetchArticleGroups]);
 
-  return { articleGroups, setArticleGroups, loading, error };
+  useEffect(() => {
+    if (currentUserId) {
+      fetchArticleGroups();
+    }
+  }, [currentUserId, fetchArticleGroups]);
+
+  return {
+    articleGroups,
+    setArticleGroups,
+    loading,
+    error,
+    loadMoreArticles,
+    isLoadingMore,
+  };
 };

@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
-import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop";
-import NotificationList from "../../components/NotificationList";
-import useNotificationScreen from "./useNotificationScreen";
-import getColor from "@/src/styles/Color";
 import CHeader from "@/src/shared/components/header/CHeader";
-import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
+import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
+import getColor from "@/src/styles/Color";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
+import NotificationList from "../../components/NotificationList";
+import useNotificationScreen from "./useNotificationScreen";
 
 const SWIPE_THRESHOLD = 50;
 
@@ -22,12 +22,13 @@ const NotificationScreen: React.FC = () => {
     unreadCount,
     handleSwipe,
     handleOptions,
-    getUserId
+    getUserId,
+    loadMoreNotifications,
+    isLoadingMore,
   } = useNotificationScreen();
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
   const colors = getColor();
-
 
   const tabs = [
     { label: "Tất cả" },
@@ -58,6 +59,8 @@ const NotificationScreen: React.FC = () => {
             onDelete={handleDelete}
             handleOptions={handleOptions}
             handleScroll={handleScroll}
+            loadMoreNotifications={loadMoreNotifications}
+            isLoadingMore={isLoadingMore}
           />
           <CTabbar tabbarPosition={tabbarPosition} startTab="notifications" />
         </View>
