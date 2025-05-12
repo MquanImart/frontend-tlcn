@@ -8,7 +8,7 @@ import { SupportChatNavigation } from "./SupportChatNavigation";
 import Profile from "@/src/features/profile/containers/Profile";
 import MyProfile from "@/src/features/profile/containers/MyProfile";
 import ArticleDetail from "@/src/features/newfeeds/containers/articledetail/ArticleDetail";
-
+import { PersonalPageStackParamList } from "./PersonalPageNavigation";
 const Stack = createStackNavigator<NewFeedParamList>();
 
 export type NewFeedParamList = {
@@ -17,7 +17,10 @@ export type NewFeedParamList = {
   MessageNavigation: undefined;
   SupportChatNavigation: undefined;
   Profile: { userId: string };
-  MyProfile: undefined;
+  MyProfile: {
+      screen?: keyof PersonalPageStackParamList;
+      params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
+    };
   ArticleDetail: { articleId: string };
 };
 

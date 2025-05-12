@@ -5,11 +5,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { User } from "@/src/interface/interface_reference";
 
-
+import { PersonalPageStackParamList } from "./PersonalPageNavigation";
 
 export type ProfileStackParamList = {
     MyProfile: undefined;
-    EditProfile: undefined;
+    EditProfile: {
+          screen?: keyof PersonalPageStackParamList;
+          params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
+        };
     Profile: { userId: string };
 };
 

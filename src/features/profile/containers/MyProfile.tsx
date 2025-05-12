@@ -7,6 +7,7 @@ import getColor from "@/src/styles/Color";
 import ProfilePost from './post/ProfilePost';
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
+import { PersonalPageStackParamList } from "@/src/shared/routes/PersonalPageNavigation";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import restClient from '@/src/shared/services/RestClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,7 +16,7 @@ import ViewAllVideo from './video/ViewAllVideo';
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 
-type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "MyProfile">;
+type ProfileNavigationProp = StackNavigationProp<PersonalPageStackParamList, "MyProfile">;
 const Color = getColor();
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
