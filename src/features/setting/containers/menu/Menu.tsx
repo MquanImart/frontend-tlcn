@@ -171,7 +171,7 @@ const Menu = () => {
         <CIconButton
           label={user.displayName}
           icon={<Image source={{ uri: avt }} style={styles.avatar} />}
-          onSubmit={() => navigationMenu.navigate("MyProfile", { screen: "Profile", params: { userId: userID! } })}
+          onSubmit={() => navigationMenu.navigate("MyProfile", { screen: "MyProfile", params: { userId: userID! } })}
           style={{
             width: "90%",
             height: 60,

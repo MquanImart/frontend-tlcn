@@ -1,6 +1,17 @@
-import React from "react";
-import { StyleSheet, KeyboardAvoidingView, Platform, Text, Image, View } from "react-native";
+import React, { useRef, useEffect } from "react";
+import {
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  Image,
+  View,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import MessageList from "../components/MessageList";
 import ChatInput from "../components/ChatInput";
 import getColor from "@/src/styles/Color";
@@ -8,31 +19,58 @@ import { useSupportChatScreen } from "./useSupportChatScreen";
 import { Message } from "../interface/Message";
 
 const colors = getColor();
-const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png"; 
-
+const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
 
 const SupportChatScreen: React.FC = () => {
   const initialMessages: Message[] = [
     { id: "1", text: "Xin chào! Tôi có thể giúp gì cho bạn?", isUser: false },
   ];
-  const { messages, inputText, setInputText, handleSend } = useSupportChatScreen(initialMessages);
+  const { messages, inputText, setInputText, handleSend } = useSupportChatScreen(
+    initialMessages
+  );
+
+  // Tạo ref cho FlatList
+  const flatListRef = useRef<FlatList<Message>>(null);
+
+  // Cuộn xuống cuối nội dung khi messages thay đổi
+  useEffect(() => {
+    if (flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [messages]);
+
+  // Sử dụng useNavigation để điều hướng
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.header}>
-        <Image
-          source={{ uri: ROBOT_IMAGE }}
-          style={styles.avatar}
-          resizeMode="contain"
-        />
-        <Text style={styles.headerText}>Hỗ trợ</Text>
+        {/* Nút Back */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={28} color={colors.white_homologous} />
+        </TouchableOpacity>
+
+        {/* Logo và tiêu đề */}
+        <View style={styles.headerContent}>
+          <Image
+            source={{ uri: ROBOT_IMAGE }}
+            style={styles.avatar}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerText}>Hỗ trợ</Text>
+        </View>
       </View>
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 20}
       >
-        <MessageList messages={messages} />
+        <MessageList messages={messages} flatListRef={flatListRef} />
         <ChatInput
           inputText={inputText}
           onChangeText={setInputText}
@@ -49,20 +87,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backGround,
   },
   header: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
     padding: 15,
     backgroundColor: colors.mainColor1,
   },
+  backButton: {
+    padding: 5,
+    marginRight: 10, // Khoảng cách giữa nút Back và logo
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   avatar: {
-    width: 30,
-    height: 30,
-    marginRight: 10, 
-    borderRadius: 15, 
+    width: 35, // Tăng kích thước logo
+    height: 35,
+    marginRight: 8, // Giảm khoảng cách giữa logo và chữ
+    borderRadius: 20,
   },
   headerText: {
     color: colors.white_homologous,
-    fontSize: 18,
+    fontSize: 20, // Tăng kích thước chữ
     fontWeight: "bold",
   },
   keyboardContainer: {

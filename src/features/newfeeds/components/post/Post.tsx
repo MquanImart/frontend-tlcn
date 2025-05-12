@@ -76,7 +76,7 @@ const Post: React.FC<PostProps> = ({
 
   const handleAvatarPress = () => {
     if (article.createdBy._id === userId) {
-      navigation.navigate("MyProfile");
+      navigation.navigate("MyProfile", { screen: "MyProfile", params: { userId: userId! } });
     } else {
       navigation.navigate("Profile", { userId: article.createdBy._id });
     }
