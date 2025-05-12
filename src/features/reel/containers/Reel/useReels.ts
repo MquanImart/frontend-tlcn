@@ -379,43 +379,28 @@ export default function useReel(
 
   const getReels = async (pageNum: number = 0) => {
     try {
-      const limit = 4;
-      const skip = pageNum * limit;
-      console.log(`Fetching reels: page=${pageNum}, limit=${limit}, skip=${skip}`);
-      const response = await reelsClient.find({
-        query: {
-          limit: limit,
-          skip: skip,
-        },
-      });
+      const limit = 2;
+      const skip = pageNum * limit;      
+      // Tạo tham số phẳng
+      const queryParams = { $limit: limit, $skip: skip };
+       
+      // Gọi find với tham số phẳng
+      const response = await reelsClient.find(queryParams);
 
-      console.log(`API response for page ${pageNum}:`, JSON.stringify(response, null, 2));
-
+  
       if (response.success) {
-        // Kiểm tra response.data có tồn tại và là mảng
         if (!Array.isArray(response.data)) {
-          console.error("response.data không phải mảng:", response.data);
           return { success: false, data: [], total: 0 };
         }
-
-        // Lọc bỏ các reel có _id không hợp lệ
+  
         const validReels = response.data.filter(
           (reel: Reels) => reel._id && !reel._id.startsWith('.$')
         );
-
-        // Lọc trùng lặp với danh sách hiện tại
+  
         const uniqueReels = validReels.filter(
           (reel: Reels) => !reels.some((existingReel) => existingReel._id === reel._id)
         );
-
-        if (validReels.length < response.data.length || uniqueReels.length < validReels.length) {
-          console.warn("Đã lọc bỏ các reel:", {
-            invalid: response.data.filter((r: Reels) => !r._id || r._id.startsWith('.$')),
-            duplicates: validReels.filter((r: Reels) => reels.some((e) => e._id === r._id)),
-          });
-        }
-
-        console.log(`Page ${pageNum}: Fetched ${uniqueReels.length} reels, total: ${response.total || 0}`);
+  
         return {
           success: true,
           data: uniqueReels,
