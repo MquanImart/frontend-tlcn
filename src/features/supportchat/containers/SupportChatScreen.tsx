@@ -1,22 +1,22 @@
-import React, { useRef, useEffect } from "react";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useRef } from "react";
 import {
-  StyleSheet,
+  FlatList,
+  Image,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
   Text,
-  Image,
-  View,
-  FlatList,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import MessageList from "../components/MessageList";
 import ChatInput from "../components/ChatInput";
-import getColor from "@/src/styles/Color";
-import { useSupportChatScreen } from "./useSupportChatScreen";
+import MessageList from "../components/MessageList";
 import { Message } from "../interface/Message";
+import { useSupportChatScreen } from "./useSupportChatScreen";
 
 const colors = getColor();
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
@@ -68,7 +68,7 @@ const SupportChatScreen: React.FC = () => {
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 20}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         <MessageList messages={messages} flatListRef={flatListRef} />
         <ChatInput

@@ -1,3 +1,4 @@
+import env from "@/env";
 import { Comment, Reels, User } from "@/src/features/reel/interface/reels";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,7 +9,6 @@ const articlesClient = restClient.apiClient.service("apis/articles");
 const commentsClient = restClient.apiClient.service("apis/comments");
 const reelsClient = restClient.apiClient.service("apis/reels");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
-import env from "@/env";
 
 export default function useReel(
   reels: Reels[],
@@ -379,7 +379,7 @@ export default function useReel(
 
   const getReels = async (pageNum: number = 0) => {
     try {
-      const limit = 2;
+      const limit = 4;
       const skip = pageNum * limit;      
       // Tạo tham số phẳng
       const queryParams = { $limit: limit, $skip: skip };
