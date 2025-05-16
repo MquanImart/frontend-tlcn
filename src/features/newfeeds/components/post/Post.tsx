@@ -7,6 +7,7 @@ import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { ResizeMode, Video } from "expo-av";
 import { useState } from "react";
 import {
   Dimensions,
@@ -87,6 +88,11 @@ const Post: React.FC<PostProps> = ({
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    // Check if the item is a video based on the 'type' field
+    const isVideo = (item: { type: string }) => {
+      return item.type.toLowerCase() === "video";
+    };
+
     return (
       <View style={styles.imageContainer}>
         <FlatList
@@ -101,11 +107,24 @@ const Post: React.FC<PostProps> = ({
             setCurrentIndex(index);
           }}
           renderItem={({ item }) => (
-            <Image
-              source={{ uri: item.url }}
-              style={styles.postImage}
-              resizeMode="cover"
-            />
+            isVideo(item) ? (
+              <Video
+                source={{ uri: item.url }}
+                style={styles.postImage}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                isLooping
+                isMuted={false} // Explicitly enable audio
+                shouldPlay={currentIndex === photos.findIndex((p) => p._id === item._id)}
+                onError={(error) => console.log("Video error:", error)} // Log errors
+              />
+            ) : (
+              <Image
+                source={{ uri: item.url }}
+                style={styles.postImage}
+                resizeMode="cover"
+              />
+            )
           )}
         />
         {photos.length > 1 && (
@@ -244,7 +263,7 @@ const Post: React.FC<PostProps> = ({
           <View style={styles.hashtagContainer}>
             {article.hashTag.map((tag, index) => (
               <Text
-                key={`${tag}-${index}`} // Đảm bảo key duy nhất
+                key={`${tag}-${index}`}
                 style={[styles.hashtag, { color: colors.mainColor2 }]}
               >
                 {tag}
@@ -316,7 +335,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   userInfo: {
-    flex: 1, // Đảm bảo userInfo chiếm không gian còn lại
+    flex: 1,
   },
   userAndGroup: {
     flexDirection: "row",
@@ -326,7 +345,7 @@ const styles = StyleSheet.create({
   username: {
     fontWeight: "bold",
     fontSize: 14,
-    maxWidth: width * 0.3, // Giới hạn chiều rộng username
+    maxWidth: width * 0.3,
   },
   groupSeparator: {
     fontSize: 14,
@@ -335,7 +354,7 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 14,
     fontWeight: "400",
-    maxWidth: width * 0.4, // Giới hạn chiều rộng groupName
+    maxWidth: width * 0.4,
   },
   location: {
     fontSize: 12,
@@ -363,7 +382,7 @@ const styles = StyleSheet.create({
   },
   actionsLeft: {
     flexDirection: "row",
-    gap: 20, // Thêm khoảng cách giữa các icon
+    gap: 20,
   },
   content: {
     paddingHorizontal: 10,

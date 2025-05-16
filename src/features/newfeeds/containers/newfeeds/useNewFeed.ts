@@ -1,3 +1,4 @@
+import env from "@/env";
 import { Article, Comment, User } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
 import restClient from "@/src/shared/services/RestClient";
@@ -7,7 +8,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImagePicker from "expo-image-picker"; // Thư viện chọn ảnh/video
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import env from "@/env";
 
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList, "NewFeed">;
 
@@ -32,7 +32,7 @@ export default function useNewFeed(
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // Timeout 120s
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout 120s
 
       const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
         method: "POST",
@@ -70,7 +70,7 @@ export default function useNewFeed(
     }
     try {1
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // Timeout 120s
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout 120s
 
       const formData = new FormData();
       formData.append("file", {
