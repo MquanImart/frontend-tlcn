@@ -152,7 +152,7 @@ const handleOptions = () => {
             await notificationsClient.create({
               senderId: userId,
               receiverId: article.createdBy._id,
-              message: `${displayName || "Một người dùng"} đã báo cáo bài viết của bạn với lý do: ${selectedReportReason}`,
+              message: `đã báo cáo bài viết của bạn với lý do: ${selectedReportReason}`,
               status: "unread",
             });
           } catch (notificationError) {

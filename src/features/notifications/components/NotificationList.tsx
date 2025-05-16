@@ -20,6 +20,7 @@ interface NotificationListProps {
   }) => void;
   loadMoreNotifications: () => void;
   isLoadingMore: boolean;
+  loading?: boolean; // Thêm prop để hiển thị loading ban đầu
 }
 
 const NotificationList: React.FC<NotificationListProps> = ({
@@ -32,6 +33,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   handleScroll,
   loadMoreNotifications,
   isLoadingMore,
+  loading = false, // Mặc định là false nếu không truyền
 }) => {
   const colors = getColor();
 
@@ -39,8 +41,22 @@ const NotificationList: React.FC<NotificationListProps> = ({
     if (selectedTab === "Tất cả") return true;
     if (selectedTab === "Đã đọc") return notification.status === "read";
     if (selectedTab === "Chưa đọc") return notification.status === "unread";
+    return true;
   });
 
+  // Hiển thị loading spinner khi đang tải lần đầu
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.mainColor1} />
+        <Text style={[styles.loadingText, { color: colors.textColor1 }]}>
+          Đang tải thông báo...
+        </Text>
+      </View>
+    );
+  }
+
+  // Hiển thị thông báo khi không có dữ liệu
   if (filteredNotifications.length === 0) {
     return (
       <View style={styles.noNotifications}>
@@ -55,7 +71,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
     <FlatList
       data={filteredNotifications}
       onScroll={handleScroll}
-      keyExtractor={(item) => item._id}
+      keyExtractor={(item, index) => item._id ? item._id : `notification-${index}`}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <NotificationItem
@@ -83,7 +99,12 @@ const NotificationList: React.FC<NotificationListProps> = ({
       onEndReachedThreshold={0.5}
       ListFooterComponent={
         isLoadingMore ? (
-          <ActivityIndicator size="large" color={colors.mainColor1} />
+          <View style={styles.footerLoading}>
+            <ActivityIndicator size="large" color={colors.mainColor1} />
+            <Text style={[styles.loadingText, { color: colors.textColor1 }]}>
+              Đang tải thêm...
+            </Text>
+          </View>
         ) : null
       }
     />
@@ -104,5 +125,19 @@ const styles = StyleSheet.create({
   },
   noNotificationsText: {
     fontSize: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  footerLoading: {
+    padding: 20,
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 14,
+    marginTop: 8,
   },
 });

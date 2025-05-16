@@ -10,7 +10,6 @@ const notificationsClient = restClient.apiClient.service("apis/notifications");
 const useNotificationScreen = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState("Tất cả");
-  const [isSwiping, setIsSwiping] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -23,7 +22,13 @@ const useNotificationScreen = () => {
     socket.emit("joinUser", userId);
 
     socket.on("newNotification", ({ notification }) => {
-      setNotifications((prev) => [notification, ...prev]);
+      setNotifications((prev) => {
+        // Ngăn thêm thông báo trùng lặp
+        if (prev.some((n) => n._id === notification._id)) {
+          return prev;
+        }
+        return [notification, ...prev];
+      });
     });
 
     return () => {
@@ -40,8 +45,6 @@ const useNotificationScreen = () => {
   useEffect(() => {
     getUserId();
   }, []);
-
-  const tabs = ["Tất cả", "Chưa đọc", "Đã đọc"];
 
   const fetchNotifications = useCallback(
     async (newPage = 1, append = false) => {
@@ -62,9 +65,13 @@ const useNotificationScreen = () => {
         });
 
         if (result.success) {
-          setNotifications((prev) =>
-            append ? [...prev, ...result.data] : result.data
-          );
+          setNotifications((prev) => {
+            // Lọc bỏ thông báo trùng lặp
+            const newNotifications = result.data.filter(
+              (newNotif: Notification) => !prev.some((n) => n._id === newNotif._id)
+            );
+            return append ? [...prev, ...newNotifications] : newNotifications;
+          });
           setTotalPages(result.totalPages);
           setPage(newPage);
         } else {
@@ -85,24 +92,6 @@ const useNotificationScreen = () => {
       fetchNotifications(page + 1, true);
     }
   }, [page, totalPages, isLoadingMore, fetchNotifications]);
-
-  const handleSwipe = useCallback(
-    (direction: string) => {
-      if (isSwiping) return;
-
-      const currentIndex = tabs.indexOf(selectedTab);
-
-      if (direction === "left" && currentIndex < tabs.length - 1) {
-        setSelectedTab(tabs[currentIndex + 1]);
-      } else if (direction === "right" && currentIndex > 0) {
-        setSelectedTab(tabs[currentIndex - 1]);
-      }
-
-      setIsSwiping(true);
-      setTimeout(() => setIsSwiping(false), 300);
-    },
-    [isSwiping, selectedTab]
-  );
 
   const handleUpdateNotificationStatus = useCallback(
     async (id: string, status: "read" | "unread") => {
@@ -152,9 +141,10 @@ const useNotificationScreen = () => {
 
   useEffect(() => {
     if (userId) {
+      setNotifications([]); // Đặt lại danh sách trước khi lấy mới
       fetchNotifications();
     }
-  }, [userId, selectedTab]);
+  }, [userId, selectedTab, fetchNotifications]);
 
   return {
     notifications,
@@ -165,7 +155,6 @@ const useNotificationScreen = () => {
     handleDelete,
     handleOptions,
     unreadCount,
-    handleSwipe,
     loading,
     getUserId,
     loadMoreNotifications,

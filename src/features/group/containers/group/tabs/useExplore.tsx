@@ -74,7 +74,7 @@ export const useExplore = (currentUserId: string) => {
               await notificationsClient.create({
                 senderId: currentUserId,
                 receiverId: joinedGroup.idCreater,
-                message: `${displayName || "Một người dùng"} đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
+                message: `đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
                 status: "unread",
               });
             } catch (notificationError) {
@@ -89,7 +89,7 @@ export const useExplore = (currentUserId: string) => {
                   await notificationsClient.create({
                     senderId: currentUserId,
                     receiverId: admin.idUser._id,
-                    message: `${displayName || "Một người dùng"} đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
+                    message: `đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
                     status: "unread",
                   });
                 } catch (notificationError) {

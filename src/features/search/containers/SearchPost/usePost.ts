@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { Article, Comment, User, Group, Address, MyPhoto } from "@/src/features/newfeeds/interface/article";
-import restClient from "@/src/shared/services/RestClient";
-import { useNavigation } from "@react-navigation/native";
+import { Article, Comment, User } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
-import { StackNavigationProp } from "@react-navigation/stack";
+import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImagePicker from "expo-image-picker"; // Thư viện chọn ảnh/video
+import { useEffect, useState } from "react";
 
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList, "NewFeed">;
 
@@ -102,7 +102,7 @@ export default function useNewFeed(
   
           if (likedComment && userId !== likedComment._iduser._id && !wasLikedBefore && isLikedNow) {
             try {
-              const notificationMessage = `${displayName || "Một người dùng"} đã yêu thích bình luận của bạn`;
+              const notificationMessage = `đã yêu thích bình luận của bạn`;
               await notificationsClient.create({
                 senderId: userId,
                 receiverId: likedComment._iduser._id,
@@ -146,7 +146,7 @@ export default function useNewFeed(
       
       if (userId !== articleOwner && !wasLikedBefore && isLikedNow) {
         try {
-          const notificationMessage = `${displayName || "Một người dùng"} đã thích bài viết của bạn`;
+          const notificationMessage = `đã thích bài viết của bạn`;
           await notificationsClient.create({
             senderId: userId,
             receiverId: articleOwner,
@@ -200,7 +200,7 @@ export default function useNewFeed(
               await notificationsClient.create({
                 senderId: userId,
                 receiverId: currentArticle.createdBy._id,
-                message: `${displayName} đã được bình luận bài viết của bạn`,
+                message: `đã được bình luận bài viết của bạn`,
                 status: "unread",
               });
             } catch (notificationError) {
@@ -249,7 +249,7 @@ export default function useNewFeed(
               await notificationsClient.create({
                 senderId: userId,
                 receiverId: parentComment._iduser._id,
-                message: `${displayName} đã trả lời bình luận của bạn`,
+                message: `đã trả lời bình luận của bạn`,
                 status: "unread",
               });
             } catch (notificationError) {

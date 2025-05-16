@@ -5,11 +5,8 @@ import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import getColor from "@/src/styles/Color";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
 import NotificationList from "../../components/NotificationList";
 import useNotificationScreen from "./useNotificationScreen";
-
-const SWIPE_THRESHOLD = 50;
 
 const NotificationScreen: React.FC = () => {
   const {
@@ -20,11 +17,11 @@ const NotificationScreen: React.FC = () => {
     handleMarkAsUnread,
     handleDelete,
     unreadCount,
-    handleSwipe,
     handleOptions,
     getUserId,
     loadMoreNotifications,
     isLoadingMore,
+    loading, // Thêm prop loading
   } = useNotificationScreen();
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
@@ -37,35 +34,23 @@ const NotificationScreen: React.FC = () => {
   ];
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <PanGestureHandler
-        onGestureEvent={(e) => {
-          const { translationX } = e.nativeEvent;
-          if (translationX > SWIPE_THRESHOLD) {
-            handleSwipe("right");
-          } else if (translationX < -SWIPE_THRESHOLD) {
-            handleSwipe("left");
-          }
-        }}
-      >
-        <View style={[styles.container, { backgroundColor: colors.backGround }]}>
-          <CHeader label="Thông báo" showBackButton={false} />
-          <TabbarTop tabs={tabs} startTab={selectedTab} setTab={setSelectedTab} />
-          <NotificationList
-            notifications={notifications}
-            selectedTab={selectedTab}
-            onMarkAsRead={handleMarkAsRead}
-            onMarkAsUnRead={handleMarkAsUnread}
-            onDelete={handleDelete}
-            handleOptions={handleOptions}
-            handleScroll={handleScroll}
-            loadMoreNotifications={loadMoreNotifications}
-            isLoadingMore={isLoadingMore}
-          />
-          <CTabbar tabbarPosition={tabbarPosition} startTab="notifications" />
-        </View>
-      </PanGestureHandler>
-    </GestureHandlerRootView>
+    <View style={[styles.container, { backgroundColor: colors.backGround }]}>
+      <CHeader label="Thông báo" showBackButton={false} />
+      <TabbarTop tabs={tabs} startTab={selectedTab} setTab={setSelectedTab} />
+      <NotificationList
+        notifications={notifications}
+        selectedTab={selectedTab}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAsUnRead={handleMarkAsUnread}
+        onDelete={handleDelete}
+        handleOptions={handleOptions}
+        handleScroll={handleScroll}
+        loadMoreNotifications={loadMoreNotifications}
+        isLoadingMore={isLoadingMore}
+        loading={loading} // Truyền prop loading
+      />
+      <CTabbar tabbarPosition={tabbarPosition} startTab="notifications" />
+    </View>
   );
 };
 
