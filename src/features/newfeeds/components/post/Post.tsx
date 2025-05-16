@@ -1,22 +1,22 @@
+import EditModal from "@/src/features/newfeeds/components/EditModal/EditModal";
+import { usePostActions } from "@/src/features/newfeeds/components/post/usePost";
+import ReportModal from "@/src/features/newfeeds/components/ReportModal/ReportModal";
+import { Article } from "@/src/features/newfeeds/interface/article";
+import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
   Dimensions,
   FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Article } from "@/src/features/newfeeds/interface/article";
-import { usePostActions } from "@/src/features/newfeeds/components/post/usePost";
-import EditModal from "@/src/features/newfeeds/components/EditModal/EditModal";
-import ReportModal from "@/src/features/newfeeds/components/ReportModal/ReportModal";
-import getColor from "@/src/styles/Color";
-import { useNavigation } from "@react-navigation/native";
-import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
-import { StackNavigationProp } from "@react-navigation/stack";
 
 const colors = getColor();
 
@@ -152,15 +152,28 @@ const Post: React.FC<PostProps> = ({
               style={styles.avatar}
             />
           </TouchableOpacity>
-          <View>
+          <View style={styles.userInfo}>
             <View style={styles.userAndGroup}>
-              <Text style={[styles.username, { color: colors.textColor1 }]}>
+              <Text
+                style={[styles.username, { color: colors.textColor1 }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {article.createdBy.displayName}
               </Text>
               {article.groupID && (
-                <Text style={[styles.groupName, { color: colors.mainColor2 }]}>
-                  • {article.groupID.groupName}
-                </Text>
+                <>
+                  <Text style={[styles.groupSeparator, { color: colors.textColor3 }]}>
+                    •
+                  </Text>
+                  <Text
+                    style={[styles.groupName, { color: colors.mainColor2 }]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {article.groupID.groupName}
+                  </Text>
+                </>
               )}
             </View>
             {article.address && (
@@ -169,7 +182,7 @@ const Post: React.FC<PostProps> = ({
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {article.address.placeName}, {article.address.province}
+                {article.address.ward}, {article.address.district}, {article.address.province}
               </Text>
             )}
             <View style={styles.scopeContainer}>
@@ -207,7 +220,7 @@ const Post: React.FC<PostProps> = ({
               color={colors.textColor1}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress} >
+          <TouchableOpacity onPress={handlePress}>
             <Ionicons name="paper-plane-outline" size={28} color={colors.textColor1} />
           </TouchableOpacity>
         </View>
@@ -231,7 +244,7 @@ const Post: React.FC<PostProps> = ({
           <View style={styles.hashtagContainer}>
             {article.hashTag.map((tag, index) => (
               <Text
-                key={index}
+                key={`${tag}-${index}`} // Đảm bảo key duy nhất
                 style={[styles.hashtag, { color: colors.mainColor2 }]}
               >
                 {tag}
@@ -302,18 +315,27 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
+  userInfo: {
+    flex: 1, // Đảm bảo userInfo chiếm không gian còn lại
+  },
   userAndGroup: {
     flexDirection: "row",
     alignItems: "center",
+    flexWrap: "nowrap",
   },
   username: {
     fontWeight: "bold",
     fontSize: 14,
+    maxWidth: width * 0.3, // Giới hạn chiều rộng username
+  },
+  groupSeparator: {
+    fontSize: 14,
+    marginHorizontal: 5,
   },
   groupName: {
     fontSize: 14,
-    marginLeft: 5,
     fontWeight: "400",
+    maxWidth: width * 0.4, // Giới hạn chiều rộng groupName
   },
   location: {
     fontSize: 12,
@@ -341,6 +363,7 @@ const styles = StyleSheet.create({
   },
   actionsLeft: {
     flexDirection: "row",
+    gap: 20, // Thêm khoảng cách giữa các icon
   },
   content: {
     paddingHorizontal: 10,
