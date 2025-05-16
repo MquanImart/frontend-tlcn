@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
-import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-import { Platform } from "react-native";
-import { Address, Page, MyPhoto, Hobbies } from "@/src/interface/interface_reference";
+import { Address, Hobbies, MyPhoto, Page } from "@/src/interface/interface_reference";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import restClient from "@/src/shared/services/RestClient";
 import { NavigationProp } from "@react-navigation/native";
-import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
+import { useEffect, useState } from "react";
 
 const hobbiesClient = restClient.apiClient.service("apis/hobbies");
 const pagesClient = restClient.apiClient.service("apis/pages");
@@ -14,7 +13,8 @@ const addressesClient = restClient.apiClient.service("apis/addresses");
 
 export const useEditPage = (page: Page, navigation: NavigationProp<PageStackParamList>) => {
   const [pageName, setPageName] = useState(page.name || "");
-  const [avtUri, setAvtUri] = useState<string | null>(null);
+  const [avtUri, setAvtUri] = useState<string | null>(page.avt ? null : null);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
   const [address, setAddress] = useState<Address>(
     page.address
       ? { _id: page.address, province: "", district: "", ward: "", street: "", placeName: "", lat: null, long: null }
@@ -224,11 +224,17 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.8,
     });
-    if (!result.canceled && result.assets) {
+    if (!result.canceled && result.assets?.[0]?.uri) {
       setAvtUri(result.assets[0].uri);
+      setRemoveAvatar(false);
     }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvtUri(null);
+    setRemoveAvatar(true);
   };
 
   const onTimeOpenChange = (event: any, selectedTime?: Date) => {
@@ -244,7 +250,7 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
       setShowTimeOpenPicker(false);
     }
   };
-  
+
   const onTimeCloseChange = (event: any, selectedTime?: Date) => {
     if (event.type === "set" && selectedTime) {
       const adjustedTime = new Date();
@@ -272,7 +278,6 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
       !address.province ||
       !address.district ||
       !address.ward ||
-      !address.street ||
       !timeOpen ||
       !timeClose
     ) {
@@ -284,7 +289,6 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
 
     try {
       let addressId = address._id;
-      let avtId = page.avt;
 
       const addressData: Address = {
         _id: addressId,
@@ -298,49 +302,57 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
       };
 
       if (addressId) {
+        console.log("Updating address ID:", addressId);
         const addressResponse = await addressesClient.patch(addressId, addressData);
         if (!addressResponse.success) throw new Error("Cập nhật địa chỉ thất bại");
       } else {
+        console.log("Creating new address");
         const addressResponse = await addressesClient.create(addressData);
         if (addressResponse.success) addressId = addressResponse.data._id;
         else throw new Error("Tạo địa chỉ thất bại");
       }
 
-      if (avtUri && avtUri !== (page.avt ? (await myPhotosClient.get(page.avt)).data.url : null)) {
-        const formData = new FormData();
-        formData.append("type", "img");
-        formData.append("idAuthor", page.idCreater);
-        formData.append("photo", {
-          uri: avtUri,
-          name: "avatar.png",
-          type: "image/png",
-        } as any);
+      const formData = new FormData();
+      formData.append("name", pageName);
+      formData.append("address", addressId ?? "");
+      formData.append("timeOpen", formatTime(timeOpen));
+      formData.append("timeClose", formatTime(timeClose));
+      formData.append("hobbies", JSON.stringify(selectedHobbies));
 
-        const photoResponse = avtId
-          ? await myPhotosClient.patch(avtId, formData)
-          : await myPhotosClient.create(formData);
-        if (photoResponse.success) avtId = photoResponse.data._id;
-        else throw new Error("Cập nhật ảnh đại diện thất bại");
+      if (removeAvatar) {
+        console.log("Removing avatar for page:", page._id);
+        formData.append("removeAvatar", "true");
+      } else if (avtUri && avtUri !== (page.avt ? (await myPhotosClient.get(page.avt)).data.url : null)) {
+        console.log("Uploading new avatar URI:", avtUri);
+        const fileType = avtUri.split(".").pop()?.toLowerCase();
+        if (!fileType || !["jpg", "jpeg", "png"].includes(fileType)) {
+          throw new Error("Định dạng ảnh không hợp lệ. Vui lòng chọn JPG hoặc PNG.");
+        }
+        formData.append("avt", {
+          uri: avtUri,
+          name: `avatar.${fileType}`,
+          type: `image/${fileType === "jpg" ? "jpeg" : fileType}`,
+        } as any);
       }
 
-      const pageData = {
-        name: pageName,
-        address: addressId,
-        timeOpen: formatTime(timeOpen),
-        timeClose: formatTime(timeClose),
-        hobbies: selectedHobbies,
-        avt: avtId,
-      };
+      // Log FormData entries (React Native FormData does not support entries())
+      console.log("Sending FormData for page:", page._id);
+      // You can log the appended values manually if needed, e.g.:
+      // console.log("FormData name:", pageName);
+      // console.log("FormData address:", addressId);
+      // ...etc.
 
-      const pageResponse = await pagesClient.patch(page._id, pageData);
+      const pageResponse = await pagesClient.patch(page._id, formData);
+      console.log("Page API response:", JSON.stringify(pageResponse, null, 2));
+
       if (pageResponse.success) {
         alert("Cập nhật Page thành công!");
         navigation.goBack();
       } else {
-        throw new Error("Cập nhật Page thất bại: " + pageResponse.messages);
+        throw new Error("Cập nhật Page thất bại: " + pageResponse.message);
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
+      console.error("Lỗi khi cập nhật page:", error);
       alert("Có lỗi xảy ra khi cập nhật: " + (error instanceof Error ? error.message : "Không xác định"));
     } finally {
       setIsLoading(false);
@@ -351,6 +363,9 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
     pageName,
     setPageName,
     avtUri,
+    setAvtUri,
+    removeAvatar,
+    handleRemoveAvatar,
     address,
     setAddress,
     timeOpen,
