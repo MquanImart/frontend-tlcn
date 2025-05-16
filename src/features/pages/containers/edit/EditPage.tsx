@@ -1,26 +1,25 @@
+import CHeader from "@/src/shared/components/header/CHeader";
+import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
+import getColor from "@/src/styles/Color";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
+import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
-  View,
+  ActivityIndicator,
+  Image,
+  Modal,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Image,
-  Platform,
-  Modal,
-  ActivityIndicator,
+  View,
 } from "react-native";
-import getColor from "@/src/styles/Color";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useEditPage } from "./useEditPage";
-import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
-import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import CHeader from "@/src/shared/components/header/CHeader";
-
 
 const Color = getColor();
 
@@ -36,6 +35,8 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
     pageName,
     setPageName,
     avtUri,
+    removeAvatar,
+    handleRemoveAvatar,
     address,
     setAddress,
     timeOpen,
@@ -102,11 +103,28 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
       <Text style={styles.sectionTitle}>Ảnh đại diện</Text>
       <TouchableOpacity style={styles.imagePicker} onPress={pickImage} disabled={isLoading}>
         {avtUri ? (
-          <Image source={{ uri: avtUri }} style={styles.avatar} />
+          <Image
+            source={{ uri: avtUri }}
+            style={styles.avatar}
+            resizeMode="contain"
+            onError={() => {
+              handleRemoveAvatar();
+              alert("Lỗi tải ảnh đại diện");
+            }}
+          />
         ) : (
           <Text style={styles.imagePickerText}>Chọn ảnh đại diện</Text>
         )}
       </TouchableOpacity>
+      {avtUri && (
+        <TouchableOpacity
+          style={styles.removeButton}
+          onPress={handleRemoveAvatar}
+          disabled={isLoading}
+        >
+          <Text style={styles.removeButtonText}>Xóa ảnh đại diện</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Địa chỉ */}
       <Text style={styles.sectionTitle}>Địa chỉ</Text>
@@ -241,7 +259,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Đường/Phố (tuỳ chọn)" // Đổi thành tuỳ chọn để khớp với logic mới
+        placeholder="Đường/Phố (tuỳ chọn)"
         placeholderTextColor={Color.textColor3}
         value={address.street}
         onChangeText={handleStreetChange}
@@ -282,7 +300,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
           mode="time"
           display={Platform.OS === "ios" ? "spinner" : "clock"}
           onChange={onTimeOpenChange}
-          timeZoneName="Asia/Ho_Chi_Minh" 
+          timeZoneName="Asia/Ho_Chi_Minh"
         />
       )}
       <TouchableOpacity
@@ -298,7 +316,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
           mode="time"
           display={Platform.OS === "ios" ? "spinner" : "clock"}
           onChange={onTimeCloseChange}
-          timeZoneName="Asia/Ho_Chi_Minh" 
+          timeZoneName="Asia/Ho_Chi_Minh"
         />
       )}
 
@@ -405,7 +423,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   imagePicker: {
-    height: 100,
+    height: 200, // Increased height for larger preview
     borderColor: Color.borderColor1,
     borderWidth: 1,
     borderRadius: 10,
@@ -422,6 +440,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 10,
+    resizeMode: "contain", // Ensure full image is displayed
+  },
+  removeButton: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: Color.backGround || "#ff4d4d",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontWeight: "600",
   },
   timePicker: {
     height: 50,

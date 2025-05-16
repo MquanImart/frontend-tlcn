@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Image,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
-import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import getColor from "@/src/styles/Color";
 import { Group } from "@/src/features/newfeeds/interface/article";
 import restClient from "@/src/shared/services/RestClient";
-import CHeader from "@/src/shared/components/header/CHeader";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const Color = getColor();
 
@@ -43,9 +43,10 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
   const [hobbies, setHobbies] = useState<{ label: string; value: string }[]>([]);
   const [rules, setRules] = useState<string[]>(group?.rule || []);
   const [ruleInput, setRuleInput] = useState("");
-  const [avatar, setAvatar] = useState<string | null>(group?.avt?.url || "");
+  const [avatar, setAvatar] = useState<string | null>(group?.avt?.url || null);
   const [groupType, setGroupType] = useState<"public" | "private">(group?.type || "public");
   const [typeOpen, setTypeOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchHobbies = async () => {
@@ -58,7 +59,9 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
           }));
           setHobbies(hobbyList);
 
-          const selectedHobbies = hobbyList.filter((h: Hobby) => hobby.includes(h.value)).map((h: Hobby) => h.value);
+          const selectedHobbies = hobbyList
+            .filter((h: Hobby) => hobby.includes(h.value))
+            .map((h: Hobby) => h.value);
           setHobby(selectedHobbies);
         }
       } catch (error) {
@@ -78,12 +81,16 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets?.[0]) {
+      if (!result.canceled && result.assets?.[0]?.uri) {
         setAvatar(result.assets[0].uri);
       }
     } catch (error) {
       Alert.alert("Lỗi", "Không thể chọn ảnh");
     }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatar(null);
   };
 
   const handleDeleteRule = (index: number) => {
@@ -103,24 +110,47 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       return;
     }
 
+    setIsLoading(true);
+
     const formData = new FormData();
     formData.append("groupName", groupName);
     formData.append("type", groupType);
     formData.append("introduction", groupDescription);
-    formData.append("rule", rules.join(","));
-    formData.append("hobbies", hobby.join(","));
+    formData.append("rule", JSON.stringify(rules));
+    formData.append("hobbies", JSON.stringify(hobby));
 
-    if (avatar) {
-      const fileType = avatar.split(".").pop();
+    if (avatar && avatar !== group?.avt?.url) {
+      console.log("Sending new avatar URI:", avatar);
+      const fileType = avatar.split(".").pop()?.toLowerCase();
+      if (!fileType || !["jpg", "jpeg", "png"].includes(fileType)) {
+        Alert.alert("Lỗi", "Định dạng ảnh không hợp lệ. Vui lòng chọn JPG hoặc PNG.");
+        setIsLoading(false);
+        return;
+      }
       formData.append("avt", {
         uri: avatar,
         name: `avatar.${fileType}`,
         type: `image/${fileType}`,
       } as any);
+    } else if (!avatar) {
+      console.log("Removing avatar");
+      formData.append("removeAvatar", "true");
     }
+
+    // Log FormData values (React Native FormData does not support entries())
+    // You can log the appended values individually if needed, for example:
+    // console.log("FormData groupName:", groupName);
+    // console.log("FormData type:", groupType);
+    // console.log("FormData introduction:", groupDescription);
+    // console.log("FormData rule:", JSON.stringify(rules));
+    // console.log("FormData hobbies:", JSON.stringify(hobby));
+    // if (avatar && avatar !== group?.avt?.url) {
+    //   console.log("FormData avt:", avatar);
+    // }
 
     try {
       const response = await groupsClient.patch(group._id, formData);
+      console.log("API response:", response);
 
       if (response.success) {
         onSave(response.data);
@@ -131,6 +161,8 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
     } catch (error) {
       console.error("Lỗi khi cập nhật nhóm:", error);
       Alert.alert("Lỗi", "Không thể cập nhật nhóm, vui lòng thử lại!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -231,12 +263,28 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
     {
       key: "Ảnh đại diện",
       component: (
-        <TouchableOpacity style={styles.filePicker} onPress={handlePickAvatar}>
-          <Text style={styles.filePickerText}>
-            {avatar ? "Thay đổi ảnh đại diện" : "Chọn ảnh"}
-          </Text>
-          {avatar && <Image source={{ uri: avatar }} style={styles.avatarPreview} />}
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity style={styles.filePicker} onPress={handlePickAvatar}>
+            <Text style={styles.filePickerText}>
+              {avatar ? "Thay đổi ảnh đại diện" : "Chọn ảnh"}
+            </Text>
+            {avatar && (
+              <Image
+                source={{ uri: avatar }}
+                style={styles.avatarPreview}
+                onError={() => {
+                  setAvatar(null);
+                  Alert.alert("Lỗi", "Không thể tải ảnh đại diện");
+                }}
+              />
+            )}
+          </TouchableOpacity>
+          {avatar && (
+            <TouchableOpacity style={styles.removeButton} onPress={handleRemoveAvatar}>
+              <Text style={styles.removeButtonText}>Xóa ảnh đại diện</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       ),
     },
     {
@@ -245,8 +293,13 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
         <TouchableOpacity
           style={[styles.button, styles.saveButton]}
           onPress={handleSaveGroup}
+          disabled={isLoading}
         >
-          <Text style={styles.buttonText}>Lưu thay đổi</Text>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Lưu thay đổi</Text>
+          )}
         </TouchableOpacity>
       ),
     },
@@ -254,7 +307,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"} // Điều chỉnh hành vi tránh bàn phím
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <FlatList
@@ -354,6 +407,17 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#ccc",
     marginTop: 10,
+  },
+  removeButton: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: Color.backGround || "#ff4d4d",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontWeight: "600",
   },
   button: {
     flex: 1,
