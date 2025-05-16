@@ -184,7 +184,7 @@ export default function useNewFeed(
   
           if (likedComment && userId !== likedComment._iduser._id && !wasLikedBefore && isLikedNow) {
             try {
-              const notificationMessage = `${displayName || "Một người dùng"} đã yêu thích bình luận của bạn`;
+              const notificationMessage = `đã yêu thích bình luận của bạn`;
               await notificationsClient.create({
                 senderId: userId,
                 receiverId: likedComment._iduser._id,
@@ -237,7 +237,7 @@ export default function useNewFeed(
   
         if (userId !== articleOwner) {
           try {
-            const notificationMessage = `${displayName || "Một người dùng"} đã thích bài viết của bạn`;
+            const notificationMessage = `đã thích bài viết của bạn`;
             await notificationsClient.create({
               senderId: userId,
               receiverId: articleOwner,
@@ -318,7 +318,7 @@ export default function useNewFeed(
             await notificationsClient.create({
               senderId: userId,
               receiverId: currentArticle.createdBy._id,
-              message: `${displayName} đã bình luận bài viết của bạn`,
+              message: `đã bình luận bài viết của bạn`,
               status: "unread",
             });
           } catch (notificationError) {
@@ -388,7 +388,7 @@ export default function useNewFeed(
             await notificationsClient.create({
               senderId: userId,
               receiverId: parentComment._iduser._id,
-              message: `${displayName} đã trả lời bình luận của bạn`,
+              message: `đã trả lời bình luận của bạn`,
               status: "unread",
             });
           } catch (notificationError) {

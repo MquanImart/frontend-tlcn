@@ -74,7 +74,7 @@ export const useGroupPostApproval = (groupId: string) => {
             await notificationsClient.create({
               senderId: await AsyncStorage.getItem("userId"),
               receiverId: approvedPost.createdBy._id,
-              message: `${currentUserDisplayName || "Quản trị viên"} đã duyệt bài viết của bạn trong ${groupName}`,
+              message: `đã duyệt bài viết của bạn trong ${groupName}`,
               status: "unread",
             });
           } catch (notificationError) {

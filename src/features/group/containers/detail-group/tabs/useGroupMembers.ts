@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Alert } from "react-native";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
@@ -51,7 +51,7 @@ export const useGroupMembers = (groupId: string, currentUserId: string, role: "G
             await notificationsClient.create({
               senderId: currentUserId,
               receiverId: userId,
-              message: `${displayName || "Một người dùng"} đã mời bạn làm quản trị viên của ${groupName}`,
+              message: `đã mời bạn làm quản trị viên của ${groupName}`,
               status: "unread",
             });
           } catch (notificationError) {

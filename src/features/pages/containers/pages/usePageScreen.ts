@@ -153,7 +153,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
             await notificationsClient.create({
               senderId: currentUserId || "", 
               receiverId: page.idCreater,
-              message: `${currentUserDisplayName || "Một người dùng"} đã chấp nhận lời mời làm quản trị viên của trang ${page.name}`,
+              message: `đã chấp nhận lời mời làm quản trị viên của trang ${page.name}`,
               status: "unread",
             });
           } catch (notificationError) {

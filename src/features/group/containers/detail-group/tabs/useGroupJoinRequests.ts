@@ -79,7 +79,7 @@ export const useGroupJoinRequests = (groupId: string) => {
             await notificationsClient.create({
               senderId: await AsyncStorage.getItem("userId"),
               receiverId: id,
-              message: `${currentUserDisplayName || "Quản trị viên"} đã chấp nhận bạn vào ${groupName}`,
+              message: `đã chấp nhận bạn vào ${groupName}`,
               status: "unread",
             });
           } catch (notificationError) {

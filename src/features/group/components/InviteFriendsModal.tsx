@@ -83,7 +83,7 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
       await notificationsClient.create({
         senderId: userId,
         receiverId,
-        message: `Bạn đã được mời tham gia nhóm ${groupName}.`,
+        message: `đã mời bạn tham gia nhóm ${groupName}.`,
         status: "unread",
       });
     } catch (error) {

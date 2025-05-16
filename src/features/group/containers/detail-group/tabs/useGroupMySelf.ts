@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
-import restClient from "@/src/shared/services/RestClient";
 import { Article } from "@/src/features/newfeeds/interface/article";
-import { Alert } from "react-native";
+import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
@@ -111,7 +111,7 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
             await notificationsClient.create({
               senderId: currentUserId,
               receiverId: adminInvite.inviterId,
-              message: `${currentUserDisplayName || "Một người dùng"} đã chấp nhận lời mời làm quản trị viên của ${adminInvite.groupName}`,
+              message: `đã chấp nhận lời mời làm quản trị viên của ${adminInvite.groupName}`,
               status: "unread",
             });
           } catch (notificationError) {
