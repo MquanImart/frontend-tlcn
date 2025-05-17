@@ -5,7 +5,8 @@ import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import * as ImagePicker from "expo-image-picker"; // Thư viện chọn ảnh/video
+import * as ImageManipulator from "expo-image-manipulator";
+import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
@@ -20,29 +21,51 @@ export default function useNewFeed(
   setArticles: (articles: Article[]) => void
 ) {
   const navigation = useNavigation<NewFeedNavigationProp>();
-  const [userId, setUserId] = useState<string | null> (null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentArticle, setCurrentArticle] = useState<Article | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [newReply, setNewReply] = useState("");
   const [selectedMedia, setSelectedMedia] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
+  // Hàm retry request
+  const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 2000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const start = Date.now();
+        const result = await fn();
+        console.log(`Request thành công sau ${Date.now() - start}ms`);
+        return result;
+      } catch (error) {
+        console.warn(`Thử lại request lần ${i + 1}/${retries}:`, error);
+        if (i < retries - 1) {
+          await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
+        } else {
+          throw error;
+        }
+      }
+    }
+  };
 
   // Hàm kiểm tra nội dung văn bản
   const checkTextContent = async (text: string): Promise<boolean> => {
+    if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout 120s
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
 
-      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
-        signal: controller.signal,
-      });
+      const response = await retryRequest(() =>
+        fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
+          method: "POST",
+          headers: {
+            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+            "Content-Type": "application/json",
+            "Connection": "keep-alive",
+          },
+          body: JSON.stringify({ text }),
+          signal: controller.signal,
+        })
+      );
 
       clearTimeout(timeoutId);
 
@@ -51,42 +74,58 @@ export default function useNewFeed(
       }
 
       const data = await response.json();
-      return data.contains_bad_word || false;
+      return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra văn bản:", error.message, error.stack);
+      console.error("❌ Lỗi kiểm tra văn bản:", {
+        message: error.message,
+        status: error.response?.status,
+        stack: error.stack,
+      });
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Yêu cầu kiểm tra văn bản hết thời gian. Vui lòng thử lại!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
+        return false; // Fallback: cho phép tiếp tục
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung văn bản. Vui lòng kiểm tra kết nối mạng và thử lại!");
+        Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
+        return true; // An toàn: coi là nhạy cảm
       }
-      return true; // Coi là nhạy cảm để an toàn
     }
   };
 
   // Hàm kiểm tra hình ảnh
   const checkMediaContent = async (media: ImagePicker.ImagePickerAsset): Promise<boolean> => {
-    if (media.type === "video") {
-      return false; // Bỏ qua video
+    if (media.type !== "image") return false;
+    if (media.fileSize && media.fileSize > 5 * 1024 * 1024) {
+      Alert.alert("Lỗi", "File quá lớn, tối đa 5MB");
+      return true;
     }
-    try {1
+    try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout 120s
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
+
+      const resizedUri = await ImageManipulator.manipulateAsync(
+        media.uri,
+        [{ resize: { width: 600 } }],
+        { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+      ).then((result) => result.uri);
 
       const formData = new FormData();
       formData.append("file", {
-        uri: media.uri,
+        uri: resizedUri,
         name: media.uri.split("/").pop(),
         type: media.mimeType || "image/jpeg",
       } as any);
 
-      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-        },
-        body: formData,
-        signal: controller.signal,
-      });
+      const response = await retryRequest(() =>
+        fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
+          method: "POST",
+          headers: {
+            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+            "Connection": "keep-alive",
+          },
+          body: formData,
+          signal: controller.signal,
+        })
+      );
 
       clearTimeout(timeoutId);
 
@@ -95,18 +134,23 @@ export default function useNewFeed(
       }
 
       const data = await response.json();
-      return data.image_result.is_sensitive || false;
+      return data.image_result.is_sensitive || (data.text_result?.text_sensitivity && Object.values(data.text_result.text_sensitivity).some((v: any) => v.is_sensitive));
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", error.message, error.stack);
+      console.error("❌ Lỗi kiểm tra hình ảnh:", {
+        message: error.message,
+        status: error.response?.status,
+        stack: error.stack,
+      });
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Yêu cầu kiểm tra hình ảnh hết thời gian. Vui lòng thử lại!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
+        return false; // Fallback: cho phép tiếp tục
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung hình ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
+        Alert.alert("Lỗi", "Không thể kiểm tra hình ảnh. Vui lòng kiểm tra mạng và thử lại!");
+        return true; // An toàn: coi là nhạy cảm
       }
-      return true; // Coi là nhạy cảm để an toàn
     }
   };
-  
+
   const getUserId = async () => {
     const id = await AsyncStorage.getItem("userId");
     const name = await AsyncStorage.getItem("displayName"); 
@@ -115,7 +159,7 @@ export default function useNewFeed(
   };
 
   useEffect(() => {
-    getUserId(); // Gọi ngay khi mount để lấy userId và displayName
+    getUserId();
   }, []);
 
   useEffect(() => {
@@ -145,7 +189,6 @@ export default function useNewFeed(
       return [];
     }
   };
-  
 
   const openComments = async (article: Article) => {
     try {
@@ -156,12 +199,11 @@ export default function useNewFeed(
       console.error('Lỗi khi lấy bình luận:', error);
     }
   };
-  
 
   const closeComments = () => {
     setModalVisible(false);
     setCurrentArticle(null);
-    setSelectedMedia([]); // Reset media khi đóng modal
+    setSelectedMedia([]);
   };
 
   const likeComment = async (commentId: string) => {
@@ -208,7 +250,6 @@ export default function useNewFeed(
     }
   };
 
-
   const likeArticle = async (articleId: string, articleOwner: string) => {
     if (!userId) {
       console.warn("⚠️ userId không tồn tại");
@@ -220,20 +261,17 @@ export default function useNewFeed(
       const response = await articlesClient.patch(`${articleId}/like`, { userId });
   
       if (response.success) {
-        // Cập nhật articles với emoticons mới
         recordLike(articleId);
         setArticles(
           articles.map((article: Article) =>
             article._id === articleId
               ? {
                   ...article,
-                  emoticons: response.data.emoticons as User[], // Giả định API trả về User[]
+                  emoticons: response.data.emoticons as User[],
                 }
-              : { ...article } // Tạo bản sao để đảm bảo re-render
+              : { ...article }
           )
         );
-  
-        // Kiểm tra trạng thái like
   
         if (userId !== articleOwner) {
           try {
@@ -267,6 +305,7 @@ export default function useNewFeed(
       return total + 1 + replyCount;
     }, 0);
   };
+
   const handleAddComment = async () => {
     if (!currentArticle || !newReply.trim() || !userId) {
       Alert.alert("Thông báo", "Vui lòng nhập nội dung bình luận!");
@@ -274,14 +313,12 @@ export default function useNewFeed(
     }
 
     try {
-      // Kiểm tra nội dung văn bản
       const isTextSensitive = await checkTextContent(newReply.trim());
       if (isTextSensitive) {
         Alert.alert("Cảnh báo", "Nội dung bình luận có chứa thông tin nhạy cảm. Vui lòng chỉnh sửa!");
         return;
       }
 
-      // Kiểm tra media
       if (selectedMedia.length > 0) {
         const mediaChecks = await Promise.all(selectedMedia.map(checkMediaContent));
         if (mediaChecks.some((isSensitive) => isSensitive)) {
@@ -290,7 +327,6 @@ export default function useNewFeed(
         }
       }
 
-      // Nếu không nhạy cảm, tiếp tục gửi bình luận
       const formData = new FormData();
       formData.append("_iduser", userId);
       formData.append("content", newReply.trim());
@@ -345,14 +381,12 @@ export default function useNewFeed(
     }
 
     try {
-      // Kiểm tra nội dung văn bản
       const isTextSensitive = await checkTextContent(content.trim());
       if (isTextSensitive) {
         Alert.alert("Cảnh báo", "Nội dung trả lời có chứa thông tin nhạy cảm. Vui lòng chỉnh sửa!");
         return;
       }
 
-      // Kiểm tra media
       if (selectedMedia.length > 0) {
         const mediaChecks = await Promise.all(selectedMedia.map(checkMediaContent));
         if (mediaChecks.some((isSensitive) => isSensitive)) {
@@ -361,7 +395,6 @@ export default function useNewFeed(
         }
       }
 
-      // Nếu không nhạy cảm, tiếp tục gửi trả lời
       const formData = new FormData();
       formData.append("_iduser", userId);
       formData.append("content", content.trim());
@@ -408,8 +441,7 @@ export default function useNewFeed(
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi trả lời. Vui lòng thử lại!");
     }
   };
-  
-  
+
   const deleteArticle = async (articleId: string) => {
     try {
       await articlesClient.remove(articleId);
@@ -452,7 +484,7 @@ export default function useNewFeed(
       console.error("Lỗi xảy ra:", error);
     }
   };
-  
+
   const changeScreen = (nameScreen: "SearchNavigation" | "MessageNavigation") => {
     navigation.navigate(nameScreen);
   }
@@ -466,7 +498,7 @@ export default function useNewFeed(
       console.warn("⚠️ articleId không hợp lệ:", articleId);
       return;
     }
-  
+
     try {
       const response = await restClient.apiClient.service("apis/history-article").create({
         idUser: userId,
@@ -474,7 +506,6 @@ export default function useNewFeed(
         action: "View",
       });
 
-  
       if (response.success) {
       } else {
         const errorMessage = response.messages || response.message || "Không có thông báo lỗi từ server";
@@ -486,7 +517,7 @@ export default function useNewFeed(
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi ghi lượt xem. Vui lòng thử lại!");
     }
   };
-  
+
   const recordLike = async (articleId: string) => {
     if (!userId) {
       console.warn("⚠️ userId không tồn tại");
@@ -496,15 +527,14 @@ export default function useNewFeed(
       console.warn("⚠️ articleId không hợp lệ:", articleId);
       return;
     }
-  
+
     try {
       const response = await restClient.apiClient.service("apis/history-article").create({
         idUser: userId,
         idArticle: articleId,
         action: "Like",
       });
-  
-  
+
       if (response.success) {
       } else {
         const errorMessage = response.messages || response.message || "Không có thông báo lỗi từ server";
@@ -516,8 +546,6 @@ export default function useNewFeed(
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi ghi lượt thích. Vui lòng thử lại!");
     }
   };
-  
-
 
   return {
     getArticles,
@@ -536,7 +564,8 @@ export default function useNewFeed(
     editArticle,
     changeScreen,
     getUserId,
-    userId, setUserId,
+    userId,
+    setUserId,
     pickMedia,
     selectedMedia,
     recordView,
