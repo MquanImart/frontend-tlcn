@@ -2,6 +2,6 @@ export interface Report {
     _idReporter: string;
     reason: string;
     reportDate: string;
-    status: string;
+    status: 'pending'| 'accepted' | 'rejected'
   }
   

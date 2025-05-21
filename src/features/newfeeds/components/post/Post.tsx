@@ -5,10 +5,11 @@ import { Article } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ResizeMode, Video } from "expo-av";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -48,6 +49,23 @@ const Post: React.FC<PostProps> = ({
   editArticle,
 }) => {
   const navigation = useNavigation<NewFeedNavigationProp>();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  // Fetch user role from AsyncStorage
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const role = await AsyncStorage.getItem("role");
+        setUserRole(role);
+      } catch (error) {
+        console.error("Lỗi khi lấy userRole:", error);
+      }
+    };
+    fetchUserRole();
+  }, []);
+
+  const isAdmin = userRole === "admin";
+
   const {
     handleOptions,
     isEditModalVisible,
@@ -114,9 +132,9 @@ const Post: React.FC<PostProps> = ({
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}
                 isLooping
-                isMuted={false} // Explicitly enable audio
+                isMuted={false}
                 shouldPlay={currentIndex === photos.findIndex((p) => p._id === item._id)}
-                onError={(error) => console.log("Video error:", error)} // Log errors
+                onError={(error) => console.log("Video error:", error)}
               />
             ) : (
               <Image
@@ -214,9 +232,14 @@ const Post: React.FC<PostProps> = ({
         </View>
         <TouchableOpacity
           style={styles.menuButton}
-          onPress={() => handleOptions()}
+          onPress={() => !isAdmin && handleOptions()} // Disable for admin
+          disabled={isAdmin}
         >
-          <Ionicons name="ellipsis-vertical" size={20} color={colors.textColor1} />
+          <Ionicons
+            name="ellipsis-vertical"
+            size={20}
+            color={isAdmin ? colors.textColor3 : colors.textColor1} // Dim icon for admin
+          />
         </TouchableOpacity>
       </View>
 
@@ -225,29 +248,45 @@ const Post: React.FC<PostProps> = ({
       {/* Actions */}
       <View style={styles.actions}>
         <View style={styles.actionsLeft}>
-          <TouchableOpacity onPress={onLike}>
+          <TouchableOpacity
+            onPress={() => !isAdmin && onLike()} // Disable for admin
+            disabled={isAdmin}
+          >
             <Ionicons
               name={isLiked ? "heart" : "heart-outline"}
               size={28}
-              color={isLiked ? "red" : colors.textColor1}
+              color={isAdmin ? colors.textColor3 : isLiked ? "red" : colors.textColor1}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => onCommentPress(article)}>
+          <TouchableOpacity
+            onPress={() => !isAdmin && onCommentPress(article)} // Disable for admin
+            disabled={isAdmin}
+          >
             <Ionicons
               name="chatbubble-outline"
               size={28}
-              color={colors.textColor1}
+              color={isAdmin ? colors.textColor3 : colors.textColor1}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePress}>
-            <Ionicons name="paper-plane-outline" size={28} color={colors.textColor1} />
+          <TouchableOpacity
+            onPress={() => !isAdmin && handlePress()} // Disable for admin
+            disabled={isAdmin}
+          >
+            <Ionicons
+              name="paper-plane-outline"
+              size={28}
+              color={isAdmin ? colors.textColor3 : colors.textColor1}
+            />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => saveArticleToCollection(article._id)}>
+        <TouchableOpacity
+          onPress={() => !isAdmin && saveArticleToCollection(article._id)} // Disable for admin
+          disabled={isAdmin}
+        >
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
             size={28}
-            color={isSaved ? colors.mainColor2 : colors.textColor1}
+            color={isAdmin ? colors.textColor3 : isSaved ? colors.mainColor2 : colors.textColor1}
           />
         </TouchableOpacity>
       </View>
@@ -281,7 +320,7 @@ const Post: React.FC<PostProps> = ({
       </View>
 
       <EditModal
-        visible={isEditModalVisible}
+        visible={isEditModalVisible && !isAdmin} // Hide for admin
         editContent={editContent}
         editScope={editScope}
         editHashtags={editHashtags}
@@ -293,7 +332,7 @@ const Post: React.FC<PostProps> = ({
       />
 
       <ReportModal
-        isVisible={isReportModalVisible}
+        isVisible={isReportModalVisible && !isAdmin} // Hide for admin
         onClose={() => setReportModalVisible(false)}
         selectedReason={selectedReportReason}
         setSelectedReason={setSelectedReportReason}

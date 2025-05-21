@@ -59,10 +59,10 @@ class RestClient {
 
 
         //this.token = response.data.token;
-
+        console.log("Phản hồi data 1", response.data); 
         return {
           success: true,
-          data: response.data.resData,
+          data: response.data.data || null,
           messages: response.data.messages,
         };
       } else {

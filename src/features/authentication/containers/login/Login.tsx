@@ -8,50 +8,77 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useRef, useState } from "react";
 import {
-    Alert,
-    Image, Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
+  Alert,
+  Image, Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
 const accountClient = restClient.apiClient.service("apis/accounts");
 const Color = getColor();
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-    const [emailOrPhone, setEmailOrPhone] = useState<string>("21110741@student.hcmute.edu.vn");
-    const [password, setPassword] = useState<string>("21110741");
+    const [emailOrPhone, setEmailOrPhone] = useState<string>("admin");
+    const [password, setPassword] = useState<string>("admin");
     const navigation = useNavigation<AuthNavigationProp>();
 
     // Ref để focus vào ô mật khẩu sau khi nhập xong email/số điện thoại
     const passwordInputRef = useRef<TextInput>(null);
+    // const handleLogin = async () => {
+    //     if (!emailOrPhone || !password) {
+    //         Alert.alert("Lỗi", "Vui lòng nhập email/số điện thoại và mật khẩu");
+    //         return;
+    //     }
+    
+    //     try {
+    //         console.log("Kiểm tra accountClient:", accountClient);
+    //         const response = await accountClient.authentication(emailOrPhone, password);
+    //         console.log("Phản hồi từ API:", response);
+    //         if (response.success) {
+    //             console.log("Token đã lưu:", await AsyncStorage.getItem("token"));
+    //             navigation.navigate("TabbarNavigation");
+    //         } else {
+    //             Alert.alert("Lỗi", response.messages || "Đăng nhập thất bại");
+    //             console.log(response.messages);
+    //         }
+    //     } catch (error) {
+    //         Alert.alert("Lỗi", "Không thể kết nối đến server");
+    //     }
+
+    // };
+
     const handleLogin = async () => {
         if (!emailOrPhone || !password) {
-            Alert.alert("Lỗi", "Vui lòng nhập email/số điện thoại và mật khẩu");
-            return;
-        }
-    
-        try {
-            console.log("Kiểm tra accountClient:", accountClient);
-            const response = await accountClient.authentication(emailOrPhone, password);
-            console.log("Phản hồi từ API:", response);
-            if (response.success) {
-                console.log("Token đã lưu:", await AsyncStorage.getItem("token"));
-                navigation.navigate("TabbarNavigation");
-            } else {
-                Alert.alert("Lỗi", response.messages || "Đăng nhập thất bại");
-                console.log(response.messages);
-            }
-        } catch (error) {
-            Alert.alert("Lỗi", "Không thể kết nối đến server");
+        Alert.alert("Lỗi", "Vui lòng nhập email/số điện thoại và mật khẩu");
+        return;
         }
 
+        try {
+        const response = await accountClient.authentication(emailOrPhone, password);
+        console.log("Phản hồi từ API:", response);
+        if (response.success) {
+            const role = await AsyncStorage.getItem("role");
+            console.log("role", role);
+            if (role === "admin") {
+            // Điều hướng đến màn hình admin nếu là admin
+            navigation.navigate("AdminArticleListScreen"); // Sẽ thêm vào AuthNavigation
+            } else {
+            // Điều hướng đến TabbarNavigation cho người dùng thông thường
+            navigation.navigate("TabbarNavigation");
+            }
+        } else {
+            Alert.alert("Lỗi", response.messages || "Đăng nhập thất bại");
+        }
+        } catch (error) {
+        Alert.alert("Lỗi", "Không thể kết nối đến server");
+        }
     };
     
     return (
