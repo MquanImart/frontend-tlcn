@@ -1,40 +1,41 @@
-import React, { useEffect, useState, useRef } from "react";
+import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
+import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePostDialog";
+import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
+import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
+import ChatBubble from "@/src/shared/components/chatbubble/ChatBubble";
+import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
+import CTabbar from "@/src/shared/components/tabbar/CTabbar";
+import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator, // Import ActivityIndicator
   Dimensions,
+  FlatList,
+  Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  Image, // Thêm Image để hiển thị ảnh/video
+  View,
 } from "react-native";
-import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import Post from "../../components/post/Post";
-import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
-import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
-import getColor from "@/src/styles/Color";
-import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
-import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePostDialog";
+import Post from "../../components/post/Post";
 import PostDialog from "../../components/PostDialog/PostDialog";
-import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import { Article } from "../../interface/article";
-import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
-import ChatBubble from "@/src/shared/components/chatbubble/ChatBubble";
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function NewFeed() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const viewedArticles = useRef<Set<string>>(new Set()); //
-  
+  const viewedArticles = useRef<Set<string>>(new Set());
+
   const {
     getArticles,
     isModalVisible,
@@ -54,9 +55,13 @@ export default function NewFeed() {
     getUserId,
     userId,
     setUserId,
-    pickMedia, 
+    pickMedia,
     selectedMedia,
-    recordView
+    recordView,
+    currentPage,
+    totalPages,
+    loadingMore,
+    loadMoreArticles // Using loadMoreArticles here
   } = useNewFeed(articles, setArticles);
 
   const {
@@ -85,9 +90,9 @@ export default function NewFeed() {
     isLocationLoading,
     setPageID,
     setGroupID,
-    MapPickerDialog, 
+    MapPickerDialog,
     isMapPickerVisible,
-    setMapPickerVisible, 
+    setMapPickerVisible,
   } = usePostDialog(userId || "");
 
   useEffect(() => {
@@ -95,13 +100,8 @@ export default function NewFeed() {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await getArticles();
-      if (result?.success) {
-        setArticles(result.data);
-      }
-    };
-    fetchData();
+    // getArticles is now correctly called from within useNewFeed's useEffect when userId is available.
+    // So, no need to call it directly here.
   }, []);
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
@@ -111,11 +111,19 @@ export default function NewFeed() {
       const articleId = item.item._id;
       if (!viewedArticles.current.has(articleId) && userId) {
         viewedArticles.current.add(articleId);
-        recordView(articleId); 
+        recordView(articleId);
       }
     });
   };
 
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="large" color={colors.mainColor1} />
+      </View>
+    );
+  };
 
   return (
     <KeyboardAvoidingView
@@ -146,11 +154,14 @@ export default function NewFeed() {
         )}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        onViewableItemsChanged={handleViewableItemsChanged} // Thêm prop này
+        onViewableItemsChanged={handleViewableItemsChanged}
         viewabilityConfig={{
           itemVisiblePercentThreshold: 50,
-          minimumViewTime: 500, 
+          minimumViewTime: 500,
         }}
+        onEndReached={loadMoreArticles} // Triggers when scrolling near the end
+        onEndReachedThreshold={0.5} // 50% from the end
+        ListFooterComponent={renderFooter} // Shows a spinner at the bottom
       />
 
       <Modal
@@ -192,7 +203,6 @@ export default function NewFeed() {
                 keyboardShouldPersistTaps="handled"
               />
 
-              {/* Hiển thị ảnh/video đã chọn */}
               {selectedMedia.length > 0 && (
                 <View style={styles.mediaPreviewContainer}>
                   {selectedMedia.map((media, index) => (
@@ -246,10 +256,10 @@ export default function NewFeed() {
         getCurrentLocation={getCurrentLocation}
         clearLocation={clearLocation}
         isLocationLoading={isLocationLoading}
-        MapPickerDialog = {MapPickerDialog}
-        isMapPickerVisible = {isMapPickerVisible}
-        openMapPicker = {openMapPicker}
-        setMapPickerVisible = {setMapPickerVisible}
+        MapPickerDialog={MapPickerDialog}
+        isMapPickerVisible={isMapPickerVisible}
+        openMapPicker={openMapPicker}
+        setMapPickerVisible={setMapPickerVisible}
       />
 
       <CTabbar tabbarPosition={tabbarPosition} startTab="newsfeed" />
@@ -317,6 +327,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 5,
   },
+  loadingFooter: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
 });
-
-// Removed incorrect custom useRef implementation

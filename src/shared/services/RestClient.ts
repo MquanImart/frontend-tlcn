@@ -3,7 +3,7 @@ import axios from "axios";
 
 class RestClient {
 
-  baseURL: string = "http://192.168.1.7:3000"; // Quân
+  baseURL: string = "http://192.168.1.22:3000"; // Quân
   path: string = "";
   token: string = "";
 

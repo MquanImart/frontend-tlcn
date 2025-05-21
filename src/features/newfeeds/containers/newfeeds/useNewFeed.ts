@@ -17,8 +17,8 @@ const commentsClient = restClient.apiClient.service("apis/comments");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
 
 export default function useNewFeed(
-  articles: Article[], 
-  setArticles: (articles: Article[]) => void
+  articles: Article[],
+  setArticles: (articles: Article[] | ((prevArticles: Article[]) => Article[])) => void
 ) {
   const navigation = useNavigation<NewFeedNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
@@ -27,6 +27,10 @@ export default function useNewFeed(
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [newReply, setNewReply] = useState("");
   const [selectedMedia, setSelectedMedia] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  // State for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Hàm retry request
   const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 2000) => {
@@ -83,10 +87,10 @@ export default function useNewFeed(
       });
       if (error.name === "AbortError") {
         Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
-        return false; // Fallback: cho phép tiếp tục
+        return false;
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
-        return true; // An toàn: coi là nhạy cảm
+        return true;
       }
     }
   };
@@ -143,19 +147,19 @@ export default function useNewFeed(
       });
       if (error.name === "AbortError") {
         Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
-        return false; // Fallback: cho phép tiếp tục
+        return false;
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra hình ảnh. Vui lòng kiểm tra mạng và thử lại!");
-        return true; // An toàn: coi là nhạy cảm
+        return true;
       }
     }
   };
 
   const getUserId = async () => {
     const id = await AsyncStorage.getItem("userId");
-    const name = await AsyncStorage.getItem("displayName"); 
+    const name = await AsyncStorage.getItem("displayName");
     setUserId(id);
-    setDisplayName(name); 
+    setDisplayName(name);
   };
 
   useEffect(() => {
@@ -164,17 +168,18 @@ export default function useNewFeed(
 
   useEffect(() => {
     if (userId) {
-      getArticles();
+      setCurrentPage(1); // Reset page to 1
+      getArticles(1); // Load the first page when userId is available
     }
   }, [userId]);
 
   const pickMedia = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsMultipleSelection: false, 
+      allowsMultipleSelection: false,
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       setSelectedMedia(result.assets);
     }
@@ -211,19 +216,19 @@ export default function useNewFeed(
       console.warn("⚠️ userId không tồn tại");
       return;
     }
-  
+
     try {
       const response = await commentsClient.patch(`${commentId}/like`, { userId });
-    
+
       if (response.success) {
         if (currentArticle) {
           const updatedComments = await fetchComments(currentArticle._id);
           const likedComment = updatedComments.find((c: Comment) => c._id === commentId);
-  
+
           const currentComment = currentArticle.comments?.find((c) => c._id === commentId);
-          const wasLikedBefore = currentComment?.emoticons?.includes(userId) || false; 
-          const isLikedNow = likedComment?.emoticons?.includes(userId) || false; 
-  
+          const wasLikedBefore = currentComment?.emoticons?.includes(userId) || false;
+          const isLikedNow = likedComment?.emoticons?.includes(userId) || false;
+
           if (likedComment && userId !== likedComment._iduser._id && !wasLikedBefore && isLikedNow) {
             try {
               const notificationMessage = `đã yêu thích bình luận của bạn`;
@@ -239,7 +244,7 @@ export default function useNewFeed(
                 response: notificationError.response?.data,
               });
             }
-          } 
+          }
           setCurrentArticle({ ...currentArticle, comments: updatedComments });
         }
       } else {
@@ -256,10 +261,10 @@ export default function useNewFeed(
       Alert.alert("Lỗi", "Vui lòng đăng nhập để thích bài viết!");
       return;
     }
-  
+
     try {
       const response = await articlesClient.patch(`${articleId}/like`, { userId });
-  
+
       if (response.success) {
         recordLike(articleId);
         setArticles(
@@ -272,7 +277,7 @@ export default function useNewFeed(
               : { ...article }
           )
         );
-  
+
         if (userId !== articleOwner) {
           try {
             const notificationMessage = `đã thích bài viết của bạn`;
@@ -347,10 +352,8 @@ export default function useNewFeed(
       if (response.success) {
         const updatedComments = await fetchComments(currentArticle._id);
         setCurrentArticle({ ...currentArticle, comments: updatedComments });
-        console.log("currentArticle.createdBy._id", currentArticle.createdBy._id);
         if (userId !== currentArticle.createdBy._id) {
           try {
-            console.log("currentArticle.createdBy._id", currentArticle.createdBy._id);
             await notificationsClient.create({
               senderId: userId,
               receiverId: currentArticle.createdBy._id,
@@ -464,24 +467,66 @@ export default function useNewFeed(
           ? { ...article, content: newContent, scope: newScope, hashTag: newHashtags }
           : article
       );
-      
+
       setArticles(updatedArticles);
     } catch (error) {
       console.error("Lỗi khi cập nhật bài viết:", error);
     }
   };
 
-  const getArticles = async () => {
+  // The getArticles function is correctly sending the 'page' parameter and updating state.
+  const getArticles = async (page: number = 1, limit: number = 5) => {
+    if (loadingMore) return;
+    setLoadingMore(true);
+
     try {
-      const result = await articlesClient.find({});
+      if (!userId) {
+        console.error("Lỗi: userId không tồn tại");
+        setLoadingMore(false);
+        return { success: false, messages: "Lỗi: userId không tồn tại" };
+      }
+
+      const recommendationsClientWithUser = restClient.apiClient.service(`apis/recommendations/${userId}`);
+      const result = await recommendationsClientWithUser.find({
+        page,
+        limit, 
+      });
+
+      console.log(`getArticles result (page=${page}, limit=${limit}):`, result);
 
       if (result.success) {
-        return result
+        setArticles((prevArticles) => {
+          const newArticles = result.data.articles.filter(
+            (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
+          );
+          // If it's page 1, replace all articles. Otherwise, append new ones.
+          return page === 1 ? newArticles : [...prevArticles, ...newArticles];
+        });
+        // Crucial: Update currentPage and totalPages from the API response
+        setCurrentPage(result.data.currentPage);
+        setTotalPages(result.data.totalPages);
+        return result;
       } else {
-        console.error("Lỗi khi lấy bài viết:", result.message);
+        console.error("API error:", result.messages);
+        return { success: false, messages: result.messages || "Lỗi khi lấy bài viết" };
       }
-    } catch (error) {
-      console.error("Lỗi xảy ra:", error);
+    } catch (error: any) {
+      console.error("Lỗi khi gọi API recommendations:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      return { success: false, messages: error.message || "Lỗi kết nối với server" };
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // Function to load more articles when scrolling
+  const loadMoreArticles = () => {
+    // Only load more if current page is less than total pages AND not already loading
+    if (currentPage < totalPages && !loadingMore) {
+      getArticles(currentPage + 1);
     }
   };
 
@@ -569,6 +614,10 @@ export default function useNewFeed(
     pickMedia,
     selectedMedia,
     recordView,
-    recordLike
+    recordLike,
+    currentPage,
+    totalPages,
+    loadingMore,
+    loadMoreArticles // Make loadMoreArticles available
   };
 }
