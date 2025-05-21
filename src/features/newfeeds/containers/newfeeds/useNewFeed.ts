@@ -95,36 +95,47 @@ export default function useNewFeed(
     }
   };
 
-  // Hàm kiểm tra hình ảnh
-  const checkMediaContent = async (media: ImagePicker.ImagePickerAsset): Promise<boolean> => {
-    if (media.type !== "image") return false;
-    if (media.fileSize && media.fileSize > 5 * 1024 * 1024) {
-      Alert.alert("Lỗi", "File quá lớn, tối đa 5MB");
-      return true;
+  const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
+    if (!mediaAssets || mediaAssets.length === 0) return false;
+
+    // Initial validation for each image (file size, type)
+    for (const media of mediaAssets) {
+      if (media.type !== 'image') {
+        Alert.alert('Lỗi', `File "${media.fileName || media.uri.split('/').pop()}" không phải là ảnh.`);
+        return true; // Indicate an issue
+      }
+      if (media.fileSize && media.fileSize > 5 * 1024 * 1024) {
+        Alert.alert('Lỗi', `Ảnh "${media.fileName || media.uri.split('/').pop()}" quá lớn, tối đa 5MB.`);
+        return true; // Indicate an issue
+      }
     }
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
 
-      const resizedUri = await ImageManipulator.manipulateAsync(
-        media.uri,
-        [{ resize: { width: 600 } }],
-        { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
-      ).then((result) => result.uri);
-
       const formData = new FormData();
-      formData.append("file", {
-        uri: resizedUri,
-        name: media.uri.split("/").pop(),
-        type: media.mimeType || "image/jpeg",
-      } as any);
+
+      for (const media of mediaAssets) {
+        const resizedUri = await ImageManipulator.manipulateAsync(
+          media.uri,
+          [{ resize: { width: 600 } }],
+          { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+        ).then((result) => result.uri);
+
+        formData.append('files', {
+          uri: resizedUri,
+          name: media.fileName || resizedUri.split('/').pop(),
+          type: media.mimeType || 'image/jpeg',
+        } as any);
+      }
 
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Connection": "keep-alive",
+            'X-API-Key': env.API_KEY_CHECK_TOXIC || '',
+            'Connection': 'keep-alive',
           },
           body: formData,
           signal: controller.signal,
@@ -138,20 +149,43 @@ export default function useNewFeed(
       }
 
       const data = await response.json();
-      return data.image_result.is_sensitive || (data.text_result?.text_sensitivity && Object.values(data.text_result.text_sensitivity).some((v: any) => v.is_sensitive));
+
+      // --- NEW LOGIC START ---
+      let sensitiveImageDetected = false;
+      let sensitiveFilename = '';
+
+      for (const resultItem of data.results) {
+        const isImageSensitive = resultItem.image_result?.is_sensitive;
+        const isTextSensitive = resultItem.text_result?.text_sensitivity &&
+                                Object.values(resultItem.text_result.text_sensitivity).some((v: any) => v.is_sensitive);
+
+        if (isImageSensitive || isTextSensitive) {
+          sensitiveImageDetected = true;
+          sensitiveFilename = resultItem.filename;
+          break; // Stop checking as soon as one sensitive image is found
+        }
+      }
+
+      if (sensitiveImageDetected) {
+        Alert.alert('Cảnh báo nội dung nhạy cảm', `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
+        return true; // Indicate that sensitive content was found
+      }
+      // --- NEW LOGIC END ---
+
+      return false; // No sensitive content found in any image
+
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", {
+      console.error('❌ Lỗi kiểm tra hình ảnh:', {
         message: error.message,
         status: error.response?.status,
         stack: error.stack,
       });
-      if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
-        return false;
+      if (error.name === 'AbortError') {
+        Alert.alert('Lỗi', 'Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!');
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra hình ảnh. Vui lòng kiểm tra mạng và thử lại!");
-        return true;
+        Alert.alert('Lỗi', 'Không thể kiểm tra hình ảnh. Vui lòng kiểm tra mạng và thử lại!');
       }
+      return true; // Indicate an error that prevents usage
     }
   };
 
@@ -325,7 +359,7 @@ export default function useNewFeed(
       }
 
       if (selectedMedia.length > 0) {
-        const mediaChecks = await Promise.all(selectedMedia.map(checkMediaContent));
+        const mediaChecks = await Promise.all(selectedMedia.map(media => checkMediaContent([media])));
         if (mediaChecks.some((isSensitive) => isSensitive)) {
           Alert.alert("Cảnh báo", "Hình ảnh chứa nội dung nhạy cảm. Vui lòng chọn ảnh khác!");
           return;
@@ -391,7 +425,7 @@ export default function useNewFeed(
       }
 
       if (selectedMedia.length > 0) {
-        const mediaChecks = await Promise.all(selectedMedia.map(checkMediaContent));
+        const mediaChecks = await Promise.all(selectedMedia.map(media => checkMediaContent([media])));
         if (mediaChecks.some((isSensitive) => isSensitive)) {
           Alert.alert("Cảnh báo", "Hình ảnh chứa nội dung nhạy cảm. Vui lòng chọn ảnh khác!");
           return;
