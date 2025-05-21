@@ -1,30 +1,29 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Image,
-  Keyboard,
-  FlatList,
-} from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { Ionicons } from "@expo/vector-icons";
-import Modal from "react-native-modal";
-import getColor from "@/src/styles/Color";
-import Post from "@/src/features/newfeeds/components/post/Post";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
+import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import { Article } from "@/src/features/newfeeds/interface/article";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImagePicker from "expo-image-picker";
+import React, { useEffect, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import Modal from "react-native-modal";
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -39,11 +38,10 @@ export default function ArticleDetail() {
   const navigation = useNavigation<ArticleDetailNavigationProp>();
   const route = useRoute();
   const { articleId } = route.params as RouteParams;
-  const [articles, setArticles] = useState<Article[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
   const {
-    getArticles,
+    getArticleById,
     isModalVisible,
     currentArticle,
     newReply,
@@ -61,18 +59,16 @@ export default function ArticleDetail() {
     userId,
     pickMedia,
     selectedMedia: newFeedSelectedMedia,
-  } = useNewFeed(articles, setArticles);
+  } = useNewFeed([], () => {});
 
   useEffect(() => {
     const fetchArticle = async () => {
-      const result = await getArticles();
-      if (result?.success) {
-        setArticles(result.data);
-      }
+      const result = await getArticleById(articleId);
+      console.log("Article detail:", result);
     };
     fetchArticle();
     getUserId();
-  }, [articleId]);
+  }, [articleId, getArticleById, getUserId]);
 
   const handlePickMedia = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -80,14 +76,10 @@ export default function ArticleDetail() {
       allowsMultipleSelection: false,
       quality: 1,
     });
-
     if (!result.canceled) {
       setSelectedMedia(result.assets);
     }
   };
-
-  // Find the article to display
-  const article = articles.find((a) => a._id === articleId);
 
   return (
     <KeyboardAvoidingView
@@ -102,13 +94,13 @@ export default function ArticleDetail() {
         onPressRight={() => {}}
       />
 
-      {article ? (
+      {currentArticle ? (
         <View style={styles.postContainer}>
           <Post
-            article={article}
+            article={currentArticle}
             userId={userId || ""}
-            onCommentPress={() => openComments(article)}
-            onLike={() => likeArticle(article._id, article.createdBy._id)}
+            onCommentPress={() => openComments(currentArticle)}
+            onLike={() => likeArticle(currentArticle._id, currentArticle.createdBy._id)}
             deleteArticle={deleteArticle}
             editArticle={editArticle}
           />
@@ -195,9 +187,6 @@ const styles = StyleSheet.create({
   },
   postContainer: {
     flex: 1,
-  },
-  post: {
-    flex: 1, // Ensure Post component stretches to fill postContainer
   },
   loadingContainer: {
     flex: 1,
