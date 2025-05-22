@@ -23,9 +23,7 @@ const useAdminAccountList = () => {
         limit: ITEMS_PER_PAGE,
       };
 
-      console.log('Fetching accounts with query:', query);
       const response = await restClient.apiClient.service('apis/accounts').find(query);
-      console.log('API Response:', response);
 
       if (response.success) {
         setAccounts(response.data);
@@ -63,12 +61,10 @@ const useAdminAccountList = () => {
   };
 
   useEffect(() => {
-    console.log('useEffect triggered with filter:', filter, 'page:', currentPage);
     fetchAccounts(currentPage, filter);
   }, [currentPage, filter]);
 
   const handleSetFilter = (newFilter: FilterType) => {
-    console.log('Setting filter to:', newFilter);
     setFilter(newFilter);
     setCurrentPage(1);
   };

@@ -27,8 +27,6 @@ const usePostDialog = (userId: string) => {
   const [isMapPickerVisible, setMapPickerVisible] = useState(false);
 
   const checkTextContent = async (text: string): Promise<boolean> => {
-    console.log("API_URL_CHECK_TOXIC:", env.API_URL_CHECK_TOXIC);
-    console.log("API_KEY_CHECK_TOXIC:", env.API_KEY_CHECK_TOXIC);
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
@@ -298,7 +296,6 @@ const usePostDialog = (userId: string) => {
   ) => {
     setLocation({ coords, address });
     setMapPickerVisible(false);
-    console.log("📍 Đã chọn vị trí:", { coords, address });
   };
 
   const openMapPicker = () => {

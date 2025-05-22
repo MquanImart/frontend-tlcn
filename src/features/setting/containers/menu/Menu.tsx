@@ -63,7 +63,6 @@ const Menu = () => {
         "avt",
         "hobbies",
       ]);
-      console.log("Đăng xuất thành công, đã xóa dữ liệu AsyncStorage");
 
       // Đặt lại trạng thái client
       setUserID(null);

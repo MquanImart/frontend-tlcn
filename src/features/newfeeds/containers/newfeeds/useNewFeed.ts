@@ -37,7 +37,6 @@ export default function useNewFeed(
       try {
         const start = Date.now();
         const result = await fn();
-        console.log(`Request thành công sau ${Date.now() - start}ms`);
         return result;
       } catch (error) {
         console.warn(`Thử lại request lần ${i + 1}/${retries}:`, error);
@@ -544,7 +543,6 @@ export default function useNewFeed(
         page,
         limit,
       });
-      console.log(`getArticles result (page=${page}, limit=${limit}):`, result);
       if (result.success) {
         setArticles((prevArticles) => {
           const newArticles = result.data.articles.filter(

@@ -90,7 +90,6 @@ export const useCreatePageTab = (userId: string) => {
     setWards([]);
     try {
       const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
-      console.log('provinceCode', provinceCode)
       setDistricts(response.data.districts || []);
     } catch (error) {
       console.error("Error fetching districts:", error);

@@ -57,9 +57,6 @@ class RestClient {
         await AsyncStorage.setItem("avt", JSON.stringify(response.data.data.user.avt)); // Chuyển thành chuỗi
         await AsyncStorage.setItem("hobbies", JSON.stringify(response.data.data.user.hobbies)); // Chuyển thành chuỗi
 
-
-        //this.token = response.data.token;
-        console.log("Phản hồi data 1", response.data); 
         return {
           success: true,
           data: response.data.data || null,

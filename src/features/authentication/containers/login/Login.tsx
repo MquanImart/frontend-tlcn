@@ -42,16 +42,12 @@ const Login = () => {
 
     try {
       const response = await accountClient.authentication(emailOrPhone, password);
-      console.log("Phản hồi từ API:", response);
       if (response.success) {
-        // Giả định API trả về role trong response.data.role
         const role = await AsyncStorage.getItem("role");
         if (role === "admin") {
             
-          // Điều hướng đến AdminDashboard cho admin
           navigation.navigate("AdminDashboard");
         } else {
-          // Điều hướng đến TabbarNavigation cho người dùng thông thường
           navigation.navigate("TabbarNavigation");
         }
       } else {

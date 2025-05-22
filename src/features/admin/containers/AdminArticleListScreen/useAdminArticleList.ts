@@ -76,7 +76,6 @@ const useAdminArticleList = () => {
   }, [currentPage, filter]);
 
   const openReportModal = (reports: Article['reports']) => {
-    console.log("Opening report modal with reports:", reports);
     if (reports && Array.isArray(reports)) {
       const reportIds = reports.map((report: any) =>
         typeof report === 'string' ? report : report._id

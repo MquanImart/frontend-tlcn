@@ -78,11 +78,9 @@ export const useSupportChatScreen = (initialMessages: Message[] = []) => {
       } catch (error: any) {
         console.error(`Thử lần ${attempt + 1} thất bại:`, error);
         if (error.response?.status === 429 && attempt < maxRetries - 1) {
-          console.log(`Giới hạn tỷ lệ, thử lại sau ${delay}ms...`);
           await new Promise((resolve) => setTimeout(resolve, delay));
           delay *= 2;
         } else if (attempt < maxRetries - 1) {
-          console.log(`Lỗi chung, thử lại sau ${delay}ms...`);
           await new Promise((resolve) => setTimeout(resolve, delay));
           delay *= 2;
         } else {

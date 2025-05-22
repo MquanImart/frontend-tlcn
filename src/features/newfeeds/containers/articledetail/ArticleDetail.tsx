@@ -64,7 +64,6 @@ export default function ArticleDetail() {
   useEffect(() => {
     const fetchArticle = async () => {
       const result = await getArticleById(articleId);
-      console.log("Article detail:", result);
     };
     fetchArticle();
     getUserId();

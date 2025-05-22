@@ -36,7 +36,6 @@ const useSearch = () => {
       const result = await friendsAPI.find({});
       if (result.success) {
         setAllFriends(result.data);
-        console.log("Fetched friends:", result.data);
       }
     } catch (error) {
       console.error("Error fetching friends:", error);

@@ -178,7 +178,6 @@ const ProfileScreen = () => {
         setInitialUsername(username);
         setInitialIntro(intro);
         setIsChanged(false);
-        console.log("Lưu thay đổi thành công:", updateData);
       } else {
         throw new Error("Không thể lưu thay đổi");
       }
@@ -207,7 +206,6 @@ const ProfileScreen = () => {
         throw new Error(result.message || "Lỗi khi đổi mật khẩu từ server");
       }
       setPassword(newPassword);
-      console.log("Đổi mật khẩu thành công");
     } catch (err: any) {
       console.error("Lỗi khi đổi mật khẩu:", err);
       throw new Error(err.message || "Lỗi không xác định khi đổi mật khẩu");

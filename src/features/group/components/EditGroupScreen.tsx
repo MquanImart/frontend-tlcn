@@ -120,7 +120,6 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
     formData.append("hobbies", JSON.stringify(hobby));
 
     if (avatar && avatar !== group?.avt?.url) {
-      console.log("Sending new avatar URI:", avatar);
       const fileType = avatar.split(".").pop()?.toLowerCase();
       if (!fileType || !["jpg", "jpeg", "png"].includes(fileType)) {
         Alert.alert("Lỗi", "Định dạng ảnh không hợp lệ. Vui lòng chọn JPG hoặc PNG.");
@@ -133,24 +132,11 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
         type: `image/${fileType}`,
       } as any);
     } else if (!avatar) {
-      console.log("Removing avatar");
       formData.append("removeAvatar", "true");
     }
 
-    // Log FormData values (React Native FormData does not support entries())
-    // You can log the appended values individually if needed, for example:
-    // console.log("FormData groupName:", groupName);
-    // console.log("FormData type:", groupType);
-    // console.log("FormData introduction:", groupDescription);
-    // console.log("FormData rule:", JSON.stringify(rules));
-    // console.log("FormData hobbies:", JSON.stringify(hobby));
-    // if (avatar && avatar !== group?.avt?.url) {
-    //   console.log("FormData avt:", avatar);
-    // }
-
     try {
       const response = await groupsClient.patch(group._id, formData);
-      console.log("API response:", response);
 
       if (response.success) {
         onSave(response.data);

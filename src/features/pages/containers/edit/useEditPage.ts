@@ -302,11 +302,9 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
       };
 
       if (addressId) {
-        console.log("Updating address ID:", addressId);
         const addressResponse = await addressesClient.patch(addressId, addressData);
         if (!addressResponse.success) throw new Error("Cập nhật địa chỉ thất bại");
       } else {
-        console.log("Creating new address");
         const addressResponse = await addressesClient.create(addressData);
         if (addressResponse.success) addressId = addressResponse.data._id;
         else throw new Error("Tạo địa chỉ thất bại");
@@ -320,10 +318,8 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
       formData.append("hobbies", JSON.stringify(selectedHobbies));
 
       if (removeAvatar) {
-        console.log("Removing avatar for page:", page._id);
         formData.append("removeAvatar", "true");
       } else if (avtUri && avtUri !== (page.avt ? (await myPhotosClient.get(page.avt)).data.url : null)) {
-        console.log("Uploading new avatar URI:", avtUri);
         const fileType = avtUri.split(".").pop()?.toLowerCase();
         if (!fileType || !["jpg", "jpeg", "png"].includes(fileType)) {
           throw new Error("Định dạng ảnh không hợp lệ. Vui lòng chọn JPG hoặc PNG.");

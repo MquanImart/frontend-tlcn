@@ -26,7 +26,6 @@ const PreferenceSelection = () => {
     const fetchHobbies = async () => {
       try {
         const response = await restClient.apiClient.service("apis/hobbies").find({});
-        console.log("Hobbies API response:", JSON.stringify(response, null, 2));
 
         if (response.success && Array.isArray(response.data)) {
           // Trích xuất thuộc tính name từ mỗi document
@@ -66,11 +65,9 @@ const PreferenceSelection = () => {
 
   const handleConfirm = async () => {
     try {
-      console.log("Request Data:", { email, hobbies: selectedCategories });
       const result = await restClient.apiClient
         .service("apis/users/addHobbyByEmail")
         .create({ email: email, hobbies: selectedCategories });
-      console.log("Response:", result);
       if (result.success) {
         Alert.alert("Thành công", "Sở thích đã được lưu thành công!");
         navigation.navigate("Login");

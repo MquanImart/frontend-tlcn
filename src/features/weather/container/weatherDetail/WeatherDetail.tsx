@@ -57,7 +57,6 @@ const WeatherDetail: React.FC = () => {
         const locationName = data.address.city || data.address.town || data.address.village || data.display_name;
         setCityName(locationName);
       } else {
-        console.log("Không tìm thấy tên vị trí");
         setCityName(`Lat: ${lat}, Lon: ${lon}`); // Dự phòng nếu không tìm thấy
       }
     } catch (error) {

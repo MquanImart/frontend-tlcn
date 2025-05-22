@@ -47,7 +47,6 @@ const Register = () => {
         .create({
             email: emailOrPhone
         });
-        console.log(emailCheck);
         if (emailCheck.exists) {
             Alert.alert("Lỗi", "Email đã tồn tại");
             return;

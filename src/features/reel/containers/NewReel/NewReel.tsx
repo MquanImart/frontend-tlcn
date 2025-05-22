@@ -61,7 +61,6 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setVideoUri(result.assets[0].uri);
-        console.log('Video đã chọn:', result.assets[0].uri);
       }
     } catch (error) {
       console.error('Lỗi khi chọn video:', error);
@@ -125,7 +124,6 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
 
       // Gửi yêu cầu POST với restClient
       const response = await reelsClient.create(formData);
-      console.log('Phản hồi từ server:', response);
 
       if (response.success) {
         toggleModal();

@@ -28,7 +28,6 @@ export const useFeed = (currentUserId: string) => {
           page: newPage,
           limit: 10,
         });
-        console.log("Phản hồi từ API:", response);
 
         if (response.success) {
           setArticleGroups((prev) =>

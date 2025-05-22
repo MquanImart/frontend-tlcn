@@ -33,7 +33,6 @@ const useCityProvince = (provinceId: string) => {
     const getHotPage = async () => {
         const provinceAPI = restClient.apiClient.service(`apis/province/${provinceId}/hot-page`);
         const result = await provinceAPI.find({limit: MAX_HOTPAGE, skip: 0});
-        console.log('result', result.data)
         if (result.success){
             setHotPages(result.data);
         }
