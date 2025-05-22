@@ -1,5 +1,6 @@
+import TabBarCustom, { Tab } from '@/src/features/group/components/TabBarCustom';
 import CButton from '@/src/shared/components/button/CButton';
-import CHeader from '@/src/shared/components/header/CHeader';
+import CHeader from '@/src/shared/components/header/CHeader'; // Import TabBarCustom and Tab interface
 import getColor from '@/src/styles/Color';
 import React from 'react';
 import { ActivityIndicator, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
@@ -24,7 +25,7 @@ const AdminArticleListScreen: React.FC = () => {
     currentPage,
     setCurrentPage,
     filter,
-    setFilter,
+    setFilter, // This is now handleFilterChange from the hook
   } = useAdminArticleList();
 
   const renderArticle = ({ item }: { item: Article }) => (
@@ -40,6 +41,44 @@ const AdminArticleListScreen: React.FC = () => {
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Define tabs for TabBarCustom
+  const tabs: Tab[] = [
+    { label: 'Tất cả', icon: 'list' },
+    { label: 'Đã xóa', icon: 'delete' },
+    { label: 'Có báo cáo', icon: 'report' },
+  ];
+
+  // Map filter state to TabBarCustom's selectedTab
+  const getSelectedTabLabel = (currentFilter: string) => {
+    switch (currentFilter) {
+      case 'all':
+        return 'Tất cả';
+      case 'deleted':
+        return 'Đã xóa';
+      case 'reported':
+        return 'Có báo cáo';
+      default:
+        return 'Tất cả';
+    }
+  };
+
+  // Map TabBarCustom's selected label to filter state
+  const handleTabSelect = (tabLabel: string) => {
+    switch (tabLabel) {
+      case 'Tất cả':
+        setFilter('all');
+        break;
+      case 'Đã xóa':
+        setFilter('deleted');
+        break;
+      case 'Có báo cáo':
+        setFilter('reported');
+        break;
+      default:
+        setFilter('all');
     }
   };
 
@@ -69,41 +108,18 @@ const AdminArticleListScreen: React.FC = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: getColor().backGround, maxHeight: height }]}>
       <CHeader label="Danh sách bài viết" showBackButton={false} />
       <View style={styles.content}>
-        <View style={styles.filterContainer}>
-          <CButton
-            label="Tất cả"
-            onSubmit={() => setFilter('all')}
-            style={{
-              width: width * 0.28,
-              height: 40,
-              backColor: filter === 'all' ? getColor().mainColor1 : getColor().backGround2,
-              textColor: filter === 'all' ? getColor().white_homologous : getColor().textColor1,
-              radius: 8,
-            }}
-          />
-          <CButton
-            label="Đã xóa"
-            onSubmit={() => setFilter('deleted')}
-            style={{
-              width: width * 0.28,
-              height: 40,
-              backColor: filter === 'deleted' ? getColor().mainColor1 : getColor().backGround2,
-              textColor: filter === 'deleted' ? getColor().white_homologous : getColor().textColor1,
-              radius: 8,
-            }}
-          />
-          <CButton
-            label="Có báo cáo"
-            onSubmit={() => setFilter('reported')}
-            style={{
-              width: width * 0.28,
-              height: 40,
-              backColor: filter === 'reported' ? getColor().mainColor1 : getColor().backGround2,
-              textColor: filter === 'reported' ? getColor().white_homologous : getColor().textColor1,
-              radius: 8,
-            }}
-          />
-        </View>
+        {/* Integrate TabBarCustom here */}
+        <TabBarCustom
+          tabs={tabs}
+          selectedTab={getSelectedTabLabel(filter)}
+          onSelectTab={handleTabSelect}
+          style={styles.tabBarCustomStyle}
+          activeTabStyle={styles.activeTabStyle}
+          inactiveTabStyle={styles.inactiveTabStyle}
+          activeTextStyle={styles.activeTextStyle}
+          inactiveTextStyle={styles.inactiveTextStyle}
+        />
+
         <FlatList
           data={articles}
           renderItem={renderArticle}
@@ -211,7 +227,7 @@ const styles = StyleSheet.create({
     color: getColor().textColor1,
     minWidth: 80,
   },
-  filterContainer: {
+  filterContainer: { // This style is no longer used directly but kept for reference
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 12,
@@ -221,6 +237,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     paddingVertical: 20,
+  },
+  // Styles for TabBarCustom
+  tabBarCustomStyle: {
+    marginBottom: 12,
+    marginHorizontal: 0, // Adjust as needed
+    borderRadius: 8,
+    backgroundColor: getColor().backGround2, // Match the original button background
+    elevation: 0, // Remove shadow if not desired
+    shadowOpacity: 0,
+  },
+  activeTabStyle: {
+    backgroundColor: getColor().mainColor1,
+    borderRadius: 8, // Apply radius to active tab
+    paddingHorizontal: 15, // Adjust padding
+    paddingVertical: 10,
+  },
+  inactiveTabStyle: {
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  activeTextStyle: {
+    color: getColor().white_homologous, // Match original button text color
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  inactiveTextStyle: {
+    color: getColor().textColor1, // Match original button text color
+    fontSize: 14,
   },
 });
 

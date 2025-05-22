@@ -216,9 +216,6 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
                   Xem bài viết chi tiết
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem} onPress={onPress}>
-                <Text style={[styles.menuText, { color: colors.textColor1 }]}>Xem báo cáo</Text>
-              </TouchableOpacity>
             </Animated.View>
           </View>
         </TouchableWithoutFeedback>

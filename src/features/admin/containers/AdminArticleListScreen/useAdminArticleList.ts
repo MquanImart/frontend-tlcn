@@ -14,7 +14,7 @@ const useAdminArticleList = () => {
   const [selectedReports, setSelectedReports] = useState<Report[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filter, setFilter] = useState<FilterType>('all');
+  const [filter, setFilter] = useState<FilterType>('all'); // Giữ nguyên tên biến filter
 
   const fetchArticles = async (page: number = 1, selectedFilter: FilterType = filter) => {
     try {
@@ -29,15 +29,16 @@ const useAdminArticleList = () => {
         query.isDeleted = true;
       } else if (selectedFilter === 'reported') {
         query.hasReports = true;
-      } else {
+        query.isDeleted = false; // Đảm bảo chỉ lấy bài viết có báo cáo chưa bị xóa
+      } else { // 'all'
         query.isDeleted = false; // Chỉ lấy bài viết chưa xóa khi lọc 'all'
       }
 
       const response = await restClient.apiClient.service('apis/articles').find(query);
-      console.log("API Response:", response);
       if (response.success) {
         setArticles(response.data);
-        const totalItems = response.total || response.data.length;
+        // Đảm bảo totalItems được tính toán đúng
+        const totalItems = response.total !== undefined ? response.total : response.data.length;
         setTotalPages(Math.ceil(totalItems / ITEMS_PER_PAGE));
       } else {
         setError(response.messages?.join(', ') || 'Lỗi khi lấy danh sách bài viết');
@@ -91,7 +92,8 @@ const useAdminArticleList = () => {
     setModalVisible(false);
   };
 
-  const handleSetFilter = (newFilter: FilterType) => {
+  // Đổi tên hàm này thành setFilter để khớp với tên biến state và prop của TabBarCustom
+  const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter);
     setCurrentPage(1); // Reset về trang 1 khi thay đổi bộ lọc
   };
@@ -109,7 +111,7 @@ const useAdminArticleList = () => {
     currentPage,
     setCurrentPage,
     filter,
-    setFilter: handleSetFilter,
+    setFilter: handleFilterChange, // Export hàm đã đổi tên
   };
 };
 

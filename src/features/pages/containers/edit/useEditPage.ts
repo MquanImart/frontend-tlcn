@@ -335,15 +335,7 @@ export const useEditPage = (page: Page, navigation: NavigationProp<PageStackPara
         } as any);
       }
 
-      // Log FormData entries (React Native FormData does not support entries())
-      console.log("Sending FormData for page:", page._id);
-      // You can log the appended values manually if needed, e.g.:
-      // console.log("FormData name:", pageName);
-      // console.log("FormData address:", addressId);
-      // ...etc.
-
       const pageResponse = await pagesClient.patch(page._id, formData);
-      console.log("Page API response:", JSON.stringify(pageResponse, null, 2));
 
       if (pageResponse.success) {
         alert("Cập nhật Page thành công!");

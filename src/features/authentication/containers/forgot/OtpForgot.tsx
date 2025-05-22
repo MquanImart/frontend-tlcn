@@ -77,7 +77,7 @@ const OtpForgot = () => {
                             {otp.map((_, index) => (
                                 <TextInput
                                     key={index}
-                                    ref={(el) => (otpRefs.current[index] = el)}
+                                    ref={el => { otpRefs.current[index] = el; }}
                                     style={styles.otpInput}
                                     keyboardType="number-pad"
                                     maxLength={1}
