@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-
+import env from '@/env';
 class RestClient {
 
-  baseURL: string = "http://192.168.1.22:3000"; // Quân
+  baseURL: string = env.URL_BACKEND; // Quân
   path: string = "";
   token: string = "";
 

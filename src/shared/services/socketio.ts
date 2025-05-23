@@ -1,6 +1,7 @@
+import env from "@/env";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://192.168.1.22:3000";
+const SOCKET_URL = env.URL_BACKEND;
 
 const socket = io(SOCKET_URL);
 

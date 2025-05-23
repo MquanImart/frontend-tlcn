@@ -5,6 +5,7 @@ import ListCollections from "./ListCollections";
 import { useCallback, useState } from "react";
 import useCollectionPost from "./useCollectionPost";
 import { useFocusEffect } from "@react-navigation/native";
+import { ActivityIndicator } from "react-native";
 
 interface CollectionPostProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
@@ -29,12 +30,17 @@ const CollectionPost = ({handleScroll}: CollectionPostProps) => {
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
             <ScrollView style={styles.content} onScroll={handleScroll}>
-                <RecentsView 
+                {recentPost?(
+                    <RecentsView 
                     recentPost={recentPost}
                     deleteArticle={deleteArticle}
                     changeCollection={changeCollection}
                     listCollections={listCollections}
                 />
+                ):(
+                    <View>
+                    </View>
+                )}
                 <ListCollections collections={collections} createCollection={createCollection}/>
             </ScrollView>
             

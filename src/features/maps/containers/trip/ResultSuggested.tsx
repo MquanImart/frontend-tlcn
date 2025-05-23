@@ -1,14 +1,13 @@
-import { View, StyleSheet, Text, Animated, TouchableOpacity, Dimensions } from "react-native"
+import { View, StyleSheet, Text, Animated, Dimensions } from "react-native"
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import getColor from "@/src/styles/Color";
-import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
-import { RouteProp, useRoute } from "@react-navigation/native";
 import HeaderMap from "../../components/HeaderMap";
-import DetailsTrip from "../../components/DetailsTrip";
 import useTrip from "./useTrip";
-import FormSuggested from "./FormSuggested";
+import { SuggestedDetails } from "./FormSuggested";
+import restClient from "@/src/shared/services/RestClient";
+import { FlatList } from "react-native-gesture-handler";
 
 export interface LocationProps{
   latitude: number; 
@@ -17,31 +16,40 @@ export interface LocationProps{
 
 const Color = getColor();
 
-const Trip = () => {
-  const route = useRoute<RouteProp<MapStackParamList, "Trip">>();
-  const { tripId } = route.params || {};
+interface ResultSuggestedProps{
+    input: SuggestedDetails;
+}
 
-  const { trip, getTrip, setTrip } = useTrip(tripId);
+interface RouteDetail {
+  route: number[];
+  score: number;
+  bestStartHour: number;
+  distandce: number; // Có vẻ như đây là một lỗi chính tả, nên là "distance"
+  duration: number;
+  description: string;
+}
+
+const ResultSuggested = ({ input } : ResultSuggestedProps) => {
+
+  const { trip, getTrip } = useTrip(input.tripId);
 
   const translateY = useRef(new Animated.Value(0)).current;
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
-  const [showForm, setShowForm] = useState(false);
 
-  const [isDetails, setIsDetails] = useState<boolean>(false);
-
+  const [suggested, setSuggested] = useState<RouteDetail[]>([]);
   const moveDetails = (up: boolean) => {
     Animated.timing(translateY, {
       toValue: up?-350: 0,
       duration: 500,
       useNativeDriver: true,
     }).start();
-    setIsDetails(up);
   };
 
   useEffect(() => {
     getTrip();
+    getSuggestedAPI();
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -53,6 +61,12 @@ const Trip = () => {
       setLocation(loc);
     })();
   }, []);
+
+  const getSuggestedAPI = async () => {
+    const routeAPI = restClient.apiClient.service('apis/ai/route-suggestions');
+    const result = await routeAPI.create(input);
+    setSuggested(result);
+  }
   
   if (errorMsg || !trip) {
     return (
@@ -64,9 +78,6 @@ const Trip = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <HeaderMap startTab="Chuyến đi" getDetails={() => {}}/>
-      </View>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -107,28 +118,25 @@ const Trip = () => {
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
           }]}>
-        <DetailsTrip trip={trip} setTrip={setTrip} closeDetails={() => {moveDetails(!isDetails)}} currState={isDetails}
-          suggestedForm={setShowForm}  
-        />
+        <FlatList data={suggested} renderItem={({item}) => 
+            <CardResult route={item.route} description={item.description}/>
+        }/>
       </Animated.View>
-      {showForm && (
-        <View style={styles.overlay}>
-          <View style={styles.boxTitle}>
-            <Text style={styles.titleForm}>Gợi ý lộ trình</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowForm(false)}>
-              <Text style={styles.closeText}>✕</Text>
-            </TouchableOpacity>
-          </View>
-          <FormSuggested tripId={tripId} numVisitPlaces={trip.listAddress} />
-        </View>
-      )}
     </View>
   )
 }
 
+const CardResult = ({route, description} : {route: number[]; description: string}) => {
+
+    return (
+        <View>
+
+        </View>
+    )
+}
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
+      width: "100%", height: '100%'
     },
     searchContainer: {
       position: "absolute",
@@ -136,6 +144,7 @@ const styles = StyleSheet.create({
     },
     map: {
       flex: 1,
+      marginTop: 10
     },
     errorText: {
       color: "red",
@@ -183,4 +192,4 @@ const styles = StyleSheet.create({
     },
   });
   
-export default Trip;
+export default ResultSuggested;

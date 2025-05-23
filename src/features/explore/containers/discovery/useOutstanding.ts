@@ -1,34 +1,61 @@
-import { Page } from "@/src/interface/interface_reference";
+import { MyPhoto } from "@/src/interface/interface_reference";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 
-const MAX_HOTPAGE = 15;
+interface OutstandingProps{
+    _id: string;
+    name: string;
+    avt: MyPhoto;
+    score?: number;
+}
 
 const useOutstanding = () => {
     const navigation = useNavigation<StackNavigationProp<ExploreStackParamList>>();
-    const [suitablePages, setSuitablePages] = useState<Page[] | null>(null);
-    const [sugOfMonth, setSugOfMonth] = useState<Page[] | null>(null);
 
-    const getAllPage = async () => {
-        //Example
-        const provinceId = "67d28aed46659e757e5f4fbb";
-        const provinceAPI = restClient.apiClient.service(`apis/province/${provinceId}/hot-page`);
-        const result = await provinceAPI.find({limit: MAX_HOTPAGE, skip: 0});
-        if (result.success){
-            setSuitablePages(result.data);
-            setSugOfMonth(result.data);
+    const [suggestedPageCF, setSuggestedPageCF] = useState<OutstandingProps[] | null>(null);
+    const [suggestedPageCB, setSuggestedPageCB] = useState<OutstandingProps[] | null>(null);
+    const [suggestedPageMonth, setSuggestedPageMonth] = useState<OutstandingProps[] | null>(null);
+
+    const getSuggested = async () => {
+        const userId = await AsyncStorage.getItem("userId");
+        if (userId){
+            const CFAPI = restClient.apiClient.service(`apis/ai/suggested-page-CF`);
+            const resultCF = await CFAPI.get(userId);
+            if (resultCF.success){
+                setSuggestedPageCF(resultCF.data);
+            }
+
+            const CBAPI = restClient.apiClient.service(`apis/ai/suggested-page-CB`);
+            const resultCB = await CBAPI.get(userId);
+            if (resultCB.success){
+                const result = resultCB.data.map((item: { page: OutstandingProps; }) => item.page);
+                setSuggestedPageCB(result);
+            }
+
+            const now = new Date(); // Tạo một đối tượng Date mới
+            const month = now.getMonth() + 1;
+            const MonthAPI = restClient.apiClient.service(`apis/ai/suggested-page-month/${userId}?month=${month}`);
+            const resultMonth = await MonthAPI.find({});
+            if (resultMonth.success){
+                const result = resultMonth.data.map((item: { page: OutstandingProps; }) => item.page);
+                setSuggestedPageMonth(result);
+            }
         }
     }
-    const handleNavigateToPage = (pageId: string) => {
-        navigation.navigate("PageScreen", { pageId, currentUserId: "67d2e8e01a29ef48e08a19f4" });
+    const handleNavigateToPage = async (pageId: string) => {
+        const userId = await AsyncStorage.getItem("userId");
+        if (userId){
+            navigation.navigate("PageScreen", { pageId, currentUserId: userId });
+        }
     };
 
     return {
-        suitablePages, sugOfMonth,
-        getAllPage, handleNavigateToPage
+        suggestedPageCF, suggestedPageCB, suggestedPageMonth,
+        getSuggested, handleNavigateToPage
     }
 }
 

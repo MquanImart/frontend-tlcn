@@ -8,21 +8,20 @@ interface OutstandingProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
 }
 const Outstanding = ({handleScroll} : OutstandingProps) => {
-    const { suitablePages, sugOfMonth, 
-        getAllPage, handleNavigateToPage 
+    const { suggestedPageCB, suggestedPageCF, suggestedPageMonth, getSuggested, handleNavigateToPage 
     } = useOutstanding();
 
     useEffect(() => {
-        getAllPage();
+        getSuggested();
     }, []);
 
     return (
         <ScrollView style={styles.container} onScroll={handleScroll}>
             <View style={[styles.listContent, styles.shadow]}>
                 <Text style={styles.label}>Đề xuất cho bạn</Text>
-                {suitablePages ? (
+                {suggestedPageCB ? (
                 <FlatList
-                  data={suitablePages}
+                  data={suggestedPageCB}
                   keyExtractor={(item, index) => index.toString()}
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
@@ -30,7 +29,36 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                   renderItem={({ item }) => (
                     <View style={{ marginRight: 12 }}>
                     <CardPage 
-                      images={item.avt ? item.avt : "https://picsum.photos/200"} 
+                      images={item.avt.url ? item.avt.url : "https://picsum.photos/200"} 
+                      name={item.name} 
+                      country={"Viet Nam"} 
+                      distance={2.3} 
+                      size={{
+                        width: 150,
+                        height: 200
+                      }}
+                      onPress={() => handleNavigateToPage(item._id)}
+                    />
+                    </View>
+                  )}
+                />
+                ): (
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                )}
+            </View>
+            <View style={[styles.listContent, styles.shadow]}>
+                <Text style={styles.label}>Có thể bạn thích</Text>
+                {suggestedPageCF ? (
+                <FlatList
+                  data={suggestedPageCF}
+                  keyExtractor={(item, index) => index.toString()}
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.listPage}
+                  renderItem={({ item }) => (
+                    <View style={{ marginRight: 12 }}>
+                    <CardPage 
+                      images={item.avt.url ? item.avt.url : "https://picsum.photos/200"} 
                       name={item.name} 
                       country={"Viet Nam"} 
                       distance={2.3} 
@@ -49,9 +77,9 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
             </View>
             <View style={[styles.listContent, styles.shadow]}>
                 <Text style={styles.label}>Nổi bật trong tháng</Text>
-                {sugOfMonth ? (
+                {suggestedPageMonth ? (
                 <FlatList
-                  data={sugOfMonth}
+                  data={suggestedPageMonth}
                   keyExtractor={(item, index) => index.toString()}
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}
@@ -59,7 +87,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                   renderItem={({ item }) => (
                     <View style={{ marginRight: 12 }}>
                     <CardPage 
-                      images={item.avt ? item.avt : "https://picsum.photos/200"} 
+                      images={item.avt.url ? item.avt.url : "https://picsum.photos/200"} 
                       name={item.name} 
                       country={"Viet Nam"} 
                       distance={2.3} 

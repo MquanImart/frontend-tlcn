@@ -27,8 +27,8 @@ const Color = getColor();
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("admin");
-  const [password, setPassword] = useState<string>("admin");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("21110741@student.hcmute.edu.vn");
+  const [password, setPassword] = useState<string>("21110741");
   const navigation = useNavigation<AuthNavigationProp>();
 
   // Ref để focus vào ô mật khẩu sau khi nhập xong email/số điện thoại

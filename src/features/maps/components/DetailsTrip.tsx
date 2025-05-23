@@ -17,11 +17,12 @@ interface DetailsTripProps {
     currState: boolean;
     trip: Trip;
     setTrip: (value: Trip | null) => void;
+    suggestedForm: (value: boolean) => void;
 }   
 
 type MapNavigationProp = StackNavigationProp<MapStackParamList, "CustomMap">;
 
-const DetailsTrip = ({closeDetails, currState, trip, setTrip}: DetailsTripProps) => {
+const DetailsTrip = ({closeDetails, currState, trip, setTrip, suggestedForm}: DetailsTripProps) => {
     const navigation = useNavigation<MapNavigationProp>();
     const [visibleSearch, setVisibleSearch] = useState<boolean>(false);
     const [currAddress, setCurrAddress] = useState<string | null>(null);
@@ -156,7 +157,7 @@ const DetailsTrip = ({closeDetails, currState, trip, setTrip}: DetailsTripProps)
                     }}
                 />
                 <CIconButton icon={<Icon name={'lightbulb-outline'} size={20} color={Color.white_homologous}/>} 
-                    onSubmit={closeDetails} 
+                    onSubmit={() => {suggestedForm(true)}} 
                     label="Gợi ý lộ trình"
                     style={{
                         width: 150,
