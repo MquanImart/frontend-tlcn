@@ -50,12 +50,37 @@ const extractCCCDData = async (imageUri: string, mimeType: string = 'image/jpeg'
     }
 };
 
+// Hàm tính tuổi từ ngày sinh
+const calculateAge = (dateOfBirth: string): number => {
+    try {
+        // Giả định dateOfBirth có định dạng DD/MM/YYYY
+        const dob = new Date(dateOfBirth.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')); // Chuyển DD/MM/YYYY sang YYYY-MM-DD
+        if (isNaN(dob.getTime())) {
+            throw new Error('Ngày sinh không hợp lệ');
+        }
+
+        const today = new Date(); // Sử dụng ngày hiện tại
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        const dayDiff = today.getDate() - dob.getDate();
+
+        // Giảm tuổi nếu chưa đến ngày sinh nhật
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            age--;
+        }
+
+        return age;
+    } catch (error) {
+        throw new Error('Không thể tính tuổi từ ngày sinh');
+    }
+};
+
 const IDVerification = () => {
     const [displayName, setDisplayName] = useState<string>("");
     const [hashtag, setHashtag] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<{ uri: string, type: string } | null>(null);
     const [cccdData, setCccdData] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);  // Thêm state isLoading
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigation = useNavigation<NavigationProp>();
     const route = useRoute<IDVerificationRouteProp>();
     const emailOrPhone = route.params?.emailOrPhone;
@@ -102,101 +127,108 @@ const IDVerification = () => {
     };
 
     const handleCreateAccount = async () => {
-        if (isLoading) return; // Nếu đang loading thì không cho phép nhấn lại
+        if (isLoading) return;
 
         if (!displayName || !hashtag) {
-          Alert.alert("Lỗi", "Vui lòng nhập đầy đủ tên và mã hashtag.");
-          return;
+            Alert.alert("Lỗi", "Vui lòng nhập đầy đủ tên và mã hashtag.");
+            return;
         }
         const hashtagCheck = await restClient.apiClient
-        .service("apis/accounts/check-hashtag")
-        .create({ hashtag });
+            .service("apis/accounts/check-hashtag")
+            .create({ hashtag });
         if (hashtagCheck.exists) {
-        Alert.alert("Lỗi", "Hashtag đã tồn tại trong hệ thống");
-        return;
+            Alert.alert("Lỗi", "Hashtag đã tồn tại trong hệ thống");
+            return;
         }
         if (!selectedImage) {
-          Alert.alert("Lỗi", "Vui lòng chọn hoặc chụp ảnh CCCD.");
-          return;
+            Alert.alert("Lỗi", "Vui lòng chọn hoặc chụp ảnh CCCD.");
+            return;
         }
 
-        setIsLoading(true);  // Bắt đầu loading
+        setIsLoading(true);
 
         try {
-          const data = await extractCCCDData(selectedImage.uri);
-          setCccdData(data);
-      
-          // Tạo các trường chi tiết của address từ placeOfResidence
-          let province = "";
-          let district = "";
-          let ward = "";
-          let street = "";
-          let placeName = "";
-          let lat: number | null = null;
-          let long: number | null = null;
-      
-          if (data.placeOfResidence) {
-            const addressParts = data.placeOfResidence.split(", ").map((part: string) => part.trim());
-            province = addressParts[addressParts.length - 1] || "";
-            district = addressParts[addressParts.length - 2] || "";
-            ward = addressParts[addressParts.length - 3] || "";
-            street = addressParts[0] || "";
-      
-            // Gọi API Nominatim để lấy lat, lon
-            const fullAddress = `${ward}, ${district}, ${province}`.trim();
-            try {
-              const response = await axios.get(
-                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1`
-              );
-              const result = response.data[0];
-              if (result) {
-                lat = parseFloat(result.lat);
-                long = parseFloat(result.lon);
-              } else {
-                console.warn("Không tìm thấy tọa độ cho địa chỉ:", fullAddress);
-              }
-            } catch (apiError) {
-              console.error("Lỗi khi gọi Nominatim API:", apiError);
-              Alert.alert("Cảnh báo", "Không thể lấy tọa độ địa chỉ. Tiếp tục mà không có lat/long.");
+            const data = await extractCCCDData(selectedImage.uri);
+            setCccdData(data);
+
+            // Kiểm tra tuổi từ ngày sinh
+            const age = calculateAge(data.dateOfBirth);
+            if (age < 18) {
+                Alert.alert("Lỗi", "Bạn phải từ 18 tuổi trở lên để tạo tài khoản!");
+                return;
             }
-          }
-      
-          // Gọi API createAccount với từng trường của address và cccdData
-          const result = await restClient.apiClient
-            .service("apis/accounts/create")
-            .create({
-              email: emailOrPhone,
-              password,
-              displayName,
-              hashtag,
-              number: data.number,
-              fullName: data.fullName,
-              dateOfBirth: data.dateOfBirth,
-              sex: data.sex,
-              nationality: data.nationality || "Việt Nam",
-              placeOfOrigin: data.placeOfOrigin,
-              placeOfResidence: data.placeOfResidence,
-              dateOfExpiry: data.dateOfExpiry,
-              province,
-              district,
-              ward,
-              street,
-              placeName,
-              lat,
-              long,
-            });
-      
-          if (result.success) {
-            Alert.alert("Thành công", "Tài khoản đã được tạo!", [
-              { text: "OK", onPress: () => navigation.navigate("PreferenceSelection", { email: emailOrPhone }) },
-            ]);
-          } else {
-            Alert.alert("Lỗi", result.message || "Không thể tạo tài khoản.");
-          }
+
+            // Tạo các trường chi tiết của address từ placeOfResidence
+            let province = "";
+            let district = "";
+            let ward = "";
+            let street = "";
+            let placeName = "";
+            let lat: number | null = null;
+            let long: number | null = null;
+
+            if (data.placeOfResidence) {
+                const addressParts = data.placeOfResidence.split(", ").map((part: string) => part.trim());
+                province = addressParts[addressParts.length - 1] || "";
+                district = addressParts[addressParts.length - 2] || "";
+                ward = addressParts[addressParts.length - 3] || "";
+                street = addressParts[0] || "";
+
+                // Gọi API Nominatim để lấy lat, lon
+                const fullAddress = `${ward}, ${district}, ${province}`.trim();
+                try {
+                    const response = await axios.get(
+                        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1`
+                    );
+                    const result = response.data[0];
+                    if (result) {
+                        lat = parseFloat(result.lat);
+                        long = parseFloat(result.lon);
+                    } else {
+                        console.warn("Không tìm thấy tọa độ cho địa chỉ:", fullAddress);
+                    }
+                } catch (apiError) {
+                    console.error("Lỗi khi gọi Nominatim API:", apiError);
+                    Alert.alert("Cảnh báo", "Không thể lấy tọa độ địa chỉ. Tiếp tục mà không có lat/long.");
+                }
+            }
+
+            // Gọi API createAccount
+            const result = await restClient.apiClient
+                .service("apis/accounts/create")
+                .create({
+                    email: emailOrPhone,
+                    password,
+                    displayName,
+                    hashtag,
+                    number: data.number,
+                    fullName: data.fullName,
+                    dateOfBirth: data.dateOfBirth,
+                    sex: data.sex,
+                    nationality: data.nationality || "Việt Nam",
+                    placeOfOrigin: data.placeOfOrigin,
+                    placeOfResidence: data.placeOfResidence,
+                    dateOfExpiry: data.dateOfExpiry,
+                    province,
+                    district,
+                    ward,
+                    street,
+                    placeName,
+                    lat,
+                    long,
+                });
+
+            if (result.success) {
+                Alert.alert("Thành công", "Tài khoản đã được tạo!", [
+                    { text: "OK", onPress: () => navigation.navigate("PreferenceSelection", { email: emailOrPhone }) },
+                ]);
+            } else {
+                Alert.alert("Lỗi", result.message || "Không thể tạo tài khoản.");
+            }
         } catch (error) {
-          Alert.alert("Lỗi", error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định.");
+            Alert.alert("Lỗi", error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định.");
         } finally {
-          setIsLoading(false);  // Dừng loading khi quá trình hoàn tất
+            setIsLoading(false);
         }
     };
 
@@ -278,7 +310,6 @@ const IDVerification = () => {
                         <Image source={{ uri: selectedImage.uri }} style={{ width: 100, height: 100, marginBottom: 20 }} />
                     )}
 
-                    {/* Hiển thị spinner khi đang loading */}
                     {isLoading ? (
                         <ActivityIndicator size="large" color={Color.mainColor1} />
                     ) : (
@@ -312,7 +343,6 @@ const IDVerification = () => {
 
 export default IDVerification;
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -335,7 +365,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         color: Color.white_contrast,
-        marginBottom:20,
+        marginBottom: 20,
     },
     sectionTitle: {
         fontSize: 24,

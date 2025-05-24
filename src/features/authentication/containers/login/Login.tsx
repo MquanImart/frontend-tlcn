@@ -27,8 +27,8 @@ const Color = getColor();
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("admin");
-  const [password, setPassword] = useState<string>("admin");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigation = useNavigation<AuthNavigationProp>();
 
   // Ref để focus vào ô mật khẩu sau khi nhập xong email/số điện thoại
@@ -45,13 +45,12 @@ const Login = () => {
       if (response.success) {
         const role = await AsyncStorage.getItem("role");
         if (role === "admin") {
-            
           navigation.navigate("AdminDashboard");
         } else {
           navigation.navigate("TabbarNavigation");
         }
       } else {
-        Alert.alert("Lỗi", response.messages?.join(", ") || "Đăng nhập thất bại");
+        Alert.alert("Thông báo", response.messages || "Đăng nhập thất bại");
       }
     } catch (error: any) {
       Alert.alert("Lỗi", error.message || "Không thể kết nối đến server");
