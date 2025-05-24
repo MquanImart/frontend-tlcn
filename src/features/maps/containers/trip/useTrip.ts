@@ -1,4 +1,4 @@
-import { CLocation, Trip } from "@/src/interface/interface_detail";
+import { Trip } from "@/src/interface/interface_detail";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
@@ -76,13 +76,23 @@ const useTrip = (tripId: string) => {
       return false;
     }
 
+    const changeListTrip = (newTrip: Trip) => {
+      if (trip){
+        setTrip({
+          ...trip,
+          listAddress: newTrip.listAddress
+        });
+      }
+    }
+
     return {
         trip, getTrip,
         setTrip,
         updateTrip,
         addNewLocation,
         deleteLocation,
-        changePosition
+        changePosition,
+        changeListTrip
     }
 }
 

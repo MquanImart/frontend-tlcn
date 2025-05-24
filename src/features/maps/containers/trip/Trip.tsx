@@ -9,6 +9,7 @@ import HeaderMap from "../../components/HeaderMap";
 import DetailsTrip from "../../components/DetailsTrip";
 import useTrip from "./useTrip";
 import FormSuggested from "./FormSuggested";
+import { Trip } from "@/src/interface/interface_detail";
 
 export interface LocationProps{
   latitude: number; 
@@ -17,11 +18,11 @@ export interface LocationProps{
 
 const Color = getColor();
 
-const Trip = () => {
+const TripScreen = () => {
   const route = useRoute<RouteProp<MapStackParamList, "Trip">>();
   const { tripId } = route.params || {};
 
-  const { trip, getTrip, setTrip } = useTrip(tripId);
+  const { trip, getTrip, setTrip, changeListTrip } = useTrip(tripId);
 
   const translateY = useRef(new Animated.Value(0)).current;
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
@@ -31,6 +32,11 @@ const Trip = () => {
 
   const [isDetails, setIsDetails] = useState<boolean>(false);
 
+  const handleChangeListTrip = (trip: Trip) => {
+    changeListTrip(trip);
+    setShowForm(false);
+  }
+  
   const moveDetails = (up: boolean) => {
     Animated.timing(translateY, {
       toValue: up?-350: 0,
@@ -119,7 +125,7 @@ const Trip = () => {
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
           </View>
-          <FormSuggested tripId={tripId} numVisitPlaces={trip.listAddress} />
+          <FormSuggested tripId={tripId} numVisitPlaces={trip.listAddress} handleSubmitChange={handleChangeListTrip}/>
         </View>
       )}
     </View>
@@ -151,8 +157,14 @@ const styles = StyleSheet.create({
       zIndex: 5,
     },
     boxTitle: {
+      width: '100%',
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      position: 'absolute',
+      top: 40,
+      zIndex: 10,
+      backgroundColor: 'rgba(255,255,255,0.5)',
+      padding: 10,
     },
     titleForm: {
       fontSize: 20,
@@ -165,14 +177,13 @@ const styles = StyleSheet.create({
       width: Dimensions.get("window").width,
       height: Dimensions.get("window").height,
       backgroundColor: "white", // hoặc rgba(0,0,0,0.5) nếu muốn làm mờ nền
-      zIndex: 999,
-      paddingTop: 60, // chừa chỗ cho nút đóng
+      zIndex: 9,
     },
     closeButton: {
       position: "absolute",
-      top: 0,
+      top: 5,
       right: 16,
-      zIndex: 1000,
+      zIndex: 10,
       backgroundColor: "#eee",
       borderRadius: 20,
       padding: 6,
@@ -183,4 +194,4 @@ const styles = StyleSheet.create({
     },
   });
   
-export default Trip;
+export default TripScreen;

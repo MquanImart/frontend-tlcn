@@ -11,7 +11,7 @@ import {
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { CLocation } from "@/src/interface/interface_detail";
+import { CLocation, Trip } from "@/src/interface/interface_detail";
 import getColor from "@/src/styles/Color";
 import ResultSuggested from "./ResultSuggested";
 
@@ -28,9 +28,10 @@ export interface SuggestedDetails {
 interface FormSuggestedProps {
   tripId: string;
   numVisitPlaces:  CLocation[];
+  handleSubmitChange: (trip: Trip) => void;
 }
 
-const FormSuggested = ({ tripId, numVisitPlaces }: FormSuggestedProps) => {
+const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSuggestedProps) => {
   const [startDateTime, setStartDateTime] = useState(new Date());
   const [useTime, setUseTime] = useState(false);
 
@@ -93,9 +94,9 @@ const FormSuggested = ({ tripId, numVisitPlaces }: FormSuggestedProps) => {
   return (
     <View style={styles.container}>
     {input? (
-        <ResultSuggested input={input}/>
+        <ResultSuggested input={input} handleSubmitChange={handleSubmitChange}/>
     ) : (
-    <ScrollView contentContainerStyle={{ padding: 16, width: '100%', height: '100%' }}>
+    <ScrollView contentContainerStyle={{ padding: 16, width: '100%', height: '90%', marginTop: 100 }}>
       {/* Ngày bắt đầu */}
       <Text style={{ fontWeight: "bold", fontSize: 16 }}>Ngày bắt đầu</Text>
       <View style={styles.item}>

@@ -1,13 +1,16 @@
-import { View, StyleSheet, Text, Animated, Dimensions } from "react-native"
+import { View, StyleSheet, Text, Animated, Dimensions, ActivityIndicator, TouchableOpacity } from "react-native"
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import getColor from "@/src/styles/Color";
-import HeaderMap from "../../components/HeaderMap";
 import useTrip from "./useTrip";
 import { SuggestedDetails } from "./FormSuggested";
 import restClient from "@/src/shared/services/RestClient";
 import { FlatList } from "react-native-gesture-handler";
+import CIconButton from "@/src/shared/components/button/CIconButton";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { CLocation, Trip } from "@/src/interface/interface_detail";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface LocationProps{
   latitude: number; 
@@ -18,6 +21,7 @@ const Color = getColor();
 
 interface ResultSuggestedProps{
     input: SuggestedDetails;
+    handleSubmitChange: (trip: Trip) => void;
 }
 
 interface RouteDetail {
@@ -29,7 +33,7 @@ interface RouteDetail {
   description: string;
 }
 
-const ResultSuggested = ({ input } : ResultSuggestedProps) => {
+const ResultSuggested = ({ input, handleSubmitChange } : ResultSuggestedProps) => {
 
   const { trip, getTrip } = useTrip(input.tripId);
 
@@ -37,6 +41,7 @@ const ResultSuggested = ({ input } : ResultSuggestedProps) => {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
+  const [isDetails, setIsDetails] = useState<boolean>(false);
 
   const [suggested, setSuggested] = useState<RouteDetail[]>([]);
   const moveDetails = (up: boolean) => {
@@ -45,6 +50,7 @@ const ResultSuggested = ({ input } : ResultSuggestedProps) => {
       duration: 500,
       useNativeDriver: true,
     }).start();
+    setIsDetails(up);
   };
 
   useEffect(() => {
@@ -65,7 +71,7 @@ const ResultSuggested = ({ input } : ResultSuggestedProps) => {
   const getSuggestedAPI = async () => {
     const routeAPI = restClient.apiClient.service('apis/ai/route-suggestions');
     const result = await routeAPI.create(input);
-    setSuggested(result);
+    setSuggested(result.data);
   }
   
   if (errorMsg || !trip) {
@@ -75,6 +81,9 @@ const ResultSuggested = ({ input } : ResultSuggestedProps) => {
       </View>
     );
   }
+
+  if (!suggested || suggested.length <= 0)
+    return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
 
   return (
     <View style={styles.container}>
@@ -118,21 +127,105 @@ const ResultSuggested = ({ input } : ResultSuggestedProps) => {
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
           }]}>
-        <FlatList data={suggested} renderItem={({item}) => 
-            <CardResult route={item.route} description={item.description}/>
+        <View style={styles.boxSuggest}>
+          <Text style={styles.name}>Danh sách đề xuất</Text>
+          <CIconButton icon={<Icon name={isDetails?"keyboard-arrow-down":"keyboard-arrow-up"} size={20} color={Color.white_contrast}/>} 
+              onSubmit={() => {moveDetails(!isDetails)}} 
+              style={{
+                  width: 50,
+                  height: 50,
+                  fontSize: 13,
+                  radius: 50,
+                  flex_direction: 'row'
+              }}
+          />
+        </View>
+        <FlatList style={styles.list} data={suggested} renderItem={({item}) => 
+            <CardResult trip={trip} route={item.route} description={item.description} bestStartHour={item.bestStartHour}
+              handleSubmitChange={handleSubmitChange}
+            />
         }/>
       </Animated.View>
     </View>
   )
 }
 
-const CardResult = ({route, description} : {route: number[]; description: string}) => {
+const CardResult = ({
+  trip, route, description, bestStartHour, handleSubmitChange
+} : {
+  trip: Trip, route: number[]; description: string, bestStartHour: number, handleSubmitChange: (trip: Trip) => void
+  }
+) => {
+  const getLocationFromRoute = (index: number): CLocation => {
+    if (index === 0) return trip.startAddress;
+    if (index === route.length - 1) return trip.endAddress;
+    return trip.listAddress[route[index] - 1];
+  };
+  
+  const handleUseThisTrip = async () => {
+  try {
+    // Tạo listAddress mới theo route
+    const newListAddress = route
+      .slice(1, route.length - 1) // bỏ phần tử đầu (0) và cuối (5) vì đó là start và end
+      .map(index => trip.listAddress[index - 1]); // vì listAddress bắt đầu từ 0
 
-    return (
-        <View>
+    const updatedTrip: Trip = {
+      ...trip,
+      listAddress: newListAddress
+    };
 
+    const result = await updateTrip(trip._id, updatedTrip);
+    if (result){
+      handleSubmitChange(updatedTrip);
+    } else {
+      alert('Không thể sử dụng tuyến đường này. Vui lòng thử lại sau!')
+    }
+  } catch (err) {
+    alert('Có lỗi xảy ra khi thay đổi tuyến đường. Vui lòng thử lại sau!')
+  }
+};
+
+  const updateTrip = async (id: string, data: Trip) => {  
+    const userId = await AsyncStorage.getItem("userId");
+    if (userId){
+      const mapAPI = restClient.apiClient.service(`apis/trips`);
+      const result = await mapAPI.patch(id, {
+        name: data.name,
+        startAddress: data.startAddress,
+        listAddress: data.listAddress,
+        endAddress: data.endAddress
+      })
+      if (result.success){
+        return true;
+      }
+      return false;
+    }
+  }
+  const orderedLocations = route.map((_, i) => getLocationFromRoute(i));
+
+  return (
+    <View style={styles.card}>
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+        {trip.name}
+      </Text>
+      <Text style={styles.textLabel}>Thời gian xuất phát: {bestStartHour}:00</Text>
+      <Text style={styles.textLabel}>Lộ trình di chuyển</Text>
+      {orderedLocations.map((loc, index) => (
+        <View key={index} style={{ marginBottom: 4 }}>
+          <Text style={styles.textLocation}>
+            {index + 1}. {loc.displayName}
+          </Text>
         </View>
-    )
+      ))}
+      <Text style={styles.textLabel}>Mô tả</Text>
+      <Text style={{ fontStyle: 'italic'}}>{description}</Text>
+      <View style={{width: '100%'}}>
+        <TouchableOpacity style={styles.button} onPress={handleUseThisTrip}>
+          <Text style={styles.textButton}>Sử dụng lịch trình này</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 const styles = StyleSheet.create({
     container: {
@@ -144,7 +237,6 @@ const styles = StyleSheet.create({
     },
     map: {
       flex: 1,
-      marginTop: 10
     },
     errorText: {
       color: "red",
@@ -190,6 +282,49 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontWeight: "bold",
     },
+    name: {
+      color: Color.textColor1,
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginVertical: 20,
+    },
+    boxSuggest: {
+      width: '100%', height: '13%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 10
+    },
+    textLocation: {
+      fontWeight: '500'
+    },
+    textLabel: {
+      fontSize: 17,
+      fontWeight: '600',
+      marginTop: 10,
+    },
+    card: { 
+      padding: 5, 
+      borderWidth: 1, 
+      borderRadius: 8, 
+      margin: 5,
+      marginBottom: 50
+    },
+    textButton: {
+      textAlign: 'center',
+      color: Color.white_homologous,
+      fontWeight: '300'
+    },
+    button:{
+      width: '60%',
+      alignSelf: 'center',
+      backgroundColor: Color.mainColor1,
+      padding: 10,
+      borderRadius: 5
+    },
+    list: {
+      height: '87%',
+    }
   });
   
 export default ResultSuggested;
