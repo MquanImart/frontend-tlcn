@@ -50,20 +50,15 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
     setUserId,
     pickMedia,
     selectedMedia,
+    recordView,
+    currentPage,
+    totalPages,
+    loadingMore,
+    loadMoreArticles 
   } = usePost(articles, setArticles);
 
   useEffect(() => {
     getUserId();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await getArticles();
-      if (result?.success) {
-        setArticles(result.data);
-      }
-    };
-    fetchData();
   }, []);
 
   const normalizedSearch = removeVietnameseTones(textSearch);

@@ -45,13 +45,12 @@ const Login = () => {
       if (response.success) {
         const role = await AsyncStorage.getItem("role");
         if (role === "admin") {
-            
           navigation.navigate("AdminDashboard");
         } else {
           navigation.navigate("TabbarNavigation");
         }
       } else {
-        Alert.alert("Lỗi", response.messages?.join(", ") || "Đăng nhập thất bại");
+        Alert.alert("Thông báo", response.messages || "Đăng nhập thất bại");
       }
     } catch (error: any) {
       Alert.alert("Lỗi", error.message || "Không thể kết nối đến server");

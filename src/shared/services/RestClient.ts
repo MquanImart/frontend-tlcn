@@ -3,7 +3,7 @@ import axios from "axios";
 import env from '@/env';
 class RestClient {
 
-  baseURL: string = env.URL_BACKEND; // Quân
+  baseURL: string = env.URL_BACKEND;
   path: string = "";
   token: string = "";
 
@@ -48,7 +48,7 @@ class RestClient {
 
       if (response.data.success) {
         // Lưu thông tin người dùng
-        //await AsyncStorage.setItem("token", response.data.token);
+        await AsyncStorage.setItem("token", response.data.data.token);
         await AsyncStorage.setItem("role", response.data.data.account.role);
         await AsyncStorage.setItem("userId", response.data.data.user._id);
         await AsyncStorage.setItem("setting", JSON.stringify(response.data.data.user.setting)); // Chuyển thành chuỗi
