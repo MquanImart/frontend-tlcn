@@ -23,7 +23,7 @@ const Conversations = () => {
     getConversation, getMessages,
     messages, conversation,
     loadMoreMessages,
-    loadingMore, currUser,
+    loadingMore, userId,
     handleOpenImagePicker,
     createMessage, text, setText,
     navigationDetails
@@ -33,11 +33,11 @@ const Conversations = () => {
       useCallback(() => {
         getConversation();
         getMessages();
-      }, [])
+      }, [userId])
   );
 
   const getUIMessage = (message: Message, index: number) => {
-    if (conversation && messages){
+    if (conversation && messages && userId){
       let showAvatar;
       if (index === messages?.length - 1) {
         showAvatar = true;
@@ -50,7 +50,7 @@ const Conversations = () => {
       
       if (user.length < 0)
         return <View/>
-      if (message.sender === currUser) {
+      if (message.sender === userId) {
           return <MessageSend user={user[0]} message={message}  showAvatar={showAvatar} 
           />;
       } else {

@@ -7,8 +7,8 @@ import useMessages from "../useMessage";
 import restClient from "@/src/shared/services/RestClient";
 import { Alert } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
-import { result } from "lodash";
 import socket from "@/src/shared/services/socketio";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PAGE_SIZE = 20; // Số tin nhắn tải mỗi lần
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "NewChat">;
@@ -22,7 +22,7 @@ const useConversations = (
     }
 ) => {
     const navigation = useNavigation<ChatNavigationProp>();
-    const currUser = '67d2e8e01a29ef48e08a19f4';
+    const [userId, setUserId] = useState<string | null>(null);
 
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true); // Kiểm tra còn tin nhắn không
@@ -37,25 +37,35 @@ const useConversations = (
     } = useMessages();
     
     useEffect(() => {
-        socket.emit("joinChat", conversationId);
+        getUserId();
+    }, []);
 
-        socket.on("newMessage", (newMessage) => {
-            if (newMessage.sender !== currUser){
-                setMessages(messages?[newMessage, ...messages]: [newMessage])
-            }
-        });
-    
-        return () => {
-            socket.emit("leaveChat", conversationId);
-            socket.off("newMessage");
-        };
-    }, [conversationId]);
-      
-    
+    useEffect(() => {
+        if (userId){
+            socket.emit("joinChat", conversationId);
+
+            socket.on("newMessage", (newMessage) => {
+                if (newMessage.sender !== userId){
+                    setMessages(messages?[newMessage, ...messages]: [newMessage])
+                }
+            });
+        
+            return () => {
+                socket.emit("leaveChat", conversationId);
+                socket.off("newMessage");
+            };
+        }
+    }, [conversationId, userId]);
+
+    const getUserId = async () => {
+        const userId = await AsyncStorage.getItem("userId");
+        setUserId(userId);
+    }
+
     const getNameChat = () => {
-        if (conversation){
+        if (conversation && userId){
             if (conversation.type === "private"){
-                const userData = getOtherParticipantById(conversation, currUser);
+                const userData = getOtherParticipantById(conversation, userId);
                 return userData?userData.displayName:"Người dùng không xác định";
             } else if (conversation.type === "group"){
                 return conversation.groupName !== null? conversation.groupName : getShortNames(conversation);
@@ -81,13 +91,13 @@ const useConversations = (
     }
 
     const getMessages = async () => {
-        if (conversationId){
+        if (conversationId && userId){
             const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversationId}`);
             const result = await conversationAPI.find({limit: PAGE_SIZE, skip: 0});
             if (result.success){
                 setMessages(result.data);
                 const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversationId}/seen-all`);
-                await conversationAPI.patch("", { userId: currUser});
+                await conversationAPI.patch("", { userId: userId});
             }
         }
     }
@@ -176,11 +186,12 @@ const useConversations = (
 
     const sendMessage = async ( currConversationId: string, type: string, source: ImagePicker.ImagePickerAsset | null) => {
         if (type !== 'text' && !source) return;
+        if (!userId) return;
         try {
             const formData = new FormData();
         
             formData.append("conversationId", currConversationId);
-            formData.append("sender", currUser);
+            formData.append("sender", userId);
             formData.append("type", type);
             if (type === "text") {
                 formData.append("message", text);
@@ -223,18 +234,20 @@ const useConversations = (
         if (sending){
             return;
         }
+        if (!userId) return;
+
         setSending(true);
         if (conversation){
             sendMessage(conversation._id, type, source);
         } else {
             if (friend){
                 const conversationAPI = restClient.apiClient.service(`apis/conversations`);
-                const participants = [currUser, friend._id]
+                const participants = [userId, friend._id]
                 
                 const result = await conversationAPI.create({
                     participants: participants,
                     lastMessage: {
-                        sender: currUser,
+                        sender: userId,
                         contentType: "text",
                         message: type === 'text' ? text : "Xin chào",
                       }
@@ -275,7 +288,7 @@ const useConversations = (
         conversation, messages, getNameChat,
         getConversation, getMessages,
         loadMoreMessages, loadingMore,
-        currUser, handleOpenImagePicker,
+        userId, handleOpenImagePicker,
         createMessage, navigationDetails
     }
 }

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Animated } from "react-native"
+import { View, StyleSheet, Text, Animated, TouchableOpacity, Dimensions } from "react-native"
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
@@ -8,6 +8,8 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import HeaderMap from "../../components/HeaderMap";
 import DetailsTrip from "../../components/DetailsTrip";
 import useTrip from "./useTrip";
+import FormSuggested from "./FormSuggested";
+import { Trip } from "@/src/interface/interface_detail";
 
 export interface LocationProps{
   latitude: number; 
@@ -16,19 +18,25 @@ export interface LocationProps{
 
 const Color = getColor();
 
-const Trip = () => {
+const TripScreen = () => {
   const route = useRoute<RouteProp<MapStackParamList, "Trip">>();
   const { tripId } = route.params || {};
 
-  const { trip, getTrip, setTrip } = useTrip(tripId);
+  const { trip, getTrip, setTrip, changeListTrip } = useTrip(tripId);
 
   const translateY = useRef(new Animated.Value(0)).current;
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const mapRef = useRef<MapView>(null);
+  const [showForm, setShowForm] = useState(false);
 
   const [isDetails, setIsDetails] = useState<boolean>(false);
 
+  const handleChangeListTrip = (trip: Trip) => {
+    changeListTrip(trip);
+    setShowForm(false);
+  }
+  
   const moveDetails = (up: boolean) => {
     Animated.timing(translateY, {
       toValue: up?-350: 0,
@@ -105,8 +113,21 @@ const Trip = () => {
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
           }]}>
-        <DetailsTrip trip={trip} setTrip={setTrip} closeDetails={() => {moveDetails(!isDetails)}} currState={isDetails}/>
+        <DetailsTrip trip={trip} setTrip={setTrip} closeDetails={() => {moveDetails(!isDetails)}} currState={isDetails}
+          suggestedForm={setShowForm}  
+        />
       </Animated.View>
+      {showForm && (
+        <View style={styles.overlay}>
+          <View style={styles.boxTitle}>
+            <Text style={styles.titleForm}>Gợi ý lộ trình</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setShowForm(false)}>
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <FormSuggested tripId={tripId} numVisitPlaces={trip.listAddress} handleSubmitChange={handleChangeListTrip}/>
+        </View>
+      )}
     </View>
   )
 }
@@ -127,14 +148,50 @@ const styles = StyleSheet.create({
       fontSize: 16,
     },
     details: {
-        width: '100%', height: 550,
-        position: 'absolute',
-        bottom: -380,
-        backgroundColor: Color.backGround,
-        paddingVertical: 10,
-        borderStartEndRadius: 20, borderStartStartRadius: 20,
-        zIndex: 5,
+      width: '100%', height: 550,
+      position: 'absolute',
+      bottom: -380,
+      backgroundColor: Color.backGround,
+      paddingVertical: 10,
+      borderStartEndRadius: 20, borderStartStartRadius: 20,
+      zIndex: 5,
+    },
+    boxTitle: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      position: 'absolute',
+      top: 40,
+      zIndex: 10,
+      backgroundColor: 'rgba(255,255,255,0.5)',
+      padding: 10,
+    },
+    titleForm: {
+      fontSize: 20,
+      fontWeight: 'bold'
+    },
+      overlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: Dimensions.get("window").width,
+      height: Dimensions.get("window").height,
+      backgroundColor: "white", // hoặc rgba(0,0,0,0.5) nếu muốn làm mờ nền
+      zIndex: 9,
+    },
+    closeButton: {
+      position: "absolute",
+      top: 5,
+      right: 16,
+      zIndex: 10,
+      backgroundColor: "#eee",
+      borderRadius: 20,
+      padding: 6,
+    },
+    closeText: {
+      fontSize: 18,
+      fontWeight: "bold",
     },
   });
   
-export default Trip;
+export default TripScreen;

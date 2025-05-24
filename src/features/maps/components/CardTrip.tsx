@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
         borderColor: Color.textColor3
     },
     title: {
-        padding: 10
+        padding: 10,
+        maxWidth: '90%'
     },
     namePlace: {
         fontSize: 20,

@@ -1,18 +1,13 @@
-import { Article } from "@/src/features/newfeeds/interface/article";
 import { Page, Province } from "@/src/interface/interface_reference";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Animated } from "react-native";
 
 const MAX_HOTPAGE = 15;
-
-interface ProvinceProps {
-    articles: Article;
-    total: number;
-}
 
 const useCityProvince = (provinceId: string) => {
     const tabs = [
@@ -66,8 +61,11 @@ const useCityProvince = (provinceId: string) => {
         ]
     }
 
-    const handleNavigateToPage = (pageId: string) => {
-        navigation.navigate("PageScreen", { pageId, currentUserId: "67d2e8e01a29ef48e08a19f4" });
+    const handleNavigateToPage = async (pageId: string) => {
+        const userId = await AsyncStorage.getItem("userId");
+        if (userId){
+            navigation.navigate("PageScreen", { pageId, currentUserId: userId });
+        }
       };
 
     return {
