@@ -52,10 +52,6 @@ const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => 
           <Text style={[styles.value, { color: colors.textColor1 }]}>{account.role}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Cảnh báo:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>{account.warningLevel}</Text>
-        </View>
-        <View style={styles.infoRow}>
           <Text style={[styles.label, { color: colors.textColor3 }]}>Trạng thái:</Text>
           <Text
             style={[

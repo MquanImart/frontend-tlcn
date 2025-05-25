@@ -4,6 +4,5 @@ export interface Account {
   phone: string;
   password: string;
   role: string;
-  warningLevel: number;
   state: 'online' | 'offline';
 }

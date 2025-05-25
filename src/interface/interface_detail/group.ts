@@ -5,7 +5,6 @@ import { Hobbies } from "./hobbies";
 
 export interface Group {
   _id: string;
-  warningLevel: 0 | 1 | 2 | 3;
   groupName: string;
   type: 'public' | 'private';
   idCreater: User; 
