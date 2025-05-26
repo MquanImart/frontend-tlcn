@@ -1,7 +1,7 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import getColor from "@/src/styles/Color"
 import { View, Text, StyleSheet } from "react-native"
-import CollectionsCard, { CollectionsCardProps } from "../../components/CollectionsCard";
+import CollectionsCard from "../../components/CollectionsCard";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { ViewCardCollection } from "./interface";
 import InputCollectionModal from "../../components/InputCollectionModal";

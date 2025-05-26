@@ -1,23 +1,16 @@
 import getColor from "@/src/styles/Color";
-import { View, StyleSheet, Text, FlatList, ActivityIndicator } from "react-native"
-import HeaderMap from "../../components/HeaderMap";
+import { View, StyleSheet, FlatList, ActivityIndicator } from "react-native"
 import CardTrip from "../../components/CardTrip";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { PlaceData } from "../interfaceAPI";
+import { useFocusEffect } from "@react-navigation/native";
 import useListTrip from "./useListTrip";
 import { useCallback, useState } from "react";
 import ModalCreateTrip from "../../components/ModalCreateTrip";
 import HeaderTrip from "./HeaderTrip";
 
-type MapNavigationProp = StackNavigationProp<MapStackParamList, "CustomMap">;
 const ListTrip = () => {
-    const navigation = useNavigation<MapNavigationProp>();
     const [visible, setVisible] = useState<boolean>(false);
-
     const { trips, getListTrip, createTrip, deleteTrip } = useListTrip();
     
     useFocusEffect(

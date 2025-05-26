@@ -1,11 +1,11 @@
 import restClient from "@/src/shared/services/RestClient";
 import { useState } from "react";
-import { CollectionDetails } from "./interface";
-import { Collection } from "@/src/interface/interface_reference";
+import { CollectionDetails, ViewCardCollection } from "./interface";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useDetails = () => {
     const [articles, setArticles] = useState<CollectionDetails | null>(null);
-    const [listCollections, setListCollections] = useState<Collection[]>([]);
+    const [listCollections, setListCollections] = useState<ViewCardCollection[]>([]);
 
     const getArticles = async (collectionId: string) => {
         const userClient = restClient.apiClient.service(`apis/collections/${collectionId}/article`);
@@ -14,9 +14,12 @@ const useDetails = () => {
     }
 
     const getListCollections = async () => {
-        const userClient = restClient.apiClient.service(`apis/collections`);
-        const result = await userClient.find({});
-        setListCollections(result.data);
+        const userId = await AsyncStorage.getItem('userId');
+        if (userId){
+            const userClient = restClient.apiClient.service(`apis/users/${userId}/collections`);
+            const result = await userClient.find({});
+            setListCollections(result.data);
+        }
     }
 
     const deleteArticle = async (itemId: string, collectionId: string) => {

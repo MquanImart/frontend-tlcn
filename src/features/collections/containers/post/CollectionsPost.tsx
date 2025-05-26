@@ -1,11 +1,10 @@
-import { KeyboardAvoidingView, Pressable, View, StyleSheet } from "react-native"
+import { KeyboardAvoidingView, View, StyleSheet } from "react-native"
 import RecentsView from "./RecentsView";
 import { ScrollView } from "react-native-gesture-handler";
 import ListCollections from "./ListCollections";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import useCollectionPost from "./useCollectionPost";
 import { useFocusEffect } from "@react-navigation/native";
-import { ActivityIndicator } from "react-native";
 
 interface CollectionPostProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
@@ -15,7 +14,6 @@ const CollectionPost = ({handleScroll}: CollectionPostProps) => {
     
     const { recentPost, getRecentPost,
         collections, getCollections,
-        listCollections, getListCollections,
         deleteArticle, changeCollection,
         createCollection } = useCollectionPost();
 
@@ -23,7 +21,6 @@ const CollectionPost = ({handleScroll}: CollectionPostProps) => {
         useCallback(() => {
             getRecentPost();
             getCollections();
-            getListCollections();
         }, [])
     );
 
@@ -35,7 +32,7 @@ const CollectionPost = ({handleScroll}: CollectionPostProps) => {
                     recentPost={recentPost}
                     deleteArticle={deleteArticle}
                     changeCollection={changeCollection}
-                    listCollections={listCollections}
+                    listCollections={collections}
                 />
                 ):(
                     <View>

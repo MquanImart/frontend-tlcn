@@ -1,8 +1,7 @@
 import { Text, View, StyleSheet } from "react-native"
-import PostCard, { PostCardProps } from "../../components/PostCard";
+import PostCard from "../../components/PostCard";
 import getColor from "@/src/styles/Color";
-import { ViewCardArticle } from "./interface";
-import { Collection } from "@/src/interface/interface_reference";
+import { ViewCardArticle, ViewCardCollection } from "./interface";
 
 const Color = getColor();
 
@@ -10,7 +9,7 @@ interface RecentsViewProps {
     recentPost: ViewCardArticle[];
     deleteArticle: (itemId: string, collectionId: string) => void;
     changeCollection: (currCollectionId: string, newCollectionId: string, itemId: string) => void;
-    listCollections: Collection[];
+    listCollections: ViewCardCollection[];
 }
 const RecentsView = ({recentPost, deleteArticle, changeCollection, listCollections} : RecentsViewProps) => {
 
