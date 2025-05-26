@@ -78,7 +78,7 @@ const CardTrip = ({ trip, deleteTrip }: CardTripProps) => {
                   </Svg>
                   <View style={styles.locationTexts}>
                     <Text key={'start'} style={styles.location}>
-                        {trip.startAddress.displayName}
+                        {trip.startAddress?trip.startAddress.displayName:"Không xác định"}
                     </Text>
                     {trip.listAddress.map((loc, index) => (
                       <Text key={index} style={styles.location}>
@@ -86,7 +86,7 @@ const CardTrip = ({ trip, deleteTrip }: CardTripProps) => {
                       </Text>
                     ))}
                     <Text key={'end'} style={styles.location}>
-                        {trip.endAddress.displayName}
+                        {trip.endAddress?trip.endAddress.displayName:"Không xác định"}
                     </Text>
                   </View>
                 </View>

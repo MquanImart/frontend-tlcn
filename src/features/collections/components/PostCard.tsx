@@ -1,11 +1,12 @@
 import CButton from "@/src/shared/components/button/CButton";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Image, TouchableOpacity, View, Text, StyleSheet, Animated, Modal, Button } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Collection } from "@/src/interface/interface_reference";
 import { FlatList } from "react-native-gesture-handler";
+import { ViewCardCollection } from "../containers/post/interface";
 
 const Color = getColor();
 
@@ -21,7 +22,7 @@ export interface PostCardProps {
     collectionId: string;
     deleteArticle: (itemId: string, collectionId: string) => void;
     changeCollection: (currCollectionId: string, newCollectionId: string, itemId: string) => void;
-    listCollections: Collection[];
+    listCollections: ViewCardCollection[];
 }
 
 const PostCard = ({_id, collectionId, content, author, savedDate, img, deleteArticle, changeCollection, listCollections}: PostCardProps) => {
@@ -93,10 +94,10 @@ const PostCard = ({_id, collectionId, content, author, savedDate, img, deleteArt
                 <Text style={styles.title}>Chọn Bộ Sưu Tập</Text>
                 <FlatList
                   data={listCollections}
-                  keyExtractor={(item) => item._id}
+                  keyExtractor={(item) => item.collection._id}
                   renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.item} onPress={() => handleSelect(item)}>
-                      <Text style={styles.itemText}>{item.name}</Text>
+                    <TouchableOpacity style={styles.item} onPress={() => handleSelect(item.collection)}>
+                      <Text style={styles.itemText}>{item.collection.name}</Text>
                     </TouchableOpacity>
                   )}
                 />

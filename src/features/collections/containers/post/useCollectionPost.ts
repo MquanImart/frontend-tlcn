@@ -1,13 +1,12 @@
 import restClient from "@/src/shared/services/RestClient";
 import { useState } from "react";
 import { ViewCardArticle, ViewCardCollection } from "./interface";
-import { Collection } from "@/src/interface/interface_reference";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 const useCollectionPost = () => {
     const [recentPost, setRecentPost] = useState<ViewCardArticle[]>([]);
     const [collections, setCollections] = useState<ViewCardCollection[]>([]);
-    const [listCollections, setListCollections] = useState<Collection[]>([]);
 
 
     const getRecentPost = async () => {
@@ -24,12 +23,6 @@ const useCollectionPost = () => {
         const userClient = restClient.apiClient.service(`apis/users/${userId}/collections`);
         const result = await userClient.find({});
         setCollections(result.data);
-    }
-
-    const getListCollections = async () => {
-        const userClient = restClient.apiClient.service(`apis/collections`);
-        const result = await userClient.find({});
-        setListCollections(result.data);
     }
 
     const deleteArticle = async (itemId: string, collectionId: string) => {
@@ -51,6 +44,12 @@ const useCollectionPost = () => {
             newCollectionId: newCollectionId,
             itemId: itemId
         })
+        if (result){
+            Alert.alert(
+              'Thông báo',
+              `Thay đổi thành công`,
+            );
+        }
     }
 
     const createCollection = async (name: string) => {
@@ -68,7 +67,6 @@ const useCollectionPost = () => {
                     collection: result.data,
                     imgDefault: "https://storage.googleapis.com/kltn-hcmute/public/default/default_article.png"}
                 ]);
-                setListCollections(prev => [...prev, result.data]);
                 return result.data;
             }
         } catch (error) {
@@ -79,7 +77,6 @@ const useCollectionPost = () => {
     return {
         recentPost, getRecentPost,
         collections, getCollections,
-        listCollections, getListCollections,
         deleteArticle, changeCollection,
         createCollection
     }
