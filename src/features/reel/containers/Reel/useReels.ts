@@ -102,12 +102,6 @@ export default function useReel(
       const data = await response.json();
       return data.image_result.is_sensitive || false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", error.message, error.stack);
-      if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Yêu cầu kiểm tra hình ảnh hết thời gian. Vui lòng thử lại!");
-      } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung hình ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
-      }
       return true; // Coi là nhạy cảm để an toàn
     }
   };

@@ -10,7 +10,7 @@ import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator, // Import ActivityIndicator
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -35,6 +35,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 export default function NewFeed() {
   const [articles, setArticles] = useState<Article[]>([]);
   const viewedArticles = useRef<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1); // Thêm state để quản lý trang hiện tại
 
   const {
     getArticles,
@@ -49,6 +50,7 @@ export default function NewFeed() {
     likeArticle,
     calculateTotalComments,
     handleAddComment,
+    createArticle,
     deleteArticle,
     editArticle,
     changeScreen,
@@ -58,10 +60,10 @@ export default function NewFeed() {
     pickMedia,
     selectedMedia,
     recordView,
-    currentPage,
     totalPages,
     loadingMore,
-    loadMoreArticles // Using loadMoreArticles here
+    loadMoreArticles,
+    isCommentChecking,
   } = useNewFeed(articles, setArticles);
 
   const {
@@ -95,13 +97,23 @@ export default function NewFeed() {
     setMapPickerVisible,
   } = usePostDialog(userId || "");
 
+  // Tải danh sách bài viết khi userId thay đổi
+  useEffect(() => {
+    const fetchData = async () => {
+      if (userId) {
+        const result = await getArticles(1, 5); // Gọi getArticles với page=1, limit=5
+        if (result?.success && result.data) {
+          setArticles(result.data.articles); // Cập nhật articles từ dữ liệu trả về
+          setCurrentPage(result.data.currentPage); // Cập nhật trang hiện tại
+        }
+      }
+    };
+    fetchData();
+  }, [userId, getArticles]);
+
+  // Gọi getUserId khi component mount
   useEffect(() => {
     getUserId();
-  }, []);
-
-  useEffect(() => {
-    // getArticles is now correctly called from within useNewFeed's useEffect when userId is available.
-    // So, no need to call it directly here.
   }, []);
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
@@ -159,9 +171,9 @@ export default function NewFeed() {
           itemVisiblePercentThreshold: 50,
           minimumViewTime: 500,
         }}
-        onEndReached={loadMoreArticles} // Triggers when scrolling near the end
-        onEndReachedThreshold={0.5} // 50% from the end
-        ListFooterComponent={renderFooter} // Shows a spinner at the bottom
+        onEndReached={loadMoreArticles}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
       />
 
       <Modal
@@ -222,9 +234,13 @@ export default function NewFeed() {
                   value={newReply}
                   onChangeText={setNewReply}
                 />
-                <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={20} color={colors.mainColor1} />
-                </TouchableOpacity>
+                {isCommentChecking ? (
+                  <ActivityIndicator size="small" color={colors.mainColor1} />
+                ) : (
+                  <TouchableOpacity onPress={handleAddComment}>
+                    <Ionicons name="send" size={20} color={colors.mainColor1} />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -329,6 +345,6 @@ const styles = StyleSheet.create({
   },
   loadingFooter: {
     paddingVertical: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });

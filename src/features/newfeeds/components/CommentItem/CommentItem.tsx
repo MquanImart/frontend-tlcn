@@ -1,24 +1,24 @@
-import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  FlatList,
-  ActivityIndicator,
-  Modal,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Comment } from "@/src/features/newfeeds/interface/article";
-import { useCommentVisibility } from "./useCommentVisibility";
-import { useReplyInput } from "./useReplyInput";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useCommentVisibility } from "./useCommentVisibility";
+import { useReplyInput } from "./useReplyInput";
 
 const colors = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";

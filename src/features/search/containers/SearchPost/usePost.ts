@@ -153,11 +153,6 @@ export default function usePost(
       }
       return false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", {
-        message: error.message,
-        status: error.response?.status,
-        stack: error.stack,
-      });
       if (error.name === "AbortError") {
         Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
       } else {

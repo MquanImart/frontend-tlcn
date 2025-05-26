@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-import { Platform } from "react-native";
+import env from "@/env";
 import { Address } from "@/src/interface/interface_reference";
 import restClient from "@/src/shared/services/RestClient";
-import env from "@/env";
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 
 // Khai báo clients
@@ -48,7 +48,7 @@ export const useCreatePageTab = (userId: string) => {
         const response = await axios.get("https://provinces.open-api.vn/api/p/");
         setProvinces(response.data);
       } catch (error) {
-        console.error("Error fetching provinces:", error);
+        console.error("Lỗi khi lấy danh sách tỉnh/thành phố:", error);
       }
     };
     fetchProvinces();
@@ -68,7 +68,7 @@ export const useCreatePageTab = (userId: string) => {
           );
         }
       } catch (error) {
-        console.error("Error fetching hobbies:", error);
+        console.error("Lỗi khi lấy danh sách sở thích:", error);
       }
     };
     fetchHobbies();
@@ -92,7 +92,7 @@ export const useCreatePageTab = (userId: string) => {
       const response = await axios.get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
       setDistricts(response.data.districts || []);
     } catch (error) {
-      console.error("Error fetching districts:", error);
+      console.error("Lỗi khi lấy danh sách quận/huyện:", error);
     }
     setShowProvinceModal(false);
   };
@@ -112,7 +112,7 @@ export const useCreatePageTab = (userId: string) => {
       const response = await axios.get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
       setWards(response.data.wards || []);
     } catch (error) {
-      console.error("Error fetching wards:", error);
+      console.error("Lỗi khi lấy danh sách phường/xã:", error);
     }
     setShowDistrictModal(false);
   };
@@ -133,9 +133,9 @@ export const useCreatePageTab = (userId: string) => {
         const { lat, lng } = response.data.results[0].geometry.location;
         return { lat, long: lng };
       }
-      throw new Error(response.data.error_message || "No results found");
+      throw new Error(response.data.error_message || "Không tìm thấy kết quả");
     } catch (error) {
-      console.error("Geocoding error:", error);
+      console.error("Lỗi khi định vị địa chỉ:", error);
       return null;
     }
   };
@@ -159,7 +159,7 @@ export const useCreatePageTab = (userId: string) => {
           long: coordinates.long,
         }));
       } else {
-        console.warn("No coordinates found for this address!");
+        console.warn("Không tìm thấy tọa độ cho địa chỉ này!");
       }
     } finally {
       setIsLoading(false);
@@ -171,7 +171,7 @@ export const useCreatePageTab = (userId: string) => {
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      alert("Permission to access media library is required!");
+      Alert.alert("Thông báo","Cần cấp quyền truy cập thư viện ảnh!");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -188,18 +188,18 @@ export const useCreatePageTab = (userId: string) => {
   const onTimeOpenChange = (event: any, selectedTime?: Date) => {
     if (event.type === "set" && selectedTime) {
       setTimeOpen(selectedTime);
-      setShowTimeOpenPicker(false); 
+      setShowTimeOpenPicker(false);
     } else if (event.type === "dismissed") {
-      setShowTimeOpenPicker(false); 
+      setShowTimeOpenPicker(false);
     }
   };
-  
+
   const onTimeCloseChange = (event: any, selectedTime?: Date) => {
     if (event.type === "set" && selectedTime) {
       setTimeClose(selectedTime);
-      setShowTimeClosePicker(false); 
+      setShowTimeClosePicker(false);
     } else if (event.type === "dismissed") {
-      setShowTimeClosePicker(false); 
+      setShowTimeClosePicker(false);
     }
   };
 
@@ -213,35 +213,34 @@ export const useCreatePageTab = (userId: string) => {
       !address.province ||
       !address.district ||
       !address.ward ||
-      !address.street ||
       !timeOpen ||
       !timeClose
     ) {
-      alert("Please fill in all required fields!");
+      Alert.alert("Thông báo","Vui lòng điền đầy đủ các trường bắt buộc (được đánh dấu *)!");
       return;
     }
-  
+
     // Kiểm tra tọa độ trước khi gửi
     if (!address.lat || !address.long) {
-      console.error("Coordinates incomplete:", address);
-      alert("Không thể tạo Page: Tọa độ địa chỉ không đầy đủ!");
+      console.error("Tọa độ không đầy đủ:", address);
+      Alert.alert("Thông báo","Không thể tạo Page: Tọa độ địa chỉ không đầy đủ!");
       return;
     }
-  
+
     setIsLoading(true);
     const idCreater = userId;
-  
+
     const addressData = {
       province: provinces.find((p) => p.code === parseInt(address.province))?.name || "",
       district: districts.find((d) => d.code === parseInt(address.district))?.name || "",
       ward: wards.find((w) => w.code === parseInt(address.ward))?.name || "",
-      street: address.street,
+      street: address.street || "", // street không bắt buộc
       placeName: address.placeName || "",
       lat: address.lat,
       long: address.long,
     };
-  
-  
+
+
     const formData = new FormData();
     formData.append("name", pageName);
     formData.append("idCreater", idCreater);
@@ -249,7 +248,7 @@ export const useCreatePageTab = (userId: string) => {
     formData.append("timeOpen", formatTime(timeOpen));
     formData.append("timeClose", formatTime(timeClose));
     formData.append("hobbies", selectedHobbies.join(","));
-  
+
     if (avtUri) {
       const response = await fetch(avtUri);
       const blob = await response.blob();
@@ -259,7 +258,7 @@ export const useCreatePageTab = (userId: string) => {
         type: "image/png",
       } as any);
     }
-  
+
     try {
       const response = await pagesClient.create(formData);
       if (response.success) {
@@ -280,13 +279,12 @@ export const useCreatePageTab = (userId: string) => {
         setSelectedHobbies([]);
         setDistricts([]);
         setWards([]);
-        alert("Page created successfully!");
+        Alert.alert("Thành công","Page đã được tạo thành công!");
       } else {
-        throw new Error(response.messages || "Failed to create page");
+        throw new Error(response.messages || "Tạo page thất bại");
       }
     } catch (error: any) {
-      console.error("Error creating page:", error);
-      alert(`Error creating page: ${error.message || "Unknown error"}`);
+      console.error("Lỗi khi tạo page:", error);
     } finally {
       setIsLoading(false);
     }
@@ -330,4 +328,3 @@ export const useCreatePageTab = (userId: string) => {
     handleCreatePage,
   };
 };
-

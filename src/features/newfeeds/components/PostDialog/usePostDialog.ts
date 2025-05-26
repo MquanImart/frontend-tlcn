@@ -1,11 +1,12 @@
-import { useState } from "react";
+import env from "@/env";
+import { Address } from "@/src/interface/interface_reference";
+import restClient from "@/src/shared/services/RestClient";
+import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import restClient from "@/src/shared/services/RestClient";
-import { Address } from "@/src/interface/interface_reference";
+import { useState } from "react";
 import { Alert } from "react-native";
 import MapPickerDialog from "../MapPickerDialog/MapPickerDialog";
-import env from "@/env";
 
 const articlesClient = restClient.apiClient.service("apis/articles");
 
@@ -13,7 +14,7 @@ const usePostDialog = (userId: string) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [postContent, setPostContent] = useState("");
   const [privacy, setPrivacy] = useState<"Công khai" | "Bạn bè" | "Riêng tư">("Công khai");
-  const [selectedImages, setSelectedImages] = useState<{ uri: string; type: "image" | "video" }[]>([]);
+  const [selectedImages, setSelectedImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,81 +27,154 @@ const usePostDialog = (userId: string) => {
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [isMapPickerVisible, setMapPickerVisible] = useState(false);
 
+  // Hàm retry request
+  const retryRequest = async (fn: () => Promise<Response>, retries: number = 5, delay: number = 3000): Promise<Response> => {
+    let lastError: unknown;
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await fn();
+        return response;
+      } catch (error) {
+        console.warn(`Retry ${i + 1}/${retries}:`, error);
+        lastError = error;
+        if (i < retries - 1) {
+          await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
+        }
+      }
+    }
+    throw lastError ?? new Error("All retries failed");
+  };
+
   const checkTextContent = async (text: string): Promise<boolean> => {
+    if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
-
-      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
-        signal: controller.signal,
-      });
-
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
+      const response = await retryRequest(() =>
+        fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
+          method: "POST",
+          headers: {
+            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+            "Content-Type": "application/json",
+            "Connection": "keep-alive",
+          },
+          body: JSON.stringify({ text }),
+          signal: controller.signal,
+        })
+      );
       clearTimeout(timeoutId);
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const data = await response.json();
-      return data.contains_bad_word || false;
+      return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra văn bản:", error.message, error.stack);
+      console.error("❌ Lỗi kiểm tra văn bản:", {
+        message: error.message,
+        status: error.response?.status,
+        stack: error.stack,
+      });
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Yêu cầu kiểm tra văn bản hết thời gian. Vui lòng thử lại!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
+        return false;
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung văn bản. Vui lòng kiểm tra kết nối mạng và thử lại!");
+        Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
+        return true;
       }
-      return true; // Coi là nhạy cảm để an toàn
     }
   };
 
-  // Hàm kiểm tra hình ảnh
-  const checkMediaContent = async (media: { uri: string; type: "image" | "video" }): Promise<boolean> => {
-    if (media.type === "video") {
-      return false; // Bỏ qua video
+  const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
+    if (!mediaAssets || mediaAssets.length === 0) return false;
+
+    // Lọc chỉ các media là ảnh
+    const imageAssets = mediaAssets.filter((media) => media.type === "image");
+
+    // Nếu không có ảnh, trả về false (không cần kiểm tra)
+    if (imageAssets.length === 0) return false;
+
+    for (const media of imageAssets) {
+      if (media.fileSize && media.fileSize > 5 * 1024 * 1024) {
+        Alert.alert("Lỗi", `Ảnh "${media.fileName || media.uri.split("/").pop()}" quá lớn, tối đa 5MB.`);
+        return true;
+      }
     }
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
 
       const formData = new FormData();
-      formData.append("file", {
-        uri: media.uri,
-        name: media.uri.split("/").pop(),
-        type: "image/jpeg",
-      } as any);
+      for (const media of imageAssets) {
+        const resizedUri = await ImageManipulator.manipulateAsync(
+          media.uri,
+          [{ resize: { width: 600 } }],
+          { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+        ).then((result) => result.uri);
 
-      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-        },
-        body: formData,
-        signal: controller.signal,
-      });
+        formData.append("files", {
+          uri: resizedUri,
+          name: media.fileName || resizedUri.split("/").pop(),
+          type: media.mimeType || "image/jpeg",
+        } as any);
+      }
+
+      const response = await retryRequest(() =>
+        fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
+          method: "POST",
+          headers: {
+            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+            "Connection": "keep-alive",
+          },
+          body: formData,
+          signal: controller.signal,
+        })
+      );
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, Body: ${errorText}`);
       }
 
       const data = await response.json();
-      return data.image_result.is_sensitive || false;
-    } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", error.message, error.stack);
-      if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Yêu cầu kiểm tra hình ảnh hết thời gian. Vui lòng thử lại!");
-      } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung hình ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
+
+      let sensitiveImageDetected = false;
+      let sensitiveFilename = "";
+
+      for (const resultItem of data.results) {
+        const isImageSensitive = resultItem.image_result?.is_sensitive;
+        const isTextSensitive =
+          resultItem.text_result?.text_sensitivity &&
+          Object.values(resultItem.text_result.text_sensitivity).some((v: any) => v.is_sensitive);
+
+        if (isImageSensitive || isTextSensitive) {
+          sensitiveImageDetected = true;
+          sensitiveFilename = resultItem.filename;
+          break;
+        }
       }
-      return true; // Coi là nhạy cảm để an toàn
+
+      if (sensitiveImageDetected) {
+        Alert.alert("Cảnh báo nội dung nhạy cảm", `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
+        return true;
+      }
+
+      return false;
+    } catch (error: any) {
+      console.error("❌ Lỗi kiểm tra nội dung ảnh:", {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      });
+
+      if (error.name === "AbortError") {
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
+      } else {
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
+      }
+      return true;
     }
   };
 
@@ -133,10 +207,12 @@ const usePostDialog = (userId: string) => {
       }
 
       // Kiểm tra hình ảnh
-      const mediaChecks = await Promise.all(selectedImages.map(checkMediaContent));
-      if (mediaChecks.some((isSensitive) => isSensitive)) {
-        Alert.alert("Cảnh báo", "Một hoặc nhiều hình ảnh chứa nội dung nhạy cảm. Vui lòng xóa hoặc thay thế!");
-        return;
+      if (selectedImages.length > 0) {
+        const isMediaSensitive = await checkMediaContent(selectedImages);
+        if (isMediaSensitive) {
+          Alert.alert("Cảnh báo", "Một hoặc nhiều hình ảnh chứa nội dung nhạy cảm. Vui lòng xóa hoặc thay thế!");
+          return;
+        }
       }
 
       // Nếu không nhạy cảm, tiếp tục gửi bài viết
@@ -207,8 +283,7 @@ const usePostDialog = (userId: string) => {
     });
 
     if (!result.canceled && result.assets?.length) {
-      const mediaType = result.assets[0].type === "video" ? "video" : "image";
-      setSelectedImages((prev) => [...prev, { uri: result.assets[0].uri, type: mediaType }]);
+      setSelectedImages((prev) => [...prev, result.assets[0]]);
     }
   };
 
@@ -225,7 +300,7 @@ const usePostDialog = (userId: string) => {
     });
 
     if (!result.canceled && result.assets?.length) {
-      setSelectedImages((prev) => [...prev, { uri: result.assets[0].uri, type: "image" }]);
+      setSelectedImages((prev) => [...prev, result.assets[0]]);
     }
   };
 
