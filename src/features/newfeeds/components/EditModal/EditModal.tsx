@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import CButton from "@/src/shared/components/button/CButton";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
   Modal,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Alert,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
 
 const colors = getColor();
 
@@ -25,6 +26,7 @@ interface EditModalProps {
   setEditHashtags: (hashtags: string[]) => void;
   onSave: () => void;
   onCancel: () => void;
+  isLoading: boolean; // thêm prop isLoading
 }
 
 const EditModal: React.FC<EditModalProps> = ({
@@ -37,26 +39,27 @@ const EditModal: React.FC<EditModalProps> = ({
   setEditHashtags,
   onSave,
   onCancel,
+  isLoading, // nhận isLoading
 }) => {
-  
   const [isScopeModalVisible, setScopeModalVisible] = useState(false);
   const [hashtagInput, setHashtagInput] = useState("");
 
   const toggleScopeModal = () => setScopeModalVisible((prev) => !prev);
 
   const isValidHashtag = (tag: string) => /^#[A-Za-z0-9_]+$/.test(tag);
+
   const handleAddHashtag = () => {
+    if (isLoading) return; // không cho thao tác khi loading
+
     const newTag = hashtagInput.trim();
     if (newTag) {
       const formattedTag = newTag.startsWith("#") ? newTag : `#${newTag}`;
 
-      // Kiểm tra hashtag hợp lệ
       if (!isValidHashtag(formattedTag)) {
         Alert.alert("Lỗi", "Hashtag chỉ được chứa chữ cái, số và dấu gạch dưới.");
         return;
       }
 
-      // Kiểm tra trùng lặp
       if (!editHashtags.includes(formattedTag)) {
         setEditHashtags([...editHashtags, formattedTag]);
         setHashtagInput("");
@@ -66,105 +69,127 @@ const EditModal: React.FC<EditModalProps> = ({
     }
   };
 
-  // Xóa hashtag khỏi danh sách
-  const handleRemoveHashtag = (index: number) => {
-    setEditHashtags(editHashtags.filter((_, i) => i !== index));
-  };
-
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
-      <View style={styles.overlay}>
-        <View style={styles.dialog}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={[styles.title, { color: colors.textColor1 }]}>
-              Chỉnh sửa bài viết
-            </Text>
-            <TouchableOpacity onPress={onCancel}>
-              <Ionicons name="close" size={24} color={colors.textColor1} />
-            </TouchableOpacity>
-          </View>
+    <>
+      <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
+        <View style={styles.overlay}>
+          <View style={styles.dialog}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={[styles.title, { color: colors.textColor1 }]}>Chỉnh sửa bài viết</Text>
+              <TouchableOpacity onPress={onCancel} disabled={isLoading}>
+                <Ionicons
+                  name="close"
+                  size={24}
+                  color={isLoading ? colors.textColor3 : colors.textColor1}
+                />
+              </TouchableOpacity>
+            </View>
 
-          {/* Nội dung bài viết */}
-          <TextInput
-            style={[
-              styles.textInput,
-              {
-                borderColor: colors.borderColor1,
-                color: colors.textColor1,
-                backgroundColor: colors.backGround,
-              },
-            ]}
-            placeholder="Nhập nội dung bài viết"
-            placeholderTextColor={colors.textColor3}
-            value={editContent}
-            onChangeText={setEditContent}
-            multiline
-          />
-
-          {/* Chọn phạm vi bài viết */}
-          <TouchableOpacity
-            style={[styles.scopeSelector, { borderColor: colors.borderColor1 }]}
-            onPress={toggleScopeModal}
-          >
-            <Text style={[styles.scopeText, { color: colors.textColor1 }]}>{editScope}</Text>
-            <Ionicons name="chevron-down" size={16} color={colors.textColor3} />
-          </TouchableOpacity>
-
-          {/* Input Thêm Hashtag */}
-          <View style={styles.hashtagInputContainer}>
+            {/* Nội dung bài viết */}
             <TextInput
-              style={[styles.hashtagInput, { color: colors.textColor1 }]}
-              placeholder="Thêm hashtag..."
+              style={[
+                styles.textInput,
+                {
+                  borderColor: colors.borderColor1,
+                  color: colors.textColor1,
+                  backgroundColor: colors.backGround,
+                },
+              ]}
+              placeholder="Nhập nội dung bài viết"
               placeholderTextColor={colors.textColor3}
-              value={hashtagInput}
-              onChangeText={setHashtagInput}
-              onSubmitEditing={handleAddHashtag}
+              value={editContent}
+              onChangeText={setEditContent}
+              multiline
+              editable={!isLoading}
             />
-            <TouchableOpacity onPress={handleAddHashtag}>
-              <Ionicons name="add-circle" size={26} color={colors.mainColor1} />
+
+            {/* Chọn phạm vi bài viết */}
+            <TouchableOpacity
+              style={[styles.scopeSelector, { borderColor: colors.borderColor1 }]}
+              onPress={toggleScopeModal}
+              disabled={isLoading}
+            >
+              <Text style={[styles.scopeText, { color: colors.textColor1 }]}>{editScope}</Text>
+              <Ionicons name="chevron-down" size={16} color={colors.textColor3} />
             </TouchableOpacity>
-          </View>
 
-          {/* Hiển thị danh sách hashtag */}
-          <View style={styles.hashtagContainer}>
-            <FlatList
-              data={editHashtags}
-              horizontal
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => (
-                <View style={styles.hashtag}>
-                  <Text style={styles.hashtagText}>{item}</Text>
-                  <TouchableOpacity
-                    style={styles.hashtagClose}
-                    onPress={() => setEditHashtags(editHashtags.filter((_, i) => i !== index))}
-                  >
-                    <Ionicons name="close-circle" size={18} color={colors.textColor3} />
-                  </TouchableOpacity>
-                </View>
+            {/* Input thêm hashtag */}
+            <View style={styles.hashtagInputContainer}>
+              <TextInput
+                style={[styles.hashtagInput, { color: colors.textColor1 }]}
+                placeholder="Thêm hashtag..."
+                placeholderTextColor={colors.textColor3}
+                value={hashtagInput}
+                onChangeText={setHashtagInput}
+                onSubmitEditing={handleAddHashtag}
+                editable={!isLoading}
+              />
+              <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading}>
+                <Ionicons
+                  name="add-circle"
+                  size={26}
+                  color={isLoading ? colors.textColor3 : colors.mainColor1}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Hiển thị danh sách hashtag */}
+            <View style={styles.hashtagContainer}>
+              <FlatList
+                data={editHashtags}
+                horizontal
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <View style={styles.hashtag}>
+                    <Text style={styles.hashtagText}>{item}</Text>
+                    <TouchableOpacity
+                      style={styles.hashtagClose}
+                      onPress={() => setEditHashtags(editHashtags.filter((_, i) => i !== index))}
+                      disabled={isLoading}
+                    >
+                      <Ionicons
+                        name="close-circle"
+                        size={18}
+                        color={isLoading ? colors.textColor3 : colors.textColor3}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            </View>
+
+            {/* Nút lưu */}
+            <CButton
+              label={isLoading ? "Đang lưu..." : "Lưu"}
+              onSubmit={onSave}
+              style={{
+                width: "100%",
+                height: 50,
+                backColor: colors.mainColor1,
+                textColor: "#FFFFFF",
+                fontSize: 16,
+                fontWeight: "bold",
+                radius: 8,
+                flex_direction: "row",
+              }}
+              disabled={isLoading}
+            >
+              {isLoading && (
+                <ActivityIndicator size="small" color="#FFFFFF" style={{ marginLeft: 10 }} />
               )}
-            />
+            </CButton>
           </View>
-
-          <CButton
-            label="Lưu"
-            onSubmit={onSave}
-            style={{
-              width: "100%",
-              height: 50,
-              backColor: colors.mainColor1,
-              textColor: "#FFFFFF",
-              fontSize: 16,
-              fontWeight: "bold",
-              radius: 8,
-              flex_direction: "row",
-            }}
-          />
         </View>
-      </View>
+      </Modal>
 
-      {/* Modal chọn phạm vi bài viết */}
-      <Modal visible={isScopeModalVisible} transparent animationType="fade" onRequestClose={toggleScopeModal}>
+      {/* Modal chọn phạm vi */}
+      <Modal
+        visible={isScopeModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={toggleScopeModal}
+      >
         <View style={styles.scopeOverlay}>
           <View style={[styles.scopeDialog, { backgroundColor: colors.backGround }]}>
             <Text style={[styles.scopeTitle, { color: colors.textColor1 }]}>Chọn chế độ hiển thị</Text>
@@ -176,6 +201,7 @@ const EditModal: React.FC<EditModalProps> = ({
                   setEditScope(option);
                   toggleScopeModal();
                 }}
+                disabled={isLoading}
               >
                 <Ionicons
                   name={option === "Công khai" ? "earth" : option === "Bạn bè" ? "people" : "lock-closed"}
@@ -188,7 +214,7 @@ const EditModal: React.FC<EditModalProps> = ({
           </View>
         </View>
       </Modal>
-    </Modal>
+    </>
   );
 };
 
@@ -255,15 +281,29 @@ const styles = StyleSheet.create({
     height: 40,
     paddingVertical: 0,
   },
-  hashtagItem: {
+  hashtagContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 2,
+    marginBottom: 2,
+  },
+  hashtag: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#e0e0e0",
-    borderRadius: 15,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginRight: 5,
-    marginBottom: 5,
+    backgroundColor: colors.backGround2,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    marginRight: 6,
+    marginBottom: 6,
+  },
+  hashtagText: {
+    color: colors.textColor1,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  hashtagClose: {
+    marginLeft: 6,
   },
   scopeOverlay: {
     flex: 1,
@@ -289,28 +329,5 @@ const styles = StyleSheet.create({
   scopeOptionText: {
     fontSize: 14,
     marginLeft: 10,
-  },
-  hashtagContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  hashtag: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.backGround2,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    marginRight: 6,
-    marginBottom: 6,
-  },
-  hashtagText: {
-    color: colors.textColor1,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  hashtagClose: {
-    marginLeft: 6,
   },
 });

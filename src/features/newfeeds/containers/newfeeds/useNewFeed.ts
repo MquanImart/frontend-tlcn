@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList, "NewFeed">;
@@ -30,9 +30,10 @@ export default function useNewFeed(
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [isCommentChecking, setIsCommentChecking] = useState(false); // New loading state
 
   // Hàm retry request
-  const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 2000) => {
+  const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 3000) => {
     for (let i = 0; i < retries; i++) {
       try {
         const start = Date.now();
@@ -92,32 +93,39 @@ export default function useNewFeed(
   // Hàm kiểm tra nội dung hình ảnh
   const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
     if (!mediaAssets || mediaAssets.length === 0) return false;
-    for (const media of mediaAssets) {
-      if (media.type !== "image") {
-        Alert.alert("Lỗi", `File "${media.fileName || media.uri.split("/").pop()}" không phải là ảnh.`);
-        return true;
-      }
+
+    // Lọc chỉ các media là ảnh
+    const imageAssets = mediaAssets.filter((media) => media.type === "image");
+
+    // Nếu không có ảnh, trả về false (không cần kiểm tra)
+    if (imageAssets.length === 0) return false;
+
+    for (const media of imageAssets) {
       if (media.fileSize && media.fileSize > 5 * 1024 * 1024) {
         Alert.alert("Lỗi", `Ảnh "${media.fileName || media.uri.split("/").pop()}" quá lớn, tối đa 5MB.`);
         return true;
       }
     }
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
+
       const formData = new FormData();
-      for (const media of mediaAssets) {
+      for (const media of imageAssets) {
         const resizedUri = await ImageManipulator.manipulateAsync(
           media.uri,
           [{ resize: { width: 600 } }],
           { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
         ).then((result) => result.uri);
+
         formData.append("files", {
           uri: resizedUri,
           name: media.fileName || resizedUri.split("/").pop(),
           type: media.mimeType || "image/jpeg",
         } as any);
       }
+
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
           method: "POST",
@@ -129,39 +137,49 @@ export default function useNewFeed(
           signal: controller.signal,
         })
       );
+
       clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, Body: ${errorText}`);
       }
+
       const data = await response.json();
+
       let sensitiveImageDetected = false;
       let sensitiveFilename = "";
+
       for (const resultItem of data.results) {
         const isImageSensitive = resultItem.image_result?.is_sensitive;
         const isTextSensitive =
           resultItem.text_result?.text_sensitivity &&
           Object.values(resultItem.text_result.text_sensitivity).some((v: any) => v.is_sensitive);
+
         if (isImageSensitive || isTextSensitive) {
           sensitiveImageDetected = true;
           sensitiveFilename = resultItem.filename;
           break;
         }
       }
+
       if (sensitiveImageDetected) {
         Alert.alert("Cảnh báo nội dung nhạy cảm", `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
         return true;
       }
+
       return false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", {
+      console.error("❌ Lỗi kiểm tra nội dung ảnh:", {
         message: error.message,
-        status: error.response?.status,
+        name: error.name,
         stack: error.stack,
       });
+
       if (error.name === "AbortError") {
         Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra hình ảnh. Vui lòng kiểm tra mạng và thử lại!");
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
       return true;
     }
@@ -177,13 +195,6 @@ export default function useNewFeed(
   useEffect(() => {
     getUserId();
   }, []);
-
-  useEffect(() => {
-    if (userId) {
-      setCurrentPage(1);
-      getArticles(1);
-    }
-  }, [userId]);
 
   const pickMedia = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -320,6 +331,7 @@ export default function useNewFeed(
       Alert.alert("Thông báo", "Vui lòng nhập nội dung bình luận!");
       return;
     }
+    setIsCommentChecking(true); // Start loading
     try {
       const isTextSensitive = await checkTextContent(newReply.trim());
       if (isTextSensitive) {
@@ -327,8 +339,8 @@ export default function useNewFeed(
         return;
       }
       if (selectedMedia.length > 0) {
-        const mediaChecks = await Promise.all(selectedMedia.map((media) => checkMediaContent([media])));
-        if (mediaChecks.some((isSensitive) => isSensitive)) {
+        const isMediaSensitive = await checkMediaContent(selectedMedia);
+        if (isMediaSensitive) {
           Alert.alert("Cảnh báo", "Hình ảnh chứa nội dung nhạy cảm. Vui lòng chọn ảnh khác!");
           return;
         }
@@ -371,6 +383,8 @@ export default function useNewFeed(
     } catch (error) {
       console.error("Lỗi khi gửi bình luận:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi bình luận. Vui lòng thử lại!");
+    } finally {
+      setIsCommentChecking(false); // Stop loading
     }
   };
 
@@ -379,6 +393,7 @@ export default function useNewFeed(
       Alert.alert("Thông báo", "Vui lòng nhập nội dung trả lời!");
       return;
     }
+    setIsCommentChecking(true); // Start loading
     try {
       const isTextSensitive = await checkTextContent(content.trim());
       if (isTextSensitive) {
@@ -386,8 +401,8 @@ export default function useNewFeed(
         return;
       }
       if (selectedMedia.length > 0) {
-        const mediaChecks = await Promise.all(selectedMedia.map((media) => checkMediaContent([media])));
-        if (mediaChecks.some((isSensitive) => isSensitive)) {
+        const isMediaSensitive = await checkMediaContent(selectedMedia);
+        if (isMediaSensitive) {
           Alert.alert("Cảnh báo", "Hình ảnh chứa nội dung nhạy cảm. Vui lòng chọn ảnh khác!");
           return;
         }
@@ -431,6 +446,8 @@ export default function useNewFeed(
     } catch (error) {
       console.error("Lỗi khi gửi trả lời bình luận:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi trả lời. Vui lòng thử lại!");
+    } finally {
+      setIsCommentChecking(false); // Stop loading
     }
   };
 
@@ -449,6 +466,14 @@ export default function useNewFeed(
 
   const editArticle = async (articleId: string, newContent: string, newScope: string, newHashtags: string[]) => {
     try {
+      const isContentToxic = await checkTextContent(newContent);
+      if (isContentToxic) {
+        Alert.alert(
+          "Nội dung không hợp lệ",
+          "Nội dung bài viết chứa từ ngữ không phù hợp hoặc nhạy cảm. Vui lòng chỉnh sửa lại."
+        );
+        return;
+      }
       const response = await articlesClient.patch(articleId, {
         content: newContent,
         scope: newScope,
@@ -465,6 +490,9 @@ export default function useNewFeed(
         if (currentArticle?._id === articleId) {
           setCurrentArticle({ ...currentArticle, content: newContent, scope: newScope, hashTag: newHashtags });
         }
+        Alert.alert("Thành công", "Bài viết đã được cập nhật!");
+      } else {
+        Alert.alert("Lỗi", "Không thể cập nhật bài viết. Vui lòng thử lại!");
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật bài viết:", error);
@@ -493,8 +521,8 @@ export default function useNewFeed(
         return;
       }
       if (mediaAssets.length > 0) {
-        const mediaChecks = await Promise.all(mediaAssets.map((media) => checkMediaContent([media])));
-        if (mediaChecks.some((isSensitive) => isSensitive)) {
+        const isMediaSensitive = await checkMediaContent(mediaAssets);
+        if (isMediaSensitive) {
           Alert.alert("Cảnh báo", "Hình ảnh chứa nội dung nhạy cảm. Vui lòng chọn ảnh khác!");
           return;
         }
@@ -529,8 +557,8 @@ export default function useNewFeed(
     }
   };
 
-  const getArticles = async (page: number = 1, limit: number = 5) => {
-    if (loadingMore) return;
+  const getArticles = useCallback(async (page: number = 1, limit: number = 5) => {
+    if (loadingMore) return { success: false, messages: "Đang tải dữ liệu" };
     setLoadingMore(true);
     try {
       if (!userId) {
@@ -538,21 +566,33 @@ export default function useNewFeed(
         setLoadingMore(false);
         return { success: false, messages: "Lỗi: userId không tồn tại" };
       }
+      // Kiểm tra cache (giả sử bạn có cơ chế cache)
+      const cacheKey = `articles_${userId}_${page}_${limit}`;
+      const cachedData = await AsyncStorage.getItem(cacheKey);
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData);
+        setCurrentPage(parsedData.currentPage);
+        setTotalPages(parsedData.totalPages);
+        return { success: true, data: parsedData };
+      }
       const recommendationsClientWithUser = restClient.apiClient.service(`apis/recommendations/${userId}`);
       const result = await recommendationsClientWithUser.find({
         page,
         limit,
       });
       if (result.success) {
-        setArticles((prevArticles) => {
-          const newArticles = result.data.articles.filter(
-            (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
-          );
-          return page === 1 ? newArticles : [...prevArticles, ...newArticles];
-        });
         setCurrentPage(result.data.currentPage);
         setTotalPages(result.data.totalPages);
-        return result;
+        // Lưu vào cache
+        await AsyncStorage.setItem(cacheKey, JSON.stringify(result.data));
+        return {
+          success: true,
+          data: {
+            articles: result.data.articles,
+            currentPage: result.data.currentPage,
+            totalPages: result.data.totalPages,
+          },
+        };
       } else {
         console.error("API error:", result.messages);
         return { success: false, messages: result.messages || "Lỗi khi lấy bài viết" };
@@ -567,7 +607,7 @@ export default function useNewFeed(
     } finally {
       setLoadingMore(false);
     }
-  };
+  }, [userId, loadingMore]);
 
   const getArticleById = async (articleId: string) => {
     try {
@@ -586,9 +626,18 @@ export default function useNewFeed(
     }
   };
 
-  const loadMoreArticles = () => {
+  const loadMoreArticles = async () => {
     if (currentPage < totalPages && !loadingMore) {
-      getArticles(currentPage + 1);
+      const result = await getArticles(currentPage + 1);
+      if (result.success) {
+        setArticles((prevArticles) => {
+          if (!result.data || !result.data.articles) return prevArticles;
+          const newArticles = result.data.articles.filter(
+            (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
+          );
+          return [...prevArticles, ...newArticles];
+        });
+      }
     }
   };
 
@@ -677,5 +726,6 @@ export default function useNewFeed(
     totalPages,
     loadingMore,
     loadMoreArticles,
+    isCommentChecking, // Expose loading state
   };
 }

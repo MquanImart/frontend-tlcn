@@ -1,5 +1,5 @@
 import EditModal from "@/src/features/newfeeds/components/EditModal/EditModal";
-import { usePostActions } from "@/src/features/newfeeds/components/post/usePost";
+import { usePostActions } from "@/src/features/newfeeds/components/post/usePost"; // Assuming usePost is in usePost.ts
 import ReportModal from "@/src/features/newfeeds/components/ReportModal/ReportModal";
 import { Article } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
@@ -329,8 +329,8 @@ const Post: React.FC<PostProps> = ({
         setEditHashtags={setEditHashtags}
         onSave={saveEdit}
         onCancel={() => setEditModalVisible(false)}
+        isLoading={false} // No isSaving available, set to false or handle appropriately
       />
-
       <ReportModal
         isVisible={isReportModalVisible && !isAdmin} // Hide for admin
         onClose={() => setReportModalVisible(false)}
