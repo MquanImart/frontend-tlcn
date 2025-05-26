@@ -18,7 +18,7 @@ const notificationsClient = restClient.apiClient.service("apis/notifications");
 
 export default function usePost(
   articles: Article[],
-  setArticles: (articles: Article[] | ((prevArticles: Article[]) => Article[])) => void
+  setArticles: (articles: Article[] | ((prevArticles: Article[]) => Article[])) => void,
 ) {
   const navigation = useNavigation<NewFeedNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
@@ -530,45 +530,53 @@ export default function usePost(
     }
   };
 
-  const getArticles = async (page: number = 1, limit: number = 5) => {
-    if (loadingMore) return;
-    setLoadingMore(true);
-    try {
-      if (!userId) {
-        console.error("Lỗi: userId không tồn tại");
-        setLoadingMore(false);
-        return { success: false, messages: "Lỗi: userId không tồn tại" };
-      }
-      const recommendationsClientWithUser = restClient.apiClient.service(`apis/recommendations/${userId}`);
-      const result = await recommendationsClientWithUser.find({
-        page,
-        limit,
-      });
-      if (result.success) {
-        setArticles((prevArticles) => {
-          const newArticles = result.data.articles.filter(
-            (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
-          );
-          return page === 1 ? newArticles : [...prevArticles, ...newArticles];
-        });
-        setCurrentPage(result.data.currentPage);
-        setTotalPages(result.data.totalPages);
-        return result;
-      } else {
-        console.error("API error:", result.messages);
-        return { success: false, messages: result.messages || "Lỗi khi lấy bài viết" };
-      }
-    } catch (error: any) {
-      console.error("Lỗi khi gọi API recommendations:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      return { success: false, messages: error.message || "Lỗi kết nối với server" };
-    } finally {
+const getArticles = async (page: number = 1, limit: number = 5, keySearch?: string) => {
+  if (loadingMore) return;
+  setLoadingMore(true);
+  try {
+    if (!userId) {
+      console.error("Lỗi: userId không tồn tại");
       setLoadingMore(false);
+      return { success: false, messages: "Lỗi: userId không tồn tại" };
     }
-  };
+if (!keySearch || !keySearch.trim()) {
+      setArticles([]);
+      setTotalPages(0);
+      setCurrentPage(page);
+      return { success: true, data: [], total: 0, messages: "Không có từ khóa tìm kiếm" };
+    }
+    // Lấy bài viết theo hashtag
+    const result = await articlesClient.find({
+        hashtag: keySearch,   
+    });
+    if (result.success) {
+      setArticles((prevArticles) => {
+        // Kiểm tra result.data là mảng, nếu không thì trả về mảng rỗng
+        const articles = Array.isArray(result.data) ? result.data : [];
+        const newArticles = articles.filter(
+          (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
+        );
+        return page === 1 ? newArticles : [...prevArticles, ...newArticles];
+      });
+      setCurrentPage(page);
+      // Sử dụng result.total thay vì result.data.total
+      setTotalPages(Math.ceil(result.total / limit));
+      return result;
+    } else {
+      console.error("Lỗi API:", result.message || result.messages);
+      return { success: false, messages: result.message || result.messages || "Lỗi khi lấy bài viết" };
+    }
+  } catch (error: any) {
+    console.error("Lỗi khi gọi API:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    return { success: false, messages: error.message || "Lỗi kết nối với server" };
+  } finally {
+    setLoadingMore(false);
+  }
+};
 
   const getArticleById = async (articleId: string) => {
     try {
@@ -678,5 +686,6 @@ export default function usePost(
     totalPages,
     loadingMore,
     loadMoreArticles,
+    setCurrentPage
   };
 }

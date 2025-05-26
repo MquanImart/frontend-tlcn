@@ -54,26 +54,28 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
     currentPage,
     totalPages,
     loadingMore,
-    loadMoreArticles 
+    loadMoreArticles,setCurrentPage
   } = usePost(articles, setArticles);
 
   useEffect(() => {
     getUserId();
   }, []);
 
-  const normalizedSearch = removeVietnameseTones(textSearch);
-
-  const filteredArticles = articles.filter((item) => {
-    const hashtags = item.hashTag || [];
-    return hashtags.some((hashtag) =>
-      removeVietnameseTones(hashtag).includes(normalizedSearch)
-    );
-  });
+useEffect(() => {
+  if (userId && textSearch) { // Chỉ gọi getArticles khi textSearch có giá trị
+    setArticles([]); // Xóa danh sách bài viết khi textSearch thay đổi
+    setCurrentPage(1);
+    getArticles(1, 5, textSearch); // Gọi API với textSearch làm hashtag
+  } else if (userId) {
+    setArticles([]); // Xóa danh sách bài viết
+    console.warn("Không có textSearch, không gọi API.");
+  }
+}, [textSearch, userId]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.backGround }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {filteredArticles.length === 0 ? (
+        {articles.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: colors.textColor3 }]}>
               {textSearch
@@ -82,7 +84,7 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
             </Text>
           </View>
         ) : (
-          filteredArticles.map((item) => (
+          articles.map((item) => (
             <Post
               key={item._id}
               userId={userId || ""}
