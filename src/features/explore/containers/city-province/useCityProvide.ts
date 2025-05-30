@@ -1,3 +1,4 @@
+import { Article } from "@/src/features/newfeeds/interface/article";
 import { Page, Province } from "@/src/interface/interface_reference";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
@@ -8,73 +9,152 @@ import { useRef, useState } from "react";
 import { Animated } from "react-native";
 
 const MAX_HOTPAGE = 15;
+const ARTICLES_PER_PAGE = 5; 
 
 const useCityProvince = (provinceId: string) => {
-    const tabs = [
-        {label: "Bài viết"},
-        {label: "Trang nổi bật"},
-        {label: "Tất cả trang"},
-    ];
+  const tabs = [
+    { label: "Bài viết" },
+    { label: "Trang nổi bật" },
+    { label: "Tất cả trang" },
+  ];
 
-    const navigation = useNavigation<StackNavigationProp<ExploreStackParamList>>();
-    const [currTab, setCurrTab] = useState<string>(tabs[0].label);  
-    const scrollY = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation<StackNavigationProp<ExploreStackParamList>>();
+  const [currTab, setCurrTab] = useState<string>(tabs[0].label);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
-    const [province, setProvince] = useState<Province | null>(null);
-    const [pages, setPages] = useState<Page[] | null>(null);
-    const [hotPages, setHotPages] = useState<Page[] | null>(null);
+  const [province, setProvince] = useState<Province | null>(null);
+  const [pages, setPages] = useState<Page[] | null>(null);
+  const [hotPages, setHotPages] = useState<Page[] | null>(null);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isLoadingArticles, setIsLoadingArticles] = useState(false);
+  const [articlePage, setArticlePage] = useState(0); 
+  const [totalArticles, setTotalArticles] = useState(0); 
+  const [error, setError] = useState<string | null>(null);
+  const [hasLoadedInitialArticles, setHasLoadedInitialArticles] = useState(false); 
 
-    
+
     const getHotPage = async () => {
         const provinceAPI = restClient.apiClient.service(`apis/province/${provinceId}/hot-page`);
-        const result = await provinceAPI.find({limit: MAX_HOTPAGE, skip: 0});
-        if (result.success){
+        const result = await provinceAPI.find({ $limit: MAX_HOTPAGE, $skip: 0 });
+        if (result.success) {
             setHotPages(result.data);
         }
-    }
+    };
 
     const getAllPage = async () => {
         const provinceAPI = restClient.apiClient.service(`apis/province/${provinceId}/all-page`);
-        const result = await provinceAPI.find({limit: MAX_HOTPAGE, skip: 0});
-        if (result.success){
+        const result = await provinceAPI.find({ $limit: MAX_HOTPAGE, $skip: 0 });
+        if (result.success) {
             setPages(result.data);
+        } 
+    };
+
+  const getProvince = async () => {
+      const provinceAPI = restClient.apiClient.service(`apis/province`);
+      const result = await provinceAPI.get(provinceId);
+      if (result.success) {
+        setProvince(result.data);
+    }
+  };
+
+  const getArticles = async (pageToFetch: number = 0) => {
+    if (pageToFetch === 0 && hasLoadedInitialArticles && articles.length > 0) {
+      return;
+    }
+
+    if (isLoadingArticles) {
+      return;
+    }
+    
+    setIsLoadingArticles(true);
+    setError(null);
+    try {
+      const provinceAPI = restClient.apiClient.service(`apis/articles/provinces/${provinceId}`);
+
+      const result = await provinceAPI.find({
+          $limit: ARTICLES_PER_PAGE,
+          $skip: pageToFetch * ARTICLES_PER_PAGE
+      });
+
+      console.log(`Fetched articles for page ${pageToFetch}:`, result);
+
+      if (result.success && Array.isArray(result.data)) {
+        setArticles((prev) => {
+          const existingIds = new Set(prev.map(article => article._id));
+          const uniqueNewArticles = result.data.filter(
+            (newArticle: Article) => !existingIds.has(newArticle._id)
+          );
+          return pageToFetch === 0 ? uniqueNewArticles : [...prev, ...uniqueNewArticles];
+        });
+        
+        setTotalArticles(result.total || 0);
+        setArticlePage(pageToFetch);
+        
+        if (pageToFetch === 0) {
+          setHasLoadedInitialArticles(true);
         }
-    }
 
-    const getProvince = async () => {
-        const provinceAPI = restClient.apiClient.service(`apis/province`);
-        const result = await provinceAPI.get(provinceId);
-        if (result.success){
-            setProvince(result.data);
-        }
+      } else {
+        setError(result.messages || "Không tìm thấy bài viết");
+        console.error("Failed to fetch articles:", result.messages);
+      }
+    } catch (error: any) {
+      const errorMessage = error.message || "Lỗi khi tải bài viết";
+      setError(errorMessage);
+      console.error("Error fetching articles:", errorMessage);
+    } finally {
+      setIsLoadingArticles(false);
     }
+  };
 
-    const translateViewAnimation = {
-        transform: [
-            {
-                translateY: scrollY.interpolate({
-                    inputRange: [0, 200],
-                    outputRange: [0, -200],
-                    extrapolate: 'clamp'
-                })
-            }
-        ]
+  const loadMoreArticles = async () => {
+    if (isLoadingArticles || articles.length >= totalArticles) {
+      return;
     }
+    await getArticles(articlePage + 1);
+  };
 
-    const handleNavigateToPage = async (pageId: string) => {
-        const userId = await AsyncStorage.getItem("userId");
-        if (userId){
-            navigation.navigate("PageScreen", { pageId, currentUserId: userId });
-        }
-      };
+  const translateViewAnimation = {
+    transform: [
+      {
+        translateY: scrollY.interpolate({
+          inputRange: [0, 200],
+          outputRange: [0, -200],
+          extrapolate: "clamp",
+        }),
+      },
+    ],
+  };
 
-    return {
-        tabs, currTab, setCurrTab,
-        translateViewAnimation, scrollY,
-        handleNavigateToPage, 
-        getHotPage, getProvince, getAllPage,
-        hotPages, province, pages
+  const handleNavigateToPage = async (pageId: string) => {
+    const userId = await AsyncStorage.getItem("userId");
+    if (userId) {
+      navigation.navigate("PageScreen", { pageId, currentUserId: userId });
     }
-}
+  };
+
+  return {
+    tabs,
+    currTab,
+    setCurrTab,
+    translateViewAnimation,
+    scrollY,
+    handleNavigateToPage,
+    getHotPage,
+    getProvince,
+    getAllPage,
+    getArticles,
+    hotPages,
+    province,
+    pages,
+    articles,
+    setArticles,
+    loadMoreArticles,
+    isLoadingArticles,
+    error,
+    hasLoadedInitialArticles,
+    totalArticles
+  };
+};
 
 export default useCityProvince;

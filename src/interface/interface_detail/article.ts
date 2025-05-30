@@ -1,14 +1,13 @@
 import { Address } from "./address";
+import { Comment } from "./comment";
 import { Group } from "./group";
 import { MyPhoto } from "./myPhoto";
-import { User } from "./user";
-import { Comment } from "./comment";
 import { Report } from "./report";
+import { User } from "./user";
 
 export interface Article {
   _id: string;
   createdBy: User; // Chi tiết người tạo
-  sharedPostId?: Article; // Bài viết được chia sẻ
   reports?: Report[]; // Danh sách báo cáo
   groupID?: Group; // Chi tiết nhóm
   content: string;
