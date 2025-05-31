@@ -1,18 +1,20 @@
-// usePageScreen.tsx
-import { useState, useEffect, useCallback } from "react";
-import { MyPhoto, Page, Address } from "@/src/interface/interface_reference";
-import restClient from "@/src/shared/services/RestClient";
+// src/features/pages/containers/pages/usePageScreen.tsx (Updated)
+
+import { Address, MyPhoto, Page } from "@/src/interface/interface_reference";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
+import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
+import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationProp } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { getUserRole } from "../../utils/test";
-import { NavigationProp } from "@react-navigation/native"; 
-import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation"; 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 const addressesClient = restClient.apiClient.service("apis/addresses");
 const pagesClient = restClient.apiClient.service("apis/pages");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
+const historyViewPagesClient = restClient.apiClient.service("apis/history-page"); 
 
 type NavigationPropType = NavigationProp<ExploreStackParamList>; 
 
@@ -32,14 +34,15 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     const id = await AsyncStorage.getItem("userId");
     const name = await AsyncStorage.getItem("displayName");
     setCurrentUserId(id);
-    setCurrentUserDisplayName(name); // Lưu displayName
+    setCurrentUserDisplayName(name);
   };
 
   useEffect(() => {
     if (currentUserId){
-      fetchPage()
+      fetchPage();
+      recordPageView();
     }
-  }, [currentUserId]);
+  }, [currentUserId, pageId]);
 
   const role = page ? getUserRole(page, currentUserId || "") : "isViewer";
   const pendingInvites = page?.listAdmin?.filter(
@@ -63,11 +66,30 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     } finally {
       setLoading(false);
     }
-  }, [pageId]);
+  }, [pageId]); 
+
+  const recordPageView = useCallback(async () => {
+    if (!currentUserId || !pageId) {
+      console.warn("Không đủ thông tin để ghi lại lịch sử xem trang.");
+      return;
+    }
+    try {
+      const historyData = {
+        idUser: currentUserId,
+        idPage: pageId,
+      };
+      const response = await historyViewPagesClient.create(historyData);
+      if (!response.success) {
+        console.error("❌ Lỗi khi ghi lại lịch sử xem trang:", response.messages);
+      }
+    } catch (error) {
+      console.error("❌ Lỗi API khi ghi lại lịch sử xem trang:", error);
+    }
+  }, [currentUserId, pageId]); 
 
   useEffect(() => {
-    fetchPage();
-  }, [fetchPage]);
+    getUserId();
+  }, []); 
 
   const fetchAvatar = async (avatarId: string) => {
     try {
@@ -153,7 +175,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
             await notificationsClient.create({
               senderId: currentUserId || "", 
               receiverId: page.idCreater,
-              message: `đã chấp nhận lời mời làm quản trị viên của trang ${page.name}`,
+              message: `${currentUserDisplayName || "Một quản trị viên"} đã chấp nhận lời mời làm quản trị viên của trang ${page.name}`, // Use currentUserDisplayName
               status: "unread",
             });
           } catch (notificationError) {
