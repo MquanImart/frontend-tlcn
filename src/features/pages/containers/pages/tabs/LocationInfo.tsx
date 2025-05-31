@@ -1,9 +1,16 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions, ActivityIndicator } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import MapView, { Marker, Region } from "react-native-maps";
-import getColor from "@/src/styles/Color";
+// src/features/pages/containers/tabs/LocationInfo.tsx (Đã sửa)
+
+import { Location as MapLocationType } from "@/src/features/maps/containers/directions/interfaceLocation";
 import { Page } from "@/src/interface/interface_reference";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation"; // Đảm bảo đúng PageStackParamList
+import getColor from "@/src/styles/Color";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import * as Location from "expo-location";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Dimensions, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import useLocationInfo from "./useLocationInfo";
 
 const Color = getColor();
@@ -14,27 +21,94 @@ interface LocationInfoProps {
   role: string;
   onMessagePress: () => void;
 }
-
+type LocationInfoNavigationProp = StackNavigationProp<PageStackParamList, "MapNavigation">;
 const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, onMessagePress }) => {
+  const navigation = useNavigation<LocationInfoNavigationProp>();
   const time = page.timeOpen && page.timeClose ? `${page.timeOpen} - ${page.timeClose}` : "Không có thông tin";
-
   const { address, error, loading } = useLocationInfo(page.address || "");
-  // Định nghĩa region dựa trên address
-  const mapRegion: Region = {
+  const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
+
+  const mapRegion = {
     latitude: address?.lat || 0,
     longitude: address?.long || 0,
     latitudeDelta: 0.02,
     longitudeDelta: 0.02,
   };
 
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.getForegroundPermissionsAsync();
+
+      if (status === "denied") {
+        Alert.alert(
+          "Quyền vị trí bị từ chối",
+          "Bạn đã từ chối quyền vị trí. Hãy vào cài đặt để cấp phép.",
+          [
+            { text: "Hủy", style: "cancel" },
+            { text: "Mở cài đặt", onPress: () => Linking.openSettings() }
+          ]
+        );
+        return;
+      }
+
+      if (status !== "granted") {
+        const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+        if (newStatus !== "granted") {
+          Alert.alert(
+            "Không thể truy cập vị trí",
+            "Bạn cần cấp quyền vị trí để sử dụng tính năng này.",
+            [
+              { text: "Hủy", style: "cancel" },
+              { text: "Mở cài đặt", onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
+      }
+
+      const loc = await Location.getCurrentPositionAsync({});
+      setUserLocation(loc);
+    })();
+  }, []);
+
+  const handleMapPress = () => {
+    if (address?.lat && address?.long) {
+      try {
+        navigation.navigate("MapNavigation", {
+          screen: "Directions", 
+          params: {
+            start: userLocation
+              ? {
+                  latitude: userLocation.coords.latitude,
+                  longitude: userLocation.coords.longitude,
+                  displayName: "Vị trí của bạn",
+                }
+              : undefined,
+            end: {
+              latitude: address.lat,
+              longitude: address.long,
+              displayName: page.name || "Địa điểm",
+            } as MapLocationType, 
+          },
+        });
+        // -----------------------------------------------------------------------
+      } catch (err) {
+        console.error("Lỗi điều hướng:", err);
+        Alert.alert("Lỗi", "Không thể điều hướng đến Directions. Vui lòng thử lại.");
+      }
+    } else {
+      Alert.alert("Lỗi", "Không có tọa độ hợp lệ để điều hướng.");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Nút Nhắn Tin */}
+      {/* Nút nhắn tin */}
       <TouchableOpacity style={styles.messageButton} onPress={onMessagePress}>
         <Text style={styles.messageText}>Nhắn tin</Text>
       </TouchableOpacity>
 
-      {/* Tiêu đề địa điểm */}
+      {/* Tên địa điểm */}
       <Text style={styles.placeName}>{page.name}</Text>
 
       {/* Thông tin địa chỉ */}
@@ -49,7 +123,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
         </Text>
       </View>
 
-      {/* Thời gian hoạt động */}
+      {/* Giờ hoạt động */}
       <View style={styles.infoWrapper}>
         <View style={styles.iconContainer}>
           <Icon name="schedule" size={24} color={Color.mainColor1} />
@@ -60,7 +134,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
         </View>
       </View>
 
-      {/* Hiển thị quyền của người dùng */}
+      {/* Vai trò người dùng */}
       <View style={styles.infoWrapper}>
         <View style={styles.iconContainer}>
           <Icon name="person" size={24} color={Color.mainColor1} />
@@ -80,8 +154,9 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
       <View style={styles.mapContainer}>
         {Platform.OS === "web" ? (
           <Image
-            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Google_Maps_icon_%282020%29.svg" }}
+            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Maps_icon_%282020%29.svg" }}
             style={styles.mapImage}
+            onError={(e) => console.warn("Lỗi tải hình ảnh:", e.nativeEvent.error)}
           />
         ) : loading ? (
           <View style={styles.loadingContainer}>
@@ -89,14 +164,16 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
             <Text style={styles.loadingText}>Đang tải bản đồ...</Text>
           </View>
         ) : address?.lat && address?.long ? (
-          <MapView
-            style={styles.map}
-            region={mapRegion} // Dùng region để cập nhật động
-            scrollEnabled={false}
-            zoomEnabled={true}
-          >
-            <Marker coordinate={{ latitude: address.lat, longitude: address.long }} />
-          </MapView>
+          <TouchableOpacity activeOpacity={0.8} onPress={handleMapPress} disabled={!address?.lat || !address?.long}>
+            <MapView
+              style={styles.map}
+              region={mapRegion}
+              scrollEnabled={false}
+              zoomEnabled={true}
+            >
+              <Marker coordinate={{ latitude: address.lat, longitude: address.long }} />
+            </MapView>
+          </TouchableOpacity>
         ) : (
           <Text style={styles.errorText}>Không thể hiển thị bản đồ: {error || "Không có tọa độ"}</Text>
         )}

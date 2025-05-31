@@ -18,7 +18,8 @@ const useCityProvince = (provinceId: string) => {
     { label: "Tất cả trang" },
   ];
 
-  const navigation = useNavigation<StackNavigationProp<ExploreStackParamList>>();
+  type NavigationProps = StackNavigationProp<ExploreStackParamList, 'PageNavigation'>;
+  const navigation = useNavigation<NavigationProps>();
   const [currTab, setCurrTab] = useState<string>(tabs[0].label);
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -129,7 +130,13 @@ const useCityProvince = (provinceId: string) => {
   const handleNavigateToPage = async (pageId: string) => {
     const userId = await AsyncStorage.getItem("userId");
     if (userId) {
-      navigation.navigate("PageScreen", { pageId, currentUserId: userId });
+      navigation.navigate("PageNavigation", {
+        screen: "PageScreen",
+        params: {
+          pageId,
+          currentUserId: userId,
+        },
+      });
     }
   };
 
