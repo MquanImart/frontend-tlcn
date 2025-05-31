@@ -1,8 +1,7 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image } from "react-native";
-import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
-import getColor from "@/src/styles/Color";
 import { Page, User } from "@/src/interface/interface_reference";
+import getColor from "@/src/styles/Color";
+import React from "react";
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import usePageMembers from "./usePageMembers";
 
 const Color = getColor();

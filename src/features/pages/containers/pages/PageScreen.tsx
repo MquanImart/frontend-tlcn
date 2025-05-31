@@ -1,28 +1,28 @@
 // PageScreen.tsx
-import React, { useEffect } from "react";
-import { View, StyleSheet, FlatList, ActivityIndicator, Text } from "react-native";
-import PageHeader from "../../components/PageHeader";
 import TabBarCustom from "@/src/features/group/components/TabBarCustom";
-import LocationInfo from "./tabs/LocationInfo";
-import PageHome from "./tabs/PageHome";
-import PageTickets from "./tabs/PageTickets";
-import PageMembers from "./tabs/PageMembers";
-import { Page } from "@/src/interface/interface_reference";
-import getColor from "@/src/styles/Color";
-import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
-import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
-import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import CTabbar from "@/src/shared/components/tabbar/CTabbar";
-import PageInvitations from "./tabs/PageInvitations";
-import usePageScreen from "./usePageScreen";
-import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
 import PostDialog from "@/src/features/newfeeds/components/PostDialog/PostDialog";
 import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePostDialog";
+import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
+import CTabbar from "@/src/shared/components/tabbar/CTabbar";
+import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
+import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
+import getColor from "@/src/styles/Color";
+import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
+import React, { useEffect } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import PageHeader from "../../components/PageHeader";
+import LocationInfo from "./tabs/LocationInfo";
+import PageHome from "./tabs/PageHome";
+import PageInvitations from "./tabs/PageInvitations";
+import PageMembers from "./tabs/PageMembers";
+import PageTickets from "./tabs/PageTickets";
+import usePageScreen from "./usePageScreen";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 
 const Color = getColor();
 
 interface PageScreenProps {
-  route: RouteProp<ExploreStackParamList, "PageScreen">;
+  route: RouteProp<PageStackParamList, "PageScreen">;
 }
 
 const PageScreen: React.FC<PageScreenProps> = ({ route }) => {

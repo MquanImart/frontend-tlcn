@@ -1,17 +1,17 @@
-import { createStackNavigator } from "@react-navigation/stack";
-import React from "react";
+import GroupDetailsScreen from "@/src/features/group/containers/detail-group/GroupDetailsScreen";
 import Menu from "@/src/features/setting/containers/menu/Menu";
 import Setting from "@/src/features/setting/containers/setting/Setting";
-import GroupDetailsScreen from "@/src/features/group/containers/detail-group/GroupDetailsScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+import React from "react";
+import { AuthNavigation } from "./AuthNavigation";
 import { CollectionNavigation } from "./CollectionNavigation";
 import { FriendsNavigation } from "./FriendsNavigation";
 import { GroupNavigaton } from "./GroupNavigation";
 import { MapNavigation } from "./MapNavigation";
-import { WeatherNavigation } from "./WeatherNavigation";
-import { ProfileNavigation } from "./ProfileNavigation";
-import { MyPageNavigation } from "./MyPageNavigation";
-import { AuthNavigation } from "./AuthNavigation";
 import { PersonalPageStackParamList } from "./PersonalPageNavigation";
+import { ProfileNavigation } from "./ProfileNavigation";
+import { WeatherNavigation } from "./WeatherNavigation";
+import { PageNavigation, PageStackParamList } from "./PageNavigation";
 export type MenuStackParamList = {
     Menu: undefined;
     Setting: undefined;
@@ -24,10 +24,12 @@ export type MenuStackParamList = {
       screen?: keyof PersonalPageStackParamList;
       params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
     };
-    MyPage: undefined;
+    PageNavigation: {
+      screen?: keyof PageStackParamList;
+      params?: PageStackParamList[keyof PageStackParamList];
+    };
     Login: undefined;
     GroupDetailsScreen: { groupId: string; currentUserId: string };
-
 };
 
 const Stack = createStackNavigator<MenuStackParamList>();
@@ -45,7 +47,7 @@ export function MenuNavigation() {
           <Stack.Screen name="Weather" component={WeatherNavigation} />
           <Stack.Screen name="Setting" component={Setting} />
           <Stack.Screen name="MyProfile" component={ProfileNavigation} />
-          <Stack.Screen name="MyPage" component={MyPageNavigation} />
+          <Stack.Screen name="PageNavigation" component={PageNavigation} />
           <Stack.Screen name="Login" component={AuthNavigation} />
           <Stack.Screen name="GroupDetailsScreen" component={GroupDetailsScreen} />
       </Stack.Navigator>

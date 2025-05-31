@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { User } from "@/src/interface/interface_reference";
 import { Group } from "@/src/features/newfeeds/interface/article";
+import { User } from "@/src/interface/interface_reference";
+import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import restClient from "@/src/shared/services/RestClient";
 import { useNavigation } from "@react-navigation/native";
-import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useEffect, useState } from "react";
 
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 const UsersClient = restClient.apiClient.service("apis/users");
@@ -102,7 +102,7 @@ export const useMenu = (userID: string) => {
         navigationMenu.navigate("Map");
         break;
       case "Du lịch":
-        navigationMenu.navigate("MyPage");
+        navigationMenu.navigate("PageNavigation", { screen: "MyPage",});
         break;
     }
   };

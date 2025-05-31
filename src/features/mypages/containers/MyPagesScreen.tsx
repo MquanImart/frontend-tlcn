@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
 import TabBarCustom, { Tab } from "@/src/features/group/components/TabBarCustom";
 import CHeader from "@/src/shared/components/header/CHeader";
+import CTabbar from "@/src/shared/components/tabbar/CTabbar";
+import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import getColor from "@/src/styles/Color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { MyPageStackParamList } from "@/src/shared/routes/MyPageNavigation";
-import MyPagesTab from "./tab/MyPagesTab";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import CreatePageTab from "./tab/CreatePageTab";
-import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import CTabbar from "@/src/shared/components/tabbar/CTabbar";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import MyPagesTab from "./tab/MyPagesTab";
 
 const Color = getColor();
 
-type MyPagesNavigationProp = StackNavigationProp<MyPageStackParamList, "MyPage">;
+type MyPagesNavigationProp = StackNavigationProp<PageStackParamList, "MyPage">;
 
 const MyPagesScreen = () => {
   const navigation = useNavigation<MyPagesNavigationProp>();

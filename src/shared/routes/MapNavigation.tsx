@@ -1,17 +1,11 @@
 import Directions from "@/src/features/maps/containers/directions/Directions";
 import { LocationRoute } from "@/src/features/maps/containers/directions/interfaceAPIRoute";
+import { Location } from "@/src/features/maps/containers/directions/interfaceLocation";
 import CustomMap from "@/src/features/maps/containers/Map";
 import RealDirections from "@/src/features/maps/containers/realtime-directions/RealDirections";
-import ListSaveLocation from "@/src/features/maps/containers/saved/ListSaved";
 import ListTrip from "@/src/features/maps/containers/trip/ListTrip";
 import Trip from "@/src/features/maps/containers/trip/Trip";
 import { createStackNavigator } from "@react-navigation/stack";
-
-export interface Location {
-  latitude: number;
-  longitude: number;
-  displayName: string;
-}
 
 export type MapStackParamList = {
   CustomMap: undefined;

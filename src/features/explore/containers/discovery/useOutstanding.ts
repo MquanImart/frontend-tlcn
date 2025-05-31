@@ -14,7 +14,8 @@ interface OutstandingProps{
 }
 
 const useOutstanding = () => {
-    const navigation = useNavigation<StackNavigationProp<ExploreStackParamList>>();
+    type NavigationProps = StackNavigationProp<ExploreStackParamList, 'PageNavigation'>;
+    const navigation = useNavigation<NavigationProps>();
 
     const [suggestedPageCF, setSuggestedPageCF] = useState<OutstandingProps[] | null>(null);
     const [suggestedPageCB, setSuggestedPageCB] = useState<OutstandingProps[] | null>(null);
@@ -46,10 +47,17 @@ const useOutstanding = () => {
             }
         }
     }
+
     const handleNavigateToPage = async (pageId: string) => {
         const userId = await AsyncStorage.getItem("userId");
-        if (userId){
-            navigation.navigate("PageScreen", { pageId, currentUserId: userId });
+        if (userId) {
+        navigation.navigate("PageNavigation", {
+            screen: "PageScreen",
+            params: {
+            pageId,
+            currentUserId: userId,
+            },
+        });
         }
     };
 
