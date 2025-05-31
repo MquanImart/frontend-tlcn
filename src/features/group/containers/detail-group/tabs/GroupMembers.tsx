@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
 import MemberCard from "@/src/features/group/components/MemberCard";
-import getColor from "@/src/styles/Color";
-import { useGroupMembers } from "./useGroupMembers";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
+import getColor from "@/src/styles/Color";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useGroupMembers } from "./useGroupMembers";
 
 const Color = getColor();
 
@@ -21,6 +24,7 @@ interface Member {
 }
 
 const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, role }) => {
+  const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { loading, groupData, handleLongPress } = useGroupMembers(groupId, currentUserId, role);
 
   const renderSection = (title: string, data: Member[]) => (
@@ -43,6 +47,9 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
               name={item.name}
               avatar={item.avatar}
               description={item.description || "Thành viên nhóm"}
+              memberUserId={item.id} // Pass the member's _id for navigation
+              currentUserId={currentUserId} // Pass the current user's ID
+              navigation={navigation} // Pass the navigation object to MemberCard
             />
           </TouchableOpacity>
         )}

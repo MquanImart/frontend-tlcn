@@ -8,18 +8,18 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useRef, useState } from "react";
 import {
-    Alert,
-    Image,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const accountClient = restClient.apiClient.service("apis/accounts");
@@ -28,7 +28,7 @@ type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
   const [emailOrPhone, setEmailOrPhone] = useState<string>("21110741@student.hcmute.edu.vn");
-  const [password, setPassword] = useState<string>("21110741");
+  const [password, setPassword] = useState<string>("123456");
   const navigation = useNavigation<AuthNavigationProp>();
 
   // Ref để focus vào ô mật khẩu sau khi nhập xong email/số điện thoại

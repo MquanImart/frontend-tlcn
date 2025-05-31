@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+// src/features/group/components/MemberCard.tsx (Cleaned)
+
 import getColor from "@/src/styles/Color";
-import restClient from "@/src/shared/services/RestClient";
-import { MyPhoto } from "@/src/interface/interface_reference";
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+// Imports for navigation
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
+import { StackNavigationProp } from "@react-navigation/stack";
+
 
 const Color = getColor();
 
@@ -12,21 +17,39 @@ interface MemberCardProps {
   name: string;
   avatar: string;
   description?: string;
+  memberUserId: string;
+  currentUserId: string;
+  navigation: StackNavigationProp<GroupParamList>;
 }
 
-const MemberCard: React.FC<MemberCardProps> = ({ name, avatar, description }) => {
-  const avatarSource = avatar && avatar.trim() !== "" 
-    ? { uri: avatar } 
-    : { uri: DEFAULT_AVATAR }; 
+const MemberCard: React.FC<MemberCardProps> = ({ name, avatar, description, memberUserId, currentUserId, navigation }) => {
+  const avatarSource = avatar && avatar.trim() !== ""
+    ? { uri: avatar }
+    : { uri: DEFAULT_AVATAR };
+
+  const handlePress = () => {
+    console.log("Navigating to profile for user:", memberUserId);
+    if (memberUserId === currentUserId) {
+      navigation.navigate("ProfileNavigation", {
+        screen: "MyProfile",
+        params: undefined,
+      });
+    } else {
+      navigation.navigate("ProfileNavigation", {
+        screen: "Profile",
+        params: { userId: memberUserId },
+      });
+    }
+  };
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity onPress={handlePress} style={styles.card}>
       <Image source={avatarSource} style={styles.avatar} />
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.description}>{description || "Không có mô tả"}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
