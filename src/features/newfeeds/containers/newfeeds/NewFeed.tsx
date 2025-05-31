@@ -50,7 +50,6 @@ export default function NewFeed() {
     likeArticle,
     calculateTotalComments,
     handleAddComment,
-    createArticle,
     deleteArticle,
     editArticle,
     changeScreen,
@@ -111,7 +110,6 @@ export default function NewFeed() {
     fetchData();
   }, [userId, getArticles]);
 
-  // Gọi getUserId khi component mount
   useEffect(() => {
     getUserId();
   }, []);

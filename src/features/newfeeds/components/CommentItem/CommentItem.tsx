@@ -29,6 +29,7 @@ interface CommentItemProps {
   onLike: (commentId: string) => void;
   onReply: (parentCommentId: string, content: string, media?: ImagePicker.ImagePickerAsset[]) => void;
   level?: number;
+  isHighlighted?: boolean; // Add isHighlighted prop
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
@@ -37,6 +38,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   onLike,
   onReply,
   level = 1,
+  isHighlighted = false, // Default to false
 }) => {
   const { areRepliesVisible, toggleReplies } = useCommentVisibility();
   const {
@@ -120,7 +122,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { marginLeft: getMarginLeft(level) }]}
+      style={[
+        styles.container,
+        { marginLeft: getMarginLeft(level) },
+        isHighlighted && styles.highlighted, // Apply highlight style
+      ]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={styles.commentRow}>
@@ -201,16 +207,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
         </TouchableOpacity>
       )}
 
-      {areRepliesVisible && replies.map((reply) => (
-        <CommentItem
-          key={reply._id}
-          userId={userId}
-          comment={reply}
-          onLike={onLike}
-          onReply={onReply}
-          level={level + 1}
-        />
-      ))}
+      {areRepliesVisible &&
+        replies.map((reply) => (
+          <CommentItem
+            key={reply._id}
+            userId={userId}
+            comment={reply}
+            onLike={onLike}
+            onReply={onReply}
+            level={level + 1}
+            isHighlighted={reply._id === comment._id} // Pass highlight to replies
+          />
+        ))}
 
       {/* Modal for Enlarged Image */}
       <Modal
@@ -233,9 +241,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
 const styles = StyleSheet.create({
   container: { padding: 12, backgroundColor: colors.backGround },
+  highlighted: {
+    backgroundColor: colors.mainColor1 + "33", // Light highlight with transparency
+  },
   commentRow: { flexDirection: "row", alignItems: "flex-start" },
   avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: colors.backGround },
-  content: { flex: 1 ,},
+  content: { flex: 1 },
   username: { fontWeight: "bold", fontSize: 15 },
   text: { fontSize: 14, marginTop: 4, lineHeight: 20 },
   actions: { flexDirection: "row", alignItems: "center", marginTop: 6 },

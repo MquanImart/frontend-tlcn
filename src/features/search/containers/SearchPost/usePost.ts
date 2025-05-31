@@ -240,6 +240,9 @@ export default function usePost(
                 receiverId: likedComment._iduser._id,
                 message: notificationMessage,
                 status: "unread",
+                articleId: currentArticle._id,
+                commentId: commentId,
+                relatedEntityType: "Comment", 
               });
             } catch (notificationError: any) {
               console.error("🔴 Lỗi khi gửi thông báo like comment:", {
@@ -286,6 +289,8 @@ export default function usePost(
               receiverId: articleOwner,
               message: notificationMessage,
               status: "unread",
+              articleId, 
+              relatedEntityType: "Article", 
             });
           } catch (notificationError: any) {
             console.error("🔴 Lỗi khi gửi thông báo:", {
@@ -353,6 +358,9 @@ export default function usePost(
               receiverId: currentArticle.createdBy._id,
               message: `đã bình luận bài viết của bạn`,
               status: "unread",
+              articleId: currentArticle._id, 
+              commentId: response.data._id, 
+              relatedEntityType: "Comment",
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo comment:", notificationError);
@@ -412,6 +420,9 @@ export default function usePost(
               receiverId: parentComment._iduser._id,
               message: `đã trả lời bình luận của bạn`,
               status: "unread",
+              articleId: currentArticle._id, 
+              commentId: response.data._id, 
+              relatedEntityType: "Comment",
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo reply comment:", notificationError);

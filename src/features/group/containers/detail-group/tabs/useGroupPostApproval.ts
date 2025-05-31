@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import restClient from "@/src/shared/services/RestClient";
 import { Article } from "@/src/features/newfeeds/interface/article";
+import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useState } from "react";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
@@ -76,6 +76,8 @@ export const useGroupPostApproval = (groupId: string) => {
               receiverId: approvedPost.createdBy._id,
               message: `đã duyệt bài viết của bạn trong ${groupName}`,
               status: "unread",
+              groupId: groupId,
+              relatedEntityType: "Group",
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo duyệt bài viết:", notificationError);

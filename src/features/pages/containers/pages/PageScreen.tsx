@@ -6,6 +6,7 @@ import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import getColor from "@/src/styles/Color";
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
@@ -17,7 +18,6 @@ import PageInvitations from "./tabs/PageInvitations";
 import PageMembers from "./tabs/PageMembers";
 import PageTickets from "./tabs/PageTickets";
 import usePageScreen from "./usePageScreen";
-import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 
 const Color = getColor();
 
@@ -55,7 +55,7 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
     acceptAdminInvite,
     declineAdminInvite,
     getUserId,
-    currentUserId, setCurrentUserId
+    currentUserId
   } = usePageScreen(pageId, navigation);
 
     useEffect(() => {
@@ -148,7 +148,7 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
           />
         );
       case "Vé":
-        return <PageTickets page={page} currentUserId={currentUserId || ""} role={role} />;
+        return <PageTickets page={page} currentUserId={currentUserId || ""} role={role} updatePage={fetchPage} />;
       default:
         return null;
     }

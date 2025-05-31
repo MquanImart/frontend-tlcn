@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
 import { Page, Ticket } from "@/src/interface/interface_reference";
 import restClient from "@/src/shared/services/RestClient";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 const ticketsClient = restClient.apiClient.service("apis/tickets");
-const pagesClient = restClient.apiClient.service("apis/pages")
+const pagesClient = restClient.apiClient.service("apis/pages");
 
-const usePageTickets = (page: Page, role: string) => {
+const usePageTickets = (page: Page, role: string, updatePage: () => void) => {
   const [ticketList, setTicketList] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [canManageTickets, setCanManageTickets] = useState<boolean>(false);
@@ -15,21 +15,36 @@ const usePageTickets = (page: Page, role: string) => {
     setLoading(true);
     try {
       if (!page.listTicket || page.listTicket.length === 0) {
+        console.log("No tickets found for page:", page._id);
+        setTicketList([]);
         setLoading(false);
         return;
       }
 
+      console.log("Fetching tickets for IDs:", page.listTicket);
+
       const fetchedTickets = await Promise.all(
         page.listTicket.map(async (ticketId) => {
-          const response = await ticketsClient.get(ticketId);
-          return response.success ? response.data : null;
+          try {
+            const response = await ticketsClient.get(ticketId);
+            if (response.success && response.data && !response.data._destroy) {
+              return response.data;
+            }
+            console.log(`Ticket ${ticketId} is deleted or not found`);
+            return null;
+          } catch (error) {
+            console.error(`❌ Error fetching ticket ${ticketId}:`, error);
+            return null;
+          }
         })
       );
 
-      const validTickets = fetchedTickets.filter((ticket) => ticket !== null);
+      const validTickets = fetchedTickets.filter((ticket): ticket is Ticket => ticket !== null);
+      console.log("Fetched valid tickets:", validTickets.map(t => ({ _id: t._id, name: t.name })));
       setTicketList(validTickets);
     } catch (error) {
-      console.error("❌ Lỗi khi lấy vé:", error);
+      console.error("❌ Error fetching tickets:", error);
+      Alert.alert("Lỗi", "Không thể tải danh sách vé.");
     } finally {
       setLoading(false);
     }
@@ -38,47 +53,40 @@ const usePageTickets = (page: Page, role: string) => {
   const createTicket = async (ticket: Omit<Ticket, "_id">) => {
     try {
       const ticketData = { ...ticket, pageId: page._id };
+      console.log("Creating ticket with data:", ticketData);
       const response = await ticketsClient.create(ticketData);
-  
+
       if (response.success) {
-        setTicketList(response.data.updatedPage.listTicket);
+        console.log("Created ticket:", response.data);
+        await fetchTicket(); // Refresh local ticket list
+        updatePage(); // Refresh page object
         Alert.alert("Thành công", "Vé đã được tạo.");
       } else {
-        console.error("Lỗi khi tạo vé:", response.message);
+        console.error("❌ Error creating ticket:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể tạo vé.");
       }
     } catch (error: any) {
-      console.error("Lỗi khi gửi yêu cầu tạo vé:", error.message || error);
+      console.error("❌ Error sending create ticket request:", error.message || error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi tạo vé. Vui lòng thử lại.");
     }
   };
 
   const deleteTicket = async (ticketId: string) => {
     try {
-
-      // Bước 1: Xóa vé qua API DELETE
+      console.log("Deleting ticket:", ticketId);
       const ticketResponse = await ticketsClient.remove(ticketId);
 
       if (!ticketResponse.success) {
-        console.error("❌ Lỗi khi xóa vé:", ticketResponse.message);
+        console.error("❌ Error deleting ticket:", ticketResponse.message);
         Alert.alert("Lỗi", ticketResponse.message || "Không thể xóa vé.");
         return;
       }
 
-      const pageUpdateData = {
-        $pull: { listTicket: ticketId }, 
-      };
-      const pageResponse = await pagesClient.patch(page._id, pageUpdateData);
-
-      if (pageResponse.success) {
-        setTicketList((prevTickets) => prevTickets.filter((ticket) => ticket._id !== ticketId));
-        Alert.alert("Thành công", "Vé đã được xóa.");
-      } else {
-        console.error("❌ Lỗi khi cập nhật Page:", pageResponse.message);
-        Alert.alert("Lỗi", "Xóa vé thành công nhưng không thể cập nhật Page: " + pageResponse.message);
-      }
+      await fetchTicket(); // Refresh local ticket list
+      updatePage(); // Refresh page object
+      Alert.alert("Thành công", "Vé đã được xóa.");
     } catch (error: any) {
-      console.error("❌ Lỗi khi xóa vé hoặc cập nhật Page:", error.message || error);
+      console.error("❌ Error deleting ticket:", error.message || error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi xóa vé. Vui lòng thử lại.");
     }
   };
@@ -104,7 +112,7 @@ const usePageTickets = (page: Page, role: string) => {
     createTicket,
     deleteTicket,
     canManageTickets,
-    handleDeleteTicket
+    handleDeleteTicket,
   };
 };
 

@@ -16,11 +16,15 @@ interface Member {
 export const useGroupMembers = (groupId: string, currentUserId: string, role: "Guest" | "Member" | "Admin" | "Owner") => {
   const [loading, setLoading] = useState(true);
   const [groupData, setGroupData] = useState<{ idCreater: Member; Administrators: Member[]; members: Member[] } | null>(null);
-  const [displayName, setDisplayName] = useState<string | null>(null); // Thêm state cho displayName của người gửi
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   const getUserDisplayName = async () => {
-    const name = await AsyncStorage.getItem("displayName");
-    setDisplayName(name);
+    try {
+      const name = await AsyncStorage.getItem("displayName");
+      setDisplayName(name);
+    } catch (error) {
+      console.error("Error fetching displayName:", error);
+    }
   };
 
   const fetchGroupMembers = async () => {
@@ -28,12 +32,14 @@ export const useGroupMembers = (groupId: string, currentUserId: string, role: "G
     try {
       const response = await groupsClient.get(`${groupId}/members`);
       if (response.success) {
+        console.log("Fetched group members:", response.data);
         setGroupData(response.data);
       } else {
+        console.error("Failed to fetch group members:", response.message);
         setGroupData(null);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi lấy danh sách thành viên:", error);
+      console.error("❌ Error fetching group members:", error);
       setGroupData(null);
     } finally {
       setLoading(false);
@@ -44,33 +50,34 @@ export const useGroupMembers = (groupId: string, currentUserId: string, role: "G
     try {
       const response = await groupsClient.patch(`${groupId}/members/${userId}`, { state });
       if (response.success) {
-        // Gửi thông báo khi mời làm quản trị viên
         if (state === "invite-admin" && userId !== currentUserId) {
           try {
-            const groupName = groupData?.idCreater ? "nhóm này" : "nhóm"; // Giả định có thể lấy tên nhóm từ dữ liệu
+            const groupName = groupData?.idCreater ? "nhóm này" : "nhóm"; // TODO: Replace with actual group name if available
             await notificationsClient.create({
               senderId: currentUserId,
               receiverId: userId,
               message: `đã mời bạn làm quản trị viên của ${groupName}`,
               status: "unread",
+              groupId: groupId,
+              relatedEntityType: "Group",
             });
           } catch (notificationError) {
-            console.error("🔴 Lỗi khi gửi thông báo mời làm quản trị viên:", notificationError);
+            console.error("🔴 Error sending admin invite notification:", notificationError);
           }
         }
-
         Alert.alert("Thành công", `Thành viên đã được cập nhật trạng thái: ${state}`);
-        fetchGroupMembers(); 
+        fetchGroupMembers();
       } else {
         Alert.alert("Lỗi", response.message || "Không thể cập nhật trạng thái");
       }
     } catch (error) {
-      console.error("❌ Lỗi khi cập nhật trạng thái thành viên:", error);
+      console.error("❌ Error updating member status:", error);
       Alert.alert("Lỗi", "Không thể cập nhật trạng thái thành viên");
     }
   };
 
   const handleLongPress = (userId: string, section: string) => {
+    console.log("handleLongPress called:", { userId, section, role, creatorId: groupData?.idCreater.id });
     if (role === "Owner") {
       if (section === "Quản trị viên" && userId !== groupData?.idCreater.id) {
         return [
@@ -99,11 +106,12 @@ export const useGroupMembers = (groupId: string, currentUserId: string, role: "G
         },
       ];
     }
+    console.log("No long-press options available");
     return [];
   };
 
   useEffect(() => {
-    getUserDisplayName(); // Lấy displayName khi mount
+    getUserDisplayName();
     if (groupId) {
       fetchGroupMembers();
     }

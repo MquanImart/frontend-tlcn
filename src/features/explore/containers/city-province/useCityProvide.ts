@@ -77,7 +77,6 @@ const useCityProvince = (provinceId: string) => {
           $skip: pageToFetch * ARTICLES_PER_PAGE
       });
 
-      console.log(`Fetched articles for page ${pageToFetch}:`, result);
 
       if (result.success && Array.isArray(result.data)) {
         setArticles((prev) => {

@@ -1,6 +1,6 @@
+import env from '@/env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
-import env from '@/env';
 class RestClient {
 
   baseURL: string = env.URL_BACKEND;
@@ -33,7 +33,6 @@ class RestClient {
         messages: errorMessage,
       };
     } else {
-
       return {
         success: false,
         data: null,

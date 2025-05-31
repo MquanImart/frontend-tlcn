@@ -1,16 +1,11 @@
-// src/features/group/components/MemberCard.tsx (Cleaned)
-
+import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet"; // Import showActionSheet
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-// Imports for navigation
-import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
-import { StackNavigationProp } from "@react-navigation/stack";
-
-
 const Color = getColor();
-
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
 
 interface MemberCardProps {
@@ -19,13 +14,24 @@ interface MemberCardProps {
   description?: string;
   memberUserId: string;
   currentUserId: string;
+  role: "Guest" | "Member" | "Admin" | "Owner"; // Add role prop
+  section: string; // Add section prop to identify member type
   navigation: StackNavigationProp<GroupParamList>;
+  onLongPress: (userId: string, section: string) => { label: string; onPress: () => void; destructive?: boolean }[]; // Add onLongPress handler
 }
 
-const MemberCard: React.FC<MemberCardProps> = ({ name, avatar, description, memberUserId, currentUserId, navigation }) => {
-  const avatarSource = avatar && avatar.trim() !== ""
-    ? { uri: avatar }
-    : { uri: DEFAULT_AVATAR };
+const MemberCard: React.FC<MemberCardProps> = ({
+  name,
+  avatar,
+  description,
+  memberUserId,
+  currentUserId,
+  role,
+  section,
+  navigation,
+  onLongPress,
+}) => {
+  const avatarSource = avatar && avatar.trim() !== "" ? { uri: avatar } : { uri: DEFAULT_AVATAR };
 
   const handlePress = () => {
     console.log("Navigating to profile for user:", memberUserId);
@@ -42,8 +48,28 @@ const MemberCard: React.FC<MemberCardProps> = ({ name, avatar, description, memb
     }
   };
 
+  const handleLongPress = () => {
+    if (role === "Guest" || role === "Member") {
+      console.log("Long-press disabled for role:", role);
+      return;
+    }
+    const options = onLongPress(memberUserId, section);
+    console.log("Long-press options:", options, "for user:", memberUserId, "in section:", section);
+    if (options.length > 0) {
+      showActionSheet(options);
+    } else {
+      console.warn("No options available for long-press");
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.card}>
+    <TouchableOpacity
+      onPress={handlePress}
+      onLongPress={handleLongPress}
+      delayLongPress={300} // Explicitly set long-press delay
+      style={styles.card}
+      activeOpacity={0.8}
+    >
       <Image source={avatarSource} style={styles.avatar} />
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>

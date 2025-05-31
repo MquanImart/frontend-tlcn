@@ -23,7 +23,6 @@ const useNotificationScreen = () => {
 
     socket.on("newNotification", ({ notification }) => {
       setNotifications((prev) => {
-        // Ngăn thêm thông báo trùng lặp
         if (prev.some((n) => n._id === notification._id)) {
           return prev;
         }
@@ -66,7 +65,6 @@ const useNotificationScreen = () => {
 
         if (result.success) {
           setNotifications((prev) => {
-            // Lọc bỏ thông báo trùng lặp
             const newNotifications = result.data.filter(
               (newNotif: Notification) => !prev.some((n) => n._id === newNotif._id)
             );
@@ -141,7 +139,7 @@ const useNotificationScreen = () => {
 
   useEffect(() => {
     if (userId) {
-      setNotifications([]); // Đặt lại danh sách trước khi lấy mới
+      setNotifications([]);
       fetchNotifications();
     }
   }, [userId, selectedTab, fetchNotifications]);
