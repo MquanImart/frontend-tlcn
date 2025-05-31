@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
-import { User, Page } from "@/src/interface/interface_reference";
-import restClient from "@/src/shared/services/RestClient";
+import { Page, User } from "@/src/interface/interface_reference";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
+import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 const usersClient = restClient.apiClient.service("apis/users");
 const pagesClient = restClient.apiClient.service("apis/pages");
@@ -19,14 +20,18 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
   const [admins, setAdmins] = useState<UserWithAvatar[]>([]);
   const [followers, setFollowers] = useState<UserWithAvatar[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null); 
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserDisplayName, setCurrentUserDisplayName] = useState<string | null>(null);
 
   const getCurrentUserInfo = async () => {
-    const id = await AsyncStorage.getItem("userId");
-    const name = await AsyncStorage.getItem("displayName");
-    setCurrentUserId(id);
-    setCurrentUserDisplayName(name);
+    try {
+      const id = await AsyncStorage.getItem("userId");
+      const name = await AsyncStorage.getItem("displayName");
+      setCurrentUserId(id);
+      setCurrentUserDisplayName(name);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
   };
 
   const fetchAvatarUrl = async (photoId: string) => {
@@ -36,7 +41,7 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
         return response.data.url;
       }
     } catch (error) {
-      console.error("❌ Lỗi khi lấy dữ liệu ảnh:", error);
+      console.error("❌ Error fetching avatar:", error);
     }
     return DEFAULT_AVATAR;
   };
@@ -46,7 +51,9 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
       const ownerResponse = await usersClient.get(page.idCreater);
       const ownerData = ownerResponse.success ? ownerResponse.data : null;
       if (ownerData) {
-        const avatarUrl = await fetchAvatarUrl(ownerData.avt[ownerData.avt.length - 1]);
+        const avatarUrl = ownerData.avt?.length
+          ? await fetchAvatarUrl(ownerData.avt[ownerData.avt.length - 1])
+          : DEFAULT_AVATAR;
         setOwner({ ...ownerData, avatarUrl });
       }
 
@@ -55,28 +62,32 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
           const response = await usersClient.get(admin.idUser);
           if (response.success) {
             const userData = response.data;
-            const avatarUrl = await fetchAvatarUrl(userData.avt[userData.avt.length - 1]);
+            const avatarUrl = userData.avt?.length
+              ? await fetchAvatarUrl(userData.avt[userData.avt.length - 1])
+              : DEFAULT_AVATAR;
             return { ...userData, avatarUrl };
           }
           return null;
         })
       );
-      setAdmins(adminResponses.filter((user) => user !== null));
+      setAdmins(adminResponses.filter((user): user is UserWithAvatar => user !== null));
 
       const followerResponses = await Promise.all(
         (page.follower || []).map(async (followerId) => {
           const response = await usersClient.get(followerId);
           if (response.success) {
             const userData = response.data;
-            const avatarUrl = await fetchAvatarUrl(userData.avt[userData.avt.length - 1]);
+            const avatarUrl = userData.avt?.length
+              ? await fetchAvatarUrl(userData.avt[userData.avt.length - 1])
+              : DEFAULT_AVATAR;
             return { ...userData, avatarUrl };
           }
           return null;
         })
       );
-      setFollowers(followerResponses.filter((user) => user !== null));
+      setFollowers(followerResponses.filter((user): user is UserWithAvatar => user !== null));
     } catch (error) {
-      console.error("❌ Lỗi khi lấy dữ liệu thành viên:", error);
+      console.error("❌ Error fetching members:", error);
     } finally {
       setLoading(false);
     }
@@ -85,74 +96,93 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
   const handleRemoveAdmin = async (userId: string) => {
     try {
       const response = await pagesClient.patch(`${page._id}`, {
-        listAdmin: page.listAdmin?.filter((admin) => admin.idUser !== userId),
+        removeAdmin: userId,
+        addFollower: userId,
       });
 
       if (response.success) {
-        setAdmins((prevState) => prevState.filter((admin) => admin._id !== userId));
+        setAdmins((prev) => prev.filter((admin) => admin._id !== userId));
+        setFollowers((prev) => {
+          const admin = admins.find((a) => a._id === userId);
+          return admin ? [...prev, admin] : prev;
+        });
+        updatePage();
+        Alert.alert("Thành công", "Đã xóa quyền quản trị viên.");
       } else {
-        console.error("❌ Lỗi khi xóa quản trị viên");
+        Alert.alert("Lỗi", response.message || "Không thể xóa quản trị viên.");
+        console.error("❌ Error removing admin:", response.message);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi xóa quản trị viên:", error);
+      console.error("❌ Error removing admin:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi xóa quản trị viên.");
     }
   };
 
   const handleInviteAdmin = async (userId: string) => {
     try {
       const response = await pagesClient.patch(`${page._id}`, {
-        listAdmin: [
-          ...(page.listAdmin || []),
-          { idUser: userId, state: "pending", joinDate: new Date().getTime() },
-        ],
+        addAdmin: {
+          idUser: userId,
+          state: "pending",
+          joinDate: Date.now(),
+        },
+        // Do NOT include removeFollower
       });
 
       if (response.success) {
         if (userId !== currentUserId) {
           try {
             await notificationsClient.create({
-              senderId: currentUserId || "", 
+              senderId: currentUserId || "",
               receiverId: userId,
               message: `${currentUserDisplayName || "Quản trị viên"} đã mời bạn làm quản trị viên của trang ${page.name}`,
               status: "unread",
+              pageId: page._id,
+              relatedEntityType: "Page",
             });
           } catch (notificationError) {
-            console.error("🔴 Lỗi khi gửi thông báo mời làm quản trị viên:", notificationError);
+            console.error("🔴 Error sending admin invite notification:", notificationError);
           }
         }
-
         updatePage();
+        Alert.alert("Thành công", "Đã gửi lời mời làm quản trị viên.");
       } else {
-        console.error("❌ Lỗi khi mời làm quản trị viên");
+        Alert.alert("Lỗi", response.message || "Không thể mời làm quản trị viên.");
+        console.error("❌ Error inviting admin:", response.message);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi mời làm quản trị viên:", error);
+      console.error("❌ Error inviting admin:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi mời làm quản trị viên.");
     }
   };
 
   const handleRemoveFollower = async (userId: string) => {
     try {
       const isPendingAdmin = page.listAdmin?.some((admin) => admin.idUser === userId && admin.state === "pending");
+      const data: any = { removeFollower: userId };
       if (isPendingAdmin) {
-        handleRemoveAdmin(userId);
+        data.declineAdmin = userId;
       }
 
-      const response = await pagesClient.patch(`${page._id}`, {
-        follower: page.follower?.filter((followerId) => followerId !== userId),
-      });
+      const response = await pagesClient.patch(`${page._id}`, data);
 
       if (response.success) {
+        setFollowers((prev) => prev.filter((f) => f._id !== userId));
         updatePage();
+        Alert.alert("Thành công", "Đã xóa khỏi danh sách người theo dõi.");
       } else {
-        console.error("❌ Lỗi khi xóa khỏi danh sách người theo dõi");
+        Alert.alert("Lỗi", response.message || "Không thể xóa người theo dõi.");
+        console.error("❌ Error removing follower:", response.message);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi xóa khỏi danh sách người theo dõi:", error);
+      console.error("❌ Error removing follower:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi xóa người theo dõi.");
     }
   };
 
   const handleLongPress = (userId: string, section: string) => {
-    const actions: any[] = [];
+    console.log("handleLongPress:", { userId, section, role, creatorId: page.idCreater });
+    const actions: { label: string; onPress: () => void; destructive?: boolean }[] = [];
 
     if (role === "isOwner") {
       if (section === "Quản trị viên" && userId !== page.idCreater) {
@@ -161,9 +191,7 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
           onPress: () => handleRemoveAdmin(userId),
           destructive: true,
         });
-      }
-
-      if (section === "Người theo dõi") {
+      } else if (section === "Người theo dõi") {
         actions.push(
           { label: "Mời làm quản trị viên", onPress: () => handleInviteAdmin(userId) },
           {
@@ -173,25 +201,27 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
           }
         );
       }
-    } else if (role === "isAdmin") {
-      if (section === "Người theo dõi") {
-        actions.push(
-          { label: "Mời làm quản trị viên", onPress: () => handleInviteAdmin(userId) },
-          {
-            label: "Xóa khỏi danh sách",
-            onPress: () => handleRemoveFollower(userId),
-            destructive: true,
-          }
-        );
-      }
+    } else if (role === "isAdmin" && section === "Người theo dõi") {
+      actions.push(
+        { label: "Mời làm quản trị viên", onPress: () => handleInviteAdmin(userId) },
+        {
+          label: "Xóa khỏi danh sách",
+          onPress: () => handleRemoveFollower(userId),
+          destructive: true,
+        }
+      );
     }
 
     if (actions.length > 0) {
+      console.log("Showing action sheet with actions:", actions.map((a) => a.label));
       showActionSheet(actions);
+    } else {
+      console.log("No actions available for long-press");
     }
   };
 
   useEffect(() => {
+    getCurrentUserInfo();
     fetchMembers();
   }, [page]);
 
@@ -200,10 +230,7 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
     admins,
     followers,
     loading,
-    handleRemoveAdmin,
-    handleInviteAdmin,
-    handleRemoveFollower,
-    handleLongPress
+    handleLongPress,
   };
 };
 

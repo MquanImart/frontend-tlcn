@@ -81,6 +81,8 @@ export const useGroupJoinRequests = (groupId: string) => {
               receiverId: id,
               message: `đã chấp nhận bạn vào ${groupName}`,
               status: "unread",
+              groupId: groupId,
+              relatedEntityType: "Group",
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo chấp nhận thành viên:", notificationError);

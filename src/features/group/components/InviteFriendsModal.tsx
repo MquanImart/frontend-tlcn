@@ -1,18 +1,18 @@
+import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Image,
   ActivityIndicator,
   Alert,
+  FlatList,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import getColor from "@/src/styles/Color";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import restClient from "@/src/shared/services/RestClient";
 
 const Color = getColor();
 const groupsClient = restClient.apiClient.service("apis/groups");
@@ -85,6 +85,8 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
         receiverId,
         message: `đã mời bạn tham gia nhóm ${groupName}.`,
         status: "unread",
+        groupId: groupId,
+        relatedEntityType: "Group",
       });
     } catch (error) {
       console.error(`Lỗi khi gửi thông báo đến ${receiverId}:`, error);

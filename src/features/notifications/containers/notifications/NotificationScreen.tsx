@@ -16,12 +16,12 @@ const NotificationScreen: React.FC = () => {
     handleMarkAsRead,
     handleMarkAsUnread,
     handleDelete,
-    unreadCount,
     handleOptions,
+    unreadCount,
     getUserId,
     loadMoreNotifications,
     isLoadingMore,
-    loading, // Thêm prop loading
+    loading,
   } = useNotificationScreen();
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
@@ -47,7 +47,7 @@ const NotificationScreen: React.FC = () => {
         handleScroll={handleScroll}
         loadMoreNotifications={loadMoreNotifications}
         isLoadingMore={isLoadingMore}
-        loading={loading} // Truyền prop loading
+        loading={loading}
       />
       <CTabbar tabbarPosition={tabbarPosition} startTab="notifications" />
     </View>

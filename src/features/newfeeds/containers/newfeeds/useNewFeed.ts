@@ -191,6 +191,7 @@ export default function useNewFeed(
     setUserId(id);
     setDisplayName(name);
   };
+  
 
   useEffect(() => {
     getUserId();
@@ -236,6 +237,7 @@ export default function useNewFeed(
   const likeComment = async (commentId: string) => {
     if (!userId) {
       console.warn("⚠️ userId không tồn tại");
+      Alert.alert("Lỗi", "Vui lòng đăng nhập để thích bình luận!");
       return;
     }
     try {
@@ -255,6 +257,9 @@ export default function useNewFeed(
                 receiverId: likedComment._iduser._id,
                 message: notificationMessage,
                 status: "unread",
+                articleId: currentArticle._id,
+                commentId: commentId,
+                relatedEntityType: "Comment", 
               });
             } catch (notificationError: any) {
               console.error("🔴 Lỗi khi gửi thông báo like comment:", {
@@ -266,10 +271,15 @@ export default function useNewFeed(
           setCurrentArticle({ ...currentArticle, comments: updatedComments });
         }
       } else {
-        console.error("Lỗi khi like bình luận:", response.message);
+        console.error("🔴 Lỗi khi like bình luận:", response.message);
+        Alert.alert("Lỗi", response.message || "Không thể thích bình luận. Vui lòng thử lại!");
       }
-    } catch (error) {
-      console.error("Lỗi khi gọi API like comment:", error);
+    } catch (error: any) {
+      console.error("🔴 Lỗi khi gọi API like comment:", {
+        message: error.message,
+        response: error.response?.data,
+      });
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi thích bình luận. Vui lòng thử lại!");
     }
   };
 
@@ -279,6 +289,7 @@ export default function useNewFeed(
       Alert.alert("Lỗi", "Vui lòng đăng nhập để thích bài viết!");
       return;
     }
+
     try {
       const response = await articlesClient.patch(`${articleId}/like`, { userId });
       if (response.success) {
@@ -301,20 +312,26 @@ export default function useNewFeed(
               receiverId: articleOwner,
               message: notificationMessage,
               status: "unread",
+              articleId, // Thêm articleId để liên kết thông báo với bài viết
+              relatedEntityType: "Article", // Chỉ định loại thực thể là Article
             });
           } catch (notificationError: any) {
             console.error("🔴 Lỗi khi gửi thông báo:", {
               message: notificationError.message,
               response: notificationError.response?.data,
             });
+            // Không ném lỗi thông báo để không ảnh hưởng đến quá trình thích bài viết
           }
         }
       } else {
-        console.error("Lỗi khi like bài viết:", response.message);
+        console.error("🔴 Lỗi khi like bài viết:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể thích bài viết. Vui lòng thử lại!");
       }
     } catch (error: any) {
-      console.error("🔴 Lỗi khi gọi API like:", error);
+      console.error("🔴 Lỗi khi gọi API like:", {
+        message: error.message,
+        response: error.response?.data,
+      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi thích bài viết. Vui lòng thử lại!");
     }
   };
@@ -364,24 +381,34 @@ export default function useNewFeed(
         setCurrentArticle({ ...currentArticle, comments: updatedComments });
         if (userId !== currentArticle.createdBy._id) {
           try {
+            const notificationMessage = `đã bình luận bài viết của bạn`;
             await notificationsClient.create({
               senderId: userId,
               receiverId: currentArticle.createdBy._id,
-              message: `đã bình luận bài viết của bạn`,
+              message: notificationMessage,
               status: "unread",
+              articleId: currentArticle._id, 
+              commentId: response.data._id, 
+              relatedEntityType: "Comment",
             });
-          } catch (notificationError) {
-            console.error("🔴 Lỗi khi gửi thông báo comment:", notificationError);
+          } catch (notificationError: any) {
+            console.error("🔴 Lỗi khi gửi thông báo comment:", {
+              message: notificationError.message,
+              response: notificationError.response?.data,
+            });
           }
         }
         setNewReply("");
         setSelectedMedia([]);
       } else {
-        console.error("Lỗi khi thêm bình luận:", response.message);
-        Alert.alert("Lỗi", "Không thể thêm bình luận. Vui lòng thử lại!");
+        console.error("🔴 Lỗi khi thêm bình luận:", response.message);
+        Alert.alert("Lỗi", response.message || "Không thể thêm bình luận. Vui lòng thử lại!");
       }
-    } catch (error) {
-      console.error("Lỗi khi gửi bình luận:", error);
+    } catch (error: any) {
+      console.error("🔴 Lỗi khi gửi bình luận:", {
+        message: error.message,
+        response: error.response?.data,
+      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi bình luận. Vui lòng thử lại!");
     } finally {
       setIsCommentChecking(false); // Stop loading
@@ -426,25 +453,35 @@ export default function useNewFeed(
         const parentComment = updatedComments.find((c: Comment) => c._id === parentCommentId);
         if (parentComment && userId !== parentComment._iduser._id) {
           try {
+            const notificationMessage = `đã trả lời bình luận của bạn`;
             await notificationsClient.create({
               senderId: userId,
               receiverId: parentComment._iduser._id,
-              message: `đã trả lời bình luận của bạn`,
+              message: notificationMessage,
               status: "unread",
+              articleId: currentArticle._id, 
+              commentId: response.data._id, 
+              relatedEntityType: "Comment",
             });
-          } catch (notificationError) {
-            console.error("🔴 Lỗi khi gửi thông báo reply comment:", notificationError);
+          } catch (notificationError: any) {
+            console.error("🔴 Lỗi khi gửi thông báo reply comment:", {
+              message: notificationError.message,
+              response: notificationError.response?.data,
+            });
           }
         }
         setCurrentArticle({ ...currentArticle, comments: updatedComments });
         setNewReply("");
         setSelectedMedia([]);
       } else {
-        console.error("Lỗi khi trả lời bình luận:", response.message);
-        Alert.alert("Lỗi", "Không thể trả lời bình luận. Vui lòng thử lại!");
+        console.error("🔴 Lỗi khi trả lời bình luận:", response.message);
+        Alert.alert("Lỗi", response.message || "Không thể trả lời bình luận. Vui lòng thử lại!");
       }
-    } catch (error) {
-      console.error("Lỗi khi gửi trả lời bình luận:", error);
+    } catch (error: any) {
+      console.error("🔴 Lỗi khi gửi trả lời bình luận:", {
+        message: error.message,
+        response: error.response?.data,
+      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi trả lời. Vui lòng thử lại!");
     } finally {
       setIsCommentChecking(false); // Stop loading
@@ -609,13 +646,18 @@ export default function useNewFeed(
     }
   }, [userId, loadingMore]);
 
+  // Trong useNewFeed.ts
+
   const getArticleById = async (articleId: string) => {
     try {
       const response = await articlesClient.get(articleId);
       if (response.success) {
-        setCurrentArticle(response.data);
+        // Lấy bình luận sau khi có thông tin bài viết
+        const comments = await fetchComments(articleId); // Gọi fetchComments ở đây
+        const articleWithComments = { ...response.data, comments }; // Kết hợp bài viết và bình luận
+        setCurrentArticle(articleWithComments); // Cập nhật currentArticle với bình luận
         recordView(articleId);
-        return response.data;
+        return articleWithComments;
       } else {
         console.error("Lỗi khi lấy bài viết:", response.message);
         return null;

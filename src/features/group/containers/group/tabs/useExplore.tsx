@@ -76,6 +76,8 @@ export const useExplore = (currentUserId: string) => {
                 receiverId: joinedGroup.idCreater,
                 message: `đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
                 status: "unread",
+                groupId: groupId,
+                relatedEntityType: "Group",
               });
             } catch (notificationError) {
               console.error("🔴 Lỗi khi gửi thông báo tới chủ nhóm:", notificationError);
@@ -91,6 +93,8 @@ export const useExplore = (currentUserId: string) => {
                     receiverId: admin.idUser._id,
                     message: `đã gửi yêu cầu tham gia nhóm ${joinedGroup.groupName}`,
                     status: "unread",
+                    groupId: groupId,
+                    relatedEntityType: "Group",
                   });
                 } catch (notificationError) {
                   console.error(`🔴 Lỗi khi gửi thông báo tới quản trị viên ${admin.idUser._id}:`, notificationError);

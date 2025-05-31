@@ -113,6 +113,8 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
               receiverId: adminInvite.inviterId,
               message: `đã chấp nhận lời mời làm quản trị viên của ${adminInvite.groupName}`,
               status: "unread",
+              groupId: groupId,
+              relatedEntityType: "Group",
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo chấp nhận lời mời quản trị viên:", notificationError);

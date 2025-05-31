@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
-import TicketList from "../../../components/TicketList";
-import AddTicketModal from "../../../components/AddTicketModal";
-import CIconButton from "@/src/shared/components/button/CIconButton";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color";
-import usePageTickets from "./usePageTickets";
 import { Page } from "@/src/interface/interface_reference";
+import CIconButton from "@/src/shared/components/button/CIconButton";
+import getColor from "@/src/styles/Color";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import AddTicketModal from "../../../components/AddTicketModal";
+import TicketList from "../../../components/TicketList";
+import usePageTickets from "./usePageTickets";
 
 const Color = getColor();
 
@@ -14,9 +14,10 @@ interface PageTicketsProps {
   page: Page;
   currentUserId: string;
   role: string;
+  updatePage: () => void;
 }
 
-const PageTickets: React.FC<PageTicketsProps> = ({ page, role }) => {
+const PageTickets: React.FC<PageTicketsProps> = ({ page, role , updatePage}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const {
     ticketList,
@@ -24,7 +25,7 @@ const PageTickets: React.FC<PageTicketsProps> = ({ page, role }) => {
     createTicket,
     canManageTickets,
     handleDeleteTicket
-  } = usePageTickets(page, role);
+  } = usePageTickets(page, role, updatePage);
 
 
   return (

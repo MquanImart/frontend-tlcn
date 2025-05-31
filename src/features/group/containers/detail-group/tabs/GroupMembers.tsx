@@ -1,11 +1,10 @@
 import MemberCard from "@/src/features/group/components/MemberCard";
-import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { useGroupMembers } from "./useGroupMembers";
 
 const Color = getColor();
@@ -34,24 +33,17 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            onLongPress={() => {
-              const options = handleLongPress(item.id, title);
-              if (options.length > 0) {
-                showActionSheet(options);
-              }
-            }}
-            disabled={role === "Guest" || role === "Member"}
-          >
-            <MemberCard
-              name={item.name}
-              avatar={item.avatar}
-              description={item.description || "Thành viên nhóm"}
-              memberUserId={item.id} // Pass the member's _id for navigation
-              currentUserId={currentUserId} // Pass the current user's ID
-              navigation={navigation} // Pass the navigation object to MemberCard
-            />
-          </TouchableOpacity>
+          <MemberCard
+            name={item.name}
+            avatar={item.avatar}
+            description={item.description || "Thành viên nhóm"}
+            memberUserId={item.id}
+            currentUserId={currentUserId}
+            role={role} // Pass role
+            section={title} // Pass section title
+            navigation={navigation}
+            onLongPress={handleLongPress} // Pass handleLongPress
+          />
         )}
       />
     </View>
@@ -79,7 +71,7 @@ export default GroupMembers;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.backGround, // Fixed from backGround
     padding: 15,
   },
   section: {

@@ -1,3 +1,4 @@
+import GroupDetailsScreen from "@/src/features/group/containers/detail-group/GroupDetailsScreen";
 import ArticleDetail from "@/src/features/newfeeds/containers/articledetail/ArticleDetail";
 import NewFeed from "@/src/features/newfeeds/containers/newfeeds/NewFeed";
 import { Article } from "@/src/features/newfeeds/interface/article";
@@ -9,7 +10,6 @@ import MessagesDrawerWrapper from "./MessageNavigation";
 import { PersonalPageStackParamList } from "./PersonalPageNavigation";
 import { SearchNavigation } from "./SearchNavigation";
 import { SupportChatNavigation } from "./SupportChatNavigation";
-import GroupDetailsScreen from "@/src/features/group/containers/detail-group/GroupDetailsScreen";
 const Stack = createStackNavigator<NewFeedParamList>();
 
 export type NewFeedParamList = {
@@ -22,7 +22,7 @@ export type NewFeedParamList = {
       screen?: keyof PersonalPageStackParamList;
       params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
     };
-  ArticleDetail: { articleId: string };
+  ArticleDetail: { articleId: string; commentId?: string }; 
   GroupDetailsScreen: { groupId: string; currentUserId: string };
 };
 
