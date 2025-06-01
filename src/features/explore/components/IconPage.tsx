@@ -1,22 +1,44 @@
 import { MyPhoto } from "@/src/interface/interface_reference";
+import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import getColor from "@/src/styles/Color";
-import { View, Text, StyleSheet, Image } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 
 const Color = getColor();
-
+type NavigationProps = StackNavigationProp<ExploreStackParamList, 'Discovery'>;
 interface IconPageProps {
     avt: MyPhoto;
     name: string;
+    _id: string;
 }
-const IconPage = ({avt, name}: IconPageProps) => {
+
+const IconPage = ({avt, name, _id}: IconPageProps) => {
+    const navigation = useNavigation<NavigationProps>();
+
+    const handleNavigateToPage = async (pageId: string) => {
+      const userId = await AsyncStorage.getItem("userId");
+      if (userId) {
+        navigation.navigate("PageNavigation", {
+          screen: "PageScreen",
+          params: {
+            pageId,
+            currentUserId: userId,
+          },
+        });
+      }
+    };
 
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container}
+            onPress={() => handleNavigateToPage(_id)}
+        >
             <View style={styles.boxImages}>
                 <Image style={styles.images} source={{uri: avt.url}}/>
             </View>
             <Text style={styles.textName} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
-        </View>
+        </TouchableOpacity>
     )
 }
 

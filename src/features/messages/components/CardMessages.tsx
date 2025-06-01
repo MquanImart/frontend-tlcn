@@ -115,8 +115,9 @@ const useCardMessage = (conversation: Conversation) => {
                 onPress: () => {navigation.navigate("BoxChat", {conversationId: conversation._id})}
             }
         } else {
+            const userData = getOtherParticipantById(conversation, userId);
             return {
-                name: conversation.pageId?conversation.pageId.name : "Page không xác định",
+                name: conversation.participants.some((user) => user._id === userId) ? (conversation.pageId?conversation.pageId.name : "Page không xác định") : (userData?userData.displayName:"Người dùng không xác định"),
                 avt: conversation.pageId && conversation.pageId.avt? conversation.pageId.avt : "https://picsum.photos/200",
                 isRead: true,
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,

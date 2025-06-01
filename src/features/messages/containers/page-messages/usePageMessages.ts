@@ -119,7 +119,13 @@ const usePageMessages = () => {
     }
 
     const getConversations = async () => {
-        setConversations([]);
+        if (!userId) return;
+        const conversationAPI = restClient.apiClient.service(`apis/conversations/user/${userId}/pages`);
+        const result = await conversationAPI.get("");
+        if (result.success){
+            setConversations(result.data);
+        }
+        console.log(result);
     }
 
     const searchUser = (value: string) => {
