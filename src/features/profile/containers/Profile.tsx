@@ -23,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
+import MessageModal from "@/src/shared/components/form-message-addfriend/AddMessages";
 
 const Color = getColor();
 const UsersClient = restClient.apiClient.service("apis/users");
@@ -49,6 +50,8 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
   const [friendRequestId, setFriendRequestId] = useState<string | null>(null);
   const [hasReceivedRequest, setHasReceivedRequest] = useState<boolean>(false);
   const [receivedRequestId, setReceivedRequestId] = useState<string | null>(null);
+  const [showFormAddFriend, setShowFormAddFriend] = useState<boolean>(false);
+
   const tabs: TabProps[] = [
     { label: "Hình ảnh" },
     { label: "Video" },
@@ -282,26 +285,35 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
           ]
         );
       } else {
-        // Gửi yêu cầu kết bạn
-        const result = await friendsAPI.create({
-          senderId: currentUserId,
-          receiverId: userId,
-          message: "Xin chào, mình muốn kết bạn với bạn!",
-        });
-
-        if (result.success) {
-          setFriendRequestSent(true);
-          setFriendRequestId(result.data._id);
-          Alert.alert("Thành công", "Yêu cầu kết bạn đã được gửi!");
-        } else {
-          throw new Error("Không thể gửi yêu cầu kết bạn");
-        }
+        setShowFormAddFriend(true);
       }
     } catch (err) {
       console.error("Lỗi khi xử lý yêu cầu bạn bè:", err);
       Alert.alert("Lỗi", "Có lỗi xảy ra khi xử lý yêu cầu bạn bè");
     }
   };
+
+  const postAddFriend = async (message: string) => {
+    const friendsAPI = restClient.apiClient.service("apis/add-friends");
+    // Gửi yêu cầu kết bạn
+    const result = await friendsAPI.create({
+      senderId: currentUserId,
+      receiverId: userId,
+      message: message,
+    })
+    if (result.success) {
+      setFriendRequestSent(true);
+      setFriendRequestId(result.data._id);
+      Alert.alert("Thành công", "Yêu cầu kết bạn đã được gửi!");
+    } else {
+      throw new Error("Không thể gửi yêu cầu kết bạn");
+    }
+  }
+
+  const formAddMessage = (message: string) => {
+    setShowFormAddFriend(false);
+    postAddFriend(message);
+  }
 
   const handleFollowRequest = async () => {
     if (!currentUserId || !userId) return;
@@ -466,6 +478,7 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
           </View>
         </View>
       )}
+      <MessageModal visible={showFormAddFriend} onClose={() => {setShowFormAddFriend(false)}} onSend={formAddMessage}/>
     </ScrollView>
   );
 };

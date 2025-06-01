@@ -21,7 +21,7 @@ const CityProvice = () => {
         currTab, setCurrTab, tabs,
         handleNavigateToPage,
         getHotPage, getProvince, getAllPage,
-        province, hotPages, pages
+        province, hotPages, pages,
     } = useCityProvince(provinceId);
     
     useEffect(() => {
@@ -35,47 +35,64 @@ const CityProvice = () => {
         <HeaderProvice/>
         {province ? (
         <View>
-        <Animated.View style={[styles.header, translateViewAnimation]}>
-            <Image style={styles.images} source={{ uri: province.avt }} />
-            <LinearGradient 
-                  colors={['rgba(75, 22, 76, 0)', 'rgba(75, 22, 76, 1)']}
-                  start={{ x: 0.5, y: 0 }}
-                  end={{ x: 0.5, y: 1 }}
-                  style={[StyleSheet.absoluteFillObject, styles.flexEnd, styles.images]}
-                >
-                    <View style={styles.boxTitle}>
-                        <Text style={styles.textName}>{province.name}</Text>
-                        <Text style={styles.textCountry}>Viet Nam</Text>
+            <Animated.View style={[styles.header, translateViewAnimation]}>
+                <Image style={styles.images} source={{ uri: province.avt }} />
+                <LinearGradient 
+                      colors={['rgba(75, 22, 76, 0)', 'rgba(75, 22, 76, 1)']}
+                      start={{ x: 0.5, y: 0 }}
+                      end={{ x: 0.5, y: 1 }}
+                      style={[StyleSheet.absoluteFillObject, styles.flexEnd, styles.images]}
+                    >
+                        <View style={styles.boxTitle}>
+                            <Text style={styles.textName}>{province.name}</Text>
+                            <Text style={styles.textCountry}>Viet Nam</Text>
+                        </View>
+                        <View style={styles.tabs}>
+                            <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab}/>
+                        </View>
+                </LinearGradient>
+            </Animated.View>
+            <Animated.View style={styles.upperHeaderPlacehoder} />
+            <ScrollView 
+                onScroll={e => {
+                    const offsetY = e.nativeEvent.contentOffset.y;
+                    scrollY.setValue(offsetY);
+                }}
+                scrollEventThrottle={16}
+            >
+                <View style={styles.paddingContent}/>
+                <View style={styles.scrollViewContent}>
+                {currTab === tabs[0].label ? (
+                    <View>
                     </View>
-                    <View style={styles.tabs}>
-                        <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab}/>
-                    </View>
-            </LinearGradient>
-        </Animated.View>
-        <View style={styles.upperHeaderPlacehoder}/>
-        <ScrollView 
-            onScroll={e => {
-                const offsetY = e.nativeEvent.contentOffset.y;
-                scrollY.setValue(offsetY);
-            }}
-            scrollEventThrottle={16}
-        >
-            <View style={styles.paddingContent}/>
-            <View style={styles.scrollViewContent}>
-            {currTab === tabs[0].label ? (
-                <View>
-                </View>
-            ) : (
-            currTab === tabs[1].label ? 
-            ( hotPages ? (
+                ) : (
+                currTab === tabs[1].label ? 
+                ( hotPages ? (
+                        <View style={styles.listPage}>
+                            {hotPages.map((item, index) => 
+                            <CardPage 
+                              key={index}
+                              images={item.avt?item.avt: "https://picsum.photos/200"} 
+                              name={item.name} 
+                              country={"Viet Nam"} 
+                              size={{
+                                width: "32%",
+                                height: 160
+                              }}
+                              onPress={() => handleNavigateToPage(item._id)}
+                            />
+                          )}
+                        </View>
+                        ) : (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>)
+                ) : (
+                pages ? (
                     <View style={styles.listPage}>
-                        {hotPages.map((item, index) => 
+                        {pages.map((item, index) => 
                         <CardPage 
                           key={index}
                           images={item.avt?item.avt: "https://picsum.photos/200"} 
                           name={item.name} 
                           country={"Viet Nam"} 
-                          distance={2.3} 
                           size={{
                             width: "32%",
                             height: 160
@@ -84,31 +101,12 @@ const CityProvice = () => {
                         />
                       )}
                     </View>
-                    ) : (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>)
-            ) : (
-            pages ? (
-                <View style={styles.listPage}>
-                    {pages.map((item, index) => 
-                    <CardPage 
-                      key={index}
-                      images={item.avt?item.avt: "https://picsum.photos/200"} 
-                      name={item.name} 
-                      country={"Viet Nam"} 
-                      distance={2.3} 
-                      size={{
-                        width: "32%",
-                        height: 160
-                      }}
-                      onPress={() => handleNavigateToPage(item._id)}
-                    />
-                  )}
+                    ): (
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                    )
+                ))}
                 </View>
-                ): (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
-                )
-            ))}
-            </View>
-        </ScrollView>
+            </ScrollView>
         </View>
         ) : (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>)}
     </View>
@@ -155,7 +153,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
     },
     tabs: {
-        padding: 10,
+        padding: 0,
         backgroundColor: Color.white_homologous,
         borderStartStartRadius: 30, borderStartEndRadius: 30
     },
@@ -163,26 +161,18 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: '100%',
         top: 0,
-        zIndex: 9
+        zIndex: 9,
+        backgroundColor: Color.backGround1
     },
     paddingContent: {
-        height: 200,
-    },
-    scroll: {
-        height: WINDOW_HEIGHT
+        height: 300,
     },
     scrollViewContent: {
         backgroundColor: Color.backGround,
         height: WINDOW_HEIGHT
     },
     upperHeaderPlacehoder: {
-        height: WINDOW_HEIGHT-500
-    },
-    boxContent: {
-        width: '100%',
-        height: WINDOW_HEIGHT - 300,
-        padding: 5,
-        backgroundColor: Color.backGround,
+        height: 220
     },
     row: {
         width: '100%',

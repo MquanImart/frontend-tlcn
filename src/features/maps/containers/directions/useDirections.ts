@@ -13,7 +13,7 @@ const useDirections = (start?: LocationRoute, end?: LocationRoute) => {
     const navigation = useNavigation<MapNavigationProp>();
     const [startLocation, setStartlocation] = useState<LocationRoute | null>(start?start:null);
     const [endLocation, setEndlocation] = useState<LocationRoute | null>(end?end:null);
-    const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number; }[]>([]);
+    const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number; }[] | null>([]);
 
     const [routeDirections, setRouteDitections] = useState<RoutesResponse | null>(null);
     const mapRef = useRef<MapView | null>(null);

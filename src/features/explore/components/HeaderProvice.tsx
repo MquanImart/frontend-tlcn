@@ -2,7 +2,7 @@ import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Text, TouchableOpacity, View, StyleSheet } from "react-native"
+import { TouchableOpacity, View, StyleSheet } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();
@@ -14,10 +14,6 @@ const HeaderProvice = () => {
         <View style={styles.container}>
             <TouchableOpacity style={styles.button} onPress={() => {navigation.goBack()}}>
                 <Icon name={"chevron-left"} size={30} color={Color.white_homologous}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-                <Icon name={"near-me"} size={20} color={Color.white_homologous}/>
-                <Text style={styles.textButton}>2.5km</Text>
             </TouchableOpacity>
         </View>
     )

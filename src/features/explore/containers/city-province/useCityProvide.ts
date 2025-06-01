@@ -53,8 +53,8 @@ const useCityProvince = (provinceId: string) => {
         transform: [
             {
                 translateY: scrollY.interpolate({
-                    inputRange: [0, 200],
-                    outputRange: [0, -200],
+                    inputRange: [0, 300],
+                    outputRange: [0, -300],
                     extrapolate: 'clamp'
                 })
             }

@@ -23,7 +23,10 @@ const NewChat = () => {
 
   useFocusEffect(
         useCallback(() => {
-            getUserWithoutChat();
+            const load = async () => {
+                await getUserWithoutChat();
+            }
+            load(); 
         }, [])
     );
     

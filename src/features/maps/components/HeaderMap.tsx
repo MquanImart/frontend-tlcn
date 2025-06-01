@@ -40,7 +40,10 @@ const HeaderMap = ({startTab, rightPress, getDetails, closeDetails}: HeaderMapPr
     useFocusEffect(
         useCallback(() => {
             if (startTab){
-                setCurrTab(startTab);
+                const load = async () => {
+                    setCurrTab(startTab);
+                }
+                load(); 
             }
         }, [])
     );

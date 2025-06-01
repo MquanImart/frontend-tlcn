@@ -6,7 +6,7 @@ const Color = getColor();
 interface NameMessagesProps {
     name: string; 
     setName: (value: string) => void;
-    refInput: React.RefObject<TextInput>;
+    refInput: React.RefObject<TextInput | null>;
 }
 
 const InputName = ({refInput, name, setName} : NameMessagesProps) => {

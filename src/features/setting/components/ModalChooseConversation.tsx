@@ -24,7 +24,10 @@ const ModalChooseConversation = ({ visible, onCancel }: {
 
     useFocusEffect(
         useCallback(() => {
-          getuserId()
+            const load = async () => {
+                await getuserId();
+            }
+            load();
         }, [])
     );
     

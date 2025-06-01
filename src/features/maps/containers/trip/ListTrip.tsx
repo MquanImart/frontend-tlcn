@@ -15,7 +15,10 @@ const ListTrip = () => {
     
     useFocusEffect(
         useCallback(() => {
-            getListTrip();
+            const load = async () => {
+                await getListTrip();
+            }
+            load(); 
         }, [])
     );
 

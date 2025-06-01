@@ -119,7 +119,7 @@ const useListMessages = () => {
     }
 
     const getConversations = async () => {
-        if (!userId) return alert("Bạn cần xác nhận thông tin người dùng");
+        if (!userId) return;
         const conversationAPI = restClient.apiClient.service(`apis/conversations/user`);
         const result = await conversationAPI.get(userId);
         if (result.success){

@@ -7,7 +7,6 @@ interface CardExploreProps {
   images: string; // Giữ prop này để tương thích, nhưng không sử dụng
   name: string;
   country: string;
-  distance: number;
   size: {
     width: number | string;
     height: number | string;
@@ -19,7 +18,6 @@ const CardPage = ({
   images, // Không sử dụng nhưng giữ để tránh lỗi props
   name,
   country,
-  distance,
   size,
   onPress,
 }: CardExploreProps) => {
@@ -46,9 +44,6 @@ const CardPage = ({
         style={StyleSheet.absoluteFillObject}
       />
       <View style={styles.boxContent}>
-        <View style={styles.boxDistance}>
-          <Text style={styles.textDistance}>{distance} km</Text>
-        </View>
         <Text
           style={styles.textName}
           numberOfLines={1} // Chỉ hiển thị 1 dòng

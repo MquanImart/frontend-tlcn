@@ -16,11 +16,14 @@ export interface ConversationSettings {
     userId: string;
     notifications: boolean;
     muteUntil: number | null;
+    active: boolean;
+    sos: boolean;
     _id: string;
 }
 
 export interface Conversation {
     _id: string;
+    creatorId: string;
     participants: UserDisplay[];
     settings: ConversationSettings[];
     type: "private" | "group" | "page";

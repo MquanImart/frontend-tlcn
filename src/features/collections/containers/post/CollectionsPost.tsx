@@ -19,8 +19,11 @@ const CollectionPost = ({handleScroll}: CollectionPostProps) => {
 
     useFocusEffect(
         useCallback(() => {
-            getRecentPost();
-            getCollections();
+            const load = async () => {
+                await getRecentPost();
+                await getCollections();
+            }
+            load();
         }, [])
     );
 

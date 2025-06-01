@@ -6,7 +6,7 @@ import getColor from "@/src/styles/Color";
 import useSuggestFriends from "./useSuggestFriends";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
-import MessageModal from "./AddMessages";
+import MessageModal from "../../../../shared/components/form-message-addfriend/AddMessages";
 
 const Color = getColor();
 
@@ -22,7 +22,10 @@ const SuggestFriends = ({handleScroll} : SuggestFriendsProps) => {
 
     useFocusEffect(
         useCallback(() => {
-            getAllFriends();
+            const load = async () => {
+                await getAllFriends();
+            }
+            load();
         }, [])
     );
     
