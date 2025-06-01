@@ -13,11 +13,13 @@ import SettingsNotify from "@/src/features/messages/containers/conversations/Set
 import { Conversation, UserDisplay } from "@/src/interface/interface_flex";
 import ListMember from "@/src/features/messages/containers/conversations/ListMember";
 import AddMember from "@/src/features/messages/containers/conversations/AddMember";
+import PageMessages from "@/src/features/messages/containers/page-messages/PageMessages";
 
 export type MessagesDrawerParamList = {
     "Tin nhắn": undefined;
     "Cài đặt": undefined;
     "Tin nhắn lạ": undefined;
+    "Tin nhắn trang của bạn": undefined;
 };
 
 const Drawer = createDrawerNavigator<MessagesDrawerParamList>();
@@ -32,6 +34,7 @@ const MessagesDrawerWrapper = () => {
       <Drawer.Screen name="Tin nhắn" component={MessageNavigation} />
       <Drawer.Screen name="Cài đặt" component={SettingsMessages} />
       <Drawer.Screen name="Tin nhắn lạ" component={StrangeMessageNavigation} />
+      <Drawer.Screen name="Tin nhắn trang của bạn" component={PageChatNavigation} />
     </Drawer.Navigator>
   );
 };
@@ -93,5 +96,27 @@ return (
         <StackStrange.Screen name="BoxChat" component={Conversations} />
         <StackStrange.Screen name="StrangeMessages" component={StrangeMessages} />
     </StackStrange.Navigator>
+);
+}
+
+export type PageChatStackParamList = {
+  PageChat: undefined;
+  BoxChat: { conversationId: string | null, friend? : {
+    _id: string;
+    displayName: string;
+    avt: string;
+  }};
+};
+
+const PageChat = createStackNavigator<PageChatStackParamList>();
+
+export function PageChatNavigation() {
+return (
+    <PageChat.Navigator initialRouteName="PageChat" screenOptions={{
+       headerShown: false,
+    }}>
+        <PageChat.Screen name="BoxChat" component={Conversations} />
+        <PageChat.Screen name="PageChat" component={PageMessages} />
+    </PageChat.Navigator>
 );
 }

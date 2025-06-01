@@ -29,14 +29,6 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
   const navigation = useNavigation<NavigationProp<ExploreStackParamList>>(); 
   const pageId = route.params?.pageId;
 
-  if (!pageId) {
-    return (
-      <View style={styles.centered}>
-        <Text style={{ color: "red" }}>Lỗi: Không tìm thấy pageId</Text>
-      </View>
-    );
-  }
-
   const {
     page,
     role,
@@ -99,6 +91,14 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
 
+  if (!pageId) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: "red" }}>Lỗi: Không tìm thấy pageId</Text>
+      </View>
+    );
+  }
+  
   if (loading) {
     return (
       <View style={styles.centered}>
