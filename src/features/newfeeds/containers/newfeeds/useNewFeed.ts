@@ -30,17 +30,14 @@ export default function useNewFeed(
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [isCommentChecking, setIsCommentChecking] = useState(false); // New loading state
+  const [isCommentChecking, setIsCommentChecking] = useState(false);
 
-  // Hàm retry request
   const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 3000) => {
     for (let i = 0; i < retries; i++) {
       try {
-        const start = Date.now();
         const result = await fn();
         return result;
       } catch (error) {
-        console.warn(`Thử lại request lần ${i + 1}/${retries}:`, error);
         if (i < retries - 1) {
           await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
         } else {
@@ -50,7 +47,6 @@ export default function useNewFeed(
     }
   };
 
-  // Hàm kiểm tra nội dung văn bản
   const checkTextContent = async (text: string): Promise<boolean> => {
     if (!text.trim()) return false;
     try {
@@ -75,11 +71,6 @@ export default function useNewFeed(
       const data = await response.json();
       return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra văn bản:", {
-        message: error.message,
-        status: error.response?.status,
-        stack: error.stack,
-      });
       if (error.name === "AbortError") {
         Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
         return false;
@@ -90,14 +81,11 @@ export default function useNewFeed(
     }
   };
 
-  // Hàm kiểm tra nội dung hình ảnh
   const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
     if (!mediaAssets || mediaAssets.length === 0) return false;
 
-    // Lọc chỉ các media là ảnh
     const imageAssets = mediaAssets.filter((media) => media.type === "image");
 
-    // Nếu không có ảnh, trả về false (không cần kiểm tra)
     if (imageAssets.length === 0) return false;
 
     for (const media of imageAssets) {
@@ -109,7 +97,7 @@ export default function useNewFeed(
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
 
       const formData = new FormData();
       for (const media of imageAssets) {
@@ -170,12 +158,6 @@ export default function useNewFeed(
 
       return false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra nội dung ảnh:", {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      });
-
       if (error.name === "AbortError") {
         Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
       } else {
@@ -192,7 +174,6 @@ export default function useNewFeed(
     setDisplayName(name);
   };
   
-
   useEffect(() => {
     getUserId();
   }, []);
@@ -213,7 +194,6 @@ export default function useNewFeed(
       const response = await articlesClient.get(`${articleId}/comments`);
       return response.success ? response.data : [];
     } catch (error) {
-      console.error("Lỗi khi lấy bình luận:", error);
       return [];
     }
   };
@@ -224,7 +204,6 @@ export default function useNewFeed(
       setCurrentArticle({ ...article, comments });
       setModalVisible(true);
     } catch (error) {
-      console.error("Lỗi khi lấy bình luận:", error);
     }
   };
 
@@ -236,7 +215,6 @@ export default function useNewFeed(
 
   const likeComment = async (commentId: string) => {
     if (!userId) {
-      console.warn("⚠️ userId không tồn tại");
       Alert.alert("Lỗi", "Vui lòng đăng nhập để thích bình luận!");
       return;
     }
@@ -262,30 +240,20 @@ export default function useNewFeed(
                 relatedEntityType: "Comment", 
               });
             } catch (notificationError: any) {
-              console.error("🔴 Lỗi khi gửi thông báo like comment:", {
-                message: notificationError.message,
-                response: notificationError.response?.data,
-              });
             }
           }
           setCurrentArticle({ ...currentArticle, comments: updatedComments });
         }
       } else {
-        console.error("🔴 Lỗi khi like bình luận:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể thích bình luận. Vui lòng thử lại!");
       }
     } catch (error: any) {
-      console.error("🔴 Lỗi khi gọi API like comment:", {
-        message: error.message,
-        response: error.response?.data,
-      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi thích bình luận. Vui lòng thử lại!");
     }
   };
 
   const likeArticle = async (articleId: string, articleOwner: string) => {
     if (!userId) {
-      console.warn("⚠️ userId không tồn tại");
       Alert.alert("Lỗi", "Vui lòng đăng nhập để thích bài viết!");
       return;
     }
@@ -312,26 +280,16 @@ export default function useNewFeed(
               receiverId: articleOwner,
               message: notificationMessage,
               status: "unread",
-              articleId, // Thêm articleId để liên kết thông báo với bài viết
-              relatedEntityType: "Article", // Chỉ định loại thực thể là Article
+              articleId,
+              relatedEntityType: "Article",
             });
           } catch (notificationError: any) {
-            console.error("🔴 Lỗi khi gửi thông báo:", {
-              message: notificationError.message,
-              response: notificationError.response?.data,
-            });
-            // Không ném lỗi thông báo để không ảnh hưởng đến quá trình thích bài viết
           }
         }
       } else {
-        console.error("🔴 Lỗi khi like bài viết:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể thích bài viết. Vui lòng thử lại!");
       }
     } catch (error: any) {
-      console.error("🔴 Lỗi khi gọi API like:", {
-        message: error.message,
-        response: error.response?.data,
-      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi thích bài viết. Vui lòng thử lại!");
     }
   };
@@ -348,7 +306,7 @@ export default function useNewFeed(
       Alert.alert("Thông báo", "Vui lòng nhập nội dung bình luận!");
       return;
     }
-    setIsCommentChecking(true); // Start loading
+    setIsCommentChecking(true);
     try {
       const isTextSensitive = await checkTextContent(newReply.trim());
       if (isTextSensitive) {
@@ -392,26 +350,17 @@ export default function useNewFeed(
               relatedEntityType: "Comment",
             });
           } catch (notificationError: any) {
-            console.error("🔴 Lỗi khi gửi thông báo comment:", {
-              message: notificationError.message,
-              response: notificationError.response?.data,
-            });
           }
         }
         setNewReply("");
         setSelectedMedia([]);
       } else {
-        console.error("🔴 Lỗi khi thêm bình luận:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể thêm bình luận. Vui lòng thử lại!");
       }
     } catch (error: any) {
-      console.error("🔴 Lỗi khi gửi bình luận:", {
-        message: error.message,
-        response: error.response?.data,
-      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi bình luận. Vui lòng thử lại!");
     } finally {
-      setIsCommentChecking(false); // Stop loading
+      setIsCommentChecking(false);
     }
   };
 
@@ -420,7 +369,7 @@ export default function useNewFeed(
       Alert.alert("Thông báo", "Vui lòng nhập nội dung trả lời!");
       return;
     }
-    setIsCommentChecking(true); // Start loading
+    setIsCommentChecking(true);
     try {
       const isTextSensitive = await checkTextContent(content.trim());
       if (isTextSensitive) {
@@ -464,27 +413,18 @@ export default function useNewFeed(
               relatedEntityType: "Comment",
             });
           } catch (notificationError: any) {
-            console.error("🔴 Lỗi khi gửi thông báo reply comment:", {
-              message: notificationError.message,
-              response: notificationError.response?.data,
-            });
           }
         }
         setCurrentArticle({ ...currentArticle, comments: updatedComments });
         setNewReply("");
         setSelectedMedia([]);
       } else {
-        console.error("🔴 Lỗi khi trả lời bình luận:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể trả lời bình luận. Vui lòng thử lại!");
       }
     } catch (error: any) {
-      console.error("🔴 Lỗi khi gửi trả lời bình luận:", {
-        message: error.message,
-        response: error.response?.data,
-      });
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi trả lời. Vui lòng thử lại!");
     } finally {
-      setIsCommentChecking(false); // Stop loading
+      setIsCommentChecking(false);
     }
   };
 
@@ -496,7 +436,6 @@ export default function useNewFeed(
         setCurrentArticle(null);
       }
     } catch (error) {
-      console.error("Lỗi khi xóa bài viết:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi xóa bài viết. Vui lòng thử lại!");
     }
   };
@@ -532,7 +471,6 @@ export default function useNewFeed(
         Alert.alert("Lỗi", "Không thể cập nhật bài viết. Vui lòng thử lại!");
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật bài viết:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi cập nhật bài viết. Vui lòng thử lại!");
     }
   };
@@ -585,85 +523,80 @@ export default function useNewFeed(
         setSelectedMedia([]);
         navigation.navigate("ArticleDetail", { articleId: newArticle._id });
       } else {
-        console.error("Lỗi khi tạo bài viết:", response.message);
         Alert.alert("Lỗi", response.message || "Không thể tạo bài viết. Vui lòng thử lại!");
       }
     } catch (error) {
-      console.error("Lỗi khi gửi bài viết:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi tạo bài viết. Vui lòng thử lại!");
     }
   };
 
   const getArticles = useCallback(async (page: number = 1, limit: number = 5) => {
-    if (loadingMore) return { success: false, messages: "Đang tải dữ liệu" };
-    setLoadingMore(true);
-    try {
-      if (!userId) {
-        console.error("Lỗi: userId không tồn tại");
-        setLoadingMore(false);
-        return { success: false, messages: "Lỗi: userId không tồn tại" };
-      }
-      // Kiểm tra cache (giả sử bạn có cơ chế cache)
-      const cacheKey = `articles_${userId}_${page}_${limit}`;
-      const cachedData = await AsyncStorage.getItem(cacheKey);
-      if (cachedData) {
-        const parsedData = JSON.parse(cachedData);
-        setCurrentPage(parsedData.currentPage);
-        setTotalPages(parsedData.totalPages);
-        return { success: true, data: parsedData };
-      }
-      const recommendationsClientWithUser = restClient.apiClient.service(`apis/recommendations/${userId}`);
-      const result = await recommendationsClientWithUser.find({
+    if (loadingMore) {
+      return { success: false, messages: "Đang tải dữ liệu" };
+    }
+    setLoadingMore(true); 
+
+  try {
+    if (!userId) {
+      return { success: false, messages: "Lỗi: userId không tồn tại" };
+    }
+
+    const cacheKey = `articles_${userId}_${page}_${limit}`;
+    const cachedData = await AsyncStorage.getItem(cacheKey);
+
+    if (cachedData && page === 1) {
+      const parsedData = JSON.parse(cachedData);
+      setCurrentPage(parsedData.currentPage);
+      setTotalPages(parsedData.totalPages);
+      setLoadingMore(false);
+      return { success: true, data: parsedData };
+    }
+
+    const recommendationsClientWithUser = restClient.apiClient.service(`apis/recommendations/${userId}`);
+    const result = await recommendationsClientWithUser.find({
         page,
         limit,
-      });
-      if (result.success) {
-        setCurrentPage(result.data.currentPage);
-        setTotalPages(result.data.totalPages);
-        // Lưu vào cache
-        await AsyncStorage.setItem(cacheKey, JSON.stringify(result.data));
-        return {
-          success: true,
-          data: {
-            articles: result.data.articles,
-            currentPage: result.data.currentPage,
-            totalPages: result.data.totalPages,
-          },
-        };
-      } else {
-        console.error("API error:", result.messages);
-        return { success: false, messages: result.messages || "Lỗi khi lấy bài viết" };
-      }
-    } catch (error: any) {
-      console.error("Lỗi khi gọi API recommendations:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      return { success: false, messages: error.message || "Lỗi kết nối với server" };
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [userId, loadingMore]);
+    });
 
-  // Trong useNewFeed.ts
+    if (result.success) {
+      setCurrentPage(result.data.currentPage);
+      setTotalPages(result.data.totalPages);
+
+      if (!cachedData || page > 1) {
+        await AsyncStorage.setItem(cacheKey, JSON.stringify(result.data));
+      }
+
+      return {
+        success: true,
+        data: {
+          articles: result.data.articles,
+          currentPage: result.data.currentPage,
+          totalPages: result.data.totalPages,
+        },
+      };
+    } else {
+      return { success: false, messages: result.messages || "Lỗi khi lấy bài viết" };
+    }
+  } catch (error: any) {
+    return { success: false, messages: error.message || "Lỗi kết nối với server" };
+  } finally {
+    setLoadingMore(false);
+  }
+}, [userId, loadingMore]);
 
   const getArticleById = async (articleId: string) => {
     try {
       const response = await articlesClient.get(articleId);
       if (response.success) {
-        // Lấy bình luận sau khi có thông tin bài viết
-        const comments = await fetchComments(articleId); // Gọi fetchComments ở đây
-        const articleWithComments = { ...response.data, comments }; // Kết hợp bài viết và bình luận
-        setCurrentArticle(articleWithComments); // Cập nhật currentArticle với bình luận
+        const comments = await fetchComments(articleId);
+        const articleWithComments = { ...response.data, comments };
+        setCurrentArticle(articleWithComments);
         recordView(articleId);
         return articleWithComments;
       } else {
-        console.error("Lỗi khi lấy bài viết:", response.message);
         return null;
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API get article:", error);
       return null;
     }
   };
@@ -671,15 +604,17 @@ export default function useNewFeed(
   const loadMoreArticles = async () => {
     if (currentPage < totalPages && !loadingMore) {
       const result = await getArticles(currentPage + 1);
-      if (result.success) {
+
+      if (result.success && result.data && result.data.articles) {
         setArticles((prevArticles) => {
-          if (!result.data || !result.data.articles) return prevArticles;
           const newArticles = result.data.articles.filter(
             (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
           );
           return [...prevArticles, ...newArticles];
         });
+      } else {
       }
+    } else {
     }
   };
 
@@ -689,11 +624,9 @@ export default function useNewFeed(
 
   const recordView = async (articleId: string) => {
     if (!userId) {
-      console.warn("⚠️ userId không tồn tại");
       return;
     }
     if (!articleId || typeof articleId !== "string") {
-      console.warn("⚠️ articleId không hợp lệ:", articleId);
       return;
     }
     try {
@@ -704,22 +637,18 @@ export default function useNewFeed(
       });
       if (!response.success) {
         const errorMessage = response.messages || response.message || "Không có thông báo lỗi từ server";
-        console.error("Lỗi khi ghi lại lượt xem:", errorMessage);
         Alert.alert("Lỗi", errorMessage);
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API ghi lượt xem:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi ghi lượt xem. Vui lòng thử lại!");
     }
   };
 
   const recordLike = async (articleId: string) => {
     if (!userId) {
-      console.warn("⚠️ userId không tồn tại");
       return;
     }
     if (!articleId || typeof articleId !== "string") {
-      console.warn("⚠️ articleId không hợp lệ:", articleId);
       return;
     }
     try {
@@ -730,11 +659,9 @@ export default function useNewFeed(
       });
       if (!response.success) {
         const errorMessage = response.messages || response.message || "Không có thông báo lỗi từ server";
-        console.error("Lỗi khi ghi lại lượt thích:", errorMessage);
         Alert.alert("Lỗi", errorMessage);
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API ghi lượt thích:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi ghi lượt thích. Vui lòng thử lại!");
     }
   };
@@ -766,8 +693,9 @@ export default function useNewFeed(
     recordLike,
     currentPage,
     totalPages,
+    setTotalPages,
     loadingMore,
     loadMoreArticles,
-    isCommentChecking, // Expose loading state
+    isCommentChecking,
   };
 }

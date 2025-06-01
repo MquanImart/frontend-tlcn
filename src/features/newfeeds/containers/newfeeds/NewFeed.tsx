@@ -60,6 +60,7 @@ export default function NewFeed() {
     selectedMedia,
     recordView,
     totalPages,
+    setTotalPages,
     loadingMore,
     loadMoreArticles,
     isCommentChecking,
@@ -96,23 +97,23 @@ export default function NewFeed() {
     setMapPickerVisible,
   } = usePostDialog(userId || "");
 
-  // Tải danh sách bài viết khi userId thay đổi
   useEffect(() => {
     const fetchData = async () => {
       if (userId) {
-        const result = await getArticles(1, 5); // Gọi getArticles với page=1, limit=5
-        if (result?.success && result.data) {
-          setArticles(result.data.articles); // Cập nhật articles từ dữ liệu trả về
-          setCurrentPage(result.data.currentPage); // Cập nhật trang hiện tại
+        if (articles.length === 0) { 
+            const result = await getArticles(1, 5);
+            if (result?.success && result.data) {
+                setArticles(result.data.articles);
+            } else {
+                console.error("Lỗi khi tải bài viết ban đầu:", result?.messages);
+            }
+        } else {
+            console.log("NewFeed: Articles already loaded, skipping initial fetch.");
         }
       }
     };
     fetchData();
-  }, [userId, getArticles]);
-
-  useEffect(() => {
-    getUserId();
-  }, []);
+  }, [userId]); 
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
 

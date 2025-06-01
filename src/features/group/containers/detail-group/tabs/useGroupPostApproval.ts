@@ -33,7 +33,7 @@ export const useGroupPostApproval = (groupId: string) => {
 
         const response = await groupSpecificClient.find({
           page: newPage,
-          limit: 5, // Consistent with backend
+          limit: 5,
         });
 
         if (response.success) {

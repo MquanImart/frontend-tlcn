@@ -26,7 +26,7 @@ export const useFeed = (currentUserId: string) => {
         // Gọi API với tham số phân trang
         const response = await userSpecificClient.find({
           page: newPage,
-          limit: 2,
+          limit: 3,
         });
 
         if (response.success) {
