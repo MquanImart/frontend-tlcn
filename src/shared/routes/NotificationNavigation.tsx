@@ -5,6 +5,7 @@ import React from "react";
 import { GroupNavigaton, GroupParamList } from "./GroupNavigation";
 import { NewFeedNavigation, NewFeedParamList } from "./NewFeedNavigation";
 import { PageNavigation, PageStackParamList } from "./PageNavigation";
+import { ReelNavigation, ReelStackParamList } from "./ReelNavigation";
 const Stack = createStackNavigator();
 
 export type NotificationParamList = {
@@ -21,6 +22,10 @@ export type NotificationParamList = {
     screen?: keyof PageStackParamList;
     params?: PageStackParamList[keyof PageStackParamList];
   };
+  ReelNavigation: {
+    screen?: keyof ReelStackParamList;
+    params?: ReelStackParamList[keyof ReelStackParamList];
+  };
 };
 
 export function NotificationNavigation() {
@@ -32,6 +37,7 @@ export function NotificationNavigation() {
           <Stack.Screen name="NewFeedNavigation" component={NewFeedNavigation} /> 
           <Stack.Screen name="GroupNavigaton" component={GroupNavigaton} />
           <Stack.Screen name="PageNavigation" component={PageNavigation} />
+          <Stack.Screen name="ReelNavigation" component={ReelNavigation} />
       </Stack.Navigator>
   );
 }

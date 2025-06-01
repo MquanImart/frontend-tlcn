@@ -103,6 +103,17 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         }
         break;
 
+      case "Reel": 
+        if (notification.reelId) {
+          navigation.navigate("ReelNavigation", {
+            screen: "Reel", 
+            params: { reelId: notification.reelId }, 
+          });
+        } else {
+          Alert.alert("Lỗi", "Không tìm thấy Reel liên quan.");
+        }
+        break;
+
       default:
         Alert.alert("Thông báo", "Không thể điều hướng đến nội dung này.");
     }

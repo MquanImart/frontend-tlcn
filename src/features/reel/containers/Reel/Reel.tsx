@@ -1,45 +1,48 @@
+import { Reels } from '@/src/features/reel/interface/reels';
+import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
+import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
+import getColor from '@/src/styles/Color';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'; // <-- Thêm useRoute
+import { Video } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator,
   Dimensions,
+  FlatList,
+  Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  Image,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import { SingleReel } from './SingleReel';
-import useReels from './useReels';
 import Modal from 'react-native-modal';
-import { Ionicons } from '@expo/vector-icons';
-import getColor from '@/src/styles/Color';
 import CommentItem from '../../components/CommentItem';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
-import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
-import { Reels } from '@/src/features/reel/interface/reels';
-import { Video } from 'expo-av';
 import CHeader from '../../components/Header';
 import NewReel from '../NewReel/NewReel';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SingleReel } from './SingleReel';
+import useReels from './useReels';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, 'Menu'>;
 type ReelNavigationProp = StackNavigationProp<ReelStackParamList, 'Reel'>;
+// Định nghĩa type cho route prop của màn hình Reel
+type ReelListRouteProp = RouteProp<ReelStackParamList, 'Reel'>; // <-- Định nghĩa type cho route prop
 
 export default function ReelsList() {
   const [reels, setReels] = useState<Reels[]>([]);
   const navigation = useNavigation<SettingNavigationProp>();
-  const navigationReel = useNavigation<ReelNavigationProp>();
+  const navigationReel = useNavigation<ReelNavigationProp>(); // Có vẻ chưa dùng `navigationReel`
+  const route = useRoute<ReelListRouteProp>(); // <-- Lấy route object
   const videoRefs = useRef<(Video | null)[]>([]);
   const currentVideoIndex = useRef<number>(0);
   const wasPlayingBeforeModal = useRef<boolean>(false);
@@ -50,6 +53,12 @@ export default function ReelsList() {
   const [isLoadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+
+  // Thêm một ref cho FlatList để có thể cuộn đến vị trí mong muốn
+  const flatListRef = useRef<FlatList<Reels>>(null); // <-- Thêm ref cho FlatList
+
+  // Lấy reelId từ params nếu có
+  const initialReelId = route.params?.reelId; // <-- Lấy reelId từ params
 
   const getUserID = async () => {
     try {
@@ -82,9 +91,9 @@ export default function ReelsList() {
     calculateTotalComments,
     handleAddComment,
     setNewReply,
-    getUserId,
-    userId,
-    setUserId,
+    getUserId, // Dường như không được sử dụng trực tiếp ở đây
+    userId, // Dường như không được sử dụng trực tiếp ở đây, dùng userID thay thế
+    setUserId, // Dường như không được sử dụng trực tiếp ở đây
     pickMedia,
     selectedMedia,
   } = useReels(reels, setReels, setCommentLoading);
@@ -119,6 +128,26 @@ export default function ReelsList() {
   useEffect(() => {
     fetchReels(); // Tải trang đầu tiên
   }, []);
+
+  // Effect để cuộn đến Reel cụ thể khi có initialReelId và reels đã được tải
+  useEffect(() => {
+    if (initialReelId && reels.length > 0) {
+      const index = reels.findIndex(reel => reel._id === initialReelId);
+      if (index !== -1) {
+        // Sử dụng setTimeout để đảm bảo FlatList đã được render và sẵn sàng cuộn
+        // Giá trị delay có thể cần điều chỉnh tùy theo tốc độ render của thiết bị
+        setTimeout(() => {
+          flatListRef.current?.scrollToIndex({ index: index, animated: true, viewPosition: 0 });
+          // Đảm bảo video tại index đó được phát sau khi cuộn xong
+          // Kiểm tra lại logic phát video của bạn nếu cần
+          if (videoRefs.current[index] && !isModalVisible) {
+            videoRefs.current[index]?.playAsync();
+            currentVideoIndex.current = index; // Cập nhật currentVideoIndex
+          }
+        }, 500); // Thử nghiệm với thời gian delay này
+      }
+    }
+  }, [initialReelId, reels, isModalVisible]); // Thêm isModalVisible vào dependency
 
   const loadMoreReels = () => {
     if (!hasMore || isLoadingMore) return;
@@ -168,7 +197,7 @@ export default function ReelsList() {
   const handleReelCreated = () => {
     setPage(0);
     setHasMore(true); // Cho phép tải lại từ đầu khi tạo reel mới
-    fetchReels(0);
+    fetchReels(0); // Tải lại trang đầu tiên để hiển thị reel mới
   };
 
   return (
@@ -179,6 +208,7 @@ export default function ReelsList() {
         </View>
       ) : (
         <FlatList
+          ref={flatListRef} // <-- Gán ref vào FlatList
           data={reels}
           keyboardShouldPersistTaps="handled"
           keyExtractor={(item, index) => {
@@ -201,7 +231,7 @@ export default function ReelsList() {
               onCommentPress={() => openComments(item)}
               onLike={() => likeReel(item._id, item.createdBy._id)}
               setVideoRef={(ref: Video | null) => setVideoRef(ref, index)}
-              userId={userID || ""}
+              userId={userID || ""} // Sử dụng userID thay vì userId từ useReels
             />
           )}
           ListFooterComponent={
@@ -257,7 +287,7 @@ export default function ReelsList() {
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                   <CommentItem
-                    userId={userId || ""}
+                    userId={userID || ""} // Sử dụng userID thay vì userId từ useReels
                     comment={item}
                     onLike={likeComment}
                     onReply={replyToComment}
