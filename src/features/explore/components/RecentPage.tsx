@@ -16,7 +16,7 @@ const RecentPage = ({recent} : RecentPagePops) => {
               style={styles.listItem}
               data={recent}
               renderItem={({item}) => 
-                <IconPage avt={item.idPage.avt} name={item.idPage.name}/>
+                <IconPage avt={item.idPage.avt} name={item.idPage.name} _id={item.idPage._id}/>
             }
               keyExtractor={(item) => item.idPage._id}
               horizontal

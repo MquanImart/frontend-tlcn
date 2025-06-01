@@ -38,15 +38,15 @@ const useMessages = () => {
             return "";
         }
 
-        if (conversation.lastMessage.content.contentType == "text"){
+        if (conversation.lastMessage.content.contentType === "text"){
             return conversation.lastMessage.content.message?conversation.lastMessage.content.message:"";
-        } else if (conversation.lastMessage.content.contentType == "img"){
+        } else if (conversation.lastMessage.content.contentType === "img"){
             return "ảnh";
-        } else if (conversation.lastMessage.content.contentType == "record"){
+        } else if (conversation.lastMessage.content.contentType === "record"){
             return "ghi âm";
-        } else if (conversation.lastMessage.content.contentType == "video"){
+        } else if (conversation.lastMessage.content.contentType === "video"){
             return "video";
-        } else if (conversation.lastMessage.content.contentType == "map"){
+        } else if (conversation.lastMessage.content.contentType === "map"){
             return "Tín hiệu cầu cứu!";
         }
         return "";

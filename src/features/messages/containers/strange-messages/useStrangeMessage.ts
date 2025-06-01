@@ -99,7 +99,7 @@ const useStrangeMessage = () => {
     }
 
     const getConversations = async () => {
-        if (!userId) return alert("Bạn cần xác nhận thông tin người dùng");
+        if (!userId) return;
         const conversationAPI = restClient.apiClient.service(`apis/conversations/user/${userId}/without-friend`);
         const result = await conversationAPI.get("");
         if (result.success){
