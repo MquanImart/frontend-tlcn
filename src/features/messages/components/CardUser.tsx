@@ -10,11 +10,10 @@ export interface CardUserProps {
     name: string;
     selected?: boolean;
     onPress: () => void;
-    onPressIcon?: (_id: string) => void;
     icon?: string;
     radio: boolean;
 }
-const CardUser = ({_id, avt, name, selected, onPress, onPressIcon, icon, radio} : CardUserProps) => {
+const CardUser = ({_id, avt, name, selected, onPress, icon, radio} : CardUserProps) => {
     const [isChoose, setIsChoose] = useState<boolean>(false);
 
     const handlePress = () => {
@@ -24,9 +23,7 @@ const CardUser = ({_id, avt, name, selected, onPress, onPressIcon, icon, radio} 
 
     const handlePressIcon = () => {
         setIsChoose(!isChoose);
-        if (onPressIcon){
-            onPressIcon(_id);
-        }
+        onPress();
     }
 
     useEffect(()=> {

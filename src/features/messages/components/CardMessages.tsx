@@ -1,4 +1,4 @@
-import { Conversation } from "@/src/interface/interface_flex";
+import { Conversation, ConversationSettings } from "@/src/interface/interface_flex";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Image, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native"
 import useMessages from "../containers/useMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages">;
@@ -17,7 +18,7 @@ export interface CardMessagesProps {
 }
 
 const CardMessages = ({conversation}: CardMessagesProps) => {
-    const { cardData } = useCardMessage(conversation);
+    const { cardData, setting } = useCardMessage(conversation); 
 
     if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
     return (
@@ -26,11 +27,19 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
                 <Image source={{uri: cardData.avt}} style={styles.images}/>
                 <View style={styles.content}>
                     <View style={styles.title}>
-                        <Text style={[styles.name, cardData.isRead?{}:{fontWeight: 'bold'}]}>{cardData.name}</Text>
-                        <Text style={[styles.date, cardData.isRead?{}:{fontWeight: 'bold'}]}>{timeAgo(cardData.sendDate)}</Text>
+                      <Text style={[styles.name, (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
+                        {cardData.name}
+                      </Text>
+                      {setting?.notifications === false ? (
+                        <MaterialIcons name="notifications-off" size={16} color="gray" />
+                      ) : (
+                        <Text style={[styles.date, cardData.isRead ? {} : { fontWeight: 'bold' }]}>
+                          {timeAgo(cardData.sendDate)}
+                        </Text>
+                      )}
                     </View>
                     <Text
-                      style={[styles.textContent, cardData.isRead?{}:{fontWeight: 'bold'}]}
+                      style={[styles.textContent, (cardData.isRead || setting?.notifications === false)?{}:{fontWeight: 'bold'}]}
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -56,6 +65,8 @@ export interface DataCardProps {
 const useCardMessage = (conversation: Conversation) => {
     const [userId, setUserId] = useState<string | null>(null);
     const [cardData, setCardData] = useState<DataCardProps | null> (null);
+    const [setting, setSetting] = useState<ConversationSettings|null>(null);
+    
     const navigation = useNavigation<ChatNavigationProp>();
     const {
         getSenderName, getShortNames, 
@@ -69,6 +80,7 @@ const useCardMessage = (conversation: Conversation) => {
 
     useEffect(() => {   
         if (conversation && userId){
+            getSetting();
             setCardData(getDataCard(conversation));
         }
     }, [userId, conversation]);
@@ -116,10 +128,17 @@ const useCardMessage = (conversation: Conversation) => {
 
     }
 
-    
+    const getSetting = () => {
+        if (!userId) return null;
+        const st = conversation.settings.filter((setting) => setting.userId === userId);
+        if (st.length > 0){
+            setSetting(st[0]);
+        }
+    }
 
     return {
-        cardData
+        cardData,
+        setting
     }
     
 }

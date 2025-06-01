@@ -24,7 +24,10 @@ const StrangeMessages = () => {
     
     useFocusEffect(
         useCallback(() => {
-          getUserId()
+          const load = async () => {
+                await getUserId();
+            }
+            load();
         }, [])
     );
     

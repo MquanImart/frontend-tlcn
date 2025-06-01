@@ -16,7 +16,6 @@ const useNewGroupChat = (defaultChoose?: UserDisplay[]) => {
     const [isSearch, setIsSearch] = useState<boolean>(false);
 
     const [name, setName] = useState<string>("");
-    const [isName, setIsName] = useState<boolean>(false);
 
     const inputRef = useRef<TextInput>(null);
     const [selected, setSelected] = useState<UserDisplay[]>(defaultChoose?defaultChoose:[]);
@@ -89,6 +88,7 @@ const useNewGroupChat = (defaultChoose?: UserDisplay[]) => {
         const participants = selected.map((item) => item._id);
 
         const result = await conversationAPI.create({
+            creatorId: userId,
             participants: [...participants, userId],
             groupName: name === ""? null : name,
             lastMessage: {
@@ -98,7 +98,35 @@ const useNewGroupChat = (defaultChoose?: UserDisplay[]) => {
               }
           });
         if (result.success){
-            navigation.navigate("BoxChat", {conversationId: result.data._id})
+            navigation.reset({
+              index: 1,
+              routes: [
+                { name: "ListMessages" },
+                { name: "BoxChat", params: { conversationId: result.data._id } },
+              ],
+            });
+        }
+    }
+
+    const addMemberGroup = async (conversationId: string) => {
+        if (selected.length <= 1){
+            alert("Nhóm phải từ 3 người trở lên");
+            return;
+        }
+        const userId = await AsyncStorage.getItem("userId");
+        if (!userId) return alert("Bạn cần xác nhận thông tin người dùng");
+        const conversationAPI = restClient.apiClient.service(`apis/conversations/${conversationId}/add-member`);
+        const result = await conversationAPI.patch("", {
+            userIds: selected.map((s) => s._id)
+        });
+        if (result.success){
+            navigation.reset({
+              index: 1,
+              routes: [
+                { name: "ListMessages" },
+                { name: "BoxChat", params: { conversationId: conversationId } },
+              ],
+            });
         }
     }
 
@@ -107,9 +135,9 @@ const useNewGroupChat = (defaultChoose?: UserDisplay[]) => {
         isSearch, setIsSearch, inputRef,
         dismissKeyboard,  goBack,
         handleSelected, getUserWithoutChat,
-        setName, setIsName, name,
+        setName, name,
         selected, filterUser,
-        createGroup
+        createGroup, addMemberGroup
     }
 }
 

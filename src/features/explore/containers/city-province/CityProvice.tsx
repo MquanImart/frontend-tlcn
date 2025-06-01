@@ -38,7 +38,7 @@ const CityProvince = () => {
     translateViewAnimation,
     scrollY,
     currTab,
-    setCurrTab,
+    handleChangeTab,
     tabs,
     handleNavigateToPage,
     getHotPage,
@@ -81,17 +81,10 @@ const CityProvince = () => {
     editArticle,
   } = useNewFeed(articles, setArticles);
 
-  const handleScroll = (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    scrollY.setValue(offsetY);
-  };
-
-  const contentPaddingTop = scrollY.interpolate({
-    inputRange: [0, HEIGHT_HEADER], 
-    outputRange: [HEIGHT_HEADER, 0],
-    extrapolate: 'clamp', 
-  });
-
+const onScrollAnimated = Animated.event(
+  [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+  { useNativeDriver: true }
+);
 
   return (
     <View style={styles.container}>
@@ -111,13 +104,18 @@ const CityProvince = () => {
                 <Text style={styles.textCountry}>Viet Nam</Text>
               </View>
               <View style={styles.tabs}>
-                <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
+                <TabbarTop tabs={tabs} startTab={currTab} setTab={handleChangeTab} />
               </View>
             </LinearGradient>
           </Animated.View>
-          <Animated.View style={[styles.contentListContainer, { paddingTop: contentPaddingTop }]}>
-            {currTab === tabs[0].label ? (
-              <FlatList
+          <View style={styles.paddingAnimated}/>
+          <View style={[styles.contentListContainer]}>
+              <Animated.FlatList
+                style={{
+                  flex: 1,
+                  paddingTop: 300,
+                  display: currTab === tabs[0].label ? 'flex' : 'none',
+                }}
                 data={articles}
                 keyExtractor={(item) => item._id}
                 showsVerticalScrollIndicator={false}
@@ -131,7 +129,7 @@ const CityProvince = () => {
                     editArticle={editArticle}
                   />
                 )}
-                onScroll={handleScroll}
+                onScroll={onScrollAnimated}
                 scrollEventThrottle={16}
                 onEndReached={loadMoreArticles}
                 onEndReachedThreshold={0.5}
@@ -150,12 +148,17 @@ const CityProvince = () => {
                   </View>
                 }
               />
-            ) : (
-              <ScrollView
-                onScroll={handleScroll}
+              <Animated.ScrollView
+                style={{
+                  flex: 1,
+                  display: currTab === tabs[0].label ? 'none': 'flex',
+                }}
+                onScroll={onScrollAnimated}
                 scrollEventThrottle={16}
                 contentContainerStyle={styles.scrollViewContent}
               >
+                <View style={{height: 300}}/>
+                <View style={{height: WINDOW_HEIGHT-300}}>
                 {currTab === tabs[1].label ? (
                   hotPages ? (
                     <View style={styles.listPage}>
@@ -165,7 +168,6 @@ const CityProvince = () => {
                           images={item.avt || "https://picsum.photos/200"}
                           name={item.name}
                           country="Viet Nam"
-                          distance={2.3}
                           size={{ width: "32%", height: 160 }}
                           onPress={() => handleNavigateToPage(item._id)}
                         />
@@ -184,7 +186,6 @@ const CityProvince = () => {
                         images={item.avt || "https://picsum.photos/200"}
                         name={item.name}
                         country="Viet Nam"
-                        distance={2.3}
                         size={{ width: "32%", height: 160 }}
                         onPress={() => handleNavigateToPage(item._id)}
                       />
@@ -195,9 +196,9 @@ const CityProvince = () => {
                     <ActivityIndicator size="large" color={colors.mainColor1} />
                   </View>
                 )}
-              </ScrollView>
-            )}
-          </Animated.View>
+                </View>
+              </Animated.ScrollView>
+          </View>
 
           <Modal
             isVisible={isModalVisible}
@@ -359,6 +360,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.backGround,
   },
+  paddingAnimated: {
+    height: 220
+  }
 });
 
 export default CityProvince;

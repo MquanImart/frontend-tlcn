@@ -114,17 +114,17 @@ const useCityProvince = (provinceId: string) => {
     await getArticles(articlePage + 1);
   };
 
-  const translateViewAnimation = {
-    transform: [
-      {
-        translateY: scrollY.interpolate({
-          inputRange: [0, 200],
-          outputRange: [0, -200],
-          extrapolate: "clamp",
-        }),
-      },
-    ],
-  };
+    const translateViewAnimation = {
+        transform: [
+            {
+                translateY: scrollY.interpolate({
+                    inputRange: [0, 300],
+                    outputRange: [0, -300],
+                    extrapolate: 'clamp'
+                })
+            }
+        ]
+    }
 
   const handleNavigateToPage = async (pageId: string) => {
     const userId = await AsyncStorage.getItem("userId");
@@ -139,6 +139,10 @@ const useCityProvince = (provinceId: string) => {
     }
   };
 
+  const handleChangeTab = (newTab: string) => {
+    setCurrTab(newTab);
+    // scrollY.setValue(0);
+  }
   return {
     tabs,
     currTab,
@@ -159,7 +163,8 @@ const useCityProvince = (provinceId: string) => {
     isLoadingArticles,
     error,
     hasLoadedInitialArticles,
-    totalArticles
+    totalArticles,
+    handleChangeTab
   };
 };
 

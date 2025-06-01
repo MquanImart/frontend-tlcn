@@ -25,7 +25,10 @@ const DetailsConversations = () => {
 
     useFocusEffect(
         useCallback(() => {
-            getDataAction();
+            const load = async () => {
+                await getDataAction();
+            }
+            load(); 
         }, [])
     );
       

@@ -2,7 +2,7 @@ import { View, StyleSheet, Animated, ActivityIndicator } from "react-native";
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
 import getColor from "@/src/styles/Color";
 import SearchMessages from "../../components/SearchMessages";
-import CardMessages, { CardMessagesProps } from "../../components/CardMessages";
+import CardMessages from "../../components/CardMessages";
 import { FlatList } from "react-native-gesture-handler";
 
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
@@ -26,9 +26,13 @@ const Messages = () => {
   const { tabbarPosition, handleScroll} = useScrollTabbar();
 
   useFocusEffect(
-      useCallback(() => {
-        getuserId()
-      }, [])
+    useCallback(() => {
+      const load = async () => {
+        await getuserId(); // lấy lại userId nếu cần
+        await getConversations(); // luôn gọi lại conversations khi focus
+      };
+      load();
+    }, [])
   );
 
   useEffect(()=> {

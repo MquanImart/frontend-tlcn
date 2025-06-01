@@ -3,50 +3,46 @@ import SearchMessages from "../../components/SearchMessages";
 import getColor from "@/src/styles/Color";
 import CardUser from "../../components/CardUser";
 import { FlatList } from "react-native-gesture-handler";
-import InputName from "../../components/InputName";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
-import useNewGroupChat from "./useNewGroupChat";
 import { useCallback } from "react";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
+import useNewGroupChat from "../list-messages/useNewGroupChat";
 
 const Color = getColor();
 
-const NewGroupChat = () => {
-    const route = useRoute<RouteProp<ChatStackParamList, "NewGroupChat">>();
-    const { defaultChoose } = route.params || {};
+const AddMember = () => {
+    const route = useRoute<RouteProp<ChatStackParamList, "AddMember">>();
+    const { conversationId, defaultChoose } = route.params || {};
     const { 
       dismissKeyboard, goBack,
-      search, searchUser, inputRef,
-      setName, setIsSearch, name,
+      search, searchUser, inputRef, setIsSearch,
       isSearch, selected, filterUser,
       handleSelected, getUserWithoutChat,
-      createGroup
+      addMemberGroup
     } = useNewGroupChat(defaultChoose); 
 
     useFocusEffect(
         useCallback(() => {
-            const load = async () => {
-                await getUserWithoutChat();
-            }
-            load();
+          const load = async () => {
+            await getUserWithoutChat();
+          }
+          load(); 
         }, [])
     );
 
+    const handleAddMember = () => {
+        addMemberGroup(conversationId)
+    }
     return (
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
         <View style={styles.container}>
             <CHeaderIcon 
-                label={"Nhóm mới"} 
+                label={"Thêm thành viên"} 
                 IconLeft={"arrow-back-ios"} 
                 onPressLeft={goBack}
-                textRight="Tạo"
-                onPressRight={createGroup}
-            />
-            <InputName
-              refInput={inputRef}
-              name={name}
-              setName={setName}
+                textRight="Thêm"
+                onPressRight={handleAddMember}
             />
             <SearchMessages
               refInput={inputRef}
@@ -56,20 +52,37 @@ const NewGroupChat = () => {
             />
             {!isSearch && selected.length > 0 && <View style={styles.boxMember}>
                 <Text style={styles.textNewGroup}>Đã chọn</Text>
-                <FlatList data={selected} renderItem={({item}) => 
-                    <CardUser 
+                <FlatList 
+                  data={selected} 
+                  keyExtractor={(item) => item._id.toString()}
+                  renderItem={({ item }) => {
+                    const isDefault = defaultChoose?defaultChoose.some(
+                      (id) => id._id.toString() === item._id.toString()
+                    ):true;
+                
+                    return (
+                      <CardUser 
                         _id={item._id}
-                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : "https://picsum.photos/200"}  
+                        avt={item.avt.length > 0 ? item.avt[item.avt.length - 1] : "https://picsum.photos/200"}  
                         name={item.displayName} 
-                        onPress={() => {handleSelected(item._id)}} 
+                        onPress={() => handleSelected(item._id)} 
                         icon={"highlight-off"} 
-                        radio={true}
-                    />
-                }/>
+                        radio={!isDefault}  // false nếu là defaultChoose
+                      />
+                    );
+                  }}
+                />
+
             </View>}
             <View style={[styles.boxUser, {height: 590 - selected.length*70 - (selected.length>0?40:0)}]}>
                 <Text style={styles.textNewGroup}>Gợi ý</Text>
-                <FlatList data={filterUser} renderItem={({item}) => 
+                <FlatList 
+                    data={filterUser?filterUser.filter(
+                      (user) => defaultChoose?!defaultChoose.some(
+                        (id) => id._id.toString() === user._id.toString()
+                      ):true
+                    ):[]} 
+                    renderItem={({item}) => 
                     <CardUser 
                         _id={item._id}
                         avt={item.avt.length > 0? item.avt[item.avt.length - 1] : "https://picsum.photos/200"}  
@@ -109,4 +122,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default NewGroupChat;
+export default AddMember;

@@ -20,7 +20,10 @@ const AllFriends = ({handleScroll}: AllFriendsProps) => {
 
     useFocusEffect(
         useCallback(() => {
-            getAllFriends();
+            const load = async () => {
+              await getAllFriends();
+            }
+            load();
         }, [])
     );
     

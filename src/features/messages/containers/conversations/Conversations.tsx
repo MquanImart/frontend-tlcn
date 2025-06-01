@@ -31,8 +31,11 @@ const Conversations = () => {
 
   useFocusEffect(
       useCallback(() => {
-        getConversation();
-        getMessages();
+        const load = async () => {
+            await getConversation();
+            await getMessages();
+          }
+          load(); 
       }, [userId])
   );
 

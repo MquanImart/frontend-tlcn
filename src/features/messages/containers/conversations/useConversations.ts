@@ -245,6 +245,7 @@ const useConversations = (
                 const participants = [userId, friend._id]
                 
                 const result = await conversationAPI.create({
+                    creatorId: userId,
                     participants: participants,
                     lastMessage: {
                         sender: userId,

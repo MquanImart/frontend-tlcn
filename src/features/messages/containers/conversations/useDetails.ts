@@ -8,8 +8,10 @@ import restClient from "@/src/shared/services/RestClient";
 import { Alert } from "react-native";
 import useMessages from "../useMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
 
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "Details">;
+type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
 
 interface DisplayProps {
     name: string;
@@ -18,6 +20,7 @@ interface DisplayProps {
 
 const useDetails = (defaultConversationId: Conversation) => {
     const navigation = useNavigation<ChatNavigationProp>();
+    const navigationProfile = useNavigation<ProfileNavigationProp>();
     const { getShortNames } = useMessages();
 
     const [conversation, setConversation] = useState<Conversation>(defaultConversationId);
@@ -31,14 +34,14 @@ const useDetails = (defaultConversationId: Conversation) => {
     const getDataAction = async () => {
         const userId = await AsyncStorage.getItem("userId");
         if (!userId) return alert("Bạn cần xác nhận thông tin người dùng");
-        if (conversation.type == "private"){
+        if (conversation.type === "private"){
             const otherUser = firstOtherParticipant(conversation, userId);
             setDisplay({
                 name: otherUser?otherUser.displayName : "Không xác định",
                 avt: otherUser && otherUser.avt.length > 0 ? otherUser.avt[otherUser.avt.length - 1] : "https://picsum.photos/200"
             })
             setListActionUser([
-                {text: 'Xem trang cá nhân', showIcon: true, onPress:()=>{}},
+                {text: 'Xem trang cá nhân', showIcon: true, onPress:()=>{otherUser && navigationProfile.navigate('Profile', {userId: otherUser._id})}},
                 {text: `Tạo nhóm với ${otherUser?.displayName}`, showIcon: true, onPress:()=>{navigation.navigate("NewGroupChat", {defaultChoose: otherUser? [otherUser] : []})}},
             ])
             setListActionMessage([
@@ -52,7 +55,7 @@ const useDetails = (defaultConversationId: Conversation) => {
             })
             setListActionUser([
                 {text: 'Đổi tên nhóm', showIcon: true, onPress:()=>{setOpenEditName(true)}},
-                {text: 'Xem thành viên', showIcon: true, onPress:()=>{navigation.navigate("ListMember", { listUser: conversation.participants})}},
+                {text: 'Xem thành viên', showIcon: true, onPress:()=>{navigation.navigate("ListMember", { conversation: conversation})}},
             ])
             setListActionMessage([
                 {text: 'Xem file và phương tiện', showIcon: true, onPress:()=>{navigation.navigate("PhotoAndFile", {conversationId: conversation._id})}},

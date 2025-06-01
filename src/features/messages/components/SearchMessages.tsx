@@ -7,7 +7,7 @@ interface SearchMessagesProps {
     search: string; 
     setSearch: (value: string) => void;
     setIsSearch: (value: boolean) => void;
-    refInput: React.RefObject<TextInput>;
+    refInput: React.RefObject<TextInput | null>;
 }
 
 const SearchMessages = ({refInput, search, setSearch, setIsSearch} : SearchMessagesProps) => {
@@ -17,7 +17,7 @@ const SearchMessages = ({refInput, search, setSearch, setIsSearch} : SearchMessa
     };
 
     const unfocusTextInput = () => {
-        // setIsSearch(false);
+        setIsSearch(false);
     };
 
     const handleTextChange = (text: string) => {

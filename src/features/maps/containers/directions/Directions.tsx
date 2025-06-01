@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, Text } from "react-native"
+import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, Text, ActivityIndicator } from "react-native"
 import HeaderDirection from "./HeaderDirection";
 import getColor from "@/src/styles/Color";
 import MapView, { Marker, Polyline } from "react-native-maps";
@@ -74,80 +74,79 @@ const Directions = () => {
       });
     }
   }, [isMapReady, startLocation, endLocation]);
-      
-    return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container}>
-                <View style={styles.searchContainer}>
-                    <HeaderDirection startLocation={startLocation} endLocation={endLocation} 
-                        openSearch={openSearch} changeTransport={changeTransport} 
-                        reverseRoute={reverseRoute}
-                    />
-                </View>
-
-                {startLocation && endLocation &&
-                <MapView
-                  ref={mapRef}
-                  style={styles.map}
-                  initialRegion={getInitialRegion()} // Đặt vùng ban đầu
-                  onMapReady={() => setIsMapReady(true)} // Xác nhận bản đồ đã sẵn sàng
-                >
-                    <Marker
-                        coordinate={{
-                            latitude: startLocation.latitude,
-                            longitude: startLocation.longitude,
-                        }}
-                        title="Vị trí bắt đầu"
-                    />
-                    <Marker
-                        coordinate={{
-                            latitude: endLocation.latitude,
-                            longitude: endLocation.longitude,
-                        }}
-                        title="Vị trí kết thúc"
-                    />
-                    {coordinates.length > 0 && (
-                      <Polyline coordinates={coordinates} strokeWidth={4} strokeColor="#7DA9FF" />
-                    )}
-                </MapView>
-                }
-                {routeDirections &&
-                <View style={styles.actions}>
-                    <Text style={styles.title}>{formatRouteInfo(routeDirections)}</Text>
-                    <View style={styles.boxActions}>
-                    <CIconButton icon={<Icon name={"place"} size={20} color={Color.white_homologous}/>} 
-                        label=" Bắt đầu"
-                        onSubmit={() => {navigationBegin()}} 
-                        style={{
-                        width: 100,
-                        height: 40,
-                        backColor: Color.mainColor1,
-                        textColor: Color.textColor2,
-                        radius: 50,
-                        shadow: true
-                    }}/>
-                    <CButton
-                        label={"Tạo chuyến đi"}
-                        onSubmit={() => {}} 
-                        style={{
-                            width: 110,
-                            height: 35,
-                            fontSize: 13,
-                            radius: 50,
-                            flex_direction: 'row',
-                            shadow: true
-                        }}
-                    />
-                    </View>
-                </View>}
-                {visiableSearch && <View style={styles.boxSearch}>
-                    <SearchPlace 
-                    onBack={() => {setVisiableSearch(false)}} 
-                    selectedLocation={selectedSearch}/>
-                </View>}
+  
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+            <View style={styles.searchContainer}>
+                <HeaderDirection startLocation={startLocation} endLocation={endLocation} 
+                    openSearch={openSearch} changeTransport={changeTransport} 
+                    reverseRoute={reverseRoute}
+                />
             </View>
-        </TouchableWithoutFeedback>
-    )
+            {(coordinates && startLocation && endLocation)?(
+            <MapView
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={getInitialRegion()} 
+              onMapReady={() => setIsMapReady(true)} // Xác nhận bản đồ đã sẵn sàng
+            >
+                <Marker
+                    coordinate={{
+                        latitude: startLocation.latitude,
+                        longitude: startLocation.longitude,
+                    }}
+                    title="Vị trí bắt đầu"
+                />
+                <Marker
+                    coordinate={{
+                        latitude: endLocation.latitude,
+                        longitude: endLocation.longitude,
+                    }}
+                    title="Vị trí kết thúc"
+                />
+                <Polyline coordinates={coordinates} strokeWidth={4} strokeColor="#7DA9FF" />
+            </MapView>
+            ):(
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+            )}
+            {routeDirections &&
+            <View style={styles.actions}>
+                <Text style={styles.title}>{formatRouteInfo(routeDirections)}</Text>
+                <View style={styles.boxActions}>
+                <CIconButton icon={<Icon name={"place"} size={20} color={Color.white_homologous}/>} 
+                    label=" Bắt đầu"
+                    onSubmit={() => {navigationBegin()}} 
+                    style={{
+                    width: 100,
+                    height: 40,
+                    backColor: Color.mainColor1,
+                    textColor: Color.textColor2,
+                    radius: 50,
+                    shadow: true
+                }}/>
+                <CButton
+                    label={"Tạo chuyến đi"}
+                    onSubmit={() => {}} 
+                    style={{
+                        width: 110,
+                        height: 35,
+                        fontSize: 13,
+                        radius: 50,
+                        flex_direction: 'row',
+                        shadow: true
+                    }}
+                />
+                </View>
+            </View>}
+            {visiableSearch && <View style={styles.boxSearch}>
+                <SearchPlace 
+                onBack={() => {setVisiableSearch(false)}} 
+                selectedLocation={selectedSearch}/>
+            </View>}
+        </View>
+    </TouchableWithoutFeedback>
+  )
 }
 
 const Color = getColor();

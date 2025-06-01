@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, Text, Alert } from "react-native"
+import { View, StyleSheet, Text, Alert } from "react-native"
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
@@ -92,6 +92,8 @@ const SettingsNotify = () => {
                     userId: setting.userId,
                     notifications: notifications,
                     muteUntil: muteUntil,
+                    sos: setting.sos,
+                    active: setting.active,
                     _id: setting._id
                 })
             } else {

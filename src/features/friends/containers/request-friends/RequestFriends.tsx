@@ -22,8 +22,11 @@ const RequestFriends = ({handleScroll} : RequestFriendsProps) => {
 
     useFocusEffect(
         useCallback(() => {
-            getDataFriendsToMe();
-            getDataFriendsToOther();
+            const load = async () => {
+                await getDataFriendsToMe();
+                await getDataFriendsToOther();
+            }
+            load();
         }, [])
     );
     

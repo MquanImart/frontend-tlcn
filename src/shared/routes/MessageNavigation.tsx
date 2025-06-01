@@ -12,6 +12,7 @@ import PhotoAndFile from "@/src/features/messages/containers/conversations/Photo
 import SettingsNotify from "@/src/features/messages/containers/conversations/SettingsNotify";
 import { Conversation, UserDisplay } from "@/src/interface/interface_flex";
 import ListMember from "@/src/features/messages/containers/conversations/ListMember";
+import AddMember from "@/src/features/messages/containers/conversations/AddMember";
 
 export type MessagesDrawerParamList = {
     "Tin nhắn": undefined;
@@ -49,7 +50,8 @@ export type ChatStackParamList = {
   Details: { defaultConversation: Conversation };
   PhotoAndFile: { conversationId: string };
   SettingsNotify: { conversation: Conversation };
-  ListMember: {listUser: UserDisplay[]};
+  ListMember: {conversation: Conversation};
+  AddMember: {conversationId: string, defaultChoose?: UserDisplay[]};
 };
 
 const Stack = createStackNavigator<ChatStackParamList>();
@@ -67,6 +69,7 @@ return (
         <Stack.Screen name="PhotoAndFile" component={PhotoAndFile} />
         <Stack.Screen name="SettingsNotify" component={SettingsNotify} />
         <Stack.Screen name="ListMember" component={ListMember} />
+        <Stack.Screen name="AddMember" component={AddMember} />
     </Stack.Navigator>
 );
 }
