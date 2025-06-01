@@ -15,12 +15,10 @@ interface NotificationListProps {
     onMarkAsUnread: () => void,
     onDelete: () => void
   ) => void;
-  handleScroll: (event: {
-    nativeEvent: { contentOffset: { y: any } };
-  }) => void;
+  handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
   loadMoreNotifications: () => void;
   isLoadingMore: boolean;
-  loading?: boolean; // Thêm prop để hiển thị loading ban đầu
+  loading?: boolean;
 }
 
 const NotificationList: React.FC<NotificationListProps> = ({
@@ -33,7 +31,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   handleScroll,
   loadMoreNotifications,
   isLoadingMore,
-  loading = false, // Mặc định là false nếu không truyền
+  loading = false,
 }) => {
   const colors = getColor();
 
@@ -44,7 +42,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
     return true;
   });
 
-  // Hiển thị loading spinner khi đang tải lần đầu
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -56,7 +53,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
     );
   }
 
-  // Hiển thị thông báo khi không có dữ liệu
   if (filteredNotifications.length === 0) {
     return (
       <View style={styles.noNotifications}>
@@ -71,23 +67,11 @@ const NotificationList: React.FC<NotificationListProps> = ({
     <FlatList
       data={filteredNotifications}
       onScroll={handleScroll}
-      keyExtractor={(item, index) => item._id ? item._id : `notification-${index}`}
+      keyExtractor={(item, index) => (item._id ? item._id : `notification-${index}`)}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <NotificationItem
-          avatar={
-            item?.senderId?.avt?.length > 0
-              ? item.senderId.avt[item.senderId.avt.length - 1].url
-              : "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png"
-          }
-          name={item?.senderId?.displayName || "Người dùng ẩn danh"}
-          message={item?.message || "Không có nội dung"}
-          time={
-            item?.createdAt
-              ? new Date(item.createdAt).toLocaleString()
-              : "Không rõ thời gian"
-          }
-          isUnread={item?.status === "unread"}
+          notification={item}
           onMarkAsRead={() => onMarkAsRead(item._id)}
           onMarkAsUnRead={() => onMarkAsUnRead(item._id)}
           onDelete={() => onDelete(item._id)}

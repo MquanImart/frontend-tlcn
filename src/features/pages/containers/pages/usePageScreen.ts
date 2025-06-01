@@ -1,23 +1,23 @@
-// usePageScreen.tsx
-import { useState, useEffect, useCallback } from "react";
-import { MyPhoto, Page, Address } from "@/src/interface/interface_reference";
-import restClient from "@/src/shared/services/RestClient";
+import { Address, MyPhoto, Page } from "@/src/interface/interface_reference";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
+import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
+import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationProp } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { getUserRole } from "../../utils/test";
-import { NavigationProp } from "@react-navigation/native"; 
-import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation"; 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 const addressesClient = restClient.apiClient.service("apis/addresses");
 const pagesClient = restClient.apiClient.service("apis/pages");
 const notificationsClient = restClient.apiClient.service("apis/notifications");
+const historyViewPagesClient = restClient.apiClient.service("apis/history-page");
 
-type NavigationPropType = NavigationProp<ExploreStackParamList>; 
+type NavigationPropType = NavigationProp<ExploreStackParamList>;
 
 const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
-  const [currentUserId, setCurrentUserId] = useState<string | null> (null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [page, setPage] = useState<Page | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,26 +27,30 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentUserDisplayName, setCurrentUserDisplayName] = useState<string | null>(null);
 
-
   const getUserId = async () => {
-    const id = await AsyncStorage.getItem("userId");
-    const name = await AsyncStorage.getItem("displayName");
-    setCurrentUserId(id);
-    setCurrentUserDisplayName(name); // Lưu displayName
+    try {
+      const id = await AsyncStorage.getItem("userId");
+      const name = await AsyncStorage.getItem("displayName");
+      setCurrentUserId(id);
+      setCurrentUserDisplayName(name);
+    } catch (error) {
+      console.error("Error fetching userId or displayName:", error);
+    }
   };
 
   useEffect(() => {
-    if (currentUserId){
-      fetchPage()
+    if (currentUserId) {
+      fetchPage();
+      recordPageView();
     }
-  }, [currentUserId]);
+  }, [currentUserId, pageId]);
 
   const role = page ? getUserRole(page, currentUserId || "") : "isViewer";
   const pendingInvites = page?.listAdmin?.filter(
     (admin) => admin.state === "pending" && admin.idUser === currentUserId
   ) || [];
 
-  const fetchPage = useCallback(async () => {
+  const fetchPage = async () => {
     try {
       const response = await pagesClient.get(pageId);
       if (response.success) {
@@ -55,19 +59,38 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
         fetchAddress(response.data.address || "");
         setError(null);
       } else {
-        setError(response.messages || "Không thể tải trang");
+        setError(response.message || "Không thể tải trang");
       }
-    } catch (err) {
+    } catch (error) {
       setError("Lỗi khi lấy dữ liệu trang");
-      console.error("❌ API Error:", err);
+      console.error("❌ API Error:", error);
     } finally {
       setLoading(false);
     }
-  }, [pageId]);
+  };
+
+  const recordPageView = async () => {
+    if (!currentUserId || !pageId) {
+      console.warn("Không đủ thông tin để ghi lại lịch sử xem trang.");
+      return;
+    }
+    try {
+      const historyData = {
+        idUser: currentUserId,
+        idPage: pageId,
+      };
+      const response = await historyViewPagesClient.create(historyData);
+      if (!response.success) {
+        console.error("❌ Lỗi khi ghi lại lịch sử xem trang:", response.message);
+      }
+    } catch (error) {
+      console.error("❌ Lỗi API khi ghi lại lịch sử xem trang:", error);
+    }
+  };
 
   useEffect(() => {
-    fetchPage();
-  }, [fetchPage]);
+    getUserId();
+  }, []);
 
   const fetchAvatar = async (avatarId: string) => {
     try {
@@ -77,8 +100,9 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
       } else {
         setAvatar(null);
       }
-    } catch (err) {
+    } catch (error) {
       setError("Lỗi khi lấy dữ liệu ảnh đại diện");
+      console.error("Error fetching avatar:", error);
     }
   };
 
@@ -90,101 +114,153 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
       } else {
         setAddress(null);
       }
-    } catch (err) {
+    } catch (error) {
       setError("Lỗi khi lấy dữ liệu địa chỉ");
-    }
-  };
-
-  const leaveGroup = async (userId: string) => {
-    const isPendingAdmin = page?.listAdmin?.some((admin) => admin.idUser === userId && admin.state === "pending");
-    await pagesClient.patch(`${page?._id}`, {
-      follower: page?.follower?.filter((followerId) => followerId !== userId),
-    });
-    if (isPendingAdmin) {
-      await pagesClient.patch(`${page?._id}`, {
-        listAdmin: page?.listAdmin?.filter((admin) => admin.idUser !== userId),
-      });
-    }
-    fetchPage();
-  };
-
-  const deleteRightAdmin = async (userId: string) => {
-    const isAcceptedAdmin = page?.listAdmin?.some((admin) => admin.idUser === userId && admin.state === "accepted");
-    if (isAcceptedAdmin) {
-      await pagesClient.patch(`${page?._id}`, {
-        listAdmin: page?.listAdmin?.filter((admin) => admin.idUser !== userId),
-      });
-      addFollower(userId);
-      fetchPage();
+      console.error("Error fetching address:", error);
     }
   };
 
   const addFollower = async (userId: string) => {
     try {
-      const updatedFollowers = [...(page?.follower ?? []), userId];
-      const response = await pagesClient.patch(`${page?._id}`, {
-        follower: updatedFollowers,
-      });
+      if (!page?._id || !userId) {
+        Alert.alert("Lỗi", "Thiếu thông tin trang hoặc người dùng.");
+        return;
+      }
+
+      const response = await pagesClient.patch(`${page._id}`, { follower: userId });
+      console.log("Add follower response:", response);
+
       if (response.success) {
         Alert.alert("Thành công", "Đã thêm bạn vào danh sách người theo dõi.");
         fetchPage();
       } else {
-        console.error("❌ Lỗi khi thêm vào người theo dõi", response.message);
+        Alert.alert("Lỗi", response.message || "Không thể thêm người theo dõi.");
+        console.error("❌ Error adding follower:", response.message);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi thêm vào người theo dõi:", error);
+      console.error("❌ Error adding follower:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi thêm người theo dõi. Vui lòng thử lại.");
+    }
+  };
+
+  const leaveGroup = async (userId: string) => {
+    try {
+      if (!page?._id || !userId) {
+        Alert.alert("Lỗi", "Thiếu thông tin trang hoặc người dùng.");
+        return;
+      }
+
+      const isPendingAdmin = page?.listAdmin?.some(
+        (admin) => admin.idUser === userId && admin.state === "pending"
+      );
+
+      const data: any = { removeFollower: userId };
+      if (isPendingAdmin) {
+        data.declineAdmin = userId;
+      }
+
+      const response = await pagesClient.patch(`${page._id}`, data);
+      if (response.success) {
+        Alert.alert("Thành công", "Bạn đã rời khỏi trang.");
+        fetchPage();
+      } else {
+        Alert.alert("Lỗi", response.message || "Không thể rời khỏi trang.");
+        console.error("❌ Error leaving page:", response.message);
+      }
+    } catch (error) {
+      console.error("❌ Error leaving page:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi rời khỏi trang.");
+    }
+  };
+
+  const deleteRightAdmin = async (userId: string) => {
+    try {
+      if (!page?._id || !userId) {
+        Alert.alert("Lỗi", "Thiếu thông tin trang hoặc người dùng.");
+        return;
+      }
+
+      const response = await pagesClient.patch(`${page._id}`, {
+        removeAdmin: userId,
+        addFollower: userId,
+      });
+
+      if (response.success) {
+        Alert.alert("Thành công", "Đã xóa quyền quản trị viên.");
+        fetchPage();
+      } else {
+        Alert.alert("Lỗi", response.message || "Không thể xóa quyền quản trị viên.");
+        console.error("❌ Error deleting admin rights:", response.message);
+      }
+    } catch (error) {
+      console.error("❌ Error deleting admin rights:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi xóa quyền quản trị viên.");
     }
   };
 
   const acceptAdminInvite = async (userId: string) => {
     try {
-      const updatedAdmins = page?.listAdmin?.map((admin) =>
-        admin.idUser === userId && admin.state === "pending"
-          ? { ...admin, state: "accepted" }
-          : admin
-      );
-      const response = await pagesClient.patch(`${page?._id}`, {
-        listAdmin: updatedAdmins,
-        follower: page?.follower?.filter((followerId) => followerId !== userId),
+      if (!page?._id || !userId) {
+        Alert.alert("Lỗi", "Thiếu thông tin trang hoặc người dùng.");
+        return;
+      }
+
+      const response = await pagesClient.patch(`${page._id}`, {
+        acceptAdmin: userId,
+        removeFollower: userId,
       });
+
       if (response.success) {
-        if (page?.idCreater && page.idCreater !== currentUserId) {
+        if (page?.idCreater && page.idCreater !== userId) {
           try {
             await notificationsClient.create({
-              senderId: currentUserId || "", 
+              senderId: userId,
               receiverId: page.idCreater,
-              message: `đã chấp nhận lời mời làm quản trị viên của trang ${page.name}`,
+              message: `${currentUserDisplayName || "Một quản trị viên"} đã chấp nhận lời mời làm quản trị viên của trang ${page.name}`,
               status: "unread",
+              pageId: page._id,
+              relatedEntityType: "Page",
             });
           } catch (notificationError) {
-            console.error("🔴 Lỗi khi gửi thông báo chấp nhận lời mời quản trị viên:", notificationError);
+            console.error("🔴 Error sending admin accept notification:", notificationError);
           }
         }
 
         Alert.alert("Thành công", "Bạn đã chấp nhận lời mời làm quản trị viên.");
         setModalVisible(false);
         fetchPage();
+      } else {
+        Alert.alert("Lỗi", response.message || "Không thể chấp nhận lời mời.");
+        console.error("❌ Error accepting admin invite:", response.message);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi chấp nhận lời mời:", error);
+      console.error("❌ Error accepting admin invite:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi chấp nhận lời mời.");
     }
   };
 
   const declineAdminInvite = async (userId: string) => {
     try {
-      const updatedAdmins = page?.listAdmin?.filter(
-        (admin) => !(admin.idUser === userId && admin.state === "pending")
-      );
-      const response = await pagesClient.patch(`${page?._id}`, {
-        listAdmin: updatedAdmins,
+      if (!page?._id || !userId) {
+        Alert.alert("Lỗi", "Thiếu thông tin trang hoặc người dùng.");
+        return;
+      }
+
+      const response = await pagesClient.patch(`${page._id}`, {
+        declineAdmin: userId,
       });
+
       if (response.success) {
         Alert.alert("Thành công", "Bạn đã từ chối lời mời làm quản trị viên.");
         setModalVisible(false);
         fetchPage();
+      } else {
+        Alert.alert("Lỗi", response.message || "Không thể từ chối lời mời.");
+        console.error("❌ Error declining admin invite:", response.message);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi từ chối lời mời:", error);
+      console.error("❌ Error declining admin invite:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi từ chối lời mời.");
     }
   };
 
@@ -192,7 +268,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     if (pendingInvites.length > 0) {
       setModalVisible(true);
     } else {
-      Alert.alert("Thông báo", "Bạn không có lời mời làm quản trị viên.");
+      Alert.alert("Không có lời mời", "Bạn không có lời mời làm quản trị viên.");
     }
   };
 
@@ -202,7 +278,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     if (role === "isOwner" && page) {
       options.push({
         label: "Chỉnh sửa trang",
-        onPress: () => navigation.navigate("EditPage", { page }), 
+        onPress: () => navigation.navigate("EditPage", { page }),
       });
     }
 
@@ -215,7 +291,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
 
     if (role === "isFollower") {
       options.push({
-        label: "Rời khỏi nhóm",
+        label: "Rời khỏi trang",
         onPress: () => leaveGroup(currentUserId || ""),
         destructive: true,
       });
@@ -231,10 +307,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     if (role === "isAdmin") {
       options.push({
         label: "Xóa quyền quản trị viên",
-        onPress: () => {
-          deleteRightAdmin(currentUserId || "");
-          Alert.alert("Thành công", "Đã xóa quyền quản trị viên.");
-        },
+        onPress: () => deleteRightAdmin(currentUserId || ""),
       });
     }
 
@@ -282,7 +355,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     acceptAdminInvite,
     declineAdminInvite,
     getUserId,
-    currentUserId, setCurrentUserId
+    currentUserId,
   };
 };
 

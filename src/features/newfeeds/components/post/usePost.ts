@@ -1,10 +1,10 @@
+import useCollectionPost from "@/src/features/collections/containers/post/useCollectionPost";
+import { Article } from "@/src/features/newfeeds/interface/article";
+import { Collection, CollectionItem } from "@/src/interface/interface_reference/collection";
+import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { ActionSheetIOS, Alert } from "react-native";
-import { Article } from "@/src/features/newfeeds/interface/article";
-import restClient from "@/src/shared/services/RestClient";
-import { Collection, CollectionItem } from "@/src/interface/interface_reference/collection";
-import useCollectionPost from "@/src/features/collections/containers/post/useCollectionPost";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const reportsClient = restClient.apiClient.service("apis/reports");
 const usersClient = restClient.apiClient.service("apis/users");
@@ -154,6 +154,8 @@ const handleOptions = () => {
               receiverId: article.createdBy._id,
               message: `đã báo cáo bài viết của bạn với lý do: ${selectedReportReason}`,
               status: "unread",
+              articleId: article._id,
+              relatedEntityType: "Article", 
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo báo cáo:", notificationError);

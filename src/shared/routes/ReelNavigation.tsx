@@ -1,10 +1,10 @@
+import MyProfile from "@/src/features/profile/containers/MyProfile";
+import Profile from "@/src/features/profile/containers/Profile";
+import Reel from "@/src/features/reel/containers/Reel/Reel";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import Reel from "@/src/features/reel/containers/Reel/Reel";
-import Profile from "@/src/features/profile/containers/Profile";
-import MyProfile from "@/src/features/profile/containers/MyProfile";
 export type ReelStackParamList = {
-    Reel: undefined;
+    Reel: { reelId?: string }; // <-- T
     Profile: { userId: string };
     MyProfile: undefined;
 };

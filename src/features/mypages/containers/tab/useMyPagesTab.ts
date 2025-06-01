@@ -4,6 +4,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
 import { Page } from "@/src/interface/interface_reference";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const MAX_HOTPAGE = 15;
 
@@ -35,9 +37,18 @@ const useMyPagesTab = (userId: string) => {
     fetchCreatedPages();
   }, []);
 
-  const handleNavigateToPage = (pageId: string) => {
-    navigation.navigate("PageScreen", { pageId, currentUserId: userId });
-  };
+  const handleNavigateToPage = async (pageId: string) => {
+    const userId = await AsyncStorage.getItem("userId");
+    if (userId) {
+      navigation.navigate("PageNavigation", {
+        screen: "PageScreen",
+        params: {
+          pageId,
+          currentUserId: userId,
+          },
+        });
+      }
+    };
 
   const numColumns = 3;
   const fillerCount = (numColumns - (pages.length % numColumns)) % numColumns;

@@ -26,7 +26,7 @@ export const useGroupHome = (groupId: string) => {
 
         const response = await groupSpecificClient.find({
           page: newPage,
-          limit: 5, // Phù hợp với backend
+          limit: 3, 
         });
 
         if (response.success) {

@@ -20,7 +20,7 @@ const Weather: React.FC = () => {
   const navigationWeather = useNavigation<WeatherNavigationProp>();
 
   const [weatherData, setWeatherData] = useState<any[]>([]);
-  const [locationList] = useState<string[]>(["Biên Hòa", "Hồ Chí Minh", "Đà Nẵng"]);
+  const [locationList] = useState<string[]>(["Biên Hòa", "Hồ Chí Minh", "Hà Nội"]);
   const [loading, setLoading] = useState<boolean>(true);
   const apiKey = "93ec152097fc00b3380bffe41fd8be2c"; // API key cho OpenWeatherMap Geocoding
 

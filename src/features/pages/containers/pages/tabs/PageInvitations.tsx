@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
-import MemberCard from "@/src/features/group/components/MemberCard";
+import { Page, User } from "@/src/interface/interface_reference";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
 import getColor from "@/src/styles/Color";
-import { Page, User } from "@/src/interface/interface_reference";
+import React from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MemberCard from "../../../components/MemberCard";
 import usePageInvitations from "./usePageInvitations";
 
 const Color = getColor();

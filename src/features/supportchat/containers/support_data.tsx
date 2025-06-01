@@ -5,7 +5,11 @@ Giới thiệu
 Đây là Ứng dụng VieWay là ứng dụng mạng xã hội du lịch tích hợp công nghệ AI được phát triển bởi nhóm sinh viên Nguyễn Bảo Quốc, Phan Minh Quân, và Vũ Hoàng Gia Bảo tại Trường Đại học Sư phạm Kỹ thuật TP.HCM. Mục tiêu là tạo ra một nền tảng kết nối người dùng, chia sẻ thông tin du lịch, và cá nhân hóa trải nghiệm du lịch tại Việt Nam.
 
 Tính cấp thiết
-Ngành du lịch Việt Nam đang phục hồi mạnh mẽ sau đại dịch Covid-19, với dự kiến 17,6 triệu khách quốc tế vào năm 2024. Tuy nhiên, lượng khách quốc tế chưa đạt mức trước dịch. Ứng dụng này sử dụng AI để cá nhân hóa trải nghiệm, đề xuất điểm đến, và thu hút khách du lịch, đặc biệt là khách quốc tế. Ước tính đến năm 2025, lượng khách du lịch trực tuyến tại Việt Nam sẽ đạt 24 triệu người, tăng 25% so với 2020.
+Bối cảnh: Ngành du lịch Việt Nam phục hồi mạnh mẽ sau Covid-19, dự kiến đón 17,6 triệu khách quốc tế năm 2024 (98% mức trước dịch). Tổng doanh thu du lịch 2022 đạt 495 nghìn tỷ đồng, vượt 23% kế hoạch.
+Vấn đề: Lượng khách quốc tế chưa đạt mức trước dịch (18 triệu năm 2019). Cá nhân hóa trải nghiệm du lịch là yếu tố then chốt để thu hút du khách.
+Giải pháp: Phát triển mạng xã hội du lịch tích hợp AI để:Cá nhân hóa đề xuất điểm đến, dịch vụ dựa trên sở thích người dùng.Tăng cường tương tác, chia sẻ thông tin du lịch.
+Dự kiến: 24 triệu khách du lịch trực tuyến vào 2025 (tăng 25% so với 2020).
+Vai trò AI: Tự động hóa, phân tích dữ liệu lớn, kiểm duyệt nội dung, đề xuất lộ trình, nâng cao trải nghiệm người dùng.
 
 Tính năng chính
 - Xác thực và quản lý người dùng: Đăng nhập, đăng ký, quên mật khẩu, cập nhật hồ sơ cá nhân.
@@ -20,8 +24,7 @@ Tính năng chính
 - Backend: Node.js + Express.js (API RESTful), MongoDB (cơ sở dữ liệu NoSQL).
 - Frontend: React Native (ứng dụng di động cho Android và iOS), TypeScript.
 - Bảo mật: JSON Web Token (JWT) để xác thực và bảo vệ dữ liệu.
-- AI: Tích hợp Google Gemini API để kiểm duyệt nội dung, nhận diện hình ảnh, đề xuất lộ trình, và hỗ trợ chatbot.
- Kết quả dự kiến
+- AI:Kiểm duyệt nội dung: FastText, LSTM, GRU (text); Cloud Vision (hình ảnh).Gợi ý bài viết: Thuật toán Collaborative Filtering.Chatbot: Gemini 1.5 Flash (trả lời nhanh, chi phí thấp).Phân tích ngôn ngữ: PhoBERT (NLP tiếng Việt).
 - Hoàn thiện mạng xã hội du lịch với giao diện di động thân thiện.
 - Tích hợp AI để nâng cao trải nghiệm người dùng, từ đề xuất cá nhân hóa đến hỗ trợ thông tin du lịch.
 - Đáp ứng nhu cầu chia sẻ, kết nối, và khám phá du lịch tại Việt Nam.

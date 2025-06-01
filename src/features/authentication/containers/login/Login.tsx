@@ -8,18 +8,18 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useRef, useState } from "react";
 import {
-    Alert,
-    Image,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const accountClient = restClient.apiClient.service("apis/accounts");
@@ -138,18 +138,6 @@ const Login = () => {
                 <Text style={styles.registerLink}>Quên mật khẩu?</Text>
               </TouchableOpacity>
 
-              {/* Hoặc */}
-              <Text style={styles.orText}>___________ hoặc ___________</Text>
-
-              {/* Đăng nhập với Google */}
-              <TouchableOpacity style={styles.googleButton}>
-                <Image
-                  source={require("../../../../assets/images/iconGoogle.png")}
-                  style={styles.googleIcon}
-                />
-                <Text style={styles.googleButtonText}>Đăng nhập với Google</Text>
-              </TouchableOpacity>
-
               {/* Đăng ký */}
               <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                 <Text style={styles.registerText}>
@@ -216,33 +204,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     marginTop: 5,
-  },
-  orText: {
-    fontSize: 14,
-    color: Color.textColor4,
-    marginVertical: 10,
-    textAlign: "center",
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Color.backGround2,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    width: "85%",
-    height: 50,
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  googleIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  googleButtonText: {
-    fontSize: 16,
-    color: Color.textColor4,
   },
   registerText: {
     fontSize: 14,

@@ -101,6 +101,16 @@ const Post: React.FC<PostProps> = ({
     }
   };
 
+  // New function to handle group name press
+  const handleGroupPress = () => {
+    if (article.groupID?._id) {
+      navigation.navigate("GroupDetailsScreen", {
+        groupId: article.groupID._id,
+        currentUserId: userId,
+      });
+    }
+  };
+
   const renderImage = (photos: Article["listPhoto"]) => {
     if (!photos || photos.length === 0) return null;
 
@@ -203,13 +213,15 @@ const Post: React.FC<PostProps> = ({
                   <Text style={[styles.groupSeparator, { color: colors.textColor3 }]}>
                     •
                   </Text>
-                  <Text
-                    style={[styles.groupName, { color: colors.mainColor2 }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {article.groupID.groupName}
-                  </Text>
+                  <TouchableOpacity onPress={handleGroupPress}>
+                    <Text
+                      style={[styles.groupName, { color: colors.mainColor2 }]}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {article.groupID.groupName}
+                    </Text>
+                  </TouchableOpacity>
                 </>
               )}
             </View>
@@ -232,13 +244,13 @@ const Post: React.FC<PostProps> = ({
         </View>
         <TouchableOpacity
           style={styles.menuButton}
-          onPress={() => !isAdmin && handleOptions()} // Disable for admin
+          onPress={() => !isAdmin && handleOptions()}
           disabled={isAdmin}
         >
           <Ionicons
             name="ellipsis-vertical"
             size={20}
-            color={isAdmin ? colors.textColor3 : colors.textColor1} // Dim icon for admin
+            color={isAdmin ? colors.textColor3 : colors.textColor1}
           />
         </TouchableOpacity>
       </View>
@@ -249,7 +261,7 @@ const Post: React.FC<PostProps> = ({
       <View style={styles.actions}>
         <View style={styles.actionsLeft}>
           <TouchableOpacity
-            onPress={() => !isAdmin && onLike()} // Disable for admin
+            onPress={() => !isAdmin && onLike()}
             disabled={isAdmin}
           >
             <Ionicons
@@ -259,7 +271,7 @@ const Post: React.FC<PostProps> = ({
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => !isAdmin && onCommentPress(article)} // Disable for admin
+            onPress={() => !isAdmin && onCommentPress(article)}
             disabled={isAdmin}
           >
             <Ionicons
@@ -269,7 +281,7 @@ const Post: React.FC<PostProps> = ({
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => !isAdmin && handlePress()} // Disable for admin
+            onPress={() => !isAdmin && handlePress()}
             disabled={isAdmin}
           >
             <Ionicons
@@ -280,7 +292,7 @@ const Post: React.FC<PostProps> = ({
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          onPress={() => !isAdmin && saveArticleToCollection(article._id)} // Disable for admin
+          onPress={() => !isAdmin && saveArticleToCollection(article._id)}
           disabled={isAdmin}
         >
           <Ionicons
@@ -320,7 +332,7 @@ const Post: React.FC<PostProps> = ({
       </View>
 
       <EditModal
-        visible={isEditModalVisible && !isAdmin} // Hide for admin
+        visible={isEditModalVisible && !isAdmin}
         editContent={editContent}
         editScope={editScope}
         editHashtags={editHashtags}
@@ -329,10 +341,10 @@ const Post: React.FC<PostProps> = ({
         setEditHashtags={setEditHashtags}
         onSave={saveEdit}
         onCancel={() => setEditModalVisible(false)}
+        isLoading={false}
       />
-
       <ReportModal
-        isVisible={isReportModalVisible && !isAdmin} // Hide for admin
+        isVisible={isReportModalVisible && !isAdmin}
         onClose={() => setReportModalVisible(false)}
         selectedReason={selectedReportReason}
         setSelectedReason={setSelectedReportReason}
@@ -344,6 +356,7 @@ const Post: React.FC<PostProps> = ({
 
 export default Post;
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,

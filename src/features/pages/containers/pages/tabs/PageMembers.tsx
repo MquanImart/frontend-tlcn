@@ -1,8 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image } from "react-native";
-import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
-import getColor from "@/src/styles/Color";
 import { Page, User } from "@/src/interface/interface_reference";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
+import getColor from "@/src/styles/Color";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React from "react";
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import usePageMembers from "./usePageMembers";
 
 const Color = getColor();
@@ -18,26 +20,73 @@ interface MemberCardProps {
   name: string;
   avatarUrl: string;
   description?: string;
+  userId: string;
+  currentUserId: string;
+  role: string;
+  section: string;
+  navigation: StackNavigationProp<PageStackParamList>;
+  onLongPress: (userId: string, section: string) => void;
 }
 
 interface UserWithAvatar extends User {
   avatarUrl: string;
 }
 
-const MemberCard: React.FC<MemberCardProps> = ({ name, avatarUrl, description }) => {
+const MemberCard: React.FC<MemberCardProps> = ({
+  name,
+  avatarUrl,
+  description,
+  userId,
+  currentUserId,
+  role,
+  section,
+  navigation,
+  onLongPress,
+}) => {
+  const handlePress = () => {
+    console.log(`Navigating to profile for user: ${userId}`);
+    if (userId === currentUserId) {
+      navigation.navigate("ProfileNavigation", {
+        screen: "MyProfile",
+        params: undefined,
+      });
+    } else {
+      navigation.navigate("ProfileNavigation", {
+        screen: "Profile",
+        params: { userId: userId },
+      });
+    }
+  };
+
+  const handleLongPressAction = () => {
+    if (role !== "isOwner" && role !== "isAdmin") {
+      console.log(`Long-press disabled for role: ${role}`);
+      return;
+    }
+    console.log(`Long-press triggered for user: ${userId} in section: ${section}`);
+    onLongPress(userId, section);
+  };
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      onPress={handlePress}
+      onLongPress={handleLongPressAction}
+      delayLongPress={300}
+      style={styles.card}
+      activeOpacity={0.8}
+    >
       <Image source={{ uri: avatarUrl }} style={styles.avatar} />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{name}</Text>
         {description && <Text style={styles.description}>{description}</Text>}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const PageMembers: React.FC<PageMembersProps> = ({ page, currentUserId, role, updatePage }) => {
   const { owner, admins, followers, loading, handleLongPress } = usePageMembers(page, role, updatePage);
+  const navigation = useNavigation<StackNavigationProp<PageStackParamList>>();
 
   const renderSection = (title: string, data: UserWithAvatar[]) => (
     <View style={styles.section}>
@@ -46,9 +95,17 @@ const PageMembers: React.FC<PageMembersProps> = ({ page, currentUserId, role, up
         data={data}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity onLongPress={() => handleLongPress(item._id, title)}>
-            <MemberCard name={item.displayName} avatarUrl={item.avatarUrl} description={item.aboutMe} />
-          </TouchableOpacity>
+          <MemberCard
+            name={item.displayName}
+            avatarUrl={item.avatarUrl}
+            description={item.aboutMe}
+            userId={item._id}
+            currentUserId={currentUserId}
+            role={role}
+            section={title}
+            navigation={navigation}
+            onLongPress={handleLongPress}
+          />
         )}
       />
     </View>
@@ -92,11 +149,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
-    shadowColor: "#000", // Màu bóng
-    shadowOpacity: 0.1, // Độ mờ của bóng
-    shadowOffset: { width: 0, height: 5 }, // Độ lệch bóng
-    shadowRadius: 10, // Bán kính bóng
-    elevation: 3, // Độ nổi trên Android
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 10,
+    elevation: 3,
   },
   avatar: {
     width: 50,
@@ -105,7 +162,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   textContainer: {
-    flex: 1, // Để text chiếm không gian còn lại
+    flex: 1,
   },
   name: {
     fontSize: 16,

@@ -10,7 +10,8 @@ import {
     Platform,
     TouchableWithoutFeedback,
     Keyboard,
-    Alert
+    Alert,
+    ActivityIndicator
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CInput from "@/src/features/authentication/components/CInput";
@@ -25,25 +26,28 @@ type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const InputForgot = () => {
     const [phoneOrMail, setPhoneOrMail] = useState("");
+    const [loading, setLoading] = useState(false); // Add loading state
     const navigation = useNavigation<LoginNavigationProp>();
     
     const isValidEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
+
     const handleSendOtp = async () => {
         if (!phoneOrMail.trim()) {
             Alert.alert("Lỗi", "Vui lòng nhập email của bạn để tiếp tục.");
             return;
         }
     
-        let formattedInput = phoneOrMail.trim(); // Xóa khoảng trắng đầu cuối
+        let formattedInput = phoneOrMail.trim(); // Remove whitespace
     
         if (!isValidEmail(formattedInput)) {
             Alert.alert("Lỗi", "Vui lòng nhập địa chỉ email hợp lệ.");
             return;
         }
     
+        setLoading(true); // Set loading to true when request starts
         try {
             const result = await restClient.apiClient
                 .service("apis/accounts/sendOtp")
@@ -54,7 +58,7 @@ const InputForgot = () => {
                     "Thành công",
                     "Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư!"
                 );
-                navigation.navigate("OtpForgot", { email: formattedInput }); // Chuyển đến màn hình nhập OTP
+                navigation.navigate("OtpForgot", { email: formattedInput });
             } else {
                 Alert.alert("Lỗi", result.message || "Không thể gửi OTP. Vui lòng thử lại.");
             }
@@ -65,6 +69,8 @@ const InputForgot = () => {
             } else {
                 Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định khi gửi OTP.");
             }
+        } finally {
+            setLoading(false); // Reset loading state when request completes
         }
     };
     
@@ -76,7 +82,7 @@ const InputForgot = () => {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <ScrollView 
                     contentContainerStyle={styles.scrollContainer}
-                    keyboardShouldPersistTaps="handled" // Đảm bảo ẩn bàn phím khi chạm vào bất kỳ đâu
+                    keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.container}>
                         {/* Circular image banner */}
@@ -90,13 +96,13 @@ const InputForgot = () => {
 
                         {/* Instruction text */}
                         <Text style={styles.instructionText}>
-                            Nhập email  của bạn
+                            Nhập email của bạn
                         </Text>
 
                         {/* Input field */}
                         <View style={styles.inputContainer}>
                             <CInput
-                                placeholder="Email "
+                                placeholder="Email"
                                 style={{
                                     width: "90%",
                                     height: 50,
@@ -110,19 +116,28 @@ const InputForgot = () => {
                             />
                         </View>
 
-                        {/* Button */}
+                        {/* Button with loading state */}
                         <CButton
-                            label="Gửi mã"
+                            label={loading ? "Đang gửi..." : "Gửi mã"}
                             onSubmit={handleSendOtp}
+                            disabled={loading} // Disable button while loading
                             style={{
                                 width: "90%",
                                 height: 50,
-                                backColor: Color.mainColor1,
+                                backColor: loading ? Color.mainColor1 : Color.mainColor1, // Change background color when loading
                                 textColor: Color.white_homologous,
                                 fontSize: 18,
                                 radius: 25,
                             }}
-                        />
+                        >
+                            {loading && (
+                                <ActivityIndicator
+                                    size="small"
+                                    color={Color.white_homologous}
+                                    style={styles.loadingIndicator}
+                                />
+                            )}
+                        </CButton>
 
                         {/* Footer link */}
                         <View style={styles.footer}>
@@ -178,10 +193,10 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: "100%",
         alignItems: "center",
-        marginBottom: 30, // Thêm khoảng cách giữa input và button
+        marginBottom: 30,
     },
     footer: {
-        marginTop: 120, // Giảm khoảng cách để phù hợp khi bàn phím mở
+        marginTop: 120,
     },
     loginText: {
         color: Color.white_contrast,
@@ -190,5 +205,8 @@ const styles = StyleSheet.create({
     loginLink: {
         color: Color.mainColor2,
         fontWeight: "bold",
+    },
+    loadingIndicator: {
+        marginRight: 10,
     },
 });

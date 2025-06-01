@@ -102,12 +102,6 @@ export default function useReel(
       const data = await response.json();
       return data.image_result.is_sensitive || false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra hình ảnh:", error.message, error.stack);
-      if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Yêu cầu kiểm tra hình ảnh hết thời gian. Vui lòng thử lại!");
-      } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung hình ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
-      }
       return true; // Coi là nhạy cảm để an toàn
     }
   };
@@ -176,7 +170,9 @@ export default function useReel(
                 senderId: userId,
                 receiverId: likedComment._iduser._id,
                 message: notificationMessage,
-                status: "unread"
+                status: "unread",
+                reelId: currentReel._id,
+                relatedEntityType: "Reel",
               });
             } catch (notificationError: any) {
               console.error("🔴 Lỗi khi gửi thông báo like comment:", {
@@ -245,6 +241,8 @@ export default function useReel(
                 receiverId: parentComment._iduser._id,
                 message: `đã trả lời bình luận của bạn`,
                 status: "unread",
+                reelId: currentReel._id,
+                relatedEntityType: "Reel",
               });
             } catch (notificationError) {
               console.error("🔴 Lỗi khi gửi thông báo reply comment:", notificationError);
@@ -280,12 +278,14 @@ export default function useReel(
       
       if (userId !== reelOwner && !wasLikedBefore && isLikedNow) {
         try {
-          const notificationMessage = `đã thích bài viết của bạn`;
+          const notificationMessage = `đã thích bài reels của bạn`;
           await notificationsClient.create({
             senderId: userId,
             receiverId: reelOwner,
             message: notificationMessage,
             status: "unread",
+            reelId: reelId,
+            relatedEntityType: "Reel",
           });
         } catch (notificationError: any) {
           console.error("🔴 Lỗi khi gửi thông báo:", {
@@ -357,8 +357,10 @@ export default function useReel(
               await notificationsClient.create({
                 senderId: userId,
                 receiverId: currentReel.createdBy._id,
-                message: `đã bình luận bài đăng của bạn`,
+                message: `đã bình luận bài reels của bạn`,
                 status: "unread",
+                reelId: currentReel._id,
+                relatedEntityType: "Reel",
               });
             } catch (notificationError) {
               console.error("🔴 Lỗi khi gửi thông báo comment:", notificationError);

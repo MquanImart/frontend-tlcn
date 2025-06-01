@@ -1,15 +1,14 @@
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
-import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import * as ImagePicker from "expo-image-picker";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -24,6 +23,7 @@ import {
   View,
 } from "react-native";
 import Modal from "react-native-modal";
+import useArticleDetail from "./useArticleDetail";
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -32,53 +32,36 @@ type ArticleDetailNavigationProp = StackNavigationProp<NewFeedParamList, "Articl
 
 interface RouteParams {
   articleId: string;
+  commentId?: string;
 }
 
 export default function ArticleDetail() {
   const navigation = useNavigation<ArticleDetailNavigationProp>();
   const route = useRoute();
-  const { articleId } = route.params as RouteParams;
-  const [selectedMedia, setSelectedMedia] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const { articleId, commentId } = route.params as RouteParams;
 
   const {
-    getArticleById,
-    isModalVisible,
+    userId,
     currentArticle,
+    flatComments,
+    isModalVisible,
     newReply,
+    setNewReply,
+    selectedMedia,
+    isCommentChecking,
+    isLoading,
     openComments,
     closeComments,
     likeComment,
     replyToComment,
-    setNewReply,
     likeArticle,
     calculateTotalComments,
     handleAddComment,
     deleteArticle,
     editArticle,
-    getUserId,
-    userId,
     pickMedia,
-    selectedMedia: newFeedSelectedMedia,
-  } = useNewFeed([], () => {});
-
-  useEffect(() => {
-    const fetchArticle = async () => {
-      const result = await getArticleById(articleId);
-    };
-    fetchArticle();
-    getUserId();
-  }, [articleId, getArticleById, getUserId]);
-
-  const handlePickMedia = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsMultipleSelection: false,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setSelectedMedia(result.assets);
-    }
-  };
+    commentListRef,
+  } = useArticleDetail(articleId, commentId);
 
   return (
     <KeyboardAvoidingView
@@ -87,26 +70,31 @@ export default function ArticleDetail() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
       <CHeaderIcon
-        label={"Bài viết"}
-        IconLeft={"arrow-back"}
+        label="Bài viết"
+        IconLeft="arrow-back"
         onPressLeft={() => navigation.goBack()}
         onPressRight={() => {}}
       />
 
-      {currentArticle ? (
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.mainColor1} />
+          <Text style={[styles.loadingText, { color: colors.textColor1 }]}>Đang tải...</Text>
+        </View>
+      ) : currentArticle ? (
         <View style={styles.postContainer}>
           <Post
             article={currentArticle}
             userId={userId || ""}
-            onCommentPress={() => openComments(currentArticle)}
-            onLike={() => likeArticle(currentArticle._id, currentArticle.createdBy._id)}
+            onCommentPress={openComments}
+            onLike={likeArticle}
             deleteArticle={deleteArticle}
             editArticle={editArticle}
           />
         </View>
       ) : (
         <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: colors.textColor1 }]}>Đang tải...</Text>
+          <Text style={[styles.loadingText, { color: colors.textColor1 }]}>Không thể tải bài viết</Text>
         </View>
       )}
 
@@ -126,7 +114,7 @@ export default function ArticleDetail() {
             <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
               <View style={styles.commentHeader}>
                 <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
-                  {calculateTotalComments(currentArticle?.comments || [])} bình luận
+                  {calculateTotalComments()} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
                   <Ionicons name="close" size={24} color={colors.textColor1} />
@@ -134,7 +122,8 @@ export default function ArticleDetail() {
               </View>
 
               <FlatList
-                data={currentArticle?.comments || []}
+                ref={commentListRef}
+                data={flatComments} // Use flatComments
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                   <CommentItem
@@ -142,11 +131,19 @@ export default function ArticleDetail() {
                     comment={item}
                     onLike={likeComment}
                     onReply={replyToComment}
+                    isHighlighted={item._id === commentId}
                   />
                 )}
                 showsVerticalScrollIndicator={true}
                 contentContainerStyle={styles.commentList}
                 keyboardShouldPersistTaps="handled"
+                onScrollToIndexFailed={(info) => {
+                  console.warn("Failed to scroll to comment index:", info);
+                  commentListRef.current?.scrollToIndex({
+                    index: Math.min(info.index, (flatComments.length || 1) - 1),
+                    animated: true,
+                  });
+                }}
               />
 
               {selectedMedia.length > 0 && (
@@ -158,7 +155,7 @@ export default function ArticleDetail() {
               )}
 
               <View style={styles.commentInputContainer}>
-                <TouchableOpacity onPress={handlePickMedia}>
+                <TouchableOpacity onPress={pickMedia}>
                   <Ionicons name="image" size={24} color={colors.mainColor1} />
                 </TouchableOpacity>
                 <TextInput
@@ -168,9 +165,13 @@ export default function ArticleDetail() {
                   value={newReply}
                   onChangeText={setNewReply}
                 />
-                <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={20} color={colors.mainColor1} />
-                </TouchableOpacity>
+                {isCommentChecking ? (
+                  <ActivityIndicator size="small" color={colors.mainColor1} />
+                ) : (
+                  <TouchableOpacity onPress={handleAddComment}>
+                    <Ionicons name="send" size={20} color={colors.mainColor1} />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </TouchableWithoutFeedback>

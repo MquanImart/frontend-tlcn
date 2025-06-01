@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
 import MemberCard from "@/src/features/group/components/MemberCard";
+import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { useGroupMembers } from "./useGroupMembers";
-import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
 
 const Color = getColor();
 
@@ -21,6 +23,7 @@ interface Member {
 }
 
 const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, role }) => {
+  const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { loading, groupData, handleLongPress } = useGroupMembers(groupId, currentUserId, role);
 
   const renderSection = (title: string, data: Member[]) => (
@@ -30,21 +33,17 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            onLongPress={() => {
-              const options = handleLongPress(item.id, title);
-              if (options.length > 0) {
-                showActionSheet(options);
-              }
-            }}
-            disabled={role === "Guest" || role === "Member"}
-          >
-            <MemberCard
-              name={item.name}
-              avatar={item.avatar}
-              description={item.description || "Thành viên nhóm"}
-            />
-          </TouchableOpacity>
+          <MemberCard
+            name={item.name}
+            avatar={item.avatar}
+            description={item.description || "Thành viên nhóm"}
+            memberUserId={item.id}
+            currentUserId={currentUserId}
+            role={role} // Pass role
+            section={title} // Pass section title
+            navigation={navigation}
+            onLongPress={handleLongPress} // Pass handleLongPress
+          />
         )}
       />
     </View>
@@ -72,7 +71,7 @@ export default GroupMembers;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.backGround, // Fixed from backGround
     padding: 15,
   },
   section: {

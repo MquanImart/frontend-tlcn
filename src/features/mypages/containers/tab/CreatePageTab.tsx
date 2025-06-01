@@ -1,19 +1,19 @@
+import getColor from "@/src/styles/Color";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 import React from "react";
 import {
-  View,
+  ActivityIndicator,
+  Image,
+  Modal,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Image,
-  Platform,
-  Modal,
-  ActivityIndicator,
+  View,
 } from "react-native";
-import getColor from "@/src/styles/Color";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useCreatePageTab } from "./useCreatePageTab";
 
@@ -229,7 +229,7 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Đường/Phố *"
+        placeholder="Đường/Phố (tùy chọn)"
         placeholderTextColor={Color.textColor3}
         value={address.street}
         onChangeText={(text) => setAddress({ ...address, street: text })}
@@ -237,7 +237,7 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Tên địa điểm (tuỳ chọn)"
+        placeholder="Tên địa điểm (tùy chọn)"
         placeholderTextColor={Color.textColor3}
         value={address.placeName}
         onChangeText={(text) => setAddress({ ...address, placeName: text })}
