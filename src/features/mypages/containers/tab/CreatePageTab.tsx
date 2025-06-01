@@ -118,12 +118,13 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
               style={styles.modalPicker}
               enabled={!isLoading}
             >
-              <Picker.Item label="Chọn tỉnh/thành phố *" value="" />
+              <Picker.Item label="Chọn tỉnh/thành phố *" value="" color={Color.white_contrast}/>
               {provinces.map((province) => (
                 <Picker.Item
                   key={province.code}
                   label={province.name}
                   value={province.code.toString()}
+                  color={Color.white_contrast}
                 />
               ))}
             </Picker>
@@ -163,12 +164,13 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
               style={styles.modalPicker}
               enabled={districts.length > 0 && !isLoading}
             >
-              <Picker.Item label="Chọn quận/huyện *" value="" />
+              <Picker.Item label="Chọn quận/huyện *" value="" color={Color.white_contrast}/>
               {districts.map((district) => (
                 <Picker.Item
                   key={district.code}
                   label={district.name}
                   value={district.code.toString()}
+                  color={Color.white_contrast}
                 />
               ))}
             </Picker>
@@ -208,12 +210,13 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
               style={styles.modalPicker}
               enabled={wards.length > 0 && !isLoading}
             >
-              <Picker.Item label="Chọn phường/xã *" value="" />
+              <Picker.Item label="Chọn phường/xã *" value="" color={Color.white_contrast}/>
               {wards.map((ward) => (
                 <Picker.Item
                   key={ward.code}
                   label={ward.name}
                   value={ward.code.toString()}
+                  color={Color.white_contrast}
                 />
               ))}
             </Picker>

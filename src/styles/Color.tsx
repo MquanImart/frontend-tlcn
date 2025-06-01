@@ -14,7 +14,7 @@ interface Color {
     textColor2: string;
     textColor3: string;
     textColor4: string;
-    textColor5: String,
+    textColor5: string;
     borderColor1: string;
     borderColorwb: string;
     inputBackGround: string;
@@ -68,4 +68,5 @@ const getColor = () => {
         return darkColor;
     }
 }
+
 export default getColor;
