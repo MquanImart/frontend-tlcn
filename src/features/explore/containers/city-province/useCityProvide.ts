@@ -139,6 +139,10 @@ const useCityProvince = (provinceId: string) => {
     }
   };
 
+  const handleChangeTab = (newTab: string) => {
+    setCurrTab(newTab);
+    // scrollY.setValue(0);
+  }
   return {
     tabs,
     currTab,
@@ -159,7 +163,8 @@ const useCityProvince = (provinceId: string) => {
     isLoadingArticles,
     error,
     hasLoadedInitialArticles,
-    totalArticles
+    totalArticles,
+    handleChangeTab
   };
 };
 
