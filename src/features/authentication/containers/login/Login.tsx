@@ -27,7 +27,7 @@ const Color = getColor();
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("21110741@student.hcmute.edu.vn");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("phanquanhcmute@gmail.com");
   const [password, setPassword] = useState<string>("123456");
   const navigation = useNavigation<AuthNavigationProp>();
 

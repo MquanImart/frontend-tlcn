@@ -268,6 +268,7 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
           mode="time"
           display={Platform.OS === "ios" ? "spinner" : "clock"}
           onChange={onTimeOpenChange}
+          textColor="black"
         />
       )}
       <TouchableOpacity
@@ -283,6 +284,7 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
           mode="time"
           display={Platform.OS === "ios" ? "spinner" : "clock"}
           onChange={onTimeCloseChange}
+          textColor="black"
         />
       )}
 
