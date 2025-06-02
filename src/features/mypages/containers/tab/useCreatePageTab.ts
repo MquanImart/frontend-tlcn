@@ -1,6 +1,9 @@
 import env from "@/env";
 import { Address } from "@/src/interface/interface_reference";
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
@@ -14,6 +17,8 @@ const pagesClient = restClient.apiClient.service("apis/pages");
 // Định nghĩa API Key từ biến môi trường (nên cấu hình trong .env)
 
 export const useCreatePageTab = (userId: string) => {
+  type NavigationProps = StackNavigationProp<PageStackParamList>;
+  const navigation = useNavigation<NavigationProps>();
   const [pageName, setPageName] = useState("");
   const [avtUri, setAvtUri] = useState<string | null>(null);
   const [address, setAddress] = useState<Address>({
@@ -279,7 +284,24 @@ export const useCreatePageTab = (userId: string) => {
         setSelectedHobbies([]);
         setDistricts([]);
         setWards([]);
-        Alert.alert("Thành công","Page đã được tạo thành công!");
+
+        const newPageId = response.data._id; 
+
+        Alert.alert("Thành công", "Page đã được tạo thành công!", [
+          {
+            text: "OK",
+            onPress: () => {
+              // Kiểm tra stack navigation
+              if (navigation.getState().routeNames.includes("PageScreen")) {
+                navigation.navigate("PageScreen", { pageId: newPageId, currentUserId: userId });
+              } else {
+                console.error("PageScreen is not defined in navigation stack");
+                Alert.alert("Lỗi", "Không thể điều hướng đến PageScreen. Vui lòng kiểm tra cấu hình navigation.");
+              }
+            },
+          },
+        ]);
+
       } else {
         throw new Error(response.messages || "Tạo page thất bại");
       }

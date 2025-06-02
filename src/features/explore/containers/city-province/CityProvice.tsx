@@ -10,17 +10,16 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Animated,
-    Dimensions,
-    FlatList,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import Modal from "react-native-modal";
 import CardPage from "../../components/CardPage";
@@ -81,10 +80,9 @@ const CityProvince = () => {
     editArticle,
   } = useNewFeed(articles, setArticles);
 
-const onScrollAnimated = Animated.event(
-  [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-  { useNativeDriver: true }
-);
+  const onScrollAnimated = Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+    useNativeDriver: true,
+  });
 
   return (
     <View style={styles.container}>
@@ -108,57 +106,57 @@ const onScrollAnimated = Animated.event(
               </View>
             </LinearGradient>
           </Animated.View>
-          <View style={styles.paddingAnimated}/>
+          <View style={styles.paddingAnimated} />
           <View style={[styles.contentListContainer]}>
-              <Animated.FlatList
-                style={{
-                  flex: 1,
-                  paddingTop: 300,
-                  display: currTab === tabs[0].label ? 'flex' : 'none',
-                }}
-                data={articles}
-                keyExtractor={(item) => item._id}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <Post
-                    userId={userId || ""}
-                    article={item}
-                    onCommentPress={() => openComments(item)}
-                    onLike={() => likeArticle(item._id, item.createdBy._id)}
-                    deleteArticle={deleteArticle}
-                    editArticle={editArticle}
-                  />
-                )}
-                onScroll={onScrollAnimated}
-                scrollEventThrottle={16}
-                onEndReached={loadMoreArticles}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={
-                  isLoadingArticles ? (
-                    <View style={styles.footer}>
-                      <ActivityIndicator size="large" color={colors.mainColor1} />
-                    </View>
-                  ) : null
-                }
-                ListEmptyComponent={
-                  <View style={styles.centered}>
-                    <Text style={styles.emptyText}>
-                      {isLoadingArticles ? "Đang tải..." : error || "Không có bài viết nào"}
-                    </Text>
+            <Animated.FlatList
+              style={{
+                flex: 1,
+                paddingTop: 300,
+                display: currTab === tabs[0].label ? "flex" : "none",
+              }}
+              data={articles}
+              keyExtractor={(item) => item._id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <Post
+                  userId={userId || ""}
+                  article={item}
+                  onCommentPress={() => openComments(item)}
+                  onLike={() => likeArticle(item._id, item.createdBy._id)}
+                  deleteArticle={deleteArticle}
+                  editArticle={editArticle}
+                />
+              )}
+              onScroll={onScrollAnimated}
+              scrollEventThrottle={16}
+              onEndReached={loadMoreArticles}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={
+                isLoadingArticles ? (
+                  <View style={styles.footer}>
+                    <ActivityIndicator size="large" color={colors.mainColor1} />
                   </View>
-                }
-              />
-              <Animated.ScrollView
-                style={{
-                  flex: 1,
-                  display: currTab === tabs[0].label ? 'none': 'flex',
-                }}
-                onScroll={onScrollAnimated}
-                scrollEventThrottle={16}
-                contentContainerStyle={styles.scrollViewContent}
-              >
-                <View style={{height: 300}}/>
-                <View style={{height: WINDOW_HEIGHT-300}}>
+                ) : null
+              }
+              ListEmptyComponent={
+                <View style={styles.centered}>
+                  <Text style={styles.emptyText}>
+                    {isLoadingArticles ? "Đang tải..." : error || "Không có bài viết nào"}
+                  </Text>
+                </View>
+              }
+            />
+            <Animated.ScrollView
+              style={{
+                flex: 1,
+                display: currTab === tabs[0].label ? "none" : "flex",
+              }}
+              onScroll={onScrollAnimated}
+              scrollEventThrottle={16}
+              contentContainerStyle={styles.scrollViewContent}
+            >
+              <View style={{ height: 300 }} />
+              <View style={{ height: WINDOW_HEIGHT - 300 }}>
                 {currTab === tabs[1].label ? (
                   hotPages ? (
                     <View style={styles.listPage}>
@@ -196,15 +194,11 @@ const onScrollAnimated = Animated.event(
                     <ActivityIndicator size="large" color={colors.mainColor1} />
                   </View>
                 )}
-                </View>
-              </Animated.ScrollView>
+              </View>
+            </Animated.ScrollView>
           </View>
 
-          <Modal
-            isVisible={isModalVisible}
-            onBackdropPress={closeComments}
-            style={styles.modal}
-          >
+          <Modal isVisible={isModalVisible} onBackdropPress={closeComments} style={styles.modal}>
             <View style={styles.commentContainer}>
               <View style={styles.commentHeader}>
                 <Text style={styles.commentTitle}>
@@ -218,12 +212,12 @@ const onScrollAnimated = Animated.event(
                 data={currentArticle?.comments || []}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                 <CommentItem
+                  <CommentItem
                     userId={userId || ""}
                     comment={item}
                     onLike={likeComment}
                     onReply={replyToComment}
-                />
+                  />
                 )}
               />
               <View style={styles.commentInputContainer}>
@@ -361,8 +355,8 @@ const styles = StyleSheet.create({
     backgroundColor: Color.backGround,
   },
   paddingAnimated: {
-    height: 220
-  }
+    height: 220,
+  },
 });
 
 export default CityProvince;

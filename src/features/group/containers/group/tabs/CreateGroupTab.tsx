@@ -1,26 +1,26 @@
-import React from "react";
-import { 
-  View, 
-  StyleSheet, 
-  FlatList, 
-  TextInput, 
-  TouchableOpacity, 
-  Text, 
-  Image, 
-  ActivityIndicator, 
-  KeyboardAvoidingView, 
-  Platform 
-} from "react-native";
+import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import useCreateGroup from "./useCreateGroup";
-import getColor from "@/src/styles/Color";
 
 const Color = getColor();
 
 interface CreateGroupProps {
   userId: string;
-  handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
+  handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
@@ -167,19 +167,13 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
             content: (
               <View>
                 <Text style={styles.label}>Ảnh đại diện</Text>
-                <TouchableOpacity 
-                  style={styles.filePicker} 
-                  onPress={handlePickAvatar}
-                >
+                <TouchableOpacity style={styles.filePicker} onPress={handlePickAvatar}>
                   <Text style={styles.filePickerText}>
                     {avatar ? "Đổi ảnh đại diện" : "Chọn ảnh"}
                   </Text>
                 </TouchableOpacity>
                 {avatar && (
-                  <Image
-                    source={{ uri: avatar.uri }}
-                    style={styles.avatarPreview}
-                  />
+                  <Image source={{ uri: avatar.uri }} style={styles.avatarPreview} />
                 )}
               </View>
             ),
@@ -187,17 +181,17 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
           {
             key: "Nút tạo nhóm",
             content: (
-              <TouchableOpacity 
-              style={styles.createButton} 
-              onPress={handleCreateGroup}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.createButtonText}>Tạo Nhóm</Text>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.createButton, loading && styles.disabledButton]}
+                onPress={handleCreateGroup}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.createButtonText}>Tạo Nhóm</Text>
+                )}
+              </TouchableOpacity>
             ),
           },
         ]}
@@ -288,12 +282,6 @@ const styles = StyleSheet.create({
   filePickerText: {
     color: Color.textColor3,
   },
-  selectedFile: {
-    color: Color.textColor3,
-    fontSize: 12,
-    textAlign: "center",
-    marginBottom: 15,
-  },
   createButton: {
     backgroundColor: Color.mainColor1,
     padding: 15,
@@ -312,6 +300,9 @@ const styles = StyleSheet.create({
     borderRadius: 80,
     alignSelf: "center",
     marginTop: 10,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
 });
 

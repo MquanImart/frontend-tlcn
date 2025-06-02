@@ -49,7 +49,7 @@ const usePostDialog = (userId: string) => {
     if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout 90s
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
           method: "POST",
@@ -102,7 +102,7 @@ const usePostDialog = (userId: string) => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000); // Timeout 90s
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 90s
 
       const formData = new FormData();
       for (const media of imageAssets) {

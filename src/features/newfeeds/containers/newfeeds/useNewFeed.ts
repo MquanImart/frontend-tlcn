@@ -51,7 +51,7 @@ export default function useNewFeed(
     if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
           method: "POST",
@@ -97,7 +97,7 @@ export default function useNewFeed(
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
       const formData = new FormData();
       for (const media of imageAssets) {
@@ -541,16 +541,6 @@ export default function useNewFeed(
       return { success: false, messages: "Lỗi: userId không tồn tại" };
     }
 
-    const cacheKey = `articles_${userId}_${page}_${limit}`;
-    const cachedData = await AsyncStorage.getItem(cacheKey);
-
-    if (cachedData && page === 1) {
-      const parsedData = JSON.parse(cachedData);
-      setCurrentPage(parsedData.currentPage);
-      setTotalPages(parsedData.totalPages);
-      setLoadingMore(false);
-      return { success: true, data: parsedData };
-    }
 
     const recommendationsClientWithUser = restClient.apiClient.service(`apis/recommendations/${userId}`);
     const result = await recommendationsClientWithUser.find({
@@ -561,10 +551,6 @@ export default function useNewFeed(
     if (result.success) {
       setCurrentPage(result.data.currentPage);
       setTotalPages(result.data.totalPages);
-
-      if (!cachedData || page > 1) {
-        await AsyncStorage.setItem(cacheKey, JSON.stringify(result.data));
-      }
 
       return {
         success: true,

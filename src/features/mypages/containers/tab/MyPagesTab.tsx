@@ -41,7 +41,6 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
         images={item.avt || "https://picsum.photos/200"}
         name={item.name} // name là required trong Page
         country={"Viet Nam"} // Giá trị mặc định vì Page không có country
-        distance={2.3} // Giá trị mặc định vì Page không có distance
         size={{ width: "32%", height: 160 }}
         onPress={() => handleNavigateToPage(item._id)}
       />

@@ -54,7 +54,7 @@ export default function usePost(
     if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
           method: "POST",
@@ -104,7 +104,7 @@ export default function usePost(
     }
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       const formData = new FormData();
       for (const media of mediaAssets) {
         const resizedUri = await ImageManipulator.manipulateAsync(
