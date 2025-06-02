@@ -3,15 +3,15 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { Page } from "@/src/interface/interface_reference";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PageProvince } from "@/src/features/explore/containers/city-province/interface";
 
 
 const MAX_HOTPAGE = 15;
 
 const useMyPagesTab = (userId: string) => {
   const navigation = useNavigation<StackNavigationProp<ExploreStackParamList>>();
-  const [pages, setPages] = useState<Page[]>([]);
+  const [pages, setPages] = useState<PageProvince[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,9 +52,9 @@ const useMyPagesTab = (userId: string) => {
 
   const numColumns = 3;
   const fillerCount = (numColumns - (pages.length % numColumns)) % numColumns;
-  const filledData: (Page & { isFiller?: boolean })[] = [
+  const filledData: (PageProvince & { isFiller?: boolean })[] = [
     ...pages, // Các Page thực tế
-    ...Array(fillerCount).fill({ _id: `filler-${Math.random()}`, isFiller: true } as Page & { isFiller: boolean }), // Filler items
+    ...Array(fillerCount).fill({ _id: `filler-${Math.random()}`, isFiller: true } as PageProvince & { isFiller: boolean }), // Filler items
   ];
 
   return {
