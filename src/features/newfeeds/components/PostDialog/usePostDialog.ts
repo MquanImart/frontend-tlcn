@@ -47,9 +47,10 @@ const usePostDialog = (userId: string) => {
 
   const checkTextContent = async (text: string): Promise<boolean> => {
     if (!text.trim()) return false;
+    console.time("CheckTextContent"); // Bắt đầu đo thời gian kiểm tra văn bản
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout 90s
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout 3s
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
           method: "POST",
@@ -67,6 +68,7 @@ const usePostDialog = (userId: string) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
+      console.timeEnd("CheckTextContent"); // Kết thúc đo thời gian
       return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
     } catch (error: any) {
       console.error("❌ Lỗi kiểm tra văn bản:", {
@@ -74,8 +76,9 @@ const usePostDialog = (userId: string) => {
         status: error.response?.status,
         stack: error.stack,
       });
+      console.timeEnd("CheckTextContent"); // Đảm bảo kết thúc đo thời gian ngay cả khi có lỗi
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (3s). Vui lòng thử lại!");
         return false;
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
@@ -100,9 +103,10 @@ const usePostDialog = (userId: string) => {
       }
     }
 
+    console.time("CheckMediaContent"); // Bắt đầu đo thời gian kiểm tra hình ảnh
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 90s
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
 
       const formData = new FormData();
       for (const media of imageAssets) {
@@ -156,6 +160,7 @@ const usePostDialog = (userId: string) => {
         }
       }
 
+      console.timeEnd("CheckMediaContent"); // Kết thúc đo thời gian
       if (sensitiveImageDetected) {
         Alert.alert("Cảnh báo nội dung nhạy cảm", `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
         return true;
@@ -168,9 +173,9 @@ const usePostDialog = (userId: string) => {
         name: error.name,
         stack: error.stack,
       });
-
+      console.timeEnd("CheckMediaContent"); // Đảm bảo kết thúc đo thời gian ngay cả khi có lỗi
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (10s). Vui lòng dùng ảnh nhỏ hơn!");
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
@@ -195,6 +200,7 @@ const usePostDialog = (userId: string) => {
     }
 
     setIsLoading(true);
+    console.time("HandlePost"); // Bắt đầu đo thời gian toàn bộ quá trình đăng bài
 
     try {
       // Kiểm tra nội dung văn bản
@@ -254,8 +260,15 @@ const usePostDialog = (userId: string) => {
         } as any);
       });
 
+      console.time("BackendCreateArticle"); // Bắt đầu đo thời gian gửi yêu cầu backend
       const response = await articlesClient.create(formData);
+      console.timeEnd("BackendCreateArticle"); // Kết thúc đo thời gian backend
+
       if (response.success) {
+        // Ghi log thời gian xử lý từ backend (nếu có)
+        if (response.backendProcessingTime) {
+          console.log(`⏱️ Backend processing time: ${response.backendProcessingTime} ms`);
+        }
         Alert.alert("Thông báo", "🎉 Bài viết đã được đăng thành công!");
         toggleModal();
       } else {
@@ -265,6 +278,7 @@ const usePostDialog = (userId: string) => {
       console.error("❌ Lỗi khi đăng bài viết:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi đăng bài. Vui lòng thử lại!");
     } finally {
+      console.timeEnd("HandlePost"); // Kết thúc đo thời gian toàn bộ quá trình
       setIsLoading(false);
     }
   };

@@ -51,7 +51,7 @@ export default function useNewFeed(
     if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 300);
       const response = await retryRequest(() =>
         fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
           method: "POST",
@@ -72,7 +72,6 @@ export default function useNewFeed(
       return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
     } catch (error: any) {
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
         return false;
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
