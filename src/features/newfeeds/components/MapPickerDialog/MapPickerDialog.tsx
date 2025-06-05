@@ -1,20 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Modal,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
-import { Ionicons } from "@expo/vector-icons";
-import * as Location from "expo-location";
-import getColor from "@/src/styles/Color";
 import { Address } from "@/src/interface/interface_reference";
+import getColor from "@/src/styles/Color";
+import React from "react";
+import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import MapView, { Marker } from "react-native-maps";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import useMapPicker from "./useMapPicker";
 
-const colors = getColor();
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const Color = getColor();
 
 interface MapPickerDialogProps {
   isVisible: boolean;
@@ -23,297 +17,250 @@ interface MapPickerDialogProps {
 }
 
 const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, onConfirm }) => {
-  const [selectedCoords, setSelectedCoords] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [address, setAddress] = useState<Address | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const mapRef = useRef<MapView>(null);
+  const {
+    location,
+    mapRef,
+    selectedMarker,
+    details,
+    listSearch,
+    search,
+    isSearch,
+    setSearch,
+    setIsSearch,
+    handleMapPress,
+    fetchPlaces,
+    getLatLngFromPlaceId,
+    confirmLocation,
+  } = useMapPicker(onConfirm, onClose);
 
-  // Lấy vị trí hiện tại khi mở dialog
-  useEffect(() => {
-    if (isVisible) {
-      (async () => {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.warn("Quyền vị trí bị từ chối");
-          return;
-        }
-        const loc = await Location.getCurrentPositionAsync({});
-        const coords = {
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-        };
-        setCurrentLocation(coords);
-        // Di chuyển bản đồ đến vị trí hiện tại
-        if (mapRef.current) {
-          mapRef.current.animateToRegion({
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        }
-      })();
-    }
-  }, [isVisible]);
-
-  // Xử lý khi nhấn vào bản đồ
-  const handleMapPress = async (event: any) => {
-    const coords = event.nativeEvent.coordinate;
-    setSelectedCoords(coords);
-    setIsLoading(true);
-
-    try {
-      const addressResponse = await Location.reverseGeocodeAsync(coords);
-      if (addressResponse.length > 0) {
-        const firstAddress = addressResponse[0];
-        const newAddress: Address = {
-          province: firstAddress.region || "",
-          district: firstAddress.district || "",
-          ward: firstAddress.subregion || "",
-          street: firstAddress.street || "",
-          placeName: [
-            firstAddress.name,
-            firstAddress.street,
-            firstAddress.city,
-            firstAddress.region,
-          ].filter(Boolean).join(", "),
-          lat: coords.latitude,
-          long: coords.longitude,
-        };
-        setAddress(newAddress);
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy địa chỉ:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Xử lý tìm kiếm địa chỉ
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-
-    setIsLoading(true);
-    try {
-      const results = await Location.geocodeAsync(searchQuery);
-      if (results.length > 0) {
-        const { latitude, longitude } = results[0];
-        const coords = { latitude, longitude };
-        setSelectedCoords(coords);
-
-        // Di chuyển bản đồ đến vị trí tìm kiếm
-        if (mapRef.current) {
-          mapRef.current.animateToRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        }
-
-        // Lấy địa chỉ chi tiết
-        const addressResponse = await Location.reverseGeocodeAsync(coords);
-        if (addressResponse.length > 0) {
-          const firstAddress = addressResponse[0];
-          const newAddress: Address = {
-            province: firstAddress.region || "",
-            district: firstAddress.district || "",
-            ward: firstAddress.subregion || "",
-            street: firstAddress.street || "",
-            placeName: [
-              firstAddress.name,
-              firstAddress.street,
-              firstAddress.city,
-              firstAddress.region,
-            ].filter(Boolean).join(", "),
-            lat: coords.latitude,
-            long: coords.longitude,
-          };
-          setAddress(newAddress);
-        }
-      } else {
-        console.warn("Không tìm thấy địa điểm nào!");
-      }
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm địa chỉ:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Xác nhận và gửi dữ liệu về
-  const handleConfirm = () => {
-    if (selectedCoords && address) {
-      onConfirm(selectedCoords, address);
-      resetState();
-      onClose();
-    }
-  };
-
-  // Reset state khi đóng dialog
-  const resetState = () => {
-    setSelectedCoords(null);
-    setAddress(null);
-    setSearchQuery("");
-    setIsLoading(false);
-  };
+  if (!isVisible) return null;
 
   return (
-    <Modal visible={isVisible} transparent animationType="slide">
-      <View style={styles.overlay}>
-        <View style={styles.dialog}>
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Chọn vị trí trên bản đồ</Text>
-            <TouchableOpacity onPress={() => { resetState(); onClose(); }}>
-              <Ionicons name="close" size={24} color={colors.textColor1} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Thanh tìm kiếm */}
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Tìm kiếm địa điểm..."
-              placeholderTextColor={colors.textColor3}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
-            />
-            <TouchableOpacity onPress={handleSearch} disabled={isLoading}>
-              <Ionicons name="search" size={24} color={colors.mainColor1} />
-            </TouchableOpacity>
-          </View>
-
-          <MapView
-            ref={mapRef}
-            style={styles.map}
-            initialRegion={
-              currentLocation
-                ? {
-                    latitude: currentLocation.latitude,
-                    longitude: currentLocation.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                  }
-                : {
-                    latitude: 10.762622, // Mặc định TP.HCM nếu chưa có vị trí
-                    longitude: 106.660172,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                  }
-            }
-            onPress={handleMapPress}
+    <View style={styles.container}>
+      <View style={[styles.searchContainer, isSearch && styles.searchContainerFull]}>
+        <View style={styles.searchBox}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (isSearch) {
+                setIsSearch(false);
+              } else {
+                onClose();
+              }
+            }}
           >
-            {currentLocation && (
-              <Marker
-                coordinate={currentLocation}
-                title="Vị trí của bạn"
-                pinColor="blue"
-              />
-            )}
-            {selectedCoords && (
-              <Marker coordinate={selectedCoords} title="Địa điểm đã chọn" />
-            )}
-          </MapView>
-
-          {selectedCoords && (
-            <View style={styles.infoContainer}>
-              {isLoading ? (
-                <ActivityIndicator size="small" color={colors.mainColor1} />
-              ) : (
-                <Text style={styles.addressText}>
-                  {address?.placeName || "Đang lấy địa chỉ..."}
-                </Text>
-              )}
-            </View>
-          )}
-
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: selectedCoords ? colors.mainColor1 : colors.borderColor1 }]}
-              onPress={handleConfirm}
-              disabled={!selectedCoords || isLoading}
-            >
-              <Text style={styles.buttonText}>Xác nhận</Text>
+            <Icon name="chevron-left" size={30} color={Color.white_contrast} />
+          </TouchableOpacity>
+          <TextInput
+            style={[styles.searchInput, isSearch && styles.inputSearchFocus]}
+            placeholder="Tìm kiếm địa điểm"
+            placeholderTextColor={Color.textColor3}
+            value={search}
+            onChangeText={(text) => fetchPlaces(text)}
+            onFocus={() => setIsSearch(true)}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch("")} style={styles.deleteTextSearch}>
+              <Icon name="close" size={20} color="gray" />
             </TouchableOpacity>
-          </View>
+          )}
         </View>
+        {isSearch && listSearch.length > 0 && (
+          <View style={styles.suggestionsContainer}>
+            <FlatList
+              style={styles.boxSearch}
+              data={listSearch}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.cardSearch}
+                  key={item.placePrediction.placeId}
+                  onPress={() => getLatLngFromPlaceId(item.placePrediction.placeId)}
+                >
+                  <View style={styles.cardSearchContent}>
+                    <Icon name="place" size={20} color={Color.textColor3} style={styles.cardSearchIcon} />
+                    <Text style={styles.textSearch}>{item.placePrediction.text.text}</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.placePrediction.placeId}
+              initialNumToRender={10}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        )}
       </View>
-    </Modal>
+
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        initialRegion={{
+          latitude: 10.762622,
+          longitude: 106.660172,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+        onPress={handleMapPress}
+      >
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            }}
+            title="Vị trí của tôi"
+            pinColor="blue"
+          />
+        )}
+        {selectedMarker && (
+          <Marker
+            coordinate={{
+              latitude: selectedMarker.latitude,
+              longitude: selectedMarker.longitude,
+            }}
+            title="Địa điểm đã chọn"
+          />
+        )}
+      </MapView>
+
+      {selectedMarker && (
+        <TouchableOpacity
+          style={[styles.confirmButton, { backgroundColor: Color.mainColor1 }]}
+          onPress={confirmLocation}
+        >
+          <Text style={[styles.buttonText, { color: Color.textColor2 }]}>Xác nhận vị trí này</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: Color.backGround,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    backgroundColor: Color.borderColor1,
+    borderRadius: 16,
+    width: 32,
+    height: 32,
     justifyContent: "center",
     alignItems: "center",
-  },
-  dialog: {
-    width: "90%",
-    height: "70%",
-    backgroundColor: colors.backGround,
-    borderRadius: 15,
-    padding: 15,
+    zIndex: 20,
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.textColor1,
+  closeButtonText: {
+    fontSize: 20,
+    color: Color.textColor1,
+    fontWeight: "600",
   },
   searchContainer: {
+    position: "absolute",
+    top: 40,
+    left: 10,
+    right: 10,
+    zIndex: 10,
+    borderRadius: 12,
+    padding: 6,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  searchContainerFull: {
+    backgroundColor: Color.backGround,
+  },
+  searchBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.borderColor1,
-    borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginVertical: 5,
+  },
+  backButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: Color.backGround,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
   },
   searchInput: {
     flex: 1,
-    height: 40,
-    color: colors.textColor1,
+    height: 50,
+    paddingHorizontal: 15,
     fontSize: 16,
+    borderRadius: 25,
+    backgroundColor: Color.backGround,
+  },
+  inputSearchFocus: {
+    backgroundColor: Color.backGround2,
+  },
+  deleteTextSearch: {
+    position: "absolute",
+    right: 20,
+    top: 15,
+  },
+  suggestionsContainer: {
+    maxHeight: SCREEN_HEIGHT * 0.4, // Giới hạn chiều cao tối đa là 40% màn hình
+    backgroundColor: Color.backGround,
+    borderRadius: 12,
+    marginTop: 5,
+    paddingVertical: 5,
+  },
+  boxSearch: {
+    marginHorizontal: 10,
+  },
+  cardSearch: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: Color.backGround2,
+  },
+  cardSearchContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardSearchIcon: {
+    marginRight: 8,
+  },
+  textSearch: {
+    fontSize: 16,
+    color: Color.textColor1,
   },
   map: {
     flex: 1,
+  },
+  confirmButton: {
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
     borderRadius: 10,
-  },
-  infoContainer: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: colors.borderColor1,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  addressText: {
-    color: colors.textColor1,
-    fontSize: 14,
-    textAlign: "center",
-  },
-  buttonContainer: {
-    marginTop: 15,
-    alignItems: "center",
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   buttonText: {
-    color: colors.textColor2,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
 
