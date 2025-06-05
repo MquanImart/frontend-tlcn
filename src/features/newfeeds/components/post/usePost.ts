@@ -23,7 +23,7 @@ export const usePostActions = (
   const [editHashtags, setEditHashtags] = useState<string[]>([]);
   const [isSaved, setIsSaved] = useState(false);
   const [selectedReportReason, setSelectedReportReason] = useState<string>("");
-  const [displayName, setDisplayName] = useState<string | null>(null); // Thêm state cho displayName
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const { createCollection } = useCollectionPost();
   const isOwnPost = article.createdBy._id === userId;
 
@@ -33,7 +33,7 @@ export const usePostActions = (
   };
 
   useEffect(() => {
-    getUserDisplayName(); // Lấy displayName khi mount
+    getUserDisplayName();
   }, []);
 
   const openEditModal = (currentContent: string, currentScope: string, currentHashtags: string[]) => {
@@ -65,63 +65,59 @@ export const usePostActions = (
     checkIfArticleIsSaved();
   }, [article._id]);
 
-const handleOptions = () => {
-  if (isOwnPost) {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Hủy", "Xóa bài viết", "Chỉnh sửa", "Báo cáo"],
-        destructiveButtonIndex: 1,
-        cancelButtonIndex: 0,
-      },
-      (buttonIndex) => {
-        switch (buttonIndex) {
-          case 1:
-            // Hiển thị dialog xác nhận xóa
-            Alert.alert(
-              "Xác nhận xóa",
-              "Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.",
-              [
-                {
-                  text: "Hủy",
-                  style: "cancel",
-                },
-                {
-                  text: "Xóa",
-                  style: "destructive",
-                  onPress: () => deleteArticle(article._id), // Chỉ xóa khi người dùng xác nhận
-                },
-              ]
-            );
-            break;
-          case 2:
-            openEditModal(article.content, article.scope, article.hashTag || []);
-            break;
-          case 3:
-            setReportModalVisible(true);
-            break;
-          default:
-            break;
+  const handleOptions = () => {
+    if (isOwnPost) {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Hủy", "Xóa bài viết", "Chỉnh sửa"], // Loại bỏ "Báo cáo"
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          switch (buttonIndex) {
+            case 1:
+              Alert.alert(
+                "Xác nhận xóa",
+                "Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.",
+                [
+                  {
+                    text: "Hủy",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Xóa",
+                    style: "destructive",
+                    onPress: () => deleteArticle(article._id),
+                  },
+                ]
+              );
+              break;
+            case 2:
+              openEditModal(article.content, article.scope, article.hashTag || []);
+              break;
+            default:
+              break;
+          }
         }
-      }
-    );
-  } else {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Hủy", "Báo cáo"],
-        cancelButtonIndex: 0,
-      },
-      (buttonIndex) => {
-        switch (buttonIndex) {
-          case 1:
-            setReportModalVisible(true);
-            break;
-          default:
-            break;
+      );
+    } else {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Hủy", "Báo cáo"],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          switch (buttonIndex) {
+            case 1:
+              setReportModalVisible(true);
+              break;
+            default:
+              break;
+          }
         }
-      }
-    );
-  }
-};
+      );
+    }
+  };
 
   const saveEdit = () => {
     if (editContent.trim() && editScope.trim()) {
@@ -146,7 +142,6 @@ const handleOptions = () => {
       });
 
       if (response.success) {
-        // Gửi thông báo cho người tạo bài viết nếu không phải là người báo cáo
         if (userId !== article.createdBy._id) {
           try {
             await notificationsClient.create({
@@ -155,7 +150,7 @@ const handleOptions = () => {
               message: `đã báo cáo bài viết của bạn với lý do: ${selectedReportReason}`,
               status: "unread",
               articleId: article._id,
-              relatedEntityType: "Article", 
+              relatedEntityType: "Article",
             });
           } catch (notificationError) {
             console.error("🔴 Lỗi khi gửi thông báo báo cáo:", notificationError);
@@ -172,7 +167,7 @@ const handleOptions = () => {
     }
 
     setReportModalVisible(false);
-    setSelectedReportReason(""); // Reset lý do báo cáo
+    setSelectedReportReason("");
   };
 
   const saveArticleToCollection = async (articleId: string) => {
