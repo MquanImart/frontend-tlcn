@@ -26,7 +26,8 @@ const Conversations = () => {
     loadingMore, userId,
     handleOpenImagePicker,
     createMessage, text, setText,
-    navigationDetails
+    navigationDetails,
+    sending
   } = useConversations(conversationId, friend);
 
   useFocusEffect(
@@ -97,7 +98,10 @@ const Conversations = () => {
                 }
               />
             </View>
-            <View style={styles.boxInput}>
+            {sending?(
+              <View style={[styles.boxInput, {justifyContent: 'center', alignItems: 'center'}]}><ActivityIndicator/></View> 
+            ):(
+              <View style={styles.boxInput}>
                 <CIconButton icon={<Icon name={"camera-alt"} size={20} color={Color.white_homologous} />} 
                     onSubmit={handleOpenImagePicker} 
                     style={{
@@ -114,6 +118,7 @@ const Conversations = () => {
                     radius: 50,
                 }}/>
             </View>
+            )}
           </View>
         </View>
     </KeyboardAvoidingView>

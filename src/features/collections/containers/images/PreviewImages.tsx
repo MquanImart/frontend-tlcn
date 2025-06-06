@@ -43,7 +43,7 @@ const PreviewImages = ({label, onPressViewAll, handleSelected, src}: PreviewImag
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: 420,
+        maxHeight: 420,
     },
     boxTitle: {
         flexDirection: 'row',
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         color: Color.textColor3
     },
     boxImages: {
-        height: 400, width: '100%'
+        maxHeight: 400, width: '100%'
     },
     row: {
         width: '100%',

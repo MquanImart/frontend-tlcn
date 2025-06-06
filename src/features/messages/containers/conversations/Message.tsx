@@ -124,14 +124,12 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'center',
         marginVertical: 1,
     },
     container_send: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        alignItems: 'center',
         marginVertical: 1,
     },
     images: {

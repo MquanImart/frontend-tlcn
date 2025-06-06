@@ -15,7 +15,7 @@ const CollectionsImages = ({handleScroll}: CollectionsImagesProps) => {
     const fadeAnim = new Animated.Value(1);
     
     const {dataImages, dataImagesAvt, viewAll, handleViewAll, handleSelectedPhoto, 
-      currentView, selectedPhoto, isModalVisible, closeModal} = useCollectionImages();
+      currentView, selectedPhoto, isModalVisible, closeModal, selectedData} = useCollectionImages();
 
     useEffect(() => {
         Animated.timing(fadeAnim, {
@@ -52,7 +52,7 @@ const CollectionsImages = ({handleScroll}: CollectionsImagesProps) => {
           ) : (
             <Animated.View style={{ opacity: fadeAnimAll }}>
               <ViewAllImages label={currentView} 
-                  src={dataImages} 
+                  src={selectedData?selectedData:[]} 
                   onBack={() => {handleViewAll("")}} 
                   handleScroll={handleScroll}
                   handleSelected={handleSelectedPhoto}

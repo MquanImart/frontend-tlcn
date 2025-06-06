@@ -3,7 +3,7 @@ import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePost
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
 import ChatBubble from "@/src/shared/components/chatbubble/ChatBubble";
-import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
+import { CHeaderIconNewFeed } from "@/src/shared/components/header/CHeaderIcon";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import getColor from "@/src/styles/Color";
@@ -142,7 +142,7 @@ export default function NewFeed() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
-      <CHeaderIcon
+      <CHeaderIconNewFeed
         label={"Bảng tin"}
         IconLeft={"search"}
         onPressLeft={() => changeScreen("SearchNavigation")}

@@ -211,7 +211,7 @@ const useConversations = (
             // Gửi FormData qua articlesClient.create
             const messageAPI = restClient.apiClient.service(`apis/messages`);
             const result = await messageAPI.create(formData);
-        
+            console.log(result);
             if (result.success) {
                 if (type === 'text'){
                     setText("");
@@ -220,14 +220,14 @@ const useConversations = (
                     return prev ? [result.data, ...prev] : [result.data];
                 });
             } else {
-              throw new Error(result.message);
+              Alert.alert("Thông báo", "Không thể gửi tin nhắn!")
               }
         } catch (error) {
-          console.error("❌ Lỗi khi gửi tin nhắn:", error);
-          alert("Đã xảy ra lỗi khi gửi tin nhắn!");
+          Alert.alert("Đã xảy ra lỗi khi gửi tin nhắn!");
         }
     }
     const createMessage = async ( type: string, source: ImagePicker.ImagePickerAsset | null) => {
+        
         if (type === 'text' && text === "") {
             return;
         }
@@ -237,45 +237,48 @@ const useConversations = (
         if (!userId) return;
 
         setSending(true);
-        if (conversation){
-            sendMessage(conversation._id, type, source);
-        } else {
-            if (friend){
-                const conversationAPI = restClient.apiClient.service(`apis/conversations`);
-                const participants = [userId, friend._id]
-                
-                const result = await conversationAPI.create({
-                    creatorId: userId,
-                    participants: participants,
-                    lastMessage: {
-                        sender: userId,
-                        contentType: "text",
-                        message: type === 'text' ? text : "Xin chào",
-                      }
-                });
-                if (result.success){
+        try{
+            if (conversation){
+                await sendMessage(conversation._id, type, source);
+            } else {
+                if (friend){
                     const conversationAPI = restClient.apiClient.service(`apis/conversations`);
-                    const newConversation = await conversationAPI.get(result.data._id);
-                    if (newConversation.success){
-                        setConversation(newConversation.data);
-                    }
-                    const messageAPI = restClient.apiClient.service(`apis/messages`);
-                    const messages = await messageAPI.get(result.data.lastMessage);
-                    if (messages.success){
-                        setMessages((prev) => {
-                            return prev ? [messages.data, ...prev] : [messages.data];
-                        });
-                    }
-                    if (type === 'text'){
-                        setText(""); 
-                    }
-                    else {
-                        sendMessage(result.data._id, type, source);
+                    const participants = [userId, friend._id]
+
+                    const result = await conversationAPI.create({
+                        creatorId: userId,
+                        participants: participants,
+                        lastMessage: {
+                            sender: userId,
+                            contentType: "text",
+                            message: type === 'text' ? text : "Xin chào",
+                          }
+                    });
+                    if (result.success){
+                        const conversationAPI = restClient.apiClient.service(`apis/conversations`);
+                        const newConversation = await conversationAPI.get(result.data._id);
+                        if (newConversation.success){
+                            setConversation(newConversation.data);
+                        }
+                        const messageAPI = restClient.apiClient.service(`apis/messages`);
+                        const messages = await messageAPI.get(result.data.lastMessage);
+                        if (messages.success){
+                            setMessages((prev) => {
+                                return prev ? [messages.data, ...prev] : [messages.data];
+                            });
+                        }
+                        if (type === 'text'){
+                            setText(""); 
+                        }
+                        else {
+                            sendMessage(result.data._id, type, source);
+                        }
                     }
                 }
             }
+        } finally{
+            setSending(false);
         }
-        setSending(false);
     }
 
     const navigationDetails = () => {
@@ -290,7 +293,8 @@ const useConversations = (
         getConversation, getMessages,
         loadMoreMessages, loadingMore,
         userId, handleOpenImagePicker,
-        createMessage, navigationDetails
+        createMessage, navigationDetails,
+        sending
     }
 }
 

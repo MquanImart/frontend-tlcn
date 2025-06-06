@@ -41,7 +41,7 @@ const ViewAllImages = ({label, src, onBack, handleScroll, handleSelected}: ViewA
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: '90%',
+        height: '100%',
     },
     boxTitle: {
         flexDirection: 'row',
