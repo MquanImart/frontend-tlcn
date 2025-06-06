@@ -417,6 +417,32 @@ export default function useReel(
       return { success: false, data: [], total: 0 };
     }
   };
+    const getReelById = async (reelId: string) => {
+    try {
+      const response = await reelsClient.get(reelId);
+
+      if (response.success && response.data) {
+        const reel = response.data;
+        if (reel._id && !reel._id.startsWith(".$")) {
+          // Lấy danh sách bình luận cho reel
+          const comments = await fetchComments(reel._id);
+          return {
+            success: true,
+            data: { ...reel, comments },
+          };
+        } else {
+          console.warn("Reel ID không hợp lệ:", reel._id);
+          return { success: false, data: null };
+        }
+      } else {
+        console.error("API trả về lỗi khi lấy reel:", response.message);
+        return { success: false, data: null };
+      }
+    } catch (error) {
+      console.error("Lỗi xảy ra khi tải reel:", error);
+      return { success: false, data: null };
+    }
+  };
   return {
     reels,
     currentReel,
@@ -439,5 +465,6 @@ export default function useReel(
     page,
     setPage,
     hasMore,
+    getReelById
   };
 }

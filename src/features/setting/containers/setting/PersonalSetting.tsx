@@ -18,7 +18,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChangePasswordDialog from "../../components/ChangePasswordDialog";
 import ChangePreferencesDialog from "../../components/ChangePreferencesDialog";
 import ChangeIDDialog from "../../components/ChangeIDDialog";
-
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
+import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
+import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
+type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
+type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 const Color = getColor();
 
 const UsersClient = restClient.apiClient.service("apis/users");
@@ -85,6 +90,7 @@ const ProfileScreen = () => {
   const [isIDModalVisible, setIDModalVisible] = useState(false);
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [user,setUser] = useState<any>(null);
+  const navigationMenu = useNavigation<MenuNavigationProp>();
   const getUserId = async () => {
     try {
       const id = await AsyncStorage.getItem("userId");
@@ -282,6 +288,7 @@ const ProfileScreen = () => {
               label={username}
               iconName="person-outline"
               extraInfo={hashtag}
+              onPress={() =>navigationMenu.navigate("MyProfile", { screen: "MyProfile", params: { userId: userId! } })}
             />
           </View>
 
