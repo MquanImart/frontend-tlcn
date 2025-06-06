@@ -47,7 +47,8 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
     acceptAdminInvite,
     declineAdminInvite,
     getUserId,
-    currentUserId
+    currentUserId,
+    handlePressMessage
   } = usePageScreen(pageId, navigation);
 
     useEffect(() => {
@@ -124,7 +125,7 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
             page={page}
             currentUserId={currentUserId || ""}
             role={role}
-            onMessagePress={() => alert("Bạn đã nhấn vào Nhắn Tin!")}
+            onMessagePress={handlePressMessage}
           />
         );
       case "Bài viết":

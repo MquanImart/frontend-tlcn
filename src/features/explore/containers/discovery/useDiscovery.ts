@@ -67,6 +67,7 @@ const useDiscovery = () => {
     const handleSearch = (value: string) => {
         if (!provinces || !value) {
             setFilterProvinces(provinces);
+            setSearch(value);
             return;
         }
     

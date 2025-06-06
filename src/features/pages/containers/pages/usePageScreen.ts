@@ -335,6 +335,40 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     return role === "isOwner" ? ownerTabs : nonOwnerTabs;
   };
 
+  const handlePressMessage = async () => {
+    if (!page){
+      Alert.alert("Thông báo", "Trang không xác định!");
+      return;
+    }
+    if (currentUserId){
+      if(currentUserId === page.idCreater) {
+        Alert.alert("Thông báo", "Bạn không thể nhắn tin với trang của mình!");
+        return;
+      }
+      
+      const conversationAPI = restClient.apiClient.service(`apis/conversations`);
+      const participants = [currentUserId]
+      
+      const result = await conversationAPI.create({
+          creatorId: currentUserId,
+          participants: participants,
+          lastMessage: {
+              sender: currentUserId,
+              contentType: "text",
+              message: "Xin chào",
+          },
+          type: 'page',
+          pageId: page._id
+      });
+
+      if (result.success){
+        navigation.navigate('BoxChat', {conversationId: result.data._id})
+      }
+    } else {
+      Alert.alert("Thông báo", "Bạn chưa đăng nhập!");
+    }
+  }
+
   const filteredTabs = getTabs(role);
 
   return {
@@ -356,6 +390,7 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
     declineAdminInvite,
     getUserId,
     currentUserId,
+    handlePressMessage
   };
 };
 

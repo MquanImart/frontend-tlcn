@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect, useRef, useState } from "react";
 import { Keyboard, TextInput } from "react-native";
-import { Conversation, UserDisplay } from "@/src/interface/interface_flex";
+import { Conversation } from "@/src/interface/interface_flex";
 import restClient from "@/src/shared/services/RestClient";
 import useMessages from "../useMessage";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";

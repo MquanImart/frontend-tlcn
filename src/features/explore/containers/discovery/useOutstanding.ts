@@ -39,8 +39,8 @@ const useOutstanding = () => {
 
             const now = new Date(); // Tạo một đối tượng Date mới
             const month = now.getMonth() + 1;
-            const MonthAPI = restClient.apiClient.service(`apis/ai/suggested-page-month/${userId}?month=${month}`);
-            const resultMonth = await MonthAPI.find({});
+            const MonthAPI = restClient.apiClient.service(`apis/ai/suggested-page-month/${userId}`);
+            const resultMonth = await MonthAPI.find({month: month});
             if (resultMonth.success){
                 const result = resultMonth.data.map((item: { page: OutstandingProps; }) => item.page);
                 setSuggestedPageMonth(result);

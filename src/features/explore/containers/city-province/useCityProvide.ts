@@ -1,5 +1,5 @@
 import { Article } from "@/src/features/newfeeds/interface/article";
-import { Page, Province } from "@/src/interface/interface_reference";
+import { Province } from "@/src/interface/interface_reference";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useRef, useState } from "react";
 import { Animated } from "react-native";
+import { PageProvince } from "./interface";
 
 const MAX_HOTPAGE = 15;
 const ARTICLES_PER_PAGE = 5;
@@ -24,8 +25,8 @@ const useCityProvince = (provinceId: string) => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [province, setProvince] = useState<Province | null>(null);
-  const [pages, setPages] = useState<Page[] | null>(null);
-  const [hotPages, setHotPages] = useState<Page[] | null>(null);
+  const [pages, setPages] = useState<PageProvince[] | null>(null);
+  const [hotPages, setHotPages] = useState<PageProvince[] | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoadingArticles, setIsLoadingArticles] = useState(false);
   const [articlePage, setArticlePage] = useState(0);

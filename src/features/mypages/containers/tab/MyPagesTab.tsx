@@ -2,8 +2,8 @@ import React from "react";
 import { View, StyleSheet, FlatList, ActivityIndicator, Text } from "react-native";
 import getColor from "@/src/styles/Color";
 import CardPage from "@/src/features/explore/components/CardPage";
-import { Page } from "@/src/interface/interface_reference";
 import useMyPagesTab from "./useMyPagesTab";
+import { PageProvince } from "@/src/features/explore/containers/city-province/interface";
 
 const Color = getColor();
 
@@ -32,13 +32,13 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
     );
   }
 
-  const renderPageItem = ({ item }: { item: Page & { isFiller?: boolean } }) => {
+  const renderPageItem = ({ item }: { item: PageProvince & { isFiller?: boolean } }) => {
     if (item.isFiller) {
       return <View style={styles.filler} />;
     }
     return (
       <CardPage
-        images={item.avt || "https://picsum.photos/200"}
+        images={item.avt?.url || "https://picsum.photos/200"}
         name={item.name} // name là required trong Page
         country={"Viet Nam"} // Giá trị mặc định vì Page không có country
         size={{ width: "32%", height: 160 }}

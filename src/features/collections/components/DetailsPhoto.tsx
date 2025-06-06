@@ -1,9 +1,10 @@
 import { MyPhoto } from "@/src/interface/interface_flex"
 import { ResizeMode, Video } from "expo-av";
-import React from "react";
-import { useState } from "react";
-import { Modal, View, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
+import { Modal, View, StyleSheet, Image, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import { useRef, useState } from "react";
 
 interface DetailsPhotoProps {
     source: MyPhoto | null;
@@ -13,23 +14,63 @@ interface DetailsPhotoProps {
 
 const DetailsPhoto = ({source, isModalVisible, closeModal}: DetailsPhotoProps) => {  
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
-    const videoRef = React.useRef(null);
+    const [downloading, setDownLoading] = useState<boolean>(false);
+
+    const videoRef = useRef(null);
     
     const openOptions = () => {
       setOptionModalVisible(true);
     };
   
-    const handleDownload = () => {
-      alert('Tải về ảnh!');
+    const handleDownload = async () => {
+      setDownLoading(true);
       setOptionModalVisible(false);
+      try {
+        if (!source) return;
+        
+        const fileUri = FileSystem.documentDirectory + source.name;
+        // Tải file về thư mục tạm
+        const downloadResumable = FileSystem.createDownloadResumable(
+          source.url,
+          fileUri
+        );
+      
+        const res = await downloadResumable.downloadAsync();
+        if (!res || !res.uri) {
+          Alert.alert('Thông báo', 'Tải về thất bại');
+          return;
+        }
+
+        const uri = res.uri;
+        await MediaLibrary.saveToLibraryAsync(uri);
+
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Thông báo', 'Bạn cần cấp quyền để lưu ảnh/video');
+          return;
+        }
+      
+        // Lưu vào thư viện ảnh
+        await MediaLibrary.saveToLibraryAsync(uri);
+        Alert.alert('Thông báo', 'Đã tải về thành công!');
+      } catch (error) {
+        Alert.alert('Thông báo', 'Tải về thất bại');
+      } finally {
+        setDownLoading(false);
+      }
     };
-  
+
     const closeOptionModal = () => {
       setOptionModalVisible(false);
     };
+
     return (
         <Modal visible={isModalVisible} animationType="slide" transparent={true} onRequestClose={closeModal}>
         <View style={styles.modalOverlay}>
+          {downloading && <View style={styles.download}>
+            <ActivityIndicator size={120} color="white" />
+          </View>
+          }
           <View style={styles.modalContent}>
             {source && (
               <View style={styles.container}>
@@ -166,6 +207,14 @@ const styles = StyleSheet.create({
         maxWidth: '100%',
         maxHeight: '100%',
     },
+    download: {
+      position: 'absolute', top:0, left: 0,
+      zIndex: 1000,
+      width: '100%', height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
 })
 
 export default DetailsPhoto;

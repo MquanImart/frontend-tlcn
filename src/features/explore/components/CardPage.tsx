@@ -34,7 +34,7 @@ const CardPage = ({
     >
       <Image
         style={styles.images}
-        source={require("@/src/assets/images/test.jpg")} // Giữ ảnh mặc định
+        source={{uri: images}} // Giữ ảnh mặc định
         resizeMode="cover" // Đảm bảo ảnh hiển thị đúng tỷ lệ
       />
       <LinearGradient

@@ -75,7 +75,7 @@ const useCollectionImages = () => {
         isModalVisible, setModalVisible,
         handleViewAll,
         handleSelectedPhoto,
-        closeModal
+        closeModal, selectedData
     }
 }
 
