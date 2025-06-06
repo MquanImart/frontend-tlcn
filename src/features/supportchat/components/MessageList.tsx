@@ -1,11 +1,10 @@
-import React, { RefObject } from "react";
 import { FlatList, StyleSheet } from "react-native";
-import MessageBubble from "./MessageBubble";
 import { Message } from "../interface/Message";
+import MessageBubble from "./MessageBubble";
 
 interface MessageListProps {
   messages: Message[];
-  flatListRef?: RefObject<FlatList<Message> | null>;
+  flatListRef?: React.RefObject<FlatList<Message>>;
 }
 
 const MessageList: React.FC<MessageListProps> = ({ messages, flatListRef }) => (
@@ -27,11 +26,11 @@ const MessageList: React.FC<MessageListProps> = ({ messages, flatListRef }) => (
 
 const styles = StyleSheet.create({
   flatList: {
-    flex: 1, // Đảm bảo FlatList chiếm toàn bộ không gian
+    flex: 1,
   },
   messageList: {
     padding: 10,
-    flexGrow: 1, // Mở rộng nội dung
+    flexGrow: 1,
   },
 });
 

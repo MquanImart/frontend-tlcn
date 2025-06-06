@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Video, ResizeMode } from 'expo-av';
@@ -19,7 +20,8 @@ import restClient from '@/src/shared/services/RestClient';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
-
+import { ActionSheetIOS } from 'react-native';
+import EditModal from '@/src/features/newfeeds/components/EditModal/EditModal';
 interface ReelProps {
   reel: Reels;
   onCommentPress: (reel: Reels) => void;
@@ -30,7 +32,8 @@ interface ReelProps {
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
-const UsersClient = restClient.apiClient.service("apis/users");
+const UsersClient = restClient.apiClient.service('apis/users');
+const reelsClient = restClient.apiClient.service('apis/reels');
 
 type ReelNavigationProp = StackNavigationProp<ReelStackParamList, 'Reel'>;
 
@@ -56,6 +59,11 @@ export const SingleReel: React.FC<ReelProps> = ({
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [editContent, setEditContent] = useState<string>('');
+  const [editScope, setEditScope] = useState<string>('');
+  const [editHashtags, setEditHashtags] = useState<string[]>([]);
+  const isOwnPost = reel.createdBy._id === userId;
 
   useEffect(() => {
     setVideoRef(videoRef.current);
@@ -70,13 +78,20 @@ export const SingleReel: React.FC<ReelProps> = ({
     }
   }, [showControls]);
 
+  const openEditModal = (currentContent: string, currentScope: string, currentHashtags: string[]) => {
+    setEditContent(currentContent || '');
+    setEditScope(currentScope || 'Công khai');
+    setEditHashtags(currentHashtags || []);
+    setEditModalVisible(true);
+  };
+
   const getCurrentUserId = async () => {
     try {
-      const id = await AsyncStorage.getItem("userId");
+      const id = await AsyncStorage.getItem('userId');
       setCurrentUserId(id);
       return id;
     } catch (err) {
-      console.error("Lỗi khi lấy currentUserId:", err);
+      console.error('Lỗi khi lấy currentUserId:', err);
       return null;
     }
   };
@@ -89,8 +104,8 @@ export const SingleReel: React.FC<ReelProps> = ({
         setIsFollowing(isFollowing);
       }
     } catch (err) {
-      console.error("Lỗi khi kiểm tra trạng thái theo dõi:", err);
-      setError("Không thể kiểm tra trạng thái theo dõi");
+      console.error('Lỗi khi kiểm tra trạng thái theo dõi:', err);
+      setError('Không thể kiểm tra trạng thái theo dõi');
     }
   };
 
@@ -107,26 +122,22 @@ export const SingleReel: React.FC<ReelProps> = ({
   const handleFollowRequest = async () => {
     if (!currentUserId || !reel.createdBy._id) return;
     try {
-      // Lấy dữ liệu người dùng được theo dõi
       const targetUserData = await UsersClient.get(reel.createdBy._id);
       if (!targetUserData.success) {
-        throw new Error("Không thể lấy dữ liệu người dùng được theo dõi");
+        throw new Error('Không thể lấy dữ liệu người dùng được theo dõi');
       }
 
-      // Lấy dữ liệu người dùng hiện tại
       const currentUserData = await UsersClient.get(currentUserId);
       if (!currentUserData.success) {
-        throw new Error("Không thể lấy dữ liệu người dùng hiện tại");
+       robin:throw new Error('Không thể lấy dữ liệu người dùng hiện tại');
       }
 
       if (!isFollowing) {
-        // Thêm currentUserId vào followers của người dùng được theo dõi
         const updatedFollowers = [...(targetUserData.data.followers || []), currentUserId];
         const followerResponse = await UsersClient.patch(reel.createdBy._id, {
           followers: updatedFollowers,
         });
 
-        // Thêm reel.createdBy._id vào following của người dùng hiện tại
         const updatedFollowing = [...(currentUserData.data.following || []), reel.createdBy._id];
         const followingResponse = await UsersClient.patch(currentUserId, {
           following: updatedFollowing,
@@ -135,10 +146,9 @@ export const SingleReel: React.FC<ReelProps> = ({
         if (followerResponse.success && followingResponse.success) {
           setIsFollowing(true);
         } else {
-          throw new Error("Không thể theo dõi");
+          throw new Error('Không thể theo dõi');
         }
       } else {
-        // Xóa currentUserId khỏi followers của người dùng được theo dõi
         const updatedFollowers = (targetUserData.data.followers || []).filter(
           (id: string) => id !== currentUserId
         );
@@ -146,7 +156,6 @@ export const SingleReel: React.FC<ReelProps> = ({
           followers: updatedFollowers,
         });
 
-        // Xóa reel.createdBy._id khỏi following của người dùng hiện tại
         const updatedFollowing = (currentUserData.data.following || []).filter(
           (id: string) => id !== reel.createdBy._id
         );
@@ -157,12 +166,12 @@ export const SingleReel: React.FC<ReelProps> = ({
         if (followerResponse.success && followingResponse.success) {
           setIsFollowing(false);
         } else {
-          throw new Error("Không thể hủy theo dõi");
+          throw new Error('Không thể hủy theo dõi');
         }
       }
     } catch (err) {
-      console.error("Lỗi khi xử lý yêu cầu theo dõi:", err);
-      setError("Không thể xử lý yêu cầu theo dõi");
+      console.error('Lỗi khi xử lý yêu cầu theo dõi:', err);
+      setError('Không thể xử lý yêu cầu theo dõi');
     }
   };
 
@@ -210,6 +219,59 @@ export const SingleReel: React.FC<ReelProps> = ({
     if (videoRef.current) {
       await videoRef.current.setIsMutedAsync(!isMuted);
       setIsMuted(!isMuted);
+    }
+  };
+
+
+
+  const deleteReel = async (reelId: string) => {
+    try {
+      const response = await reelsClient.remove(reelId);
+      if (response.success) {
+        Alert.alert('Thành công', 'Bài viết đã được xóa');
+        // Optionally navigate back or refresh the reel list
+        navigation.goBack();
+      } else {
+        throw new Error('Không thể xóa bài viết');
+      }
+    } catch (err) {
+      console.error('Lỗi khi xóa reel:', err);
+      Alert.alert('Lỗi', 'Không thể xóa bài viết');
+    }
+  };
+
+  const handleOptions = () => {
+    if (isOwnPost) {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Hủy', 'Xóa bài viết', 'Chỉnh sửa'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          switch (buttonIndex) {
+            case 1:
+              Alert.alert(
+                'Xác nhận xóa',
+                'Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.',
+                [
+                  {
+                    text: 'Hủy',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Xóa',
+                    style: 'destructive',
+                    onPress: () => deleteReel(reel._id),
+                  },
+                ]
+              );
+              break;
+            default:
+              break;
+          }
+        }
+      );
     }
   };
 
@@ -265,6 +327,7 @@ export const SingleReel: React.FC<ReelProps> = ({
                 name={isMuted ? 'volume-mute' : 'volume-high'}
                 size={24}
                 color="white"
+                style={styles.iconShadow}
               />
             </TouchableOpacity>
           </View>
@@ -319,6 +382,7 @@ export const SingleReel: React.FC<ReelProps> = ({
                 name="heart"
                 size={35}
                 color={isLiked ? 'red' : 'white'}
+                style={styles.iconShadow}
               />
               <Text style={styles.iconText}>
                 {reel.emoticons?.length || 0}
@@ -329,13 +393,30 @@ export const SingleReel: React.FC<ReelProps> = ({
               style={styles.iconContainer}
               onPress={() => onCommentPress(reel)}
             >
-              <Ionicons name="chatbubble-ellipses" size={35} color="white" />
+              <Ionicons
+                name="chatbubble-ellipses"
+                size={35}
+                color="white"
+                style={styles.iconShadow}
+              />
               <Text style={styles.iconText}>
                 {calculateTotalComments(reel?.comments || []) || 0}
               </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={handleOptions}
+            >
+              <Ionicons
+                name="ellipsis-horizontal"
+                size={35}
+                color="white"
+                style={styles.iconShadow}
+              />
+            </TouchableOpacity>
           </View>
-        </View>
+        </View>    
       </View>
     </TouchableWithoutFeedback>
   );
@@ -438,18 +519,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 5,
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  iconShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.75,
+    shadowRadius: 2,
   },
   nameText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
     marginRight: 14,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   descriptionText: {
     color: 'white',
     fontSize: 16,
     marginTop: 5,
     width: '100%',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   errorContainer: {
     position: 'absolute',
@@ -463,5 +559,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'white',
     fontSize: 16,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });

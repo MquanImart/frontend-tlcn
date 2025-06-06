@@ -29,10 +29,8 @@ const SupportChatScreen: React.FC = () => {
     initialMessages
   );
 
-  // Tạo ref cho FlatList
-  const flatListRef = useRef<FlatList<Message>>(null);
+  const flatListRef = useRef<FlatList<Message>>(null as unknown as FlatList<Message>);
 
-  // Cuộn xuống cuối nội dung khi messages thay đổi
   useEffect(() => {
     if (flatListRef.current) {
       setTimeout(() => {
@@ -41,21 +39,17 @@ const SupportChatScreen: React.FC = () => {
     }
   }, [messages]);
 
-  // Sử dụng useNavigation để điều hướng
   const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.header}>
-        {/* Nút Back */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={28} color={colors.white_homologous} />
         </TouchableOpacity>
-
-        {/* Logo và tiêu đề */}
         <View style={styles.headerContent}>
           <Image
             source={{ uri: ROBOT_IMAGE }}
@@ -94,21 +88,21 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 5,
-    marginRight: 10, // Khoảng cách giữa nút Back và logo
+    marginRight: 10,
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
   },
   avatar: {
-    width: 35, // Tăng kích thước logo
+    width: 35,
     height: 35,
-    marginRight: 8, // Giảm khoảng cách giữa logo và chữ
+    marginRight: 8,
     borderRadius: 20,
   },
   headerText: {
     color: colors.white_homologous,
-    fontSize: 20, // Tăng kích thước chữ
+    fontSize: 20,
     fontWeight: "bold",
   },
   keyboardContainer: {

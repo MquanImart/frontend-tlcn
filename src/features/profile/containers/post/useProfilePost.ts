@@ -14,7 +14,7 @@ export default function useProfilePost(userId: string) {
   // 📌 Fetch tất cả bài viết từ API
   const fetchArticles = async () => {
     try {
-      const result = await articlesClient.find({ userId }); // Sử dụng userId động
+      const result = await articlesClient.find({ createdBy: userId }); // Sử dụng userId động
       if (result.success) {
         setArticles(result.data);
       } else {

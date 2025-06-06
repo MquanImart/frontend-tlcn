@@ -4,7 +4,7 @@ import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
 import getColor from '@/src/styles/Color';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'; // <-- Thêm useRoute
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -24,7 +24,6 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import CommentItem from '../../components/CommentItem';
-import CHeader from '../../components/Header';
 import NewReel from '../NewReel/NewReel';
 import { SingleReel } from './SingleReel';
 import useReels from './useReels';
@@ -35,14 +34,13 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, 'Menu'>;
 type ReelNavigationProp = StackNavigationProp<ReelStackParamList, 'Reel'>;
-// Định nghĩa type cho route prop của màn hình Reel
-type ReelListRouteProp = RouteProp<ReelStackParamList, 'Reel'>; // <-- Định nghĩa type cho route prop
+type ReelListRouteProp = RouteProp<ReelStackParamList, 'Reel'>;
 
 export default function ReelsList() {
   const [reels, setReels] = useState<Reels[]>([]);
   const navigation = useNavigation<SettingNavigationProp>();
-  const navigationReel = useNavigation<ReelNavigationProp>(); // Có vẻ chưa dùng `navigationReel`
-  const route = useRoute<ReelListRouteProp>(); // <-- Lấy route object
+  const navigationReel = useNavigation<ReelNavigationProp>();
+  const route = useRoute<ReelListRouteProp>();
   const videoRefs = useRef<(Video | null)[]>([]);
   const currentVideoIndex = useRef<number>(0);
   const wasPlayingBeforeModal = useRef<boolean>(false);
@@ -54,11 +52,8 @@ export default function ReelsList() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  // Thêm một ref cho FlatList để có thể cuộn đến vị trí mong muốn
-  const flatListRef = useRef<FlatList<Reels>>(null); // <-- Thêm ref cho FlatList
-
-  // Lấy reelId từ params nếu có
-  const initialReelId = route.params?.reelId; // <-- Lấy reelId từ params
+  const flatListRef = useRef<FlatList<Reels>>(null);
+  const initialReelId = route.params?.reelId;
 
   const getUserID = async () => {
     try {
@@ -91,15 +86,12 @@ export default function ReelsList() {
     calculateTotalComments,
     handleAddComment,
     setNewReply,
-    getUserId, // Dường như không được sử dụng trực tiếp ở đây
-    userId, // Dường như không được sử dụng trực tiếp ở đây, dùng userID thay thế
-    setUserId, // Dường như không được sử dụng trực tiếp ở đây
     pickMedia,
     selectedMedia,
   } = useReels(reels, setReels, setCommentLoading);
 
   const fetchReels = async (pageNum: number = 0) => {
-    if (!hasMore && pageNum !== 0) return; // Ngừng tải nếu hết video
+    if (!hasMore && pageNum !== 0) return;
     if (pageNum === 0) setLoading(true);
     else setLoadingMore(true);
 
@@ -108,7 +100,6 @@ export default function ReelsList() {
       if (result?.success && result.data.length > 0) {
         const newReels = result.data;
         setReels(pageNum === 0 ? newReels : [...reels, ...newReels]);
-        // Kiểm tra nếu đã tải hết video
         setHasMore(newReels.length === 4 && reels.length + newReels.length < result.total);
         setPage(pageNum);
       } else {
@@ -126,28 +117,23 @@ export default function ReelsList() {
   };
 
   useEffect(() => {
-    fetchReels(); // Tải trang đầu tiên
+    fetchReels();
   }, []);
 
-  // Effect để cuộn đến Reel cụ thể khi có initialReelId và reels đã được tải
   useEffect(() => {
     if (initialReelId && reels.length > 0) {
       const index = reels.findIndex(reel => reel._id === initialReelId);
       if (index !== -1) {
-        // Sử dụng setTimeout để đảm bảo FlatList đã được render và sẵn sàng cuộn
-        // Giá trị delay có thể cần điều chỉnh tùy theo tốc độ render của thiết bị
         setTimeout(() => {
           flatListRef.current?.scrollToIndex({ index: index, animated: true, viewPosition: 0 });
-          // Đảm bảo video tại index đó được phát sau khi cuộn xong
-          // Kiểm tra lại logic phát video của bạn nếu cần
           if (videoRefs.current[index] && !isModalVisible) {
             videoRefs.current[index]?.playAsync();
-            currentVideoIndex.current = index; // Cập nhật currentVideoIndex
+            currentVideoIndex.current = index;
           }
-        }, 500); // Thử nghiệm với thời gian delay này
+        }, 500);
       }
     }
-  }, [initialReelId, reels, isModalVisible]); // Thêm isModalVisible vào dependency
+  }, [initialReelId, reels, isModalVisible]);
 
   const loadMoreReels = () => {
     if (!hasMore || isLoadingMore) return;
@@ -176,7 +162,7 @@ export default function ReelsList() {
         videoRefs.current[currentVideoIndex.current]?.pauseAsync();
       }
       if (videoRefs.current[newIndex] && !isModalVisible) {
-        videoRefs.current[newIndex]?.playAsync(); // Chỉ phát video trong khung nhìn
+        videoRefs.current[newIndex]?.playAsync();
       }
       currentVideoIndex.current = newIndex;
     }
@@ -196,8 +182,8 @@ export default function ReelsList() {
 
   const handleReelCreated = () => {
     setPage(0);
-    setHasMore(true); // Cho phép tải lại từ đầu khi tạo reel mới
-    fetchReels(0); // Tải lại trang đầu tiên để hiển thị reel mới
+    setHasMore(true);
+    fetchReels(0);
   };
 
   return (
@@ -208,13 +194,13 @@ export default function ReelsList() {
         </View>
       ) : (
         <FlatList
-          ref={flatListRef} // <-- Gán ref vào FlatList
+          ref={flatListRef}
           data={reels}
           keyboardShouldPersistTaps="handled"
           keyExtractor={(item, index) => {
             if (!item._id || item._id.startsWith('.$')) {
               console.warn('Invalid _id detected:', item._id);
-              return `${index}-${item.createdAt || Date.now()}`; // Key tạm thời
+              return `${index}-${item.createdAt || Date.now()}`;
             }
             return item._id.toString();
           }}
@@ -231,7 +217,7 @@ export default function ReelsList() {
               onCommentPress={() => openComments(item)}
               onLike={() => likeReel(item._id, item.createdBy._id)}
               setVideoRef={(ref: Video | null) => setVideoRef(ref, index)}
-              userId={userID || ""} // Sử dụng userID thay vì userId từ useReels
+              userId={userID || ""}
             />
           )}
           ListFooterComponent={
@@ -249,14 +235,15 @@ export default function ReelsList() {
       )}
 
       <View style={styles.headerContainer}>
-        <CHeader
-          label="Reels"
-          backPress={() => navigation.goBack()}
-          rightPress={toggleNewReelModal}
-          labelColor={colors.backGround1}
-          iconColor={colors.backGround1}
-          rightIcon="add"
-        />
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={35} color={colors.backGround1} style={styles.headerIcon} />
+          </TouchableOpacity>
+          <Text style={styles.headerLabel}>Reels</Text>
+          <TouchableOpacity onPress={toggleNewReelModal}>
+            <Ionicons name="add" size={35} color={colors.backGround1} style={styles.headerIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <Modal
@@ -274,11 +261,11 @@ export default function ReelsList() {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
               <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+                <Text style={styles.commentTitle}>
                   {calculateTotalComments(currentReel?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={colors.textColor1} />
+                  <Ionicons name="close" size={24} color={colors.textColor1}  />
                 </TouchableOpacity>
               </View>
 
@@ -287,7 +274,7 @@ export default function ReelsList() {
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                   <CommentItem
-                    userId={userID || ""} // Sử dụng userID thay vì userId từ useReels
+                    userId={userID || ""}
                     comment={item}
                     onLike={likeComment}
                     onReply={replyToComment}
@@ -308,7 +295,7 @@ export default function ReelsList() {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={colors.mainColor1} />
+                  <Ionicons name="image" size={24} color={colors.mainColor1}  />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
@@ -321,7 +308,7 @@ export default function ReelsList() {
                   {isCommentLoading ? (
                     <ActivityIndicator size="small" color={colors.mainColor1} />
                   ) : (
-                    <Ionicons name="send" size={20} color={colors.mainColor1} />
+                    <Ionicons name="send" size={20} color={colors.mainColor1}  />
                   )}
                 </TouchableOpacity>
               </View>
@@ -348,7 +335,28 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: 'transparent',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingTop: Platform.OS === 'ios' ? 50 : 30, // Adjust for status bar
+  },
+  headerLabel: {
+    color: 'white',
+    fontSize: 25,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)', // Black shadow for text
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  headerIcon: {
+    shadowColor: '#000', // Black shadow for icons
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.75,
+    shadowRadius: 2,
   },
   modal: {
     justifyContent: 'flex-end',
@@ -376,10 +384,14 @@ const styles = StyleSheet.create({
   emptyText: {
     color: 'white',
     fontSize: 16,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)', // Black shadow for text
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   commentTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    textShadowRadius: 2,
   },
   commentInputContainer: {
     borderTopWidth: 1,

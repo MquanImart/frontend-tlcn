@@ -106,7 +106,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       case "Reel": 
         if (notification.reelId) {
           navigation.navigate("ReelNavigation", {
-            screen: "Reel", 
+            screen: "ReelDetail", 
             params: { reelId: notification.reelId }, 
           });
         } else {

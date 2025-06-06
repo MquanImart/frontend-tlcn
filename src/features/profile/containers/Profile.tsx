@@ -5,7 +5,6 @@ import {
   Image,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Alert,
 } from "react-native";
 import CHeader from "@/src/shared/components/header/CHeader";
@@ -15,7 +14,6 @@ import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import getColor from "@/src/styles/Color";
 import ProfilePost from "./post/ProfilePost";
 import CButton from "@/src/shared/components/button/CButton";
-import CIconButton from "@/src/shared/components/button/CIconButton";
 import { Ionicons } from "@expo/vector-icons";
 import ViewAllVideo from "./video/ViewAllVideo";
 import restClient from "@/src/shared/services/RestClient";
@@ -31,7 +29,7 @@ const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 type ProfileRouteProp = RouteProp<SearchStackParamList, "Profile">;
-type ProfileNavigationProp = StackNavigationProp<SearchStackParamList, "Profile">;
+type ProfileNavigationProp = StackNavigationProp<SearchStackParamList, "Profile" >;
 
 interface ProfileProps {
   route: ProfileRouteProp;
@@ -44,13 +42,14 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
   const [avt, setAvt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("picture");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(false);
   const [friendRequestId, setFriendRequestId] = useState<string | null>(null);
   const [hasReceivedRequest, setHasReceivedRequest] = useState<boolean>(false);
   const [receivedRequestId, setReceivedRequestId] = useState<string | null>(null);
   const [showFormAddFriend, setShowFormAddFriend] = useState<boolean>(false);
+  const [canViewProfile, setCanViewProfile] = useState<boolean>(true);
+  const [isFriend, setIsFriend] = useState<boolean>(false); // Tách isFriend thành state riêng
 
   const tabs: TabProps[] = [
     { label: "Hình ảnh" },
@@ -96,7 +95,6 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
 
   const checkFriendRequest = async (currentUserId: string) => {
     try {
-      // Kiểm tra yêu cầu gửi đi
       const senderAPI = restClient.apiClient.service("apis/add-friends/sender");
       const senderResult = await senderAPI.get(currentUserId);
       if (senderResult.success) {
@@ -109,7 +107,6 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
         }
       }
 
-      // Kiểm tra yêu cầu nhận được
       const receiverAPI = restClient.apiClient.service("apis/add-friends/receive");
       const receiverResult = await receiverAPI.get(currentUserId);
       if (receiverResult.success) {
@@ -125,6 +122,17 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
       console.error("Lỗi khi kiểm tra yêu cầu kết bạn:", err);
     }
   };
+
+  // Kiểm tra isFriend và canViewProfile khi user hoặc currentUserId thay đổi
+  useEffect(() => {
+    if (user && currentUserId) {
+      const friendStatus = user.friends?.includes(currentUserId) || false;
+      setIsFriend(friendStatus);
+      const isProfileVisible = user.setting?.profileVisibility ?? true;
+      const isOwner = currentUserId === userId;
+      setCanViewProfile(isProfileVisible || friendStatus || isOwner);
+    }
+  }, [user, currentUserId, userId]);
 
   useEffect(() => {
     const initialize = async () => {
@@ -143,7 +151,6 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
   const friendsCount = user?.friends?.length || 0;
   const followingCount = user?.following?.length || 0;
 
-  const isFriend = currentUserId && user?.friends?.includes(currentUserId);
   const isFollowing = currentUserId && user?.followers?.includes(currentUserId);
 
   const handleFriendRequest = async () => {
@@ -156,15 +163,11 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
       const friendsAPI = restClient.apiClient.service("apis/add-friends");
 
       if (isFriend) {
-        // Xác nhận hủy bạn bè
         Alert.alert(
           "Hủy kết bạn",
           `Bạn có chắc muốn hủy kết bạn với ${user.displayName}?`,
           [
-            {
-              text: "Hủy",
-              style: "cancel",
-            },
+            { text: "Hủy", style: "cancel" },
             {
               text: "Xác nhận",
               onPress: async () => {
@@ -177,11 +180,14 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
                       ...prev,
                       friends: (prev.friends || []).filter((id: string) => id !== currentUserId),
                     }));
+                    setIsFriend(false); // Cập nhật trạng thái bạn bè
                     setFriendRequestSent(false);
                     setFriendRequestId(null);
                     setHasReceivedRequest(false);
                     setReceivedRequestId(null);
                     Alert.alert("Thành công", "Đã hủy kết bạn!");
+                    // Cập nhật quyền xem hồ sơ
+                    setCanViewProfile(user?.setting?.profileVisibility || currentUserId === userId);
                   } else {
                     throw new Error("Không thể hủy kết bạn");
                   }
@@ -194,15 +200,11 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
           ]
         );
       } else if (hasReceivedRequest && receivedRequestId) {
-        // Xác nhận yêu cầu kết bạn
         Alert.alert(
           "Xác nhận kết bạn",
           `Bạn có muốn chấp nhận yêu cầu kết bạn từ ${user.displayName}?`,
           [
-            {
-              text: "Hủy",
-              style: "cancel",
-            },
+            { text: "Hủy", style: "cancel" },
             {
               text: "Chấp nhận",
               onPress: async () => {
@@ -212,12 +214,13 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
                   });
 
                   if (result.success) {
-                    // Làm mới thông tin người dùng để cập nhật danh sách bạn bè
-                    await getUser(userId);
+                    await getUser(userId); // Làm mới dữ liệu user để cập nhật friends
                     setHasReceivedRequest(false);
                     setReceivedRequestId(null);
                     setFriendRequestSent(false);
                     setFriendRequestId(null);
+                    setIsFriend(true); // Cập nhật trạng thái bạn bè
+                    setCanViewProfile(true); // Cập nhật quyền xem hồ sơ
                     Alert.alert("Thành công", `Bạn và ${user.displayName} đã trở thành bạn bè!`);
                   } else {
                     throw new Error("Không thể xác nhận yêu cầu");
@@ -251,39 +254,6 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
             },
           ]
         );
-      } else if (friendRequestSent && friendRequestId) {
-        // Xác nhận thu hồi yêu cầu kết bạn
-        Alert.alert(
-          "Thu hồi yêu cầu",
-          `Bạn có muốn thu hồi yêu cầu kết bạn với ${user.displayName}?`,
-          [
-            {
-              text: "Hủy",
-              style: "cancel",
-            },
-            {
-              text: "Xác nhận",
-              onPress: async () => {
-                try {
-                  const result = await friendsAPI.patch(friendRequestId, {
-                    status: "rejected",
-                  });
-
-                  if (result.success) {
-                    setFriendRequestSent(false);
-                    setFriendRequestId(null);
-                    Alert.alert("Thành công", "Đã thu hồi yêu cầu kết bạn!");
-                  } else {
-                    throw new Error("Không thể thu hồi yêu cầu");
-                  }
-                } catch (err) {
-                  console.error("Lỗi khi thu hồi yêu cầu:", err);
-                  Alert.alert("Lỗi", "Không thể thu hồi yêu cầu kết bạn");
-                }
-              },
-            },
-          ]
-        );
       } else {
         setShowFormAddFriend(true);
       }
@@ -295,12 +265,11 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
 
   const postAddFriend = async (message: string) => {
     const friendsAPI = restClient.apiClient.service("apis/add-friends");
-    // Gửi yêu cầu kết bạn
     const result = await friendsAPI.create({
       senderId: currentUserId,
       receiverId: userId,
       message: message,
-    })
+    });
     if (result.success) {
       setFriendRequestSent(true);
       setFriendRequestId(result.data._id);
@@ -308,34 +277,30 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
     } else {
       throw new Error("Không thể gửi yêu cầu kết bạn");
     }
-  }
+  };
 
   const formAddMessage = (message: string) => {
     setShowFormAddFriend(false);
     postAddFriend(message);
-  }
+  };
 
   const handleFollowRequest = async () => {
     if (!currentUserId || !userId) return;
     try {
-      // Lấy dữ liệu người dùng được theo dõi
       const targetUserData = await UsersClient.get(userId);
       if (!targetUserData.success) {
         throw new Error("Không thể lấy dữ liệu người dùng được theo dõi");
       }
-      // Lấy dữ liệu người dùng hiện tại
       const currentUserData = await UsersClient.get(currentUserId);
       if (!currentUserData.success) {
         throw new Error("Không thể lấy dữ liệu người dùng hiện tại");
       }
 
       if (!isFollowing) {
-        // Cập nhật followers của người dùng được theo dõi
         const updatedFollowers = [...(targetUserData.data.followers || []), currentUserId];
         const followerResponse = await UsersClient.patch(userId, {
           followers: updatedFollowers,
         });
-        // Cập nhật following của người dùng hiện tại
         const updatedFollowing = [...(currentUserData.data.following || []), userId];
         const followingResponse = await UsersClient.patch(currentUserId, {
           following: updatedFollowing,
@@ -350,14 +315,12 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
           throw new Error("Không thể theo dõi");
         }
       } else {
-        // Xóa currentUserId khỏi followers của người dùng được theo dõi
         const updatedFollowers = (targetUserData.data.followers || []).filter(
           (id: string) => id !== currentUserId
         );
         const followerResponse = await UsersClient.patch(userId, {
           followers: updatedFollowers,
         });
-        // Xóa userId khỏi following của người dùng hiện tại
         const updatedFollowing = (currentUserData.data.following || []).filter(
           (id: string) => id !== userId
         );
@@ -380,9 +343,20 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
     }
   };
 
+  const handleMessage = () => {
+    if (!currentUserId || !userId) {
+      Alert.alert("Lỗi", "Không thể xác định thông tin người dùng");
+      return;
+    }
+    if (!user?.setting?.allowMessagesFromStrangers && !isFriend && currentUserId !== userId) {
+      Alert.alert("Lỗi", "Người dùng này chỉ cho phép bạn bè nhắn tin.");
+      return;
+    }
+  };
+
   return (
     <ScrollView style={styles.container} onScroll={handleScroll}>
-      <CHeader label={user?.displayName || "Profile"} backPress={() => navigation.goBack()} />
+      <CHeader label={user?.displayName || "Hồ sơ"} backPress={() => navigation.goBack()} />
       <View style={styles.profileInfo}>
         {loading ? (
           <Text style={styles.bio}>Đang tải...</Text>
@@ -391,6 +365,30 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
         ) : !user ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>Không tìm thấy thông tin người dùng</Text>
+          </View>
+        ) : !canViewProfile ? (
+          <View style={styles.emptyContainer}>
+            <Image source={{ uri: avt || DEFAULT_AVATAR }} style={styles.profileImage} />
+            <Text style={styles.name}>{user?.displayName || "Không có tên"}</Text>
+            <Text style={styles.emptyText}>
+              Hồ sơ này không công khai. Vui lòng kết bạn để xem thêm thông tin.
+            </Text>
+            <View style={styles.buttonContainer}>
+              <CButton
+                label={friendRequestSent ? "Đã gửi kết bạn" : "Kết bạn"}
+                onSubmit={handleFriendRequest}
+                style={{
+                  width: "100%",
+                  height: 40,
+                  backColor: friendRequestSent ? Color.textColor3 : Color.mainColor1,
+                  textColor: Color.white_homologous,
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  radius: 20,
+                  flex_direction: "row",
+                }}
+              />
+            </View>
           </View>
         ) : (
           <>
@@ -417,7 +415,7 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
           </>
         )}
       </View>
-      {!loading && !error && user && (
+      {!loading && !error && user && canViewProfile && (
         <View style={styles.container2}>
           <View style={styles.buttonContainer}>
             <CButton
@@ -462,9 +460,25 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
               }}
             />
           </View>
+          <View style={styles.buttonContainer}>
+            <CButton
+              label="Nhắn tin"
+              onSubmit={handleMessage}
+              style={{
+                width: "100%",
+                height: 40,
+                backColor: Color.mainColor1,
+                textColor: Color.white_homologous,
+                fontSize: 14,
+                fontWeight: "bold",
+                radius: 20,
+                flex_direction: "row",
+              }}
+            />
+          </View>
         </View>
       )}
-      {!loading && !error && user && (
+      {!loading && !error && user && canViewProfile && (
         <View style={{ flex: 1, backgroundColor: Color.backGround }}>
           <View style={{ width: "100%", height: "100%" }}>
             <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
@@ -478,7 +492,7 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
           </View>
         </View>
       )}
-      <MessageModal visible={showFormAddFriend} onClose={() => {setShowFormAddFriend(false)}} onSend={formAddMessage}/>
+      <MessageModal visible={showFormAddFriend} onClose={() => setShowFormAddFriend(false)} onSend={formAddMessage} />
     </ScrollView>
   );
 };
@@ -493,8 +507,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 20,
     alignItems: "center",
-    gap: 20,
+    gap: 10,
     backgroundColor: Color.white_homologous,
+    paddingHorizontal: 10,
   },
   profileInfo: {
     alignItems: "center",
@@ -547,9 +562,10 @@ const styles = StyleSheet.create({
     color: Color.textColor3,
     fontStyle: "italic",
     textAlign: "center",
+    marginVertical: 10,
   },
   buttonContainer: {
-    width: "45%",
+    width: "30%",
     alignSelf: "center",
   },
 });

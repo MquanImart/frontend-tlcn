@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Thêm Ionicons
 import getColor from "@/src/styles/Color";
+import restClient from "@/src/shared/services/RestClient";
 
 const Color = getColor();
 
@@ -20,6 +21,7 @@ interface ChangePasswordDialogProps {
   onSave: (oldPassword: string, newPassword: string) => Promise<void>;
   loading: boolean;
 }
+const accountClient = restClient.apiClient.service("apis/accounts");
 
 const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePasswordDialogProps) => {
   const [oldPassword, setOldPassword] = useState("");
@@ -33,6 +35,14 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSave = async () => {
+            const passWordCheck = await restClient.apiClient
+            .service("apis/accounts/compare-password")
+            .create({
+                password: oldPassword
+            });
+    if (!passWordCheck.success) {
+      setPasswordError("Mật khẩu cũ không chính xác");
+    return}        
     if (newPassword !== confirmPassword) {
       setPasswordError("Mật khẩu mới và xác nhận mật khẩu không khớp");
       return;
