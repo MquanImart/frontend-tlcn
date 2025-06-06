@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import getColor from "@/src/styles/Color";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();
 
@@ -47,7 +47,7 @@ const TabBarCustom: React.FC<TabBarProps> = ({
           <Icon
             name={tab.icon}
             size={24}
-            color={selectedTab === tab.label ? Color.mainColor2 : Color.textColor3}
+            color={selectedTab === tab.label ? Color.textColor2 : Color.textColor3}
           />
           {selectedTab === tab.label && (
             <Text style={[styles.activeText, activeTextStyle]}>{tab.label}</Text>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   activeText: {
-    color: Color.mainColor2,
+    color: Color.textColor2,
     fontSize: 14,
     fontWeight: "bold",
     marginLeft: 5,

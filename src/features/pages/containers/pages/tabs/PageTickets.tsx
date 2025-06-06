@@ -34,7 +34,7 @@ const PageTickets: React.FC<PageTicketsProps> = ({ page, role , updatePage}) => 
 
       {canManageTickets && (
         <CIconButton
-          label="Tạo vé"
+          label="Tạo dịch vụ"
           icon={<Icon name="add-circle-outline" size={24} color="white" />}
           onSubmit={() => setModalVisible(true)}
           style={{

@@ -1,3 +1,4 @@
+// ArticleDetail.tsx
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
@@ -43,7 +44,6 @@ export default function ArticleDetail() {
   const {
     userId,
     currentArticle,
-    flatComments,
     isModalVisible,
     newReply,
     setNewReply,
@@ -123,7 +123,7 @@ export default function ArticleDetail() {
 
               <FlatList
                 ref={commentListRef}
-                data={flatComments} // Use flatComments
+                data={currentArticle?.comments || []}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                   <CommentItem
@@ -131,6 +131,7 @@ export default function ArticleDetail() {
                     comment={item}
                     onLike={likeComment}
                     onReply={replyToComment}
+                    level={1}
                     isHighlighted={item._id === commentId}
                   />
                 )}
@@ -140,7 +141,7 @@ export default function ArticleDetail() {
                 onScrollToIndexFailed={(info) => {
                   console.warn("Failed to scroll to comment index:", info);
                   commentListRef.current?.scrollToIndex({
-                    index: Math.min(info.index, (flatComments.length || 1) - 1),
+                    index: Math.min(info.index, (currentArticle?.comments?.length || 1) - 1),
                     animated: true,
                   });
                 }}
@@ -159,11 +160,12 @@ export default function ArticleDetail() {
                   <Ionicons name="image" size={24} color={colors.mainColor1} />
                 </TouchableOpacity>
                 <TextInput
-                  style={styles.commentInput}
+                  style={[styles.commentInput, { color: colors.textColor1 }]}
                   placeholder="Viết bình luận..."
                   placeholderTextColor={colors.textColor3}
                   value={newReply}
                   onChangeText={setNewReply}
+                  multiline
                 />
                 {isCommentChecking ? (
                   <ActivityIndicator size="small" color={colors.mainColor1} />
@@ -233,8 +235,8 @@ const styles = StyleSheet.create({
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: colors.textColor1,
     paddingHorizontal: 10,
+    maxHeight: 100,
   },
   commentList: {
     flexGrow: 1,

@@ -322,14 +322,14 @@ const usePageScreen = (pageId: string, navigation: NavigationPropType) => {
       { label: "Bài viết", icon: "article" },
       { label: "Quản lý lời mời", icon: "admin-panel-settings" },
       { label: "Quản trị viên", icon: "admin-panel-settings" },
-      { label: "Vé", icon: "confirmation-number" },
+      { label: "Dịch vụ", icon: "confirmation-number" },
     ];
 
     const nonOwnerTabs = [
       { label: "Trang chủ", icon: "home" },
       { label: "Bài viết", icon: "article" },
       { label: "Quản trị viên", icon: "admin-panel-settings" },
-      { label: "Vé", icon: "confirmation-number" },
+      { label: "Dịch vụ", icon: "confirmation-number" },
     ];
 
     return role === "isOwner" ? ownerTabs : nonOwnerTabs;
