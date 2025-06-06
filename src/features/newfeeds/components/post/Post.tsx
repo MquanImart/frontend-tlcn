@@ -397,7 +397,6 @@ const styles = StyleSheet.create({
   username: {
     fontWeight: "bold",
     fontSize: 14,
-    maxWidth: width * 0.3,
   },
   groupSeparator: {
     fontSize: 14,
@@ -406,7 +405,7 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 14,
     fontWeight: "400",
-    maxWidth: width * 0.4,
+    maxWidth: width * 0.35,
   },
   location: {
     fontSize: 12,

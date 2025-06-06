@@ -1,15 +1,14 @@
-import React from "react";
-import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, Dimensions, ActionSheetIOS } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { StackNavigationProp } from "@react-navigation/stack";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
+import { Address, MyPhoto, Page } from "@/src/interface/interface_reference";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import { Page, MyPhoto, Address } from "@/src/interface/interface_reference";
-import AdminInviteModal from "./AdminInviteModal";
 import getColor from "@/src/styles/Color";
-import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import AdminInviteModal from "./AdminInviteModal";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 const IMAGE_HEIGHT = (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 15);
@@ -48,58 +47,49 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   const navigation = useNavigation<NavigationProp>();
 
-
   return (
     <View style={styles.container}>
-      {/* PHẢN CHIẾU 2 */}
       <View style={styles.reflectionContainer2}>
         <ImageBackground source={{ uri: avatar?.url || "" }} style={styles.reflectionImage2} imageStyle={styles.reflectionImageStyle}>
           <LinearGradient colors={["rgba(0,0,0,0.1)", "transparent"]} style={styles.reflectionGradient} />
         </ImageBackground>
       </View>
 
-      {/* PHẢN CHIẾU 1 */}
       <View style={styles.reflectionContainer1}>
         <ImageBackground source={{ uri: avatar?.url || "" }} style={styles.reflectionImage1} imageStyle={styles.reflectionImageStyle}>
           <LinearGradient colors={["rgba(0,0,0,0.3)", "transparent"]} style={styles.reflectionGradient} />
         </ImageBackground>
       </View>
 
-      {/* ẢNH CHÍNH */}
       <View style={styles.imageWrapper}>
         <ImageBackground source={{ uri: avatar?.url || "" }} style={styles.headerImage} imageStyle={styles.imageStyle} />
       </View>
 
-      {/* THANH CÔNG CỤ */}
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#FFFFFF" />
+          <Icon name="arrow-back" size={24} color={Color.white_homologous} />
         </TouchableOpacity>
 
-        {/* ICON THỜI TIẾT */}
         <View style={styles.weatherContainer}>
-          <MaterialCommunityIcons name="weather-sunny" size={30} color="#FFD700" style={styles.sunIcon} />
+          <MaterialCommunityIcons name="weather-sunny" size={30} color={"#FFD700"} style={styles.sunIcon} />
           <TouchableOpacity onPress={() => {
             navigation.navigate("WeatherDetail", { lat: address?.lat ?? 0, lon: address?.long ?? 0 });
           }}>
-            <MaterialCommunityIcons name="cloud" size={34} color="#FFFFFF" style={styles.cloudIcon} />
+            <MaterialCommunityIcons name="cloud" size={34} color={Color.white_homologous} style={styles.cloudIcon} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* THÔNG TIN ĐỊA DANH */}
-      <View style={styles.infoContainer}>
+      <View style={styles.infoAndMoreContainer}>
         <View style={styles.infoBackground}>
           <Text style={styles.title}>{page.name}</Text>
           <Text style={styles.subtitle}>{address?.province}, {address?.district}</Text>
         </View>
 
-
-        {/* NÚT THÊM TÙY CHỌN */}
         <TouchableOpacity style={styles.moreButton} onPress={handleMorePress}>
-            <MaterialCommunityIcons name="dots-vertical" size={30} color="#FFFFFF" />
+            <MaterialCommunityIcons name="dots-vertical" size={30} color={Color.white_homologous} />
             {pendingInvites.length > 0 && <View style={styles.notificationBadge} />}
-          </TouchableOpacity>  
+        </TouchableOpacity>
       </View>
 
       <AdminInviteModal
@@ -118,7 +108,7 @@ export default PageHeader;
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: Color.backGround,
     paddingBottom: SCREEN_HEIGHT * 0.0375,
   },
   imageWrapper: {
@@ -143,9 +133,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     opacity: 0.5,
     borderRadius: 20,
-    backgroundColor: "white",
+    backgroundColor: Color.backGround,
     zIndex: 2,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -162,9 +152,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     opacity: 0.2,
     borderRadius: 15,
-    backgroundColor: "white",
+    backgroundColor: Color.backGround,
     zIndex: 1,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -182,7 +172,7 @@ const styles = StyleSheet.create({
   },
   topBar: {
     position: "absolute",
-    top: SCREEN_HEIGHT * 0.01875,
+    top: SCREEN_HEIGHT * 0.05,
     left: SCREEN_WIDTH * 0.05,
     right: SCREEN_WIDTH * 0.05,
     flexDirection: "row",
@@ -194,7 +184,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: SCREEN_WIDTH * 0.02,
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -202,13 +192,14 @@ const styles = StyleSheet.create({
   weatherContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: SCREEN_WIDTH * 0.025,
+    paddingVertical: SCREEN_HEIGHT * 0.0075,
+    paddingHorizontal: SCREEN_WIDTH * 0.03,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderRadius: 20,
   },
   sunIcon: {
-    marginRight: SCREEN_WIDTH * -0.025,
-    marginTop: SCREEN_HEIGHT * -0.01,
+    marginRight: SCREEN_WIDTH * -0.05,
+    marginTop: SCREEN_HEIGHT * -0.005,
   },
   cloudIcon: {
     marginLeft: SCREEN_WIDTH * 0.0125,
@@ -224,25 +215,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: SCREEN_WIDTH * 0.04,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.8)",
+    borderColor: Color.borderColor1,
     zIndex: 5,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
   distanceText: {
-    color: "#FFFFFF",
+    color: Color.white_homologous,
     fontSize: 16,
     fontWeight: "bold",
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
-  infoContainer: {
+  infoAndMoreContainer: {
     position: "absolute",
-    top: IMAGE_HEIGHT * 0.65,
+    top: IMAGE_HEIGHT * 0.5,
     left: SCREEN_WIDTH * 0.05,
+    right: SCREEN_WIDTH * 0.05,
     zIndex: 6,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -252,21 +244,23 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     padding: SCREEN_WIDTH * 0.025,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
+    flexShrink: 1,
   },
   title: {
-    color: "#FFFFFF",
+    color: Color.white_homologous,
     fontSize: 26,
     fontWeight: "bold",
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+    flexWrap: 'wrap',
   },
   subtitle: {
-    color: "#FFFFFF",
+    color: Color.white_homologous,
     fontSize: 15,
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 1, height: 1 },
@@ -282,30 +276,29 @@ const styles = StyleSheet.create({
     paddingVertical: SCREEN_HEIGHT * 0.0075,
     paddingHorizontal: SCREEN_WIDTH * 0.025,
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     zIndex: 5,
   },
   followText: {
-    color: "#FFFFFF",
+    color: Color.white_homologous,
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: SCREEN_WIDTH * 0.0125,
   },
   moreButton: {
-    position: "absolute",
-    left: SCREEN_WIDTH * 0.8,
-    top: SCREEN_HEIGHT * 0.02,
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: SCREEN_WIDTH * 0.02,
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     zIndex: 5,
+    flexShrink: 0,
+    marginLeft: SCREEN_WIDTH * 0.02,
   },
   notificationBadge: {
     position: "absolute",
@@ -316,6 +309,6 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#FFFFFF",
+    borderColor: Color.white_homologous,
   },
 });
