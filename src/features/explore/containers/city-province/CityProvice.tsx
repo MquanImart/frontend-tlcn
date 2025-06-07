@@ -163,7 +163,7 @@ const CityProvince = () => {
                       {hotPages.map((item) => (
                         <CardPage
                           key={item._id}
-                          images={item.avt?.url || "https://picsum.photos/200"}
+                          images={item.avt?.url || null}
                           name={item.name}
                           country="Viet Nam"
                           size={{ width: "32%", height: 160 }}
@@ -181,7 +181,7 @@ const CityProvince = () => {
                     {pages.map((item) => (
                       <CardPage
                         key={item._id}
-                        images={item.avt?.url || "https://picsum.photos/200"}
+                        images={item.avt?.url || null}
                         name={item.name}
                         country="Viet Nam"
                         size={{ width: "32%", height: 160 }}

@@ -1,3 +1,4 @@
+import { MyPhoto } from "@/src/interface/interface_reference";
 import getColor from "@/src/styles/Color";
 import { useEffect, useState } from "react";
 import { Image, Text, StyleSheet, View, TouchableOpacity } from "react-native";
@@ -6,7 +7,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 const Color = getColor();
 export interface CardUserProps {
     _id: string;
-    avt: string;
+    avt: MyPhoto | null;
     name: string;
     selected?: boolean;
     onPress: () => void;
@@ -35,7 +36,7 @@ const CardUser = ({_id, avt, name, selected, onPress, icon, radio} : CardUserPro
     return (
         <TouchableOpacity style={styles.container} onPress={handlePress}>
             <View style={styles.boxContent}>
-                <Image source={{uri:avt}} style={styles.images}/>
+                <Image source={avt?{uri:avt.url} : require('@/src/assets/images/default/default_user.png')} style={styles.images}/>
                 <Text style={styles.text}>{name}</Text>
             </View>
             {radio && <TouchableOpacity style={styles.radio} onPress={handlePressIcon}>

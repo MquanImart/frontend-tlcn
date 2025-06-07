@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 interface CardExploreProps {
-  images: string; // Giữ prop này để tương thích, nhưng không sử dụng
+  images: string | null; // Giữ prop này để tương thích, nhưng không sử dụng
   name: string;
   country: string;
   size: {
@@ -34,7 +34,7 @@ const CardPage = ({
     >
       <Image
         style={styles.images}
-        source={{uri: images}} // Giữ ảnh mặc định
+        source={images?{uri: images}:require('@/src/assets/images/default/default_page.jpg')}
         resizeMode="cover" // Đảm bảo ảnh hiển thị đúng tỷ lệ
       />
       <LinearGradient

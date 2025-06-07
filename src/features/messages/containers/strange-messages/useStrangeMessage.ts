@@ -67,19 +67,19 @@ const useStrangeMessage = () => {
                     return {
                         conversationId: item._id,
                         name: userData?userData.displayName:"Người dùng không xác định",
-                        avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : "https://picsum.photos/200",
+                        avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : null,
                     }
                 } else if (item.type === "group"){
                     return {
                         conversationId: item._id,
                         name: item.groupName !== null? item.groupName : getShortNames(item),
-                        avt: item.avtGroup !== null? item.avtGroup : "https://picsum.photos/200",
+                        avt: item.avtGroup !== null? item.avtGroup : null,
                     }
                 } else {
                     return {
                         conversationId: item._id,
                         name: item.pageId?item.pageId.name : "Page không xác định",
-                        avt: item.pageId && item.pageId.avt? item.pageId.avt : "https://picsum.photos/200",
+                        avt: item.pageId && item.pageId.avt? item.pageId.avt : null,
                     }
                 }
             })

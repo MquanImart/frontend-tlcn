@@ -14,7 +14,6 @@ import { Message } from "@/src/interface/interface_flex";
 
 const Color = getColor();
 const WINDOW_HEIGHT = Dimensions.get('window').height;
-const WINDOW_WIDTH =  Dimensions.get('window').width;
 const IMAGE_SIZE = Dimensions.get('window').width / 2 - 4;
 
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "NewChat">;
@@ -57,7 +56,7 @@ const PhotoAndFile = () =>{
         >
             <Image
               style={styles.img}
-              source={{ uri: item.content.mediaUrl ? item.content.mediaUrl.url : "https://picsum.photos/200" }}
+              source={ item.content.mediaUrl ? { uri: item.content.mediaUrl.url} : require('@/src/assets/images/default/default_images.png')}
               resizeMode="cover" // Giữ nguyên tỉ lệ, không cắt ảnh
             />
         </TouchableOpacity>

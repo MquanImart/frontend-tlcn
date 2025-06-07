@@ -7,6 +7,9 @@ import { callPostGoogleApi } from "@/src/shared/services/API_Google";
 import { RoutesResponse } from "../interfaceRoute";
 import { LocationRoute } from "./interfaceAPIRoute";
 import decodePolyline from "../../utils/DecodePolyline";
+import { Alert } from "react-native";
+import axios from "axios";
+import env from "@/env";
 type MapNavigationProp = StackNavigationProp<MapStackParamList, "CustomMap">;
 
 const useDirections = (start?: LocationRoute, end?: LocationRoute) => {
@@ -41,15 +44,24 @@ const useDirections = (start?: LocationRoute, end?: LocationRoute) => {
     const getRoute = async (travelMode: "DRIVE" | "WALK" | "MOTORCYCLE") => {
       const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
       const header = { 'X-Goog-FieldMask': '*' };
-      const body = {
-          origin: { location: { latLng: {
-            latitude: startLocation?.latitude,
-            longitude: startLocation?.longitude
-        } } },
-          destination: { location: { latLng: {
-            latitude: endLocation?.latitude,
-            longitude: endLocation?.longitude
-        } } },
+
+      const commonBody : any = {
+          origin: { 
+            location: { 
+              latLng: {
+                latitude: startLocation?.latitude,
+                longitude: startLocation?.longitude
+              } 
+            } 
+          },
+          destination: { 
+            location: { 
+              latLng: {
+                latitude: endLocation?.latitude,
+                longitude: endLocation?.longitude
+              } 
+            } 
+          },
           travelMode: travelMode === "MOTORCYCLE" ? "DRIVE" : travelMode, // Google chưa hỗ trợ MOTORCYCLE
           polylineQuality: 'HIGH_QUALITY',
           polylineEncoding: 'ENCODED_POLYLINE',
@@ -57,9 +69,17 @@ const useDirections = (start?: LocationRoute, end?: LocationRoute) => {
               travelMode === "DRIVE" ? "TRAFFIC_AWARE" :
               travelMode === "MOTORCYCLE" ? "TRAFFIC_AWARE_OPTIMAL" : "TRAFFIC_UNAWARE",
       };
+
+      if (travelMode === "MOTORCYCLE") {
+        commonBody.routeModifiers = {
+          avoidHighways: true,
+          //avoidTolls: true,
+          //avoidFerries: true
+        };
+      }
   
       try {
-          const result = await callPostGoogleApi<RoutesResponse>(url, body, header);
+          const result = await callPostGoogleApi<RoutesResponse>(url, commonBody, header);
           if (result && result.routes && result.routes.length) {
               setRouteDitections(result);
               const encodedPolyline = result.routes[0].polyline.encodedPolyline;
@@ -70,6 +90,48 @@ const useDirections = (start?: LocationRoute, end?: LocationRoute) => {
           }
       } catch (error) {
           console.error(error);
+      }
+    };
+
+    const getRoutev1 = async (travelMode: "driving" | "walking" | "moto") => {
+      if (!startLocation || !endLocation) {
+        Alert.alert('Thông báo','Bạn phải chọn điểm đi và điểm đến!');
+        return;
+      }
+      let mode = travelMode === "moto"? "driving": travelMode;
+      let avoid =travelMode === "moto"? "highways": "";
+
+      const origin = `${startLocation.latitude},${startLocation.longitude}`;
+      const destination = `${endLocation.latitude},${endLocation.longitude}`;
+
+      const apiKey = env.GOOGLE_MAPS_API_KEY;
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=${mode}&key=${apiKey}${
+        avoid ? `&avoid=${avoid}` : ""
+      }`;
+      
+      try {
+        const response = await axios.get(url);
+        const data = response.data;
+          
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+          const encodedPolyline = route.overview_polyline.points;
+          const decodedPoints = decodePolyline(encodedPolyline);
+          setCoordinates(decodedPoints);
+
+          return {
+            polyline: encodedPolyline,
+            legs: route.legs,
+            summary: route.summary,
+          };
+        } else {
+          Alert.alert('Thông báo', 'Không tìm thấy tuyến đường!')
+          return null;
+        }
+      } catch (error) {
+        Alert.alert('Thông báo', 'Không thể gọi API!')
+        console.log(error);
+        return null;
       }
     };
 
@@ -113,7 +175,7 @@ const useDirections = (start?: LocationRoute, end?: LocationRoute) => {
         decodePolyline, coordinates, visiableSearch,
         selectedSearch, setVisiableSearch, openSearch,
         changeTransport, reverseRoute, routeDirections,
-        navigationBegin
+        navigationBegin, getRoutev1
     }
 }
 

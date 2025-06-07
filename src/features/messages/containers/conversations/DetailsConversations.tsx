@@ -37,7 +37,13 @@ const DetailsConversations = () => {
         <View style={styles.container}>
             <CHeaderIcon label={""} IconLeft={"arrow-back-ios"} onPressLeft={onPressHeaderLeft}/>
             <View style={styles.column_center}>
-                <Image style={styles.avt} source={{uri: display.avt}}/>
+                <Image style={styles.avt} 
+                    source={display.avt ? {uri: display.avt.url} : (
+                    display.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
+                    display.type === 'private'? require('@/src/assets/images/default/default_user.png'):
+                    require('@/src/assets/images/default/default_page.jpg')
+                )}
+                />
                 <Text style={styles.textName}>{display.name}</Text>
                 <CardActionsDetails label={"Hành động"} buttons={listActionUser}/>
                 <CardActionsDetails label={"Cài đặt trò chuyện"} buttons={listActionMessage}/>

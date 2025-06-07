@@ -111,7 +111,7 @@ const ListMember = () => {
                 renderItem={({ item }) => (
                     <TouchableOpacity style={[styles.userItem, styles.shadow]} onPress={() => handlePressUser(item._id)}>
                         <View style={styles.mainContent}>
-                            <Image source={{uri: item.avt.length > 0 ? item.avt[item.avt.length - 1] :  "https://picsum.photos/200"}} style={styles.images}/>
+                            <Image source={item.avt.length > 0 ? {uri: item.avt[item.avt.length - 1].url} : require('@/src/assets/images/default/default_user.png')} style={styles.images}/>
                             <View style={styles.content}>
                                 <Text style={styles.name}>{item.displayName}</Text>
                             </View>

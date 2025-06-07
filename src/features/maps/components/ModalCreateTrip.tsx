@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 30,
+        marginTop: 10,
     },
     buttonSearch: {
         width: WIDTH_SCREEN - 80,
@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
         backgroundColor: Color.backGround,
         width: '100%',
         height: '100%',
-        paddingTop: 20
     },
     title: {
         fontSize: 30,
@@ -194,6 +193,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-start",
         alignItems: "center",
+        marginTop: 10
     },
     boxC: {
         width: 50

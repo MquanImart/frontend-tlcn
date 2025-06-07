@@ -9,6 +9,7 @@ import { Image, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } fr
 import useMessages from "../containers/useMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { MyPhoto } from "@/src/interface/interface_reference";
 
 const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages">;
@@ -24,7 +25,11 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
     return (
         <TouchableOpacity style={styles.container} onPress={cardData.onPress}>
             <View style={styles.mainContent}>
-                <Image source={{uri: cardData.avt}} style={styles.images}/>
+                <Image source={cardData.avt ? {uri: cardData.avt?.url} : (
+                    cardData.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
+                    cardData.type === 'private'? require('@/src/assets/images/default/default_user.png'):
+                    require('@/src/assets/images/default/default_page.jpg')
+                )} style={styles.images}/>
                 <View style={styles.content}>
                     <View style={styles.title}>
                       <Text style={[styles.name, (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
@@ -54,8 +59,9 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
 
 export interface DataCardProps {
     name: string;
-    avt: string;
+    avt: MyPhoto | null;
     isRead: boolean;
+    type: 'group' | 'private' | 'page';
     sendDate: number;
     userSend: string;
     message: string;
@@ -95,7 +101,8 @@ const useCardMessage = (conversation: Conversation) => {
         if (conversation.type === "group") {
             return {
                 name: conversation.groupName !== null? conversation.groupName : getShortNames(conversation),
-                avt: conversation.avtGroup !== null? conversation.avtGroup : "https://picsum.photos/200",
+                avt: conversation.avtGroup !== null? conversation.avtGroup : null,
+                type: 'group',
                 isRead: hasUserSeenLastMessage(conversation, userId),
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
@@ -105,10 +112,12 @@ const useCardMessage = (conversation: Conversation) => {
         } else if (conversation.type === "private") {
 
             const userData = getOtherParticipantById(conversation, userId);
+            console.log(userData);
             return {
                 name: userData?userData.displayName:"Người dùng không xác định",
-                avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : "https://picsum.photos/200",
+                avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : null,
                 isRead: hasUserSeenLastMessage(conversation, userId),
+                type: 'private',
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
                 message: getContent(conversation),
@@ -118,8 +127,9 @@ const useCardMessage = (conversation: Conversation) => {
             const userData = getOtherParticipantById(conversation, userId);
             return {
                 name: conversation.participants.some((user) => user._id === userId) ? (conversation.pageId?conversation.pageId.name : "Page không xác định") : (userData?userData.displayName:"Người dùng không xác định"),
-                avt: conversation.pageId && conversation.pageId.avt? conversation.pageId.avt : "https://picsum.photos/200",
+                avt: conversation.pageId && conversation.pageId.avt? conversation.pageId.avt : null,
                 isRead: true,
+                type: 'page',
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
                 message: getContent(conversation),

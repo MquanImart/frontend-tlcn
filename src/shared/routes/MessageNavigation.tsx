@@ -48,7 +48,6 @@ export type ChatStackParamList = {
   BoxChat: { conversationId: string | null, friend? : {
     _id: string;
     displayName: string;
-    avt: string;
   }};
   Details: { defaultConversation: Conversation };
   PhotoAndFile: { conversationId: string };
@@ -84,6 +83,9 @@ export type StrangeChatStackParamList = {
     displayName: string;
     avt: string;
   }};
+  Details: { defaultConversation: Conversation };
+  PhotoAndFile: { conversationId: string };
+  SettingsNotify: { conversation: Conversation };
 };
 
 const StackStrange = createStackNavigator<StrangeChatStackParamList>();
@@ -95,6 +97,9 @@ return (
     }}>
         <StackStrange.Screen name="BoxChat" component={Conversations} />
         <StackStrange.Screen name="StrangeMessages" component={StrangeMessages} />
+        <StackStrange.Screen name="Details" component={DetailsConversations} />
+        <StackStrange.Screen name="PhotoAndFile" component={PhotoAndFile} />
+        <StackStrange.Screen name="SettingsNotify" component={SettingsNotify} />
     </StackStrange.Navigator>
 );
 }
@@ -106,6 +111,9 @@ export type PageChatStackParamList = {
     displayName: string;
     avt: string;
   }};
+  Details: { defaultConversation: Conversation };
+  PhotoAndFile: { conversationId: string };
+  SettingsNotify: { conversation: Conversation };
 };
 
 const PageChat = createStackNavigator<PageChatStackParamList>();
@@ -117,6 +125,9 @@ return (
     }}>
         <PageChat.Screen name="BoxChat" component={Conversations} />
         <PageChat.Screen name="PageChat" component={PageMessages} />
+        <PageChat.Screen name="Details" component={DetailsConversations} />
+        <PageChat.Screen name="PhotoAndFile" component={PhotoAndFile} />
+        <PageChat.Screen name="SettingsNotify" component={SettingsNotify} />
     </PageChat.Navigator>
 );
 }

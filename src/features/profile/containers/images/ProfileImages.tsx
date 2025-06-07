@@ -1,9 +1,7 @@
 import { Animated, ScrollView, View, StyleSheet, ActivityIndicator } from "react-native";
 import PreviewImages from "./PreviewImages";
-import { samplePhotos } from "./dataTest";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import DetailsPhoto from "../../components/DetailsPhoto";
-import { MyPhoto } from "@/src/interface/interface_flex";
 import useCollectionImages from "./useCollectionImages";
 
 interface ProfileImagesProps {
@@ -18,9 +16,7 @@ const ProfileImages: React.FC<ProfileImagesProps> = ({ userId }) => {
     dataImages,
     dataImagesAvt,
     viewAll,
-    handleViewAll,
     handleSelectedPhoto,
-    currentView,
     selectedPhoto,
     isModalVisible,
     closeModal

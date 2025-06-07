@@ -9,13 +9,15 @@ import { Alert } from "react-native";
 import useMessages from "../useMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
+import { MyPhoto } from "@/src/interface/interface_reference";
 
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "Details">;
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
 
 interface DisplayProps {
     name: string;
-    avt: string;
+    avt: MyPhoto | null;
+    type: 'group' | 'private' | 'page';
 }
 
 const useDetails = (defaultConversationId: Conversation) => {
@@ -38,7 +40,8 @@ const useDetails = (defaultConversationId: Conversation) => {
             const otherUser = firstOtherParticipant(conversation, userId);
             setDisplay({
                 name: otherUser?otherUser.displayName : "Không xác định",
-                avt: otherUser && otherUser.avt.length > 0 ? otherUser.avt[otherUser.avt.length - 1] : "https://picsum.photos/200"
+                avt: otherUser && otherUser.avt.length > 0 ? otherUser.avt[otherUser.avt.length - 1] : null,
+                type: 'private'
             })
             setListActionUser([
                 {text: 'Xem trang cá nhân', showIcon: true, onPress:()=>{otherUser && navigationProfile.navigate('Profile', {userId: otherUser._id})}},
@@ -48,10 +51,11 @@ const useDetails = (defaultConversationId: Conversation) => {
                 {text: 'Xem file và phương tiện', showIcon: true, onPress:()=>{navigation.navigate("PhotoAndFile", {conversationId: conversation._id})}},
                 {text: 'Thông báo', showIcon: true, onPress:()=>{navigation.navigate("SettingsNotify", {conversation: conversation})}}
             ])
-        } else if (conversation.type == "group"){
+        } else if (conversation.type === "group"){
             setDisplay({
                 name: conversation.groupName?conversation.groupName: getShortNames(conversation),
-                avt: conversation.avtGroup ? conversation.avtGroup : "https://picsum.photos/200"
+                avt: conversation.avtGroup ? conversation.avtGroup : null,
+                type: 'group'
             })
             setListActionUser([
                 {text: 'Đổi tên nhóm', showIcon: true, onPress:()=>{setOpenEditName(true)}},
@@ -65,7 +69,8 @@ const useDetails = (defaultConversationId: Conversation) => {
         } else {
             setDisplay({
                 name: conversation.pageId? conversation.pageId.name: "Trang không xác định",
-                avt: conversation.pageId && conversation.pageId.avt ? conversation.pageId.avt : "https://picsum.photos/200"
+                avt: conversation.pageId && conversation.pageId.avt ? conversation.pageId.avt : null,
+                type: 'page'
             })
             if (conversation.participants.some(participant => participant._id === userId)){
                 setListActionUser([
@@ -101,8 +106,8 @@ const useDetails = (defaultConversationId: Conversation) => {
         changeGroupAPI(value);
         if (display){
             setDisplay({
-                avt: display.avt,
-                name: value
+                ...display,
+                name: value,
             })
         }
     }

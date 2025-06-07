@@ -1,4 +1,5 @@
 import { Conversation } from "@/src/interface/interface_flex";
+import { MyPhoto } from "@/src/interface/interface_reference";
 import restClient from "@/src/shared/services/RestClient";
 import getColor from "@/src/styles/Color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -42,10 +43,14 @@ const ModalChooseConversation = ({ visible, onCancel }: {
             <TouchableOpacity style={styles.containerCard}
                 onPress={() => toggleConversation(item._id)}
             >
-                <View style={styles.boxContent}>
-                    <Image source={{uri:user?.avt}} style={styles.images}/>
+                {user && <View style={styles.boxContent}>
+                    <Image source={user.avt ? {uri: user.avt.url} : ( user.type === 'group'? 
+                        require('@/src/assets/images/default/default_group_message.png'):
+                        require('@/src/assets/images/default/default_user.png'))} 
+                        style={styles.images}
+                    />
                     <Text style={styles.text}>{user?.name}</Text>
-                </View>
+                </View>}
                 <View >
                     <Icon 
                         name={isSelected? "radio-button-on": "radio-button-off"} 
@@ -68,7 +73,7 @@ const ModalChooseConversation = ({ visible, onCancel }: {
               <Text style={styles.title}>Chọn cuộc trò chuyện</Text>
               {conversations && conversations.length > 0 ? (
                 <FlatList
-                  data={conversations}
+                  data={conversations.filter((conversation) => conversation.type !== 'page')}
                   renderItem={renderConversationItem}
                   keyExtractor={(item) => item._id}
                   style={styles.list}
@@ -93,7 +98,8 @@ const ModalChooseConversation = ({ visible, onCancel }: {
 interface InfoUser {
     conversationId: string;
     name: string;
-    avt: string;
+    avt: MyPhoto | null;
+    type: 'group' | 'private'
 }
 
 const useModal = () => {
@@ -138,7 +144,7 @@ const useModal = () => {
         }
     }
 
-    const getOtherParticipantById = (conversation: Conversation, userId: string): {_id: string; displayName: string; avt: string[]} | null => {
+    const getOtherParticipantById = (conversation: Conversation, userId: string): {_id: string; displayName: string; avt: MyPhoto[]} | null => {
         return conversation.participants.find(user => user._id !== userId) || null;
     };
 
@@ -156,21 +162,17 @@ const useModal = () => {
             return {
                 conversationId: item._id,
                 name: userData?userData.displayName:"Người dùng không xác định",
-                avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : "https://picsum.photos/200",
+                avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : null,
+                type: 'group'
             }
         } else if (item.type === "group"){
             return {
                 conversationId: item._id,
                 name: item.groupName !== null? item.groupName : getShortNames(item),
-                avt: item.avtGroup !== null? item.avtGroup : "https://picsum.photos/200",
+                avt: item.avtGroup !== null? item.avtGroup : null,
+                type: 'private'
             }
-        } else {
-            return {
-                conversationId: item._id,
-                name: item.pageId?item.pageId.name : "Page không xác định",
-                avt: item.pageId && item.pageId.avt? item.pageId.avt : "https://picsum.photos/200",
-            }
-        }
+        } return null;
     }
 
     const handleConfirm = () => {

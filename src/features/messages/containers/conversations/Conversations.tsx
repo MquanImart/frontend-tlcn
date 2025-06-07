@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, Keyboard, Text, FlatList, ActivityIndicator } from "react-native"
+import { View, StyleSheet, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator } from "react-native"
 import HeaderBoxChat from "../../components/HeaderBoxChat";
 import getColor from "@/src/styles/Color";
 import CIconButton from "@/src/shared/components/button/CIconButton";
@@ -7,10 +7,9 @@ import InputText from "../../components/InputText";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import useConversations from "./useConversations";
-import { useCallback, useEffect } from "react";
-import React from "react";
 import { Message } from "@/src/interface/interface_flex";
 import { MessageReceive, MessageSend } from "./Message";
+import { useCallback } from "react";
 
 const Color = getColor();
 

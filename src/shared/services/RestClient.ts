@@ -178,7 +178,7 @@ class RestClient {
     await this.loadToken();
     try {
       const queryString = new URLSearchParams(query).toString();
-      const response = await axios.patch(`${this.baseURL}/${this.path}?${queryString}`, {
+      const response = await axios.patch(`${this.baseURL}/${this.path}?${queryString}`,{}, {
         headers: { Authorization: `Bearer ${this.token}` },
       });
       return response.data;
