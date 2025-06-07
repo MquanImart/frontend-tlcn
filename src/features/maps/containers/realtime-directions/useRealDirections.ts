@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from "react";
-import * as Location from 'expo-location';
-import { LocationRoute } from "../directions/interfaceAPIRoute";
-import MapView from "react-native-maps";
-import { Magnetometer } from 'expo-sensors';
-import { StackNavigationProp } from "@react-navigation/stack";
-import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
-import { useNavigation } from "@react-navigation/native";
-import { callPostGoogleApi } from "@/src/shared/services/API_Google";
-import { RoutesResponse } from "../interfaceRoute";
-import decodePolyline from "../../utils/DecodePolyline";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import restClient from "@/src/shared/services/RestClient";
 import { Conversation } from "@/src/interface/interface_flex";
+import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
+import { callPostGoogleApi } from "@/src/shared/services/API_Google";
+import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import * as Location from 'expo-location';
+import { Magnetometer } from 'expo-sensors';
+import { useEffect, useRef, useState } from "react";
 import { Alert, Linking } from "react-native";
+import MapView from "react-native-maps";
+import decodePolyline from "../../utils/DecodePolyline";
+import { LocationRoute } from "../directions/interfaceAPIRoute";
+import { RoutesResponse } from "../interfaceRoute";
 
 type MapNavigationProp = StackNavigationProp<MapStackParamList, "CustomMap">;
 
@@ -243,7 +243,7 @@ function useRealDirections (
           const result = await messageAPI.create(formData);
       
           if (result.success) {
-            alert("Gửi tín hiệ cầu cứu thành công")
+            Alert.alert("Thông báo","Gửi tín hiệu cầu cứu thành công, bạn đợi chút nhé.");
           } else {
             throw new Error(result.message);
             }

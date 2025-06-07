@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, TextInput, StyleSheet, FlatList, TouchableOpacity, Text } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import axios from "axios";
-import { StackNavigationProp } from "@react-navigation/stack";
+import env from "@/env";
 import { WeatherStackParamList } from "@/src/shared/routes/WeatherNavigation";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 
 type WeatherNavigationProp = StackNavigationProp<WeatherStackParamList, "WeatherDetail">;
 
@@ -15,11 +16,7 @@ interface Location {
   provinceCode?: number;
   districtCode?: number;
   fullName: string;
-  lat?: number | null;
-  lon?: number | null;
 }
-
-const API_KEY = "93ec152097fc00b3380bffe41fd8be2c";
 
 const cleanName = (name: string) =>
   name
@@ -29,20 +26,43 @@ const cleanName = (name: string) =>
 // Hàm loại bỏ dấu tiếng Việt
 const removeAccents = (str: string) => {
   return str
-    .normalize("NFD") // Phân tách ký tự và dấu
-    .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu
-    .replace(/đ/g, "d") // Thay đ thành d
-    .replace(/Đ/g, "D"); // Thay Đ thành D
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
 };
 
-// Hàm chuẩn hóa chuỗi: bỏ dấu phẩy, khoảng trắng thừa, dấu tiếng Việt, không phân biệt hoa/thường
+// Hàm chuẩn hóa chuỗi
 const normalizeText = (text: string) =>
   removeAccents(
     text
-      .replace(/[,]/g, " ") // Thay dấu phẩy bằng khoảng trắng
-      .replace(/\s+/g, " ") // Thay nhiều khoảng trắng bằng một khoảng trắng
+      .replace(/[,]/g, " ")
+      .replace(/\s+/g, " ")
       .trim()
   ).toLowerCase();
+
+// Hàm lấy tọa độ từ Google Maps Geocoding API
+const geocodeAddress = async (addressString: string) => {
+  try {
+    const response = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
+      params: {
+        address: addressString,
+        key: env.GOOGLE_MAPS_API_KEY,
+        region: "vn",
+        language: "vi",
+      },
+    });
+
+    if (response.data.status === "OK" && response.data.results?.length > 0) {
+      const { lat, lng } = response.data.results[0].geometry.location;
+      return { lat, lon: lng };
+    }
+    throw new Error(response.data.error_message || "Không tìm thấy kết quả");
+  } catch (error) {
+    console.error("Lỗi khi định vị địa chỉ:", error);
+    return null;
+  }
+};
 
 const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
   const [query, setQuery] = useState("");
@@ -79,7 +99,7 @@ const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
             name: district.name,
             type: "district",
             provinceCode: province.code,
-            fullName: `${provinceName}, ${districtName}`,
+            fullName: `${districtName}, ${provinceName}`,
           });
 
           district.wards?.forEach((ward: any) => {
@@ -90,7 +110,7 @@ const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
               type: "ward",
               provinceCode: province.code,
               districtCode: district.code,
-              fullName: `${provinceName}, ${districtName}, ${wardName}`,
+              fullName: `${wardName}, ${districtName}, ${provinceName}`,
             });
           });
         });
@@ -99,43 +119,50 @@ const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
       setAllLocations(flatLocations);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách địa phương:", error);
+      Alert.alert("Lỗi", "Không thể tải danh sách địa phương. Vui lòng thử lại.");
     }
   };
 
-  // Lọc danh sách không phân biệt hoa/thường và dấu
+  // Lọc danh sách hỗ trợ tìm kiếm ở mọi cấp
   useEffect(() => {
     if (query) {
       const searchText = normalizeText(query);
       const filtered = allLocations
-        .filter((location) => normalizeText(location.fullName).startsWith(searchText))
+        .filter((location) => normalizeText(location.fullName).includes(searchText))
         .sort((a, b) => {
           const order = { province: 0, district: 1, ward: 2 };
           return order[a.type] - order[b.type];
-        });
+        })
+        .slice(0, 20);
       setFilteredLocations(filtered);
     } else {
       setFilteredLocations([]);
     }
-  }, [query, allLocations]);
+ 
+
+}, [query, allLocations]);
 
   const handleLocationSelect = async (location: Location) => {
     try {
-      const fullAddress = `${location.fullName}, Vietnam`;
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1`
-      );
+      let fullAddress = `${location.fullName}, Vietnam`;
+      if (location.type === "ward") {
+        fullAddress = `${location.name}, ${allLocations.find(loc => loc.code === location.districtCode)?.name}, ${allLocations.find(loc => loc.code === location.provinceCode)?.name}, Vietnam`;
+      } else if (location.type === "district") {
+        fullAddress = `${location.name}, ${allLocations.find(loc => loc.code === location.provinceCode)?.name}, Vietnam`;
+      }
 
-      if (response.data.length > 0) {
-        const { lat, lon } = response.data[0];
+      const coordinates = await geocodeAddress(fullAddress);
+      if (coordinates) {
         navigationWeather.navigate("WeatherDetail", {
-          lat: parseFloat(lat),
-          lon: parseFloat(lon),
+          lat: coordinates.lat,
+          lon: coordinates.lon,
         });
       } else {
-        console.warn("Không tìm thấy tọa độ cho địa chỉ này!");
+        Alert.alert("Lỗi", `Không tìm thấy tọa độ cho ${location.fullName}. Vui lòng thử lại.`);
       }
     } catch (error) {
       console.error("Lỗi khi lấy tọa độ:", error);
+      Alert.alert("Lỗi", "Không thể lấy tọa độ. Vui lòng thử lại sau.");
     }
   };
 

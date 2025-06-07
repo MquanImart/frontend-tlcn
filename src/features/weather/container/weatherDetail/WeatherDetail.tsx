@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image, Modal } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
-import { RouteProp, useRoute } from "@react-navigation/native";
 import { WeatherStackParamList } from "@/src/shared/routes/WeatherNavigation";
 import getColor from "@/src/styles/Color";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 type WeatherDetailRouteProp = RouteProp<WeatherStackParamList, "WeatherDetail">;
 const Color = getColor();
