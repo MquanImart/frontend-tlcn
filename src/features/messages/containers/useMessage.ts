@@ -1,12 +1,13 @@
 import { Conversation } from "@/src/interface/interface_flex";
+import { MyPhoto } from "@/src/interface/interface_reference";
 
 const useMessages = () => {
 
-    const getParticipantById = (conversation: Conversation, userId: string): {_id: string; displayName: string; avt: string[]} | null => {
+    const getParticipantById = (conversation: Conversation, userId: string): {_id: string; displayName: string; avt: MyPhoto[]} | null => {
         return conversation.participants.find(user => user._id === userId) || null;
     };
     
-    const getOtherParticipantById = (conversation: Conversation, userId: string): {_id: string; displayName: string; avt: string[]} | null => {
+    const getOtherParticipantById = (conversation: Conversation, userId: string): {_id: string; displayName: string; avt: MyPhoto[]} | null => {
         return conversation.participants.find(user => user._id !== userId) || null;
     };
 

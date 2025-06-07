@@ -6,7 +6,7 @@ import CardUser from "../../components/CardUser";
 import { FlatList } from "react-native-gesture-handler";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import useNewChat from "./useNewChat";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 const Color = getColor();
@@ -51,7 +51,7 @@ const NewChat = () => {
             <View style={styles.boxUser}>
                 <Text style={styles.textNewGroup}>Gợi ý</Text>
                 <FlatList data={filterUser} renderItem={({item}) => 
-                    <CardUser avt={item.avt.length > 0? item.avt[item.avt.length - 1] : "https://picsum.photos/200"} 
+                    <CardUser avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null} 
                       name={item.displayName} onPress={() => {createNewChat(item)}} 
                       _id={item._id} radio={false}
                     />

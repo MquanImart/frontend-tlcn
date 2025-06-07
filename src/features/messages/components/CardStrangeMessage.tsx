@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Image, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native"
 import useMessages from "../containers/useMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MyPhoto } from "@/src/interface/interface_reference";
 
 const Color = getColor();
 
@@ -20,7 +21,11 @@ const CardStrangeMessage = ({conversation, onPress}: CardMessagesProps) => {
     return (
         <TouchableOpacity style={styles.container} onPress={onPress}>
             <View style={styles.mainContent}>
-                <Image source={{uri: cardData.avt}} style={styles.images}/>
+                <Image source={cardData.avt ? {uri: cardData.avt?.url} : (
+                    cardData.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
+                    cardData.type === 'private'? require('@/src/assets/images/default/default_user.png'):
+                    require('@/src/assets/images/default/default_page.jpg')
+                )} style={styles.images}/>
                 <View style={styles.content}>
                     <View style={styles.title}>
                         <Text style={[styles.name, cardData.isRead?{}:{fontWeight: 'bold'}]}>{cardData.name}</Text>
@@ -42,7 +47,8 @@ const CardStrangeMessage = ({conversation, onPress}: CardMessagesProps) => {
 
 export interface DataCardProps {
     name: string;
-    avt: string;
+    avt: MyPhoto | null;
+    type: 'group' | 'private' | 'page';
     isRead: boolean;
     sendDate: number;
     userSend: string;
@@ -78,7 +84,8 @@ const useCardMessage = (conversation: Conversation) => {
         if (conversation.type === "group") {
             return {
                 name: conversation.groupName !== null? conversation.groupName : getShortNames(conversation),
-                avt: conversation.avtGroup !== null? conversation.avtGroup : "https://picsum.photos/200",
+                avt: conversation.avtGroup !== null? conversation.avtGroup : null,
+                type: 'group',
                 isRead: hasUserSeenLastMessage(conversation, userId),
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
@@ -89,7 +96,8 @@ const useCardMessage = (conversation: Conversation) => {
             const userData = getOtherParticipantById(conversation, userId);
             return {
                 name: userData?userData.displayName:"Người dùng không xác định",
-                avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : "https://picsum.photos/200",
+                avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : null,
+                type: 'private',
                 isRead: hasUserSeenLastMessage(conversation, userId),
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
@@ -98,7 +106,8 @@ const useCardMessage = (conversation: Conversation) => {
         } else {
             return {
                 name: conversation.pageId?conversation.pageId.name : "Page không xác định",
-                avt: conversation.pageId && conversation.pageId.avt? conversation.pageId.avt : "https://picsum.photos/200",
+                avt: conversation.pageId && conversation.pageId.avt? conversation.pageId.avt : null,
+                type: 'page',
                 isRead: true,
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),

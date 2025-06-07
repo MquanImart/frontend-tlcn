@@ -65,7 +65,6 @@ const useNewChat = () => {
         navigation.navigate("BoxChat", {conversationId: null, friend: {
             _id: friend._id,
             displayName: friend.displayName,
-            avt: friend.avt.length > 0? friend.avt[friend.avt.length - 1] : "https://picsum.photos/200"
         }})
     };
 

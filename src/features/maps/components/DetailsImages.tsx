@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Image, StyleSheet, TouchableOpacity, Linking } from "react-native";
 import { PlaceData } from "../containers/interfaceAPI";
 import getColor from "@/src/styles/Color";
-import { callGetGoogleApi } from "@/src/shared/services/API_Google";
 import env from "@/env";
 
 interface DetailsImagesProps {
@@ -16,7 +15,7 @@ const DetailsImages = ({details} : DetailsImagesProps) => {
     if (details.photos && details.photos.length > 0){
       setImages(getImagesDefault(details.photos[0].name));
     } else {
-      setImages("https://picsum.photos/200")
+      setImages(null)
     }
   }, [details]);
 
@@ -26,7 +25,7 @@ const DetailsImages = ({details} : DetailsImagesProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{uri: images? images : "https://picsum.photos/200"}} style={styles.image} />
+        <Image source={images? {uri: images} : require('@/src/assets/images/default/default_location.png')} style={styles.image} />
       </View>
       <View style={styles.boxInfor}>
       {details.websiteUri && (

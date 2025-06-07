@@ -59,7 +59,7 @@ const NewGroupChat = () => {
                 <FlatList data={selected} renderItem={({item}) => 
                     <CardUser 
                         _id={item._id}
-                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : "https://picsum.photos/200"}  
+                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}  
                         name={item.displayName} 
                         onPress={() => {handleSelected(item._id)}} 
                         icon={"highlight-off"} 
@@ -72,7 +72,7 @@ const NewGroupChat = () => {
                 <FlatList data={filterUser} renderItem={({item}) => 
                     <CardUser 
                         _id={item._id}
-                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : "https://picsum.photos/200"}  
+                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}  
                         name={item.displayName} 
                         selected={selected.some((user) => user._id === item._id)}
                         onPress={() => {handleSelected(item._id)}} 

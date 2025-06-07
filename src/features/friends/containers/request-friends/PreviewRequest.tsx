@@ -35,7 +35,7 @@ const PreviewRequest = ({label, onPressViewAll, data, isSendMe, ReplyRequest}: P
             <View style={styles.boxContent}>
             {data.slice(0, 3).map((item) => 
                 <FriendCard 
-                    key={item.addFriend._id} _id={item.addFriend._id} 
+                    key={item.addFriend._id} _id={isSendMe?item.sender._id:item.receiver._id} 
                     name={isSendMe?item.sender.displayName:item.receiver.displayName} 
                     img={isSendMe?item.sender.avt:item.receiver.avt} 
                     sameFriends={item.mutualFriends.length} 

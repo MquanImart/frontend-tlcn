@@ -18,7 +18,6 @@ const useConversations = (
     friend?: {
         _id: string;
         displayName: string;
-        avt: string;
     }
 ) => {
     const navigation = useNavigation<ChatNavigationProp>();

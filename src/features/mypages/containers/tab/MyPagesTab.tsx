@@ -38,7 +38,7 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
     }
     return (
       <CardPage
-        images={item.avt?.url || "https://picsum.photos/200"}
+        images={item.avt?.url || null}
         name={item.name} // name là required trong Page
         country={"Viet Nam"} // Giá trị mặc định vì Page không có country
         size={{ width: "32%", height: 160 }}

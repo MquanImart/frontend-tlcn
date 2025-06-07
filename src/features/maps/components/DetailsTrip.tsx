@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     },
     boxSearch: {
         position: 'absolute',
-        top: 0,
+        top: -150,
         zIndex: 10,
         backgroundColor: Color.backGround,
         width: '100%',

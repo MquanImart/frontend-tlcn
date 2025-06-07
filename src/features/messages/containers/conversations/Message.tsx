@@ -21,7 +21,7 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
 
     return (
         <View style={styles.container}>
-            {showAvatar?<Image style={styles.images} source={{uri: user.avt.length > 0 ? user.avt[user.avt.length - 1] : "https://picsum.photos/200"}}/> 
+            {showAvatar?<Image style={styles.images} source={user.avt.length > 0 ? {uri: user.avt[user.avt.length - 1].url}: require('@/src/assets/images/default/default_user.png')}/> 
             : <View style={styles.images}/>}
             <View style={styles.boxContent}>
                 {showAvatar && <Text style={styles.nameUser}>{user.displayName}</Text>}
@@ -34,7 +34,7 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
                     >
                         <Image
                           style={styles.img}
-                          source={{ uri: message.content.mediaUrl ? message.content.mediaUrl.url : "https://picsum.photos/200" }}
+                          source={ message.content.mediaUrl ? { uri: message.content.mediaUrl.url} : require('@/src/assets/images/default/default_images.png')}
                           resizeMode="cover" // Giữ nguyên tỉ lệ, không cắt ảnh
                         />
                     </TouchableOpacity>
@@ -84,7 +84,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
                     >
                         <Image
                           style={styles.img}
-                          source={{ uri: message.content.mediaUrl ? message.content.mediaUrl.url : "https://picsum.photos/200" }}
+                          source={ message.content.mediaUrl ? { uri: message.content.mediaUrl.url} : require('@/src/assets/images/default/default_images.png')}
                           resizeMode="cover" // Giữ nguyên tỉ lệ, không cắt ảnh
                         />
                     </TouchableOpacity>
@@ -111,7 +111,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
                 )}
                 </View>
             </View>
-            {showAvatar?<Image style={styles.images} source={{uri: user.avt.length > 0 ? user.avt[user.avt.length - 1] : "https://picsum.photos/200"}}/> 
+            {showAvatar?<Image style={styles.images} source={user.avt.length > 0 ? {uri: user.avt[user.avt.length - 1].url}: require('@/src/assets/images/default/default_user.png')}/> 
             : <View style={styles.images}/>}
             <DetailsPhoto source={message.content.mediaUrl?message.content.mediaUrl:null} 
                 isModalVisible={visiable} closeModal={() => {setVisiable(false)}}/>

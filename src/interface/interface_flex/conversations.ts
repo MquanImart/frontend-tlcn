@@ -1,15 +1,16 @@
+import { MyPhoto } from "../interface_reference";
 import { Message } from "./Message";
 
 export interface UserDisplay {
     _id: string;
     displayName: string;
-    avt: string[];
+    avt: MyPhoto[];
 }
 
 export interface InfoPageConversations {
     _id: string;
     name: string;
-    avt: string;
+    avt: MyPhoto;
 }
 
 export interface ConversationSettings {
@@ -28,7 +29,7 @@ export interface Conversation {
     settings: ConversationSettings[];
     type: "private" | "group" | "page";
     groupName: string | null;
-    avtGroup: string | null;
+    avtGroup: MyPhoto | null;
     pageId: InfoPageConversations | null;
     lastMessage: Message | null;
     createdAt: number;

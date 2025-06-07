@@ -29,10 +29,9 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                   renderItem={({ item }) => (
                     <View style={{ marginRight: 12 }}>
                     <CardPage 
-                      images={item.avt.url ? item.avt.url : "https://picsum.photos/200"} 
+                      images={item.avt.url ? item.avt.url : null} 
                       name={item.name} 
                       country={"Viet Nam"} 
-                      distance={2.3} 
                       size={{
                         width: 150,
                         height: 200
@@ -58,10 +57,9 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                   renderItem={({ item }) => (
                     <View style={{ marginRight: 12 }}>
                     <CardPage 
-                      images={item.avt.url ? item.avt.url : "https://picsum.photos/200"} 
+                      images={item.avt.url ? item.avt.url : null} 
                       name={item.name} 
                       country={"Viet Nam"} 
-                      distance={2.3} 
                       size={{
                         width: 150,
                         height: 200
@@ -87,10 +85,9 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                   renderItem={({ item }) => (
                     <View style={{ marginRight: 12 }}>
                     <CardPage 
-                      images={item.avt.url ? item.avt.url : "https://picsum.photos/200"} 
+                      images={item.avt.url ? item.avt.url : null} 
                       name={item.name} 
                       country={"Viet Nam"} 
-                      distance={2.3} 
                       size={{
                         width: 150,
                         height: 200
