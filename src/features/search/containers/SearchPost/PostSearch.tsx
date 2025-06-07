@@ -20,13 +20,14 @@ import Modal from "react-native-modal";
 import getColor from "@/src/styles/Color";
 import usePost from "./usePost";
 import { Article } from "@/src/features/newfeeds/interface/article";
-import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
+
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface PostSearchProps {
-  textSearch: string;
+  textSearch: string[]; // Đổi thành mảng string
 }
+
 export default function PostSearch({ textSearch }: PostSearchProps) {
   const [articles, setArticles] = useState<Article[]>([]);
   const {
@@ -54,23 +55,25 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
     currentPage,
     totalPages,
     loadingMore,
-    loadMoreArticles,setCurrentPage
+    loadMoreArticles,
+    setCurrentPage
   } = usePost(articles, setArticles);
 
   useEffect(() => {
     getUserId();
   }, []);
 
-useEffect(() => {
-  if (userId && textSearch) { // Chỉ gọi getArticles khi textSearch có giá trị
-    setArticles([]); // Xóa danh sách bài viết khi textSearch thay đổi
-    setCurrentPage(1);
-    getArticles(1, 5, textSearch); // Gọi API với textSearch làm hashtag
-  } else if (userId) {
-    setArticles([]); // Xóa danh sách bài viết
-    console.warn("Không có textSearch, không gọi API.");
-  }
-}, [textSearch, userId]);
+  useEffect(() => {
+    if (userId && textSearch.length > 0) { // Kiểm tra nếu textSearch có hashtag
+      setArticles([]); // Xóa danh sách bài viết khi textSearch thay đổi
+      setCurrentPage(1);
+      console.log("Gọi API với hashtag:", textSearch);
+      getArticles(1, 5, textSearch); // Truyền mảng hashtag
+    } else if (userId) {
+      setArticles([]); // Xóa danh sách bài viết
+      console.warn("Không có hashtag, không gọi API.");
+    }
+  }, [textSearch, userId]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.backGround }]}>
@@ -78,8 +81,8 @@ useEffect(() => {
         {articles.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: colors.textColor3 }]}>
-              {textSearch
-                ? `Không tìm thấy bài viết nào cho "${textSearch}"`
+              {textSearch.length > 0
+                ? `Không tìm thấy bài viết nào cho ${textSearch.map(tag => `#${tag}`).join(", ")}`
                 : "Không tìm thấy bài viết"}
             </Text>
           </View>

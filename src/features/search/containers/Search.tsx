@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, TextInput, StyleSheet, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import SearchUserAnhGroup from "./SearchUserAndGroup/SearchUserAndGroup";
+import SearchUserAndGroup from "./SearchUserAndGroup/SearchUserAndGroup";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import PostSearch from "./SearchPost/PostSearch";
 import FriendCard from "../../friends/components/FriendCard";
@@ -151,10 +151,10 @@ const Search = () => {
       {isSearching && (
         <>
           {isHashSearch ? (
-            <PostSearch textSearch={searchQuery} />
+            <PostSearch textSearch={searchQuery} /> // Truyền searchQuery dưới dạng mảng
           ) : (
-            <SearchUserAnhGroup
-              textSearch={searchQuery}
+            <SearchUserAndGroup
+              textSearch={searchQuery.join(" ")} // Nối lại cho tìm kiếm không phải hashtag
               userId={userId ?? ""}
               navigation={navigation}
             />

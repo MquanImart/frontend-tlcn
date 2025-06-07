@@ -7,7 +7,7 @@ const useSearch = () => {
   const [allFriends, setAllFriends] = useState<SuggestFriends[] | null>(null);
   const [searchText, setSearchText] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string[]>([]); // Đổi thành mảng string
   const [isHashSearch, setIsHashSearch] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [history, setHistory] = useState<string[]>([]);
@@ -19,16 +19,16 @@ const useSearch = () => {
       if (id) {
         setUserId(id);
       } else {
-        console.error("No userId found in AsyncStorage");
+        console.error("Không tìm thấy userId trong AsyncStorage");
       }
     } catch (error) {
-      console.error("Error fetching userId from AsyncStorage:", error);
+      console.error("Lỗi khi lấy userId từ AsyncStorage:", error);
     }
   };
 
   const getAllFriends = async () => {
     if (!userId) {
-      console.error("userId is null, cannot fetch friends");
+      console.error("userId rỗng, không thể lấy danh sách bạn bè");
       return;
     }
     try {
@@ -38,13 +38,13 @@ const useSearch = () => {
         setAllFriends(result.data);
       }
     } catch (error) {
-      console.error("Error fetching friends:", error);
+      console.error("Lỗi khi lấy danh sách bạn bè:", error);
     }
   };
 
   const getHistorySearch = async () => {
     if (!userId) {
-      console.error("userId is null, cannot fetch search history");
+      console.error("userId rỗng, không thể lấy lịch sử tìm kiếm");
       return;
     }
     try {
@@ -54,7 +54,7 @@ const useSearch = () => {
         setHistory(result.data.keySearch);
       }
     } catch (error) {
-      console.error("Error fetching search history:", error);
+      console.error("Lỗi khi lấy lịch sử tìm kiếm:", error);
     }
   };
 
@@ -67,7 +67,7 @@ const useSearch = () => {
       }
       return result;
     } catch (error) {
-      console.error("Error adding search history:", error);
+      console.error("Lỗi khi thêm lịch sử tìm kiếm:", error);
       throw error;
     }
   };
@@ -81,7 +81,7 @@ const useSearch = () => {
       }
       return result;
     } catch (error) {
-      console.error("Error updating search history:", error);
+      console.error("Lỗi khi cập nhật lịch sử tìm kiếm:", error);
       throw error;
     }
   };
@@ -101,37 +101,39 @@ const useSearch = () => {
     setSearchText(text);
     if (text.trim() === "") {
       setIsSearching(false);
-      setSearchQuery("");
+      setSearchQuery([]);
       setIsHashSearch(false);
     }
   };
 
-  const handleSearch = async () => {
-    if (searchText.trim() === "") return;
+const handleSearch = async () => {
+  if (searchText.trim() === "") return;
 
-    setSearchQuery(searchText);
-    setIsSearching(true);
+  // Phân tích hashtag từ searchText
+  const hashtags = searchText
+    .split(" ")
+    .filter((tag) => tag.startsWith("#") && tag.length > 1)
+    .map((tag) => tag.toLowerCase()); 
 
-    if (searchText.includes("#")) {
-      setIsHashSearch(true);
+  setSearchQuery(hashtags);
+  setIsSearching(true);
+  setIsHashSearch(hashtags.length > 0);
+
+  try {
+    if (userId) {
+      // Lưu toàn bộ searchText vào lịch sử
+      await addHistorySearch(userId, searchText);
     } else {
-      setIsHashSearch(false);
+      console.error("userId rỗng, không thể thêm lịch sử tìm kiếm");
     }
-
-    try {
-      if (userId) {
-        await addHistorySearch(userId, searchText);
-      } else {
-        console.error("userId is null, cannot add history search");
-      }
-    } catch (error) {
-      console.error("Error handling search:", error);
-    }
-  };
+  } catch (error) {
+    console.error("Lỗi khi xử lý tìm kiếm:", error);
+  }
+};
 
   const handleClearSearch = () => {
     setSearchText("");
-    setSearchQuery("");
+    setSearchQuery([]);
     setIsSearching(false);
     setIsHashSearch(false);
   };
@@ -143,18 +145,18 @@ const useSearch = () => {
       if (userId) {
         await updateHistorySearchByIdUser(userId, updatedHistory);
       } else {
-        console.error("userId is null, cannot update history search");
+        console.error("userId rỗng, không thể cập nhật lịch sử tìm kiếm");
       }
     } catch (error) {
-      console.error("Error removing search history item:", error);
-      setHistory(history); // Revert back if error occurs
+      console.error("Lỗi khi xóa mục lịch sử tìm kiếm:", error);
+      setHistory(history); // Khôi phục nếu có lỗi
     }
   };
 
   const HandleButton = (_id: string) => {
     return {
       label: ["Xem trang cá nhân"],
-      actions: [(_id: string) => ({ screen: "Profile", params: { userId: _id } })], // Trả về cấu trúc điều hướng
+      actions: [(_id: string) => ({ screen: "Profile", params: { userId: _id } })],
     };
   };
 
