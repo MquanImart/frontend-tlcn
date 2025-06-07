@@ -8,13 +8,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import MessagesDrawerWrapper from "./MessageNavigation";
 import { PersonalPageStackParamList } from "./PersonalPageNavigation";
-import { SearchNavigation } from "./SearchNavigation";
+import { SearchNavigation, SearchStackParamList } from "./SearchNavigation";
 import { SupportChatNavigation } from "./SupportChatNavigation";
 const Stack = createStackNavigator<NewFeedParamList>();
 
 export type NewFeedParamList = {
   NewFeed: { article: Article };
-  SearchNavigation: undefined;
+  SearchNavigation: {
+    screen?: keyof SearchStackParamList;
+    params?: SearchStackParamList[keyof SearchStackParamList];
+  };
   MessageNavigation: undefined;
   SupportChatNavigation: undefined;
   Profile: { userId: string };

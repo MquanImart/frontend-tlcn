@@ -1,24 +1,25 @@
-import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+// src/features/search/containers/SearchGroup/SearchGroup.tsx
 import GroupCard from "@/src/features/group/components/GroupCard";
-import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
-import { useMyGroups } from "@/src/features/group/containers/group/tabs/useMyGroups";
-import { useJoinedGroups } from "@/src/features/group/containers/group/tabs/useJoinedGroups";
 import { useExplore } from "@/src/features/group/containers/group/tabs/useExplore";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { useJoinedGroups } from "@/src/features/group/containers/group/tabs/useJoinedGroups";
+import { useMyGroups } from "@/src/features/group/containers/group/tabs/useMyGroups";
+import CButton from "@/src/shared/components/button/CButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
+import getColor from "@/src/styles/Color";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+
 const Color = getColor();
 
 interface SearchGroupProps {
   textSearch: string;
   userId: string;
-  navigation: StackNavigationProp<SearchStackParamList, "Search">;
+  navigation: StackNavigationProp<SearchStackParamList, "SearchUserAndGroup">;
 }
 
-
-const SearchGroup = ({ textSearch, userId, navigation }: SearchGroupProps) => {
+const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigation }) => {
   const { myGroups, loading: myGroupsLoading, error: myGroupsError } = useMyGroups(userId);
   const { savedGroups, loading: joinedGroupsLoading, error: joinedGroupsError } = useJoinedGroups(userId);
   const { groupsNotJoined, loading: exploreLoading, error: exploreError, handleJoinGroup } = useExplore(userId);
@@ -27,15 +28,12 @@ const SearchGroup = ({ textSearch, userId, navigation }: SearchGroupProps) => {
   const [visibleJoinedGroupsCount, setVisibleJoinedGroupsCount] = useState(3);
   const [visibleNotJoinedGroupsCount, setVisibleNotJoinedGroupsCount] = useState(3);
 
-  // Chuẩn hóa chuỗi tìm kiếm
   const normalizedSearch = removeVietnameseTones(textSearch);
 
-  // Lọc nhóm theo textSearch
   const filterGroups = (groups: any[]) =>
     groups.filter((group) => {
       if (!group.groupName) return false;
       const normalizedName = removeVietnameseTones(group.groupName);
-      // Kiểm tra chứa chuỗi hoặc gần giống
       return normalizedName.includes(normalizedSearch);
     });
 
@@ -43,21 +41,16 @@ const SearchGroup = ({ textSearch, userId, navigation }: SearchGroupProps) => {
   const filteredJoinedGroups = filterGroups(savedGroups);
   const filteredNotJoinedGroups = filterGroups(groupsNotJoined);
 
-  // Kết hợp trạng thái loading và error
   const loading = myGroupsLoading || joinedGroupsLoading || exploreLoading;
   const error = [myGroupsError, joinedGroupsError, exploreError].filter((err) => err).join("; ") || null;
 
-  // Hàm xử lý tham gia nhóm đồng bộ
   const onJoinGroup = (groupId: string) => {
     handleJoinGroup(groupId).catch((err) => {
       console.error("Lỗi khi tham gia nhóm:", err);
     });
   };
 
-  // Hàm rỗng cho các trường hợp không cần tham gia
-  const noopJoinGroup = (groupId: string) => {
-    // Không làm gì
-  };
+  const noopJoinGroup = (groupId: string) => {};
 
   const renderGroupSection = (
     groups: any[],
@@ -101,7 +94,6 @@ const SearchGroup = ({ textSearch, userId, navigation }: SearchGroupProps) => {
     </>
   );
 
-  // Kiểm tra nếu không có nhóm nào
   const totalGroups = filteredMyGroups.length + filteredJoinedGroups.length + filteredNotJoinedGroups.length;
 
   return (
@@ -122,23 +114,18 @@ const SearchGroup = ({ textSearch, userId, navigation }: SearchGroupProps) => {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Nhóm của tôi */}
           {renderGroupSection(
             filteredMyGroups,
             visibleMyGroupsCount,
             setVisibleMyGroupsCount,
             false
           )}
-
-          {/* Nhóm đã tham gia */}
           {renderGroupSection(
             filteredJoinedGroups,
             visibleJoinedGroupsCount,
             setVisibleJoinedGroupsCount,
             false
           )}
-
-          {/* Nhóm chưa tham gia */}
           {renderGroupSection(
             filteredNotJoinedGroups,
             visibleNotJoinedGroupsCount,
@@ -150,8 +137,6 @@ const SearchGroup = ({ textSearch, userId, navigation }: SearchGroupProps) => {
     </View>
   );
 };
-
-export default SearchGroup;
 
 const styles = StyleSheet.create({
   container: {
@@ -181,3 +166,5 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 });
+
+export default SearchGroup;

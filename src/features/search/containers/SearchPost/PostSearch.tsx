@@ -1,34 +1,41 @@
+// src/features/search/containers/SearchPost/PostSearch.tsx
+import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
+import Post from "@/src/features/newfeeds/components/post/Post";
+import { Article } from "@/src/features/newfeeds/interface/article";
+import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import { RouteProp } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
   Dimensions,
   Image,
-  TouchableWithoutFeedback,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import Post from "@/src/features/newfeeds/components/post/Post";
-import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
-import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
-import getColor from "@/src/styles/Color";
+import { SafeAreaView } from "react-native-safe-area-context";
 import usePost from "./usePost";
-import { Article } from "@/src/features/newfeeds/interface/article";
+
+type PostSearchRouteProp = RouteProp<SearchStackParamList, "SearchPost">;
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface PostSearchProps {
-  textSearch: string[]; // Đổi thành mảng string
+  route: PostSearchRouteProp;
 }
 
-export default function PostSearch({ textSearch }: PostSearchProps) {
+const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
+  const { textSearch } = route.params; // textSearch là mảng string, ví dụ: ["#vinper"] hoặc ["#vinperland"]
   const [articles, setArticles] = useState<Article[]>([]);
   const {
     getArticles,
@@ -45,10 +52,9 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
     handleAddComment,
     deleteArticle,
     editArticle,
-    changeScreen,
     getUserId,
     userId,
-    setUserId,
+    // setNewReply, // Hàm này đã có, không cần khai báo lại
     pickMedia,
     selectedMedia,
     recordView,
@@ -56,7 +62,7 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
     totalPages,
     loadingMore,
     loadMoreArticles,
-    setCurrentPage
+    setCurrentPage, // Đảm bảo setCurrentPage có ở đây
   } = usePost(articles, setArticles);
 
   useEffect(() => {
@@ -64,26 +70,44 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
   }, []);
 
   useEffect(() => {
-    if (userId && textSearch.length > 0) { // Kiểm tra nếu textSearch có hashtag
-      setArticles([]); // Xóa danh sách bài viết khi textSearch thay đổi
+    // Chỉ chạy khi userId hoặc textSearch thay đổi
+    if (userId && textSearch && textSearch.length > 0) {
+      console.log("useEffect triggered for textSearch:", textSearch);
+      // Reset trạng thái bài viết và trang khi textSearch thay đổi
+      setArticles([]); // Xóa bài viết cũ
+      setCurrentPage(1); // Đặt lại về trang đầu tiên
+      // Gọi API với hashtag mới
+      getArticles(1, 5, textSearch);
+    } else if (userId && (!textSearch || textSearch.length === 0)) {
+      // Nếu không có textSearch (hashtag rỗng), thì xóa hết bài viết
+      console.warn("textSearch is empty, clearing articles.");
+      setArticles([]);
       setCurrentPage(1);
-      console.log("Gọi API với hashtag:", textSearch);
-      getArticles(1, 5, textSearch); // Truyền mảng hashtag
-    } else if (userId) {
-      setArticles([]); // Xóa danh sách bài viết
-      console.warn("Không có hashtag, không gọi API.");
     }
-  }, [textSearch, userId]);
+  }, [userId, textSearch]); // Dependencies bao gồm textSearch để re-run khi nó thay đổi
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.backGround }]}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {articles.length === 0 ? (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backGround }]}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        // Thêm onScroll để xử lý loadMore
+        onScroll={({ nativeEvent }) => {
+          if (loadingMore) return;
+          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          const isCloseToBottom =
+            layoutMeasurement.height + contentOffset.y >= contentSize.height - 50; // 50px từ cuối
+          if (isCloseToBottom && currentPage < totalPages) {
+            loadMoreArticles();
+          }
+        }}
+        scrollEventThrottle={400} // Tần suất gọi onScroll (ms)
+      >
+        {articles.length === 0 && !loadingMore ? ( // Hiển thị "Không tìm thấy" chỉ khi không có bài viết và không đang tải
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: colors.textColor3 }]}>
-              {textSearch.length > 0
-                ? `Không tìm thấy bài viết nào cho ${textSearch.map(tag => `#${tag}`).join(", ")}`
-                : "Không tìm thấy bài viết"}
+              {textSearch && textSearch.length > 0
+                ? `Không tìm thấy bài viết nào cho ${textSearch.map((tag) => `#${tag}`).join(", ")}`
+                : "Nhập từ khóa để tìm kiếm"}
             </Text>
           </View>
         ) : (
@@ -99,8 +123,14 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
             />
           ))
         )}
+        {loadingMore && (
+          <View style={styles.loadingMoreContainer}>
+            <Text style={{ color: colors.textColor3 }}>Đang tải thêm bài viết...</Text>
+          </View>
+        )}
       </ScrollView>
 
+      {/* Modal và các phần khác giữ nguyên */}
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={closeComments}
@@ -173,11 +203,15 @@ export default function PostSearch({ textSearch }: PostSearchProps) {
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
-}
+};
 
+// Styles (giữ nguyên, thêm styles.loadingMoreContainer nếu muốn)
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -251,4 +285,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 5,
   },
+  loadingMoreContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
 });
+
+export default PostSearch;
