@@ -605,9 +605,6 @@ export default function usePost(
     }
   };
 
-  const changeScreen = (nameScreen: "SearchNavigation" | "MessageNavigation") => {
-    navigation.navigate(nameScreen);
-  };
 
   const recordView = async (articleId: string) => {
     if (!userId) {
@@ -678,7 +675,6 @@ export default function usePost(
     deleteArticle,
     editArticle,
     createArticle,
-    changeScreen,
     getUserId,
     userId,
     setUserId,

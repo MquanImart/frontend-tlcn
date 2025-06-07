@@ -1,3 +1,4 @@
+// src/features/newfeeds/components/post/Post.tsx
 import EditModal from "@/src/features/newfeeds/components/EditModal/EditModal";
 import { usePostActions } from "@/src/features/newfeeds/components/post/usePost";
 import ReportModal from "@/src/features/newfeeds/components/ReportModal/ReportModal";
@@ -109,6 +110,15 @@ const Post: React.FC<PostProps> = ({
         currentUserId: userId,
       });
     }
+  };
+
+  // Hàm xử lý khi bấm vào hashtag
+  const handleHashtagPress = (tag: string) => {
+    // Chỉ truyền thẳng tag (bao gồm cả dấu #) vào params
+    navigation.navigate("SearchNavigation", {
+      screen: "SearchPost",
+      params: { textSearch: [tag] }, // Truyền trực tiếp tag, bao gồm dấu #
+    });
   };
 
   const renderImage = (photos: Article["listPhoto"]) => {
@@ -313,12 +323,16 @@ const Post: React.FC<PostProps> = ({
         {article.hashTag && article.hashTag.length > 0 && (
           <View style={styles.hashtagContainer}>
             {article.hashTag.map((tag, index) => (
-              <Text
+              <TouchableOpacity
                 key={`${tag}-${index}`}
-                style={[styles.hashtag, { color: colors.mainColor2 }]}
+                onPress={() => handleHashtagPress(tag)} // Gọi hàm mới khi bấm
               >
-                {tag}
-              </Text>
+                <Text
+                  style={[styles.hashtag, { color: colors.mainColor2 }]}
+                >
+                  {tag} {/* Hiển thị tag nguyên bản từ backend */}
+                </Text>
+              </TouchableOpacity>
             ))}
           </View>
         )}

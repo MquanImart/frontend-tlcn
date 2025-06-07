@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import restClient from "@/src/shared/services/RestClient";
 import { SuggestFriends } from "@/src/features/friends/containers/suggest-friends/useSuggestFriends";
+import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 
 const useSearch = () => {
   const [allFriends, setAllFriends] = useState<SuggestFriends[] | null>(null);
   const [searchText, setSearchText] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string[]>([]); // Đổi thành mảng string
+  const [searchQuery, setSearchQuery] = useState<string[]>([]);
   const [isHashSearch, setIsHashSearch] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [history, setHistory] = useState<string[]>([]);
@@ -106,30 +106,42 @@ const useSearch = () => {
     }
   };
 
-const handleSearch = async () => {
-  if (searchText.trim() === "") return;
-
-  // Phân tích hashtag từ searchText
-  const hashtags = searchText
-    .split(" ")
-    .filter((tag) => tag.startsWith("#") && tag.length > 1)
-    .map((tag) => tag.toLowerCase()); 
-
-  setSearchQuery(hashtags);
-  setIsSearching(true);
-  setIsHashSearch(hashtags.length > 0);
-
-  try {
-    if (userId) {
-      // Lưu toàn bộ searchText vào lịch sử
-      await addHistorySearch(userId, searchText);
-    } else {
-      console.error("userId rỗng, không thể thêm lịch sử tìm kiếm");
+  const handleSearch = async () => {
+    if (searchText.trim() === "") {
+      setIsSearching(false);
+      setSearchQuery([]);
+      setIsHashSearch(false);
+      return { searchQuery: [], isHashSearch: false };
     }
-  } catch (error) {
-    console.error("Lỗi khi xử lý tìm kiếm:", error);
-  }
-};
+
+    const words = searchText.split(" ").filter((word) => word.length > 0);
+    const hasHashtag = words.some((word) => word.startsWith("#") && word.length > 1);
+
+    let currentSearchQuery: string[];
+    if (hasHashtag) {
+      // Nếu có ít nhất một từ bắt đầu bằng '#', lấy tất cả các từ có '#' và giữ nguyên dấu '#'
+      currentSearchQuery = words.filter((word) => word.startsWith("#") && word.length > 1);
+    } else {
+      // Nếu không có hashtag, coi toàn bộ searchText là một query duy nhất
+      currentSearchQuery = [searchText]; // Tìm kiếm cả cụm từ
+    }
+
+    setSearchQuery(currentSearchQuery);
+    setIsSearching(true);
+    setIsHashSearch(hasHashtag);
+
+    try {
+      if (userId) {
+        await addHistorySearch(userId, searchText);
+      } else {
+        console.error("userId rỗng, không thể thêm lịch sử tìm kiếm");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý tìm kiếm:", error);
+    }
+    // Trả về giá trị đã được cập nhật
+    return { searchQuery: currentSearchQuery, isHashSearch: hasHashtag };
+  };
 
   const handleClearSearch = () => {
     setSearchText("");
@@ -165,8 +177,8 @@ const handleSearch = async () => {
   return {
     allFriends,
     searchText,
-    searchQuery,
-    isHashSearch,
+    searchQuery, // Vẫn export để sử dụng cho mục đích render hoặc debug
+    isHashSearch, // Vẫn export
     isSearching,
     history,
     showAllHistory,
@@ -178,7 +190,7 @@ const handleSearch = async () => {
     addHistorySearch,
     updateHistorySearchByIdUser,
     handleSearchTextChange,
-    handleSearch,
+    handleSearch, // Hàm này giờ trả về giá trị
     handleClearSearch,
     handleRemoveHistoryItem,
     HandleButton,

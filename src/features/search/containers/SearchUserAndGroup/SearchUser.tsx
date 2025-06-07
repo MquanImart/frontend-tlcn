@@ -1,3 +1,4 @@
+// src/features/search/containers/SearchUser/SearchUser.tsx
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View, Text } from "react-native";
 import FriendCard from "@/src/features/friends/components/FriendCard";
@@ -9,6 +10,7 @@ import { MyPhoto } from "@/src/interface/interface_reference";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
+
 const Color = getColor();
 
 export interface Friend {
@@ -21,10 +23,10 @@ export interface Friend {
 interface SearchUserProps {
   textSearch: string;
   userId: string;
-  navigation: StackNavigationProp<SearchStackParamList, "Search">;
+  navigation: StackNavigationProp<SearchStackParamList, "SearchUserAndGroup">;
 }
 
-const SearchUser = ({ textSearch, userId, navigation }: SearchUserProps) => {
+const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation }) => {
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [allFriends, setAllFriends] = useState<Friend[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +47,6 @@ const SearchUser = ({ textSearch, userId, navigation }: SearchUserProps) => {
       setIsLoading(true);
       const result = await restClient.apiClient.service(`apis/users`).find({});
       if (result.success) {
-        // Loại bỏ userId của người dùng hiện tại
         const filteredData = result.data.filter(
           (friend: Friend) => friend._id !== userId
         );
