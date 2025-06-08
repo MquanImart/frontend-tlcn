@@ -19,7 +19,7 @@ const PageMessages = () => {
     search, searchUser, 
     isSearch, setIsSearch,
     conversations, getConversations,
-    onPressHeaderLeft, navigateNewChat,
+    onPressHeaderLeft,
     filterUser, userId, getuserId
   } = usePageMessages();
 
@@ -46,7 +46,6 @@ const PageMessages = () => {
           <View style={styles.container} >
               <CHeaderIcon label={"Tin nhắn Trang"} 
                   IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft} 
-                  IconRight={"add"} onPressRight={navigateNewChat} 
               />
               <SearchMessages search={search} setSearch={searchUser} setIsSearch={setIsSearch} refInput={inputRef}/>
               {!conversations? (

@@ -1,5 +1,4 @@
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
-import { PersonalPageStackParamList } from "@/src/shared/routes/PersonalPageNavigation";
 import restClient from '@/src/shared/services/RestClient';
 import getColor from "@/src/styles/Color";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,11 +11,12 @@ import CHeader from '../../reel/components/Header';
 import ProfileImages from './images/ProfileImages';
 import ProfilePost from './post/ProfilePost';
 import ViewAllVideo from './video/ViewAllVideo';
+import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
 
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 
-type ProfileNavigationProp = StackNavigationProp<PersonalPageStackParamList, "MyProfile">;
+type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
 const Color = getColor();
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 

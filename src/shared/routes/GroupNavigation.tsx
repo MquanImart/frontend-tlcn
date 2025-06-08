@@ -2,15 +2,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import GroupScreen from "@/src/features/group/containers/group/GroupScreen";
 import GroupDetailsScreen from "@/src/features/group/containers/detail-group/GroupDetailsScreen";
 import React from "react";
-import { PersonalPageStackParamList } from "./PersonalPageNavigation";
-import { ProfileNavigation } from "./ProfileNavigation";
+import { ProfileNavigation, ProfileStackParamList } from "./ProfileNavigation";
 
 export type GroupParamList = {
     GroupScreen: undefined;
     GroupDetailsScreen: { groupId: string; currentUserId: string };
     ProfileNavigation: {
-      screen?: keyof PersonalPageStackParamList;
-      params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
+      screen?: keyof ProfileStackParamList;
+      params?: ProfileStackParamList[keyof ProfileStackParamList];
     };
 };
 

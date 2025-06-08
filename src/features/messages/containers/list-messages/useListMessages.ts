@@ -19,6 +19,7 @@ export interface SearchConversations {
     conversationId: string;
     name: string;
     avt: MyPhoto | null;
+    type: 'group' | 'private' | 'page';
 }
 const useListMessages = () => {
     const [userId, setUserId] = useState<string | null>(null);
@@ -73,18 +74,21 @@ const useListMessages = () => {
                         conversationId: item._id,
                         name: userData?userData.displayName:"Người dùng không xác định",
                         avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : null,
+                        type: 'private'
                     }
                 } else if (item.type === "group"){
                     return {
                         conversationId: item._id,
                         name: item.groupName !== null? item.groupName : getShortNames(item),
                         avt: item.avtGroup !== null? item.avtGroup : null,
+                        type: 'group'
                     }
                 } else {
                     return {
                         conversationId: item._id,
                         name: item.pageId?item.pageId.name : "Page không xác định",
                         avt: item.pageId && item.pageId.avt? item.pageId.avt : null,
+                        type: 'page'
                     }
                 }
             })

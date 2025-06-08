@@ -1,9 +1,11 @@
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
+import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -18,18 +20,28 @@ export interface FriendCardProps {
     aboutMe: string;
     sendDate?: number;
     button: () => React.JSX.Element;
+    profile?: boolean;
 }
 
 type NavigationProp = NativeStackNavigationProp<MenuStackParamList>;
+type ProfileNavigationProp = StackNavigationProp<SearchStackParamList>;
 
-const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate, button}: FriendCardProps) => {
-    const navigation = useNavigation<NavigationProp>();
+const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate, button, profile}: FriendCardProps) => {
+    const menuNavigation = useNavigation<NavigationProp>();
+    const profileNavigation = useNavigation<ProfileNavigationProp>();
 
     const goToProfile = () => {
-      navigation.navigate('MyProfile', {
-        screen: 'Profile',
-        params: { userId: _id },
-      });
+      if (profile){
+        profileNavigation.navigate('MyProfile', {
+          screen: 'Profile',
+          params: { userId: _id },
+        });
+      } else {
+        menuNavigation.navigate('MyProfile', {
+          screen: 'Profile',
+          params: { userId: _id },
+        });
+      }
     };
 
     return (

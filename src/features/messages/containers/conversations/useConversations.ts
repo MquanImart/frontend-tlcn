@@ -15,6 +15,7 @@ type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "NewChat">;
 
 const useConversations = (
     conversationId: string | null, 
+    isFriend?: boolean,
     friend?: {
         _id: string;
         displayName: string;
@@ -282,7 +283,7 @@ const useConversations = (
 
     const navigationDetails = () => {
         if (conversation){
-            navigation.navigate("Details", {defaultConversation: conversation})
+            navigation.navigate("Details", {defaultConversation: conversation, isFriend})
         }
     }
 

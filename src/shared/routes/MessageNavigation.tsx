@@ -14,11 +14,18 @@ import { Conversation, UserDisplay } from "@/src/interface/interface_flex";
 import ListMember from "@/src/features/messages/containers/conversations/ListMember";
 import AddMember from "@/src/features/messages/containers/conversations/AddMember";
 import PageMessages from "@/src/features/messages/containers/page-messages/PageMessages";
+import { MapNavigation, MapStackParamList } from "./MapNavigation";
 
 export type MessagesDrawerParamList = {
-    "Tin nhắn": undefined;
+    "Tin nhắn": {
+      screen?: keyof ChatStackParamList;
+      params?: ChatStackParamList[keyof ChatStackParamList];
+    };
     "Cài đặt": undefined;
-    "Tin nhắn lạ": undefined;
+    "Tin nhắn lạ": {
+      screen?: keyof StrangeChatStackParamList;
+      params?: StrangeChatStackParamList[keyof StrangeChatStackParamList];
+    };
     "Tin nhắn trang của bạn": undefined;
 };
 
@@ -45,15 +52,23 @@ export type ChatStackParamList = {
   ListMessages: undefined;
   NewChat: undefined;
   NewGroupChat: {defaultChoose?: UserDisplay[]};
-  BoxChat: { conversationId: string | null, friend? : {
-    _id: string;
-    displayName: string;
-  }};
-  Details: { defaultConversation: Conversation };
+  BoxChat: { 
+    conversationId: string | null, 
+    isFriend?: boolean;
+    friend? : {
+      _id: string;
+      displayName: string;
+    }
+  };
+  Details: { defaultConversation: Conversation, isFriend?: boolean };
   PhotoAndFile: { conversationId: string };
   SettingsNotify: { conversation: Conversation };
   ListMember: {conversation: Conversation};
   AddMember: {conversationId: string, defaultChoose?: UserDisplay[]};
+  Map: {
+    screen?: keyof MapStackParamList;
+    params?: MapStackParamList[keyof MapStackParamList];
+  };
 };
 
 const Stack = createStackNavigator<ChatStackParamList>();
@@ -72,18 +87,22 @@ return (
         <Stack.Screen name="SettingsNotify" component={SettingsNotify} />
         <Stack.Screen name="ListMember" component={ListMember} />
         <Stack.Screen name="AddMember" component={AddMember} />
+        <Stack.Screen name="Map" component={MapNavigation} />
     </Stack.Navigator>
 );
 }
 
 export type StrangeChatStackParamList = {
   StrangeMessages: undefined;
-  BoxChat: { conversationId: string | null, friend? : {
-    _id: string;
-    displayName: string;
-    avt: string;
-  }};
-  Details: { defaultConversation: Conversation };
+  BoxChat: { 
+    conversationId: string | null, 
+    isFriend?: boolean;
+    friend? : {
+      _id: string;
+      displayName: string;
+    }
+  };
+  Details: { defaultConversation: Conversation, isFriend?: boolean};
   PhotoAndFile: { conversationId: string };
   SettingsNotify: { conversation: Conversation };
 };
@@ -106,12 +125,15 @@ return (
 
 export type PageChatStackParamList = {
   PageChat: undefined;
-  BoxChat: { conversationId: string | null, friend? : {
-    _id: string;
-    displayName: string;
-    avt: string;
-  }};
-  Details: { defaultConversation: Conversation };
+  BoxChat: { 
+    conversationId: string | null, 
+    isFriend?: boolean;
+    friend? : {
+      _id: string;
+      displayName: string;
+    }
+  };
+  Details: { defaultConversation: Conversation, isFriend?: boolean };
   PhotoAndFile: { conversationId: string };
   SettingsNotify: { conversation: Conversation };
 };

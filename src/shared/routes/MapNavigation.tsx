@@ -8,7 +8,10 @@ import Trip from "@/src/features/maps/containers/trip/Trip";
 import { createStackNavigator } from "@react-navigation/stack";
 
 export type MapStackParamList = {
-  CustomMap: undefined;
+  CustomMap:  {
+      lat: number;
+      long: number;
+  } | undefined;
   Directions: {start?: Location, end?: Location};
   ListTrip: undefined;
   Trip: {tripId: string};

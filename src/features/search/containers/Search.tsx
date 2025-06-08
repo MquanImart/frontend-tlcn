@@ -10,6 +10,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import useSearch from "./useSearch";
+import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
 
 type SearchNavigationProp = StackNavigationProp<SearchStackParamList, "Search">;
 const Color = getColor();
@@ -193,7 +194,10 @@ const Search: React.FC = () => {
                         actions: [
                           () => {
                             const navConfig = buttonConfig.actions[0](item.friend._id);
-                            navigation.navigate("Profile", navConfig.params);
+                            navigation.navigate("MyProfile", {
+                              screen: navConfig.screen as keyof ProfileStackParamList,
+                              params: navConfig.params,
+                            });
                           },
                         ],
                       });

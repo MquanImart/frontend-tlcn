@@ -4,7 +4,7 @@ import getColor from "@/src/styles/Color";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import { useCallback } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { CardActionsDetails } from "../../components/CardActionsDetails";
 import RenameGroupModal from "../../components/RenameGroupModal";
 import useDetails from "./useDetails";
@@ -14,15 +14,17 @@ const Color = getColor();
 
 const DetailsConversations = () => {
     const route = useRoute<RouteProp<ChatStackParamList, "Details">>();
-    const { defaultConversation } = route.params || {};
+    const { defaultConversation, isFriend } = route.params || {};
     
     const { 
         onPressHeaderLeft,
         listActionMessage, listActionUser,
         getDataAction, display,
         openEditName, setOpenEditName,
-        newName, changeNameGroup
-    } = useDetails(defaultConversation);
+        newName, changeNameGroup,
+        handleOpenImagePicker,
+        conversation
+    } = useDetails(defaultConversation, isFriend);
 
     useFocusEffect(
         useCallback(() => {
@@ -30,7 +32,7 @@ const DetailsConversations = () => {
                 await getDataAction();
             }
             load(); 
-        }, [])
+        }, [conversation])
     );
       
     if (!listActionUser || !listActionMessage || !display) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
@@ -38,13 +40,15 @@ const DetailsConversations = () => {
         <View style={styles.container}>
             <CHeaderIcon label={""} IconLeft={"arrow-back-ios"} onPressLeft={onPressHeaderLeft}/>
             <View style={styles.column_center}>
-                <Image style={styles.avt} 
-                    source={display.avt ? {uri: display.avt.url} : (
-                    display.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
-                    display.type === 'private'? require('@/src/assets/images/default/default_user.png'):
-                    require('@/src/assets/images/default/default_page.jpg')
-                )}
-                />
+                <TouchableOpacity onPress={() => {handleOpenImagePicker()}}>
+                    <Image style={styles.avt} 
+                        source={display.avt ? {uri: display.avt.url} : (
+                        display.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
+                        display.type === 'private'? require('@/src/assets/images/default/default_user.png'):
+                        require('@/src/assets/images/default/default_page.jpg')
+                        )}
+                    />
+                </TouchableOpacity>
                 <Text style={styles.textName}>{display.name}</Text>
                 <CardActionsDetails label={"Hành động"} buttons={listActionUser}/>
                 <CardActionsDetails label={"Cài đặt trò chuyện"} buttons={listActionMessage}/>

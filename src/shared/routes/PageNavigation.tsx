@@ -1,5 +1,4 @@
 import Discovery from "@/src/features/explore/containers/discovery/Discovery";
-import Directions from "@/src/features/maps/containers/directions/Directions";
 import { Location } from "@/src/features/maps/containers/directions/interfaceLocation";
 import MyPagesScreen from "@/src/features/mypages/containers/MyPagesScreen";
 import EditPage from "@/src/features/pages/containers/edit/EditPage";
@@ -9,8 +8,7 @@ import { Page } from "@/src/interface/interface_reference";
 import { MapNavigation, MapStackParamList } from "./MapNavigation";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { PersonalPageStackParamList } from "./PersonalPageNavigation";
-import { ProfileNavigation } from "./ProfileNavigation";
+import { ProfileNavigation, ProfileStackParamList } from "./ProfileNavigation";
 
 export type PageStackParamList = {
     WeatherDetail: { lat:number, lon:number};
@@ -24,8 +22,8 @@ export type PageStackParamList = {
       params?: MapStackParamList[keyof MapStackParamList];
     };
     ProfileNavigation: {
-      screen?: keyof PersonalPageStackParamList;
-      params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
+      screen?: keyof ProfileStackParamList;
+      params?: ProfileStackParamList[keyof ProfileStackParamList];
     };
 };
 

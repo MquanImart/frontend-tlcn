@@ -5,24 +5,28 @@ import getColor from "@/src/styles/Color";
 import CardDetails from "../components/CardDetails";
 import ListSaveLocation from "./saved/ListSaved";
 import useMap from "./useMap";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
 
 
 
 const Color = getColor();
 
 const CustomMap = () => {
-  
+  const route = useRoute<RouteProp<MapStackParamList, "CustomMap">>();
+  const {lat, long} = route.params || {};
+
   const { 
-    navigation, mapRef,
+    mapRef,
     currSaved, selectedMarker,
     location, details,
     translateY, translateY_S,
-    moveDetails, moveSaved,
+    moveSaved,
     handleMapPress, closeDetails,
     getDetails, navigationDirection,
     clickSavedLocation,
     
-  } = useMap();
+  } = useMap(lat, long);
 
   return (
     <View style={styles.container}>

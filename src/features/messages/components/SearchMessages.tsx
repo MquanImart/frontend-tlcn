@@ -16,10 +16,6 @@ const SearchMessages = ({refInput, search, setSearch, setIsSearch} : SearchMessa
         setIsSearch(true);
     };
 
-    const unfocusTextInput = () => {
-        setIsSearch(false);
-    };
-
     const handleTextChange = (text: string) => {
       setSearch(text);
     };
@@ -34,7 +30,6 @@ const SearchMessages = ({refInput, search, setSearch, setIsSearch} : SearchMessa
                     placeholderTextColor={Color.textColor3}
                     onFocus={focusTextInput}
                     onChangeText={handleTextChange}
-                    onBlur={unfocusTextInput}
                 />
             </View>
         </View>
