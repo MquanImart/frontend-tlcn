@@ -43,7 +43,7 @@ const lightColor : Color = {
 const darkColor : Color = {
     white_homologous: "#000",
     white_contrast: "#fff",
-    mainColor1: "#4B164C",
+    mainColor1: "#DD88CF",
     mainColor2: "#4B164C",
     backGround: "#000",
     backGround1: "#161616",
