@@ -536,8 +536,10 @@ export default function usePost(
     }
   };
 
+    const [currentHashtags, setCurrentHashtags] = useState<string[]>([]);
+
   const getArticles = async (page: number = 1, limit: number = 5, hashtags: string[] = []) => {
-    if (loadingMore) return;
+    if (loadingMore) return { success: false, messages: "Đang tải dữ liệu" };
     setLoadingMore(true);
     try {
       if (!userId) {
@@ -547,27 +549,40 @@ export default function usePost(
       }
       if (hashtags.length === 0) {
         setArticles([]);
-        setTotalPages(0);
-        setCurrentPage(page);
+        setTotalPages(1);
+        setCurrentPage(1);
+        setCurrentHashtags([]);
+        setLoadingMore(false);
         return { success: true, data: [], total: 0, messages: "Không có hashtag để tìm kiếm" };
       }
-      // Lấy bài viết theo nhiều hashtag
+
       const result = await articlesClient.find({
-        hashtag: hashtags, // Truyền mảng hashtag
+          hashtag: hashtags,
+          $limit: limit,
+          $skip: (page - 1) * limit,
       });
+
       if (result.success) {
+        const newArticles = Array.isArray(result.data) ? result.data : [];
         setArticles((prevArticles) => {
-          const articles = Array.isArray(result.data) ? result.data : [];
-          const newArticles = articles.filter(
+          if (page === 1) {
+            return newArticles;
+          }
+          const filteredArticles = newArticles.filter(
             (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
           );
-          return page === 1 ? newArticles : [...prevArticles, ...newArticles];
+          return [...prevArticles, ...filteredArticles];
         });
         setCurrentPage(page);
         setTotalPages(Math.ceil(result.total / limit));
+        if (page === 1) {
+          setCurrentHashtags(hashtags); // Lưu hashtag hiện tại
+        }
+        setLoadingMore(false);
         return result;
       } else {
         console.error("Lỗi API:", result.message || result.messages);
+        setLoadingMore(false);
         return { success: false, messages: result.message || result.messages || "Lỗi khi lấy bài viết" };
       }
     } catch (error: any) {
@@ -576,9 +591,14 @@ export default function usePost(
         response: error.response?.data,
         status: error.response?.status,
       });
-      return { success: false, messages: error.message || "Lỗi kết nối với server" };
-    } finally {
       setLoadingMore(false);
+      return { success: false, messages: error.message || "Lỗi kết nối với server" };
+    }
+  };
+
+  const loadMoreArticles = async () => {
+    if (currentPage < totalPages && !loadingMore) {
+      await getArticles(currentPage + 1, 5, currentHashtags);
     }
   };
 
@@ -599,11 +619,7 @@ export default function usePost(
     }
   };
 
-  const loadMoreArticles = () => {
-    if (currentPage < totalPages && !loadingMore) {
-      getArticles(currentPage + 1);
-    }
-  };
+
 
 
   const recordView = async (articleId: string) => {

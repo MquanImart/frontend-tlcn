@@ -2,10 +2,13 @@
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import { Article } from "@/src/features/newfeeds/interface/article";
+import CIconButton from "@/src/shared/components/button/CIconButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
-import { RouteProp } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import debounce from "lodash.debounce";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
@@ -26,6 +29,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import usePost from "./usePost";
 
 type PostSearchRouteProp = RouteProp<SearchStackParamList, "SearchPost">;
+type PostSearchNavigationProp = StackNavigationProp<SearchStackParamList, "SearchPost">;
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -35,8 +39,15 @@ interface PostSearchProps {
 }
 
 const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
-  const { textSearch } = route.params; // textSearch là mảng string, ví dụ: ["#vinper"] hoặc ["#vinperland"]
+  const navigation = useNavigation<PostSearchNavigationProp>();
+  const { textSearch: initialTextSearch } = route.params;
+  const [searchText, setSearchText] = useState<string>(
+    initialTextSearch && initialTextSearch.length > 0
+      ? initialTextSearch.join(" ") 
+      : ""
+  );
   const [articles, setArticles] = useState<Article[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
   const {
     getArticles,
     isModalVisible,
@@ -54,7 +65,6 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
     editArticle,
     getUserId,
     userId,
-    // setNewReply, // Hàm này đã có, không cần khai báo lại
     pickMedia,
     selectedMedia,
     recordView,
@@ -62,7 +72,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
     totalPages,
     loadingMore,
     loadMoreArticles,
-    setCurrentPage, // Đảm bảo setCurrentPage có ở đây
+    setCurrentPage,
   } = usePost(articles, setArticles);
 
   useEffect(() => {
@@ -70,44 +80,116 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
   }, []);
 
   useEffect(() => {
-    // Chỉ chạy khi userId hoặc textSearch thay đổi
-    if (userId && textSearch && textSearch.length > 0) {
-      console.log("useEffect triggered for textSearch:", textSearch);
-      // Reset trạng thái bài viết và trang khi textSearch thay đổi
-      setArticles([]); // Xóa bài viết cũ
-      setCurrentPage(1); // Đặt lại về trang đầu tiên
-      // Gọi API với hashtag mới
-      getArticles(1, 5, textSearch);
-    } else if (userId && (!textSearch || textSearch.length === 0)) {
-      // Nếu không có textSearch (hashtag rỗng), thì xóa hết bài viết
-      console.warn("textSearch is empty, clearing articles.");
+    if (userId && initialTextSearch && initialTextSearch.length > 0) {
       setArticles([]);
       setCurrentPage(1);
+      setIsSearching(true);
+      getArticles(1, 5, initialTextSearch).then(() => setIsSearching(false));
     }
-  }, [userId, textSearch]); // Dependencies bao gồm textSearch để re-run khi nó thay đổi
+  }, [userId, initialTextSearch]);
+
+  const handleSearchSubmit = debounce(async () => {
+    if (searchText.trim() === "") {
+      setArticles([]);
+      setCurrentPage(1);
+      setIsSearching(false);
+      return;
+    }
+
+    const words = searchText
+      .split(" ")
+      .filter((word) => word.startsWith("#") && word.length > 1)
+
+    if (words.length > 0) {
+      setArticles([]);
+      setCurrentPage(1);
+      setIsSearching(true);
+      await getArticles(1, 5, words);
+      setIsSearching(false);
+    } else {
+      setArticles([]);
+      setIsSearching(false);
+    }
+  }, 500);
+
+  const handleClearSearch = () => {
+    setSearchText("");
+    setArticles([]);
+    setCurrentPage(1);
+    setIsSearching(false);
+  };
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backGround }]}>
+      <View style={styles.containerSearch}>
+        <CIconButton
+          icon={<Ionicons name="arrow-back" size={24} color="#000" />}
+          onSubmit={() => navigation.goBack()}
+          style={{
+            width: 40,
+            height: 50,
+            backColor: colors.white_homologous,
+            textColor: colors.white_contrast,
+            fontSize: 16,
+            fontWeight: "normal",
+            radius: 0,
+            flex_direction: "row",
+          }}
+        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Tìm kiếm bài viết bằng hashtag"
+            placeholderTextColor="#000"
+            value={searchText}
+            onChangeText={setSearchText}
+            onSubmitEditing={() => handleSearchSubmit()}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClearSearch}>
+              <Ionicons name="close" size={20} color="#000" />
+            </TouchableOpacity>
+          )}
+        </View>
+        <CIconButton
+          icon={<Ionicons name="search" size={24} color="#000" />}
+          onSubmit={() => handleSearchSubmit()}
+          style={{
+            width: 50,
+            height: 50,
+            backColor: colors.white_homologous,
+            textColor: colors.white_contrast,
+            fontSize: 16,
+            fontWeight: "normal",
+            radius: 20,
+            flex_direction: "row",
+          }}
+        />
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        // Thêm onScroll để xử lý loadMore
         onScroll={({ nativeEvent }) => {
-          if (loadingMore) return;
+          if (loadingMore || isSearching) return;
           const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
           const isCloseToBottom =
-            layoutMeasurement.height + contentOffset.y >= contentSize.height - 50; // 50px từ cuối
+            layoutMeasurement.height + contentOffset.y >= contentSize.height - 50;
           if (isCloseToBottom && currentPage < totalPages) {
             loadMoreArticles();
           }
         }}
-        scrollEventThrottle={400} // Tần suất gọi onScroll (ms)
+        scrollEventThrottle={400}
       >
-        {articles.length === 0 && !loadingMore ? ( // Hiển thị "Không tìm thấy" chỉ khi không có bài viết và không đang tải
+        {isSearching ? (
+          <View style={styles.loadingContainer}>
+            <Text style={{ color: colors.textColor3 }}>Đang tìm kiếm...</Text>
+          </View>
+        ) : articles.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: colors.textColor3 }]}>
-              {textSearch && textSearch.length > 0
-                ? `Không tìm thấy bài viết nào cho ${textSearch.map((tag) => `#${tag}`).join(", ")}`
-                : "Nhập từ khóa để tìm kiếm"}
+              {searchText.trim()
+                ? `Không tìm thấy bài viết nào cho ${searchText}`
+                : "Nhập hashtag để tìm kiếm"}
             </Text>
           </View>
         ) : (
@@ -130,7 +212,6 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
         )}
       </ScrollView>
 
-      {/* Modal và các phần khác giữ nguyên */}
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={closeComments}
@@ -144,9 +225,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View
-              style={[styles.commentContainer, { backgroundColor: colors.backGround }]}
-            >
+            <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
               <View style={styles.commentHeader}>
                 <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
                   {calculateTotalComments(currentArticle?.comments || [])} bình luận
@@ -175,11 +254,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
               {selectedMedia.length > 0 && (
                 <View style={styles.mediaPreviewContainer}>
                   {selectedMedia.map((media, index) => (
-                    <Image
-                      key={index}
-                      source={{ uri: media.uri }}
-                      style={styles.mediaPreview}
-                    />
+                    <Image key={index} source={{ uri: media.uri }} style={styles.mediaPreview} />
                   ))}
                 </View>
               )}
@@ -207,19 +282,51 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
   );
 };
 
-// Styles (giữ nguyên, thêm styles.loadingMoreContainer nếu muốn)
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  container: {
+  containerSearch: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.white_homologous,
+    borderRadius: 25,
+    margin: 10,
+    paddingHorizontal: 5,
+  },
+  inputContainer: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.backGround2,
+    borderRadius: 25,
+    position: "relative",
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+    paddingLeft: 10,
+    borderRadius: 20,
+    paddingRight: 40,
+    backgroundColor: colors.backGround2,
+  },
+  clearButton: {
+    position: "absolute",
+    right: 5,
+    padding: 10,
   },
   scrollContent: {
     flexGrow: 1,
     paddingVertical: 10,
   },
   emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -287,7 +394,7 @@ const styles = StyleSheet.create({
   },
   loadingMoreContainer: {
     paddingVertical: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
 

@@ -148,7 +148,7 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
             updatePage={fetchPage}
           />
         );
-      case "Vé":
+      case "Dịch vụ":
         return <PageTickets page={page} currentUserId={currentUserId || ""} role={role} updatePage={fetchPage} />;
       default:
         return null;
