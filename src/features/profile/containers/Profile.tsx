@@ -2,13 +2,10 @@ import CButton from "@/src/shared/components/button/CButton";
 import MessageModal from "@/src/shared/components/form-message-addfriend/AddMessages";
 import CHeader from "@/src/shared/components/header/CHeader";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
-import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import restClient from "@/src/shared/services/RestClient";
 import getColor from "@/src/styles/Color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RouteProp } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import {
@@ -21,21 +18,21 @@ import {
 import ProfileImages from "./images/ProfileImages";
 import ProfilePost from "./post/ProfilePost";
 import ViewAllVideo from "./video/ViewAllVideo";
+import { useNavigation } from "expo-router";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
+import { ChatStackParamList, StrangeChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
 const Color = getColor();
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
-type ProfileRouteProp = RouteProp<SearchStackParamList, "Profile">;
-type ProfileNavigationProp = StackNavigationProp<SearchStackParamList, "Profile" >;
+type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
 
-interface ProfileProps {
-  route: ProfileRouteProp;
-  navigation: ProfileNavigationProp;
-}
-
-const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
+const Profile = () => {
+  const route = useRoute<RouteProp<ProfileStackParamList, "Profile">>();
+  const navigation = useNavigation<ProfileNavigationProp>();
   const { userId } = route.params;
   const [user, setUser] = useState<any>(null);
   const [avt, setAvt] = useState<string | null>(null);
@@ -56,7 +53,6 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
     { label: "Bài viết" },
   ];
   const [currTab, setCurrTab] = useState<string>(tabs.length > 0 ? tabs[0].label : "");
-  const { tabbarPosition, handleScroll } = useScrollTabbar();
 
   const getCurrentUserId = async () => {
     try {
@@ -347,14 +343,23 @@ const Profile: React.FC<ProfileProps> = ({ route, navigation }) => {
       Alert.alert("Lỗi", "Không thể xác định thông tin người dùng");
       return;
     }
-    if (!user?.setting?.allowMessagesFromStrangers && !isFriend && currentUserId !== userId) {
-      Alert.alert("Lỗi", "Người dùng này chỉ cho phép bạn bè nhắn tin.");
+    else if (!user?.setting?.allowMessagesFromStrangers && !isFriend && currentUserId !== userId) {
+      Alert.alert("Thông báo", "Người dùng này chỉ cho phép bạn bè nhắn tin.");
       return;
     }
+    else if (currentUserId !== userId){
+      navigation.navigate('Message', {
+        conversationId: null,
+        friend: {
+          _id: userId,
+          displayName: user.displayName,
+        },
+      });
+    } 
   };
 
   return (
-    <ScrollView style={styles.container} onScroll={handleScroll}>
+    <ScrollView style={styles.container}>
       <CHeader label={user?.displayName || "Hồ sơ"} backPress={() => navigation.goBack()} />
       <View style={styles.profileInfo}>
         {loading ? (

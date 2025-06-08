@@ -16,7 +16,7 @@ const Color = getColor();
 
 const Conversations = () => {
   const route = useRoute<RouteProp<ChatStackParamList, "BoxChat">>();
-  const { conversationId, friend } = route.params || {};
+  const { conversationId, isFriend, friend } = route.params || {};
   const { 
     getNameChat, navigation,
     getConversation, getMessages,
@@ -27,7 +27,7 @@ const Conversations = () => {
     createMessage, text, setText,
     navigationDetails,
     sending
-  } = useConversations(conversationId, friend);
+  } = useConversations(conversationId, isFriend, friend);
 
   useFocusEffect(
       useCallback(() => {

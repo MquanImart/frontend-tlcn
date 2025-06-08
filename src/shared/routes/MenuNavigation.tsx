@@ -8,8 +8,7 @@ import { CollectionNavigation } from "./CollectionNavigation";
 import { FriendsNavigation } from "./FriendsNavigation";
 import { GroupNavigaton } from "./GroupNavigation";
 import { MapNavigation } from "./MapNavigation";
-import { PersonalPageStackParamList } from "./PersonalPageNavigation";
-import { ProfileNavigation } from "./ProfileNavigation";
+import { ProfileNavigation, ProfileStackParamList } from "./ProfileNavigation";
 import { WeatherNavigation } from "./WeatherNavigation";
 import { PageNavigation, PageStackParamList } from "./PageNavigation";
 export type MenuStackParamList = {
@@ -21,8 +20,8 @@ export type MenuStackParamList = {
     Map: undefined;
     Weather: undefined;
     MyProfile: {
-      screen?: keyof PersonalPageStackParamList;
-      params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
+      screen?: keyof ProfileStackParamList;
+      params?: ProfileStackParamList[keyof ProfileStackParamList];
     };
     PageNavigation: {
       screen?: keyof PageStackParamList;

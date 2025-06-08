@@ -38,7 +38,10 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
   const HandleButton = (_id: string) => {
     return ButtonActions({
       label: ["Xem trang cá nhân"],
-      actions: [() => navigation.navigate("Profile", { userId: _id })],
+      actions: [() => navigation.navigate("MyProfile", {
+          screen: 'Profile',
+          params: { userId: _id },
+        })],
     });
   };
 
@@ -98,6 +101,7 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
                     img={item.avt}
                     aboutMe={item.aboutMe || ""}
                     button={() => HandleButton(item._id)}
+                    profile={true}
                   />
                 </View>
               ))}

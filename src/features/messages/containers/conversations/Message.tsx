@@ -6,6 +6,9 @@ import { useRef, useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import MapMessage from "./MapMessage";
+import { useNavigation } from "expo-router";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
 const WINDOW_WIDTH =  Dimensions.get('window').width;
 const Color = getColor();
@@ -16,9 +19,38 @@ interface MessageProps {
     showAvatar: boolean;
 }
 
+type ChatNavigation = StackNavigationProp<ChatStackParamList>;
+
+const parseLatLong = (addressString: string) : {lat: number, long: number} => {
+    try {
+      // Sử dụng regex để lấy lat và long
+      const match = addressString.match(/lat:([-]?[\d.]+)\s+long:([-]?[\d.]+)/);
+      if (!match) throw new Error("Invalid address format");
+  
+      const lat = parseFloat(match[1]);
+      const long = parseFloat(match[2]);
+  
+      return { lat, long };
+    } catch (error) {
+      return {lat: 0, long: 0}
+    }
+};
+    
 const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
     const videoRef = useRef(null);  
     const [visiable, setVisiable] = useState<boolean>(false);
+    const navigation = useNavigation<ChatNavigation>();
+
+    const gotoMap = (message: string) => {
+        const location = parseLatLong(message);
+        navigation.navigate('Map', {
+            screen: 'CustomMap',
+            params: {
+                lat: location.lat,
+                long: location.long
+            }
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -50,13 +82,13 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
                         shouldPlay={true}
                     />
                 ) : message.content.contentType === "map" ? (
-                    <View>
+                    <TouchableOpacity onPress={() => {gotoMap(message.content.message?message.content.message:"lat:0 long:0")}}>
                         <MapMessage addressString={message.content.message?message.content.message:"lat:0 long:0"}/>
                         <View style={{marginTop: 5}}/>
                         <View style={styles.boxMessage}>
                             <Text style={styles.message}>Tôi đang gặp nạn! Giúp tôi!</Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 ) : (
                     <View/>
                 )}
@@ -71,7 +103,18 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
 const MessageSend = ({user, message, showAvatar}: MessageProps) => {
     const videoRef = useRef(null);
     const [visiable, setVisiable] = useState<boolean>(false);
+    const navigation = useNavigation<ChatNavigation>();
 
+    const gotoMap = (message: string) => {
+        const location = parseLatLong(message);
+        navigation.navigate('Map', {
+            screen: 'CustomMap',
+            params: {
+                lat: location.lat,
+                long: location.long
+            }
+        })
+    }
     return (
         <View style={styles.container_send}>  
             <View style={styles.boxContent_send}>
@@ -100,13 +143,13 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
                         shouldPlay={false}
                     />
                 ) : message.content.contentType === "map" ? (
-                    <View>
+                    <TouchableOpacity onPress={() => {gotoMap(message.content.message?message.content.message:"lat:0 long:0")}}>
                         <MapMessage addressString={message.content.message?message.content.message:"lat:0 long:0"}/>
                         <View style={{marginTop: 5}}/>
                         <View style={styles.boxMessage_send}>
                             <Text style={styles.message_send}>Tôi đang gặp nạn! Giúp tôi!</Text>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 ) : (
                     <View/>
                 )}

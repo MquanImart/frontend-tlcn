@@ -29,7 +29,8 @@ const MapMessage= ({addressString} : MapMessageProps) => {
       
           const lat = parseFloat(match[1]);
           const long = parseFloat(match[2]);
-      
+          
+          console.log(lat, long);
           return { lat, long };
         } catch (error) {
           return {lat: 0, long: 0}

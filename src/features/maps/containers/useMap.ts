@@ -15,7 +15,7 @@ export interface LocationProps {
     longitude: number;
 }
 
-const useMap = () => {
+const useMap = (lat?: number, long?:number) => {
     const translateY = useRef(new Animated.Value(0)).current;
     const translateY_S = useRef(new Animated.Value(0)).current;
     
@@ -23,7 +23,7 @@ const useMap = () => {
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const mapRef = useRef<MapView>(null);
     const [currSaved, setCurrSaved] = useState<boolean>(false);
-    const [selectedMarker, setSelectedMarker] = useState<LocationProps | null>(null);
+    const [selectedMarker, setSelectedMarker] = useState<LocationProps | null>(lat && long? {latitude: lat, longitude: long} : null);
     const [details, setDetails] = useState<PlaceData | null>(null);
 
     const moveDetails = (up: boolean) => {
@@ -42,6 +42,12 @@ const useMap = () => {
           useNativeDriver: true,
         }).start();
     };
+    
+    useEffect(() => {
+      if (selectedMarker && lat && long){
+        getNearbyPlaces(selectedMarker.latitude, selectedMarker.latitude)
+      }
+    }, [selectedMarker]);
     
     useEffect(() => {
         (async () => {
@@ -80,27 +86,25 @@ const useMap = () => {
     }, []);
     
     useEffect(() => {
-        if (location && mapRef.current) {
-          mapRef.current.animateToRegion({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        }
-      }, [location]);
-    
-    useEffect(() => {
-        const offset = 0.004;
-        if (selectedMarker && mapRef.current) {
-          mapRef.current.animateToRegion({
-            latitude: selectedMarker.latitude - offset,
-            longitude: selectedMarker.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-        }
-    }, [selectedMarker]);
+      if (location && selectedMarker && mapRef.current) {
+        mapRef.current.fitToCoordinates(
+          [
+            {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+            {
+              latitude: selectedMarker.latitude,
+              longitude: selectedMarker.longitude,
+            },
+          ],
+          {
+            edgePadding: { top: 160, right: 80, bottom: 80, left: 80 }, // padding bản đồ
+            animated: true,
+          }
+        );
+      }
+    }, [location, selectedMarker]);
     
     const handleMapPress = (event: MapPressEvent) => {
         const location = event.nativeEvent.coordinate;

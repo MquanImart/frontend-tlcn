@@ -21,7 +21,6 @@ export interface CardMessagesProps {
 
 const CardMessages = ({conversation}: CardMessagesProps) => {
     const { cardData, setting } = useCardMessage(conversation); 
-    console.log(cardData?.avt);
     if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
     return (
         <TouchableOpacity style={styles.container} onPress={cardData.onPress}>

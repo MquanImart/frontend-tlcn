@@ -1,17 +1,20 @@
 // src/shared/routes/SearchNavigation.tsx
 import GroupDetailsScreen from "@/src/features/group/containers/detail-group/GroupDetailsScreen";
-import Profile from "@/src/features/profile/containers/Profile";
 import Search from "@/src/features/search/containers/Search";
 import PostSearch from "@/src/features/search/containers/SearchPost/PostSearch";
 import SearchUserAndGroup from "@/src/features/search/containers/SearchUserAndGroup/SearchUserAndGroup";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
+import { ProfileNavigation, ProfileStackParamList } from "./ProfileNavigation";
 
 export type SearchStackParamList = {
   Search: undefined;
   SearchUserAndGroup: { textSearch: string; userId: string };
   SearchPost: { textSearch: string[] };
-  Profile: { userId: string };
+  MyProfile: {
+        screen?: keyof ProfileStackParamList;
+        params?: ProfileStackParamList[keyof ProfileStackParamList];
+      };
   GroupDetailsScreen: { groupId: string; currentUserId: string };
 };
 
@@ -28,7 +31,7 @@ export function SearchNavigation() {
       <Stack.Screen name="Search" component={Search} />
       <Stack.Screen name="SearchUserAndGroup" component={SearchUserAndGroup} />
       <Stack.Screen name="SearchPost" component={PostSearch} />
-      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="MyProfile" component={ProfileNavigation} />
       <Stack.Screen name="GroupDetailsScreen" component={GroupDetailsScreen} />
     </Stack.Navigator>
   );

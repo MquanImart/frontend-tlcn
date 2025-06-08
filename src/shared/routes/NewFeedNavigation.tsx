@@ -7,9 +7,9 @@ import Profile from "@/src/features/profile/containers/Profile";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import MessagesDrawerWrapper from "./MessageNavigation";
-import { PersonalPageStackParamList } from "./PersonalPageNavigation";
 import { SearchNavigation, SearchStackParamList } from "./SearchNavigation";
 import { SupportChatNavigation } from "./SupportChatNavigation";
+import { ProfileStackParamList } from "./ProfileNavigation";
 const Stack = createStackNavigator<NewFeedParamList>();
 
 export type NewFeedParamList = {
@@ -22,8 +22,8 @@ export type NewFeedParamList = {
   SupportChatNavigation: undefined;
   Profile: { userId: string };
   MyProfile: {
-      screen?: keyof PersonalPageStackParamList;
-      params?: PersonalPageStackParamList[keyof PersonalPageStackParamList];
+      screen?: keyof ProfileStackParamList;
+      params?: ProfileStackParamList[keyof ProfileStackParamList];
     };
   ArticleDetail: { articleId: string; commentId?: string }; 
   GroupDetailsScreen: { groupId: string; currentUserId: string };

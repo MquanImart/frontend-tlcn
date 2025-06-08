@@ -20,7 +20,11 @@ const CardSearch = ({cardData}: CardMessagesProps) => {
     return (
         <TouchableOpacity style={styles.container} onPress={() => {navigation.navigate("BoxChat", {conversationId: cardData.conversationId})}}>
             <View style={styles.mainContent}>
-                <Image source={{uri: cardData.avt}} style={styles.images}/>
+                <Image source={cardData.avt ? {uri: cardData.avt?.url} : (
+                    cardData.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
+                    cardData.type === 'private'? require('@/src/assets/images/default/default_user.png'):
+                    require('@/src/assets/images/default/default_page.jpg')
+                )} style={styles.images}/>
                 <View style={styles.content}>
                     <Text style={styles.name}>{cardData.name}</Text>
                 </View>
