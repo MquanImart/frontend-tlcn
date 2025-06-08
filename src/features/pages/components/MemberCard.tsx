@@ -1,6 +1,7 @@
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const Color = getColor();
 

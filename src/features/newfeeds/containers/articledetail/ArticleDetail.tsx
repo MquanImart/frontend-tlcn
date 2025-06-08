@@ -7,12 +7,12 @@ import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import React from "react";
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,

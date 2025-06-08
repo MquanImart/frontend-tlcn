@@ -1,15 +1,15 @@
-import CIconButton from "@/src/shared/components/button/CIconButton"
+import CIconButton from "@/src/shared/components/button/CIconButton";
+import restClient from "@/src/shared/services/RestClient";
 import getColor from "@/src/styles/Color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import DetailsImages from "../components/DetailsImages";
-import { View, StyleSheet, Text, ActivityIndicator, FlatList, ScrollView } from "react-native"
-import Icon from "react-native-vector-icons/MaterialIcons"
 import { PlaceData } from "../containers/interfaceAPI";
+import { LocationProps } from "../containers/useMap";
 import { getOpeningStatus } from "../utils/getOpeningStatus";
 import { isToday } from "../utils/isToDay";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import restClient from "@/src/shared/services/RestClient";
-import { useEffect, useState } from "react";
-import { LocationProps } from "../containers/useMap";
 
 const tabsMap = [
     {label: 'Đường đi', icon: 'place'},

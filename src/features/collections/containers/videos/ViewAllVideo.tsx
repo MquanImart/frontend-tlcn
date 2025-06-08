@@ -1,8 +1,9 @@
-import getColor from "@/src/styles/Color"
-import { FlatList, View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native"
+import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
 import { useEffect } from "react";
-import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
+import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
 import useViewAllVideo from "./useViewAllVideo";
 
 interface ViewAllImagesProps {

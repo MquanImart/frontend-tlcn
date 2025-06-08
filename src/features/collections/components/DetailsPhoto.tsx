@@ -1,10 +1,11 @@
-import { MyPhoto } from "@/src/interface/interface_flex"
+import { MyPhoto } from "@/src/interface/interface_flex";
 import { ResizeMode, Video } from "expo-av";
-import { Modal, View, StyleSheet, Image, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native"
-import Icon from "react-native-vector-icons/MaterialIcons";
-import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
+import { Image } from 'expo-image';
+import * as MediaLibrary from 'expo-media-library';
 import { useRef, useState } from "react";
+import { ActivityIndicator, Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface DetailsPhotoProps {
     source: MyPhoto | null;

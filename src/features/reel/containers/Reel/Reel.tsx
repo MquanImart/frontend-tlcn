@@ -5,13 +5,14 @@ import getColor from '@/src/styles/Color';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Video } from 'expo-av';
+import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -27,7 +28,6 @@ import CommentItem from '../../components/CommentItem';
 import NewReel from '../NewReel/NewReel';
 import { SingleReel } from './SingleReel';
 import useReels from './useReels';
-import { StackNavigationProp } from '@react-navigation/stack';
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');

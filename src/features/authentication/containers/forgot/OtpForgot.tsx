@@ -1,11 +1,12 @@
-import React, { useState, useRef } from "react";
-import { StyleSheet, TouchableOpacity, View, Text, Image, TextInput, KeyboardAvoidingView, ScrollView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
+import React, { useRef, useState } from "react";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 const Color = getColor();
 

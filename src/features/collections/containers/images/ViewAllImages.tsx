@@ -1,6 +1,7 @@
 import { MyPhoto } from "@/src/interface/interface_flex";
-import getColor from "@/src/styles/Color"
-import { FlatList, View, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
+import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface ViewAllImagesProps {
     label: string;

@@ -1,22 +1,19 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Image,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Address } from "@/src/interface/interface_reference";
 import CButton from "@/src/shared/components/button/CButton";
 import getColor from "@/src/styles/Color";
-import { useNavigation } from "@react-navigation/native"; // Thêm import này
-import { StackNavigationProp } from "@react-navigation/stack";
-import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
-import { Address } from "@/src/interface/interface_reference";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Image } from 'expo-image';
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const colors = getColor();
 

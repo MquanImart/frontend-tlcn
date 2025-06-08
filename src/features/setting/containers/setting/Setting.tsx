@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { View, Text,Image,StyleSheet, TouchableOpacity, TextInput, Switch } from "react-native";
-import PersonalSetting from "./PersonalSetting";
-import PrivacySetting from "./PrivacySetting";
-import ScreenSetting from "./ScreenSetting";
 import CHeader from "@/src/shared/components/header/CHeader";
+import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import PersonalSetting from "./PersonalSetting";
+import PrivacySetting from "./PrivacySetting";
+import ScreenSetting from "./ScreenSetting";
 const Color = getColor();
 
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;

@@ -1,20 +1,20 @@
+import CButton from "@/src/shared/components/button/CButton";
+import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import { Image } from 'expo-image';
+import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
+  ActivityIndicator,
+  Alert,
   Modal,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  Image,
-  Alert,
-  ActivityIndicator,
+  View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
-import restClient from "@/src/shared/services/RestClient";
-import CButton from "@/src/shared/components/button/CButton";
-import axios from "axios";
 
 const Color = getColor();
 

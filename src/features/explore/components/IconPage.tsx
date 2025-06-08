@@ -4,7 +4,8 @@ import getColor from "@/src/styles/Color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Image } from 'expo-image';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Color = getColor();
 type NavigationProps = StackNavigationProp<ExploreStackParamList, 'Discovery'>;

@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import getColor from "@/src/styles/Color";
-import CIconButton from "@/src/shared/components/button/CIconButton";
-import CButton from "@/src/shared/components/button/CButton";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Color = getColor();
 

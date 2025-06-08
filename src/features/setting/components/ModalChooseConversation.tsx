@@ -4,8 +4,9 @@ import restClient from "@/src/shared/services/RestClient";
 import getColor from "@/src/styles/Color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { Image } from 'expo-image';
 import { useCallback, useEffect, useState } from "react";
-import { Modal, TouchableOpacity, View, Text, FlatList, Button, StyleSheet, Image } from "react-native";
+import { Button, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();

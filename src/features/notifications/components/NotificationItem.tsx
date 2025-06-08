@@ -4,10 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage"; // For fet
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
+import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Notification } from "../interface/INotification";
-
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: () => void;

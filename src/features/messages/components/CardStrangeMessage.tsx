@@ -1,11 +1,12 @@
 import { Conversation } from "@/src/interface/interface_flex";
+import { MyPhoto } from "@/src/interface/interface_reference";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
-import { useEffect, useState } from "react";
-import { Image, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native"
-import useMessages from "../containers/useMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MyPhoto } from "@/src/interface/interface_reference";
+import { Image } from 'expo-image';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import useMessages from "../containers/useMessage";
 
 const Color = getColor();
 

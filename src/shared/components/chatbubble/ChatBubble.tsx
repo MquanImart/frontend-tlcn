@@ -1,9 +1,10 @@
-import React from "react";
-import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
+import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import getColor from "@/src/styles/Color";
-import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation"; // Import type từ NewFeedNavigation
+import { Image } from 'expo-image';
+import React from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 const colors = getColor();
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";

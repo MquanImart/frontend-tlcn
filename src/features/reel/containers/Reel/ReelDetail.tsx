@@ -1,15 +1,18 @@
 import { Reels } from '@/src/features/reel/interface/reels';
+import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
 import getColor from '@/src/styles/Color';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Video } from 'expo-av';
+import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
-  Image,
+  FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -19,15 +22,12 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  FlatList,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { StackNavigationProp } from '@react-navigation/stack';
 import CommentItem from '../../components/CommentItem';
 import CHeader from '../../components/Header';
 import { SingleReel } from './SingleReel';
 import useReels from './useReels';
-import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 
 const colors = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');

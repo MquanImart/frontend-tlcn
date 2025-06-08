@@ -1,7 +1,8 @@
 import ConvertDimension from "@/src/shared/utils/ConvertDimension";
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface CardExploreProps {
     images: string;

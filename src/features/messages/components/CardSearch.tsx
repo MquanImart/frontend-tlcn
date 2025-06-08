@@ -1,9 +1,10 @@
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import getColor from "@/src/styles/Color";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { Image, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native"
-import { SearchConversations } from "../containers/list-messages/useListMessages";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SearchConversations } from "../containers/list-messages/useListMessages";
 
 const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages">;

@@ -1,11 +1,11 @@
 import restClient from "@/src/shared/services/RestClient";
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Image,
   Modal,
   StyleSheet,
   Text,

@@ -1,10 +1,11 @@
-import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { Group } from "@/src/features/newfeeds/interface/article";
 import CButton from "@/src/shared/components/button/CButton";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import getColor from "@/src/styles/Color";
-import { Group } from "@/src/features/newfeeds/interface/article";
+import { Image } from 'expo-image';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();
 

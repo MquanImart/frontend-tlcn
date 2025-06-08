@@ -1,10 +1,10 @@
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { Image } from 'expo-image';
 import React, { useEffect, useRef } from "react";
 import {
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,

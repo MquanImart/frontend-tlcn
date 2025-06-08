@@ -1,9 +1,9 @@
-import { MyPhoto } from "@/src/interface/interface_flex";
 import getColor from "@/src/styles/Color";
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
-import { useEffect, useState } from "react";
-import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
+import { Image } from 'expo-image';
+import { useEffect } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
+import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
 import useViewAllVideo from "./useViewAllVideo";
 
 const Color = getColor();

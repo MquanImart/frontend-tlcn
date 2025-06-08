@@ -1,15 +1,16 @@
-import React, { useState, useRef } from "react";
-import { StyleSheet, TouchableOpacity, View, Text, Image, KeyboardAvoidingView, ScrollView, Platform, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from "react-native";
 import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
+import { Image } from 'expo-image';
+import React, { useRef, useState } from "react";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-type NewPasswordRouteProp = RouteProp<AuthStackParamList, "NewPassword">;
-type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
-import getColor from "@/src/styles/Color";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+type NewPasswordRouteProp = RouteProp<AuthStackParamList, "NewPassword">;
+type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 const Color = getColor();
 const NewPassword = () => {
     const [password, setPassword] = useState("");

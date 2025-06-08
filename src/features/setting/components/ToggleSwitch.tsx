@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, Image } from 'react-native';
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import React, { useState } from 'react';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 const Color = getColor();
 interface ToggleSwitchProps {
   label: string;

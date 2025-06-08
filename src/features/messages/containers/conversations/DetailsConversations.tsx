@@ -1,12 +1,13 @@
-import { View, StyleSheet, Image, Text, ActivityIndicator } from "react-native"
-import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
-import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
-import { CardActionsDetails } from "../../components/CardActionsDetails";
-import getColor from "@/src/styles/Color";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
-import useDetails from "./useDetails";
+import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
+import getColor from "@/src/styles/Color";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
+import { Image } from 'expo-image';
 import { useCallback } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { CardActionsDetails } from "../../components/CardActionsDetails";
 import RenameGroupModal from "../../components/RenameGroupModal";
+import useDetails from "./useDetails";
 
 const Color = getColor();
 

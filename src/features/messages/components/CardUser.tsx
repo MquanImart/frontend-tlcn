@@ -1,7 +1,8 @@
 import { MyPhoto } from "@/src/interface/interface_reference";
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
 import { useEffect, useState } from "react";
-import { Image, Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();

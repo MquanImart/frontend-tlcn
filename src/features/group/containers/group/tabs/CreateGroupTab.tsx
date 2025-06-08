@@ -1,10 +1,10 @@
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from 'expo-image';
 import React from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,

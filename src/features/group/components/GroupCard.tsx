@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Group } from "@/src/features/newfeeds/interface/article";
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const colors = getColor();
 

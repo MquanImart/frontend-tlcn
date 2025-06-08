@@ -1,8 +1,9 @@
 import { Message, UserDisplay } from "@/src/interface/interface_flex";
 import getColor from "@/src/styles/Color";
 import { ResizeMode, Video } from "expo-av";
-import { useEffect, useRef, useState } from "react";
-import { Image, Text, View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import { Image } from 'expo-image';
+import { useRef, useState } from "react";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import MapMessage from "./MapMessage";
 
@@ -192,4 +193,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export {MessageReceive, MessageSend};
+export { MessageReceive, MessageSend };

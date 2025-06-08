@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet,Image, ActivityIndicator, Alert } from "react-native";
-import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Feather } from '@expo/vector-icons';
-import getColor from "@/src/styles/Color";
-import restClient from "@/src/shared/services/RestClient";
 import { Conversation } from "@/src/interface/interface_flex";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
+import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
+import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
+import { Feather } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMember">;
 

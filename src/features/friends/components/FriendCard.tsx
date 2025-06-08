@@ -4,7 +4,8 @@ import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native"
+import { Image } from 'expo-image';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Color = getColor();
 

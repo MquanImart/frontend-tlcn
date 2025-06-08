@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, Image, StyleSheet, TouchableOpacity, Linking } from "react-native";
-import { PlaceData } from "../containers/interfaceAPI";
-import getColor from "@/src/styles/Color";
 import env from "@/env";
+import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import React, { useEffect, useState } from "react";
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { PlaceData } from "../containers/interfaceAPI";
 
 interface DetailsImagesProps {
   details: PlaceData;

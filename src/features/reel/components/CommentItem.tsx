@@ -1,24 +1,24 @@
+import timeAgo from "@/src/shared/utils/TimeAgo";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from 'expo-image';
+import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  FlatList,
   ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Comment } from "../interface/reels";
 import { useCommentVisibility } from "./useCommentVisibility";
 import { useReplyInput } from "./useReplyInput";
-import timeAgo from "@/src/shared/utils/TimeAgo";
-import getColor from "@/src/styles/Color";
-import * as ImagePicker from "expo-image-picker";
 
 const colors = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
@@ -105,7 +105,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
         style={styles.mediaImage}
         onLoadStart={() => setImageLoading((prev) => ({ ...prev, [item._id]: true }))}
         onLoadEnd={() => setImageLoading((prev) => ({ ...prev, [item._id]: false }))}
-        onError={(e) => console.log(`Error loading ${item._id}:`, e.nativeEvent.error)}
+        onError={(e) => console.log(`Error loading ${item._id}:`, e)}
       />
     </TouchableOpacity>
   );
@@ -114,7 +114,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <Image
       source={{ uri: item.uri || DEFAULT_AVATAR }}
       style={styles.mediaPreview}
-      onError={(e) => console.log("Preview error:", e.nativeEvent.error)}
+      onError={(e) => console.log("Preview error:", e)}
     />
   );
 

@@ -1,15 +1,16 @@
 import { Conversation, ConversationSettings } from "@/src/interface/interface_flex";
+import { MyPhoto } from "@/src/interface/interface_reference";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import getColor from "@/src/styles/Color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import { useEffect, useState } from "react";
-import { Image, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native"
-import useMessages from "../containers/useMessage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { MyPhoto } from "@/src/interface/interface_reference";
+import useMessages from "../containers/useMessage";
 
 const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages">;

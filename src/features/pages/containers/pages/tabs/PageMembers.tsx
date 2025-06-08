@@ -3,8 +3,9 @@ import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import React from "react";
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import usePageMembers from "./usePageMembers";
 
 const Color = getColor();

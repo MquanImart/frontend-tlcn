@@ -2,13 +2,13 @@ import { Group } from "@/src/features/newfeeds/interface/article";
 import restClient from "@/src/shared/services/RestClient";
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,

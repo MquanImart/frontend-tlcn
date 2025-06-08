@@ -1,16 +1,16 @@
+import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
+import { PersonalPageStackParamList } from "@/src/shared/routes/PersonalPageNavigation";
+import restClient from '@/src/shared/services/RestClient';
+import getColor from "@/src/styles/Color";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CHeader from '../../reel/components/Header';
 import ProfileImages from './images/ProfileImages';
-import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
-import getColor from "@/src/styles/Color";
 import ProfilePost from './post/ProfilePost';
-import { StackNavigationProp } from "@react-navigation/stack";
-import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
-import { PersonalPageStackParamList } from "@/src/shared/routes/PersonalPageNavigation";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import restClient from '@/src/shared/services/RestClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ViewAllVideo from './video/ViewAllVideo';
 
 const UsersClient = restClient.apiClient.service("apis/users");

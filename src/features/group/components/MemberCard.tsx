@@ -2,8 +2,9 @@ import { showActionSheet } from "@/src/shared/components/showActionSheet/showAct
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import getColor from "@/src/styles/Color";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Color = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";

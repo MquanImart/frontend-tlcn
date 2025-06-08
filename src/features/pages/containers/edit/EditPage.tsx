@@ -5,10 +5,10 @@ import getColor from "@/src/styles/Color";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
+import { Image } from 'expo-image';
 import React from "react";
 import {
   ActivityIndicator,
-  Image,
   Modal,
   Platform,
   ScrollView,

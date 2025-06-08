@@ -1,6 +1,7 @@
 import { MyPhoto } from "@/src/interface/interface_flex";
 import getColor from "@/src/styles/Color";
-import { Text, TouchableOpacity, View, StyleSheet, Image } from "react-native"
+import { Image } from 'expo-image';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Color = getColor();
 

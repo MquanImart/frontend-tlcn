@@ -1,9 +1,9 @@
-import React from "react";
-import { View, StyleSheet, FlatList, ActivityIndicator, Text } from "react-native";
-import getColor from "@/src/styles/Color";
 import CardPage from "@/src/features/explore/components/CardPage";
-import useMyPagesTab from "./useMyPagesTab";
 import { PageProvince } from "@/src/features/explore/containers/city-province/interface";
+import getColor from "@/src/styles/Color";
+import React from "react";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import useMyPagesTab from "./useMyPagesTab";
 
 const Color = getColor();
 

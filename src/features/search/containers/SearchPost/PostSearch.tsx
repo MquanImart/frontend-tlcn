@@ -8,11 +8,11 @@ import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import debounce from "lodash.debounce";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,

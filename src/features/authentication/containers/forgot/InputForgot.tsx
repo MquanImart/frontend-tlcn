@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import {
-    StyleSheet,
-    TouchableOpacity,
-    View,
-    Text,
-    Image,
-    KeyboardAvoidingView,
-    ScrollView,
-    Platform,
-    TouchableWithoutFeedback,
-    Keyboard,
-    Alert,
-    ActivityIndicator
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
+import React, { useState } from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 
 const Color = getColor();
 type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;

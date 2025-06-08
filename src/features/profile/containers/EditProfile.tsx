@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
-import { useNavigation } from "@react-navigation/native";
 import CHeader from "@/src/shared/components/header/CHeader";
+import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
 import restClient from '@/src/shared/services/RestClient';
+import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
+import * as ImagePicker from "expo-image-picker";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "EditProfile">;
 

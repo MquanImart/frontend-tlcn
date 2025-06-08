@@ -1,27 +1,26 @@
-import React, { useRef, useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Dimensions,
-  Image,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import Slider from '@react-native-community/slider';
-import { Video, ResizeMode } from 'expo-av';
-import { Ionicons } from '@expo/vector-icons';
-import { Reels } from '../../interface/reels';
-import getColor from '@/src/styles/Color';
 import { Comment } from '@/src/features/reel/interface/reels';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import restClient from '@/src/shared/services/RestClient';
+import getColor from '@/src/styles/Color';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
-import { ActionSheetIOS } from 'react-native';
-import EditModal from '@/src/features/newfeeds/components/EditModal/EditModal';
+import { ResizeMode, Video } from 'expo-av';
+import { Image } from 'expo-image';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ActionSheetIOS,
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { Reels } from '../../interface/reels';
 interface ReelProps {
   reel: Reels;
   onCommentPress: (reel: Reels) => void;

@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from "react-native";
+import CButton from "@/src/shared/components/button/CButton";
+import MessageModal from "@/src/shared/components/form-message-addfriend/AddMessages";
 import CHeader from "@/src/shared/components/header/CHeader";
-import ProfileImages from "./images/ProfileImages";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import getColor from "@/src/styles/Color";
-import ProfilePost from "./post/ProfilePost";
-import CButton from "@/src/shared/components/button/CButton";
-import { Ionicons } from "@expo/vector-icons";
-import ViewAllVideo from "./video/ViewAllVideo";
+import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-import MessageModal from "@/src/shared/components/form-message-addfriend/AddMessages";
+import { Image } from 'expo-image';
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import ProfileImages from "./images/ProfileImages";
+import ProfilePost from "./post/ProfilePost";
+import ViewAllVideo from "./video/ViewAllVideo";
 
 const Color = getColor();
 const UsersClient = restClient.apiClient.service("apis/users");

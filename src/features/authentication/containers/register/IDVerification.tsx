@@ -1,16 +1,17 @@
-import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TextInput, Alert, ActivityIndicator } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import * as ImagePicker from "expo-image-picker";
+import getColor from "@/src/styles/Color";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
+import { Image } from 'expo-image';
+import * as ImagePicker from "expo-image-picker";
+import React, { useRef, useState } from "react";
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();
 type NavigationProp = StackNavigationProp<AuthStackParamList, "Login">;

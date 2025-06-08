@@ -6,9 +6,10 @@ import { PageStackParamList } from "@/src/shared/routes/PageNavigation"; // Đ�
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Dimensions, Image, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useLocationInfo from "./useLocationInfo";
@@ -156,7 +157,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
           <Image
             source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Maps_icon_%282020%29.svg" }}
             style={styles.mapImage}
-            onError={(e) => console.warn("Lỗi tải hình ảnh:", e.nativeEvent.error)}
+            onError={(e) => console.warn("Lỗi tải hình ảnh:", e)}
           />
         ) : loading ? (
           <View style={styles.loadingContainer}>

@@ -8,12 +8,12 @@ import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import getColor from "@/src/styles/Color";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,

@@ -2,7 +2,8 @@ import { CollectionStackParamList } from "@/src/shared/routes/CollectionNavigati
 import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Image, Text, View, StyleSheet, TouchableOpacity } from "react-native"
+import { Image } from 'expo-image';
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 const Color = getColor();
 
 export interface CollectionsCardProps {

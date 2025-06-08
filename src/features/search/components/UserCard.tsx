@@ -1,7 +1,8 @@
 
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 const Color = getColor();
 // Define the types for the props
 interface UserCardProps {

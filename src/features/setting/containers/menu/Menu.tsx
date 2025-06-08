@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, Alert, FlatList, ActivityIndicator } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CButton from "@/src/shared/components/button/CButton";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import CHeader from "@/src/shared/components/header/CHeader";
-import getColor from "@/src/styles/Color";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation } from "@react-navigation/native";
-import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
-import { useMenu } from "./useMenu";
+import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import restClient from "@/src/shared/services/RestClient"; // Import restClient
+import getColor from "@/src/styles/Color";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Image } from 'expo-image';
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from "react-native";
+import { useMenu } from "./useMenu";
 
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 const Color = getColor();

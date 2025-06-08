@@ -1,8 +1,9 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
 import CButton from "@/src/shared/components/button/CButton";
+import getColor from "@/src/styles/Color";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from 'expo-image';
+import React from "react";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Color = getColor();
 

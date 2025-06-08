@@ -1,16 +1,16 @@
-import { Animated, View, StyleSheet } from "react-native"
-import Tabbar from "@/src/shared/components/tabbar/Tabbar";
-import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import CHeader from "@/src/shared/components/header/CHeader";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
-import { useState } from "react";
-import CollectionsImages from "./images/CollectionsImages";
-import CollectionsVideos from "./videos/CollectionsVideos";
-import CollectionPost from "./post/CollectionsPost";
-import getColor from "@/src/styles/Color";
+import Tabbar from "@/src/shared/components/tabbar/Tabbar";
+import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
-import { StackNavigationProp } from "@react-navigation/stack";
+import getColor from "@/src/styles/Color";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useState } from "react";
+import { Animated, StyleSheet, View } from "react-native";
+import CollectionsImages from "./images/CollectionsImages";
+import CollectionPost from "./post/CollectionsPost";
+import CollectionsVideos from "./videos/CollectionsVideos";
 
 const Color = getColor();
 

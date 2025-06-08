@@ -1,16 +1,17 @@
+import { Message } from "@/src/interface/interface_flex";
+import { MyPhoto } from "@/src/interface/interface_reference";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import getColor from "@/src/styles/Color";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useRef, useState } from "react";
-import { TouchableOpacity, View, StyleSheet, Image, FlatList, Dimensions, ActivityIndicator } from "react-native"
-import Icon from "react-native-vector-icons/MaterialIcons";
-import usePhotoAndFile from "./usePhotoAndFile";
 import { ResizeMode, Video } from "expo-av";
+import { Image } from 'expo-image';
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import DetailsPhoto from "../../components/DetailsPhoto";
-import { MyPhoto } from "@/src/interface/interface_reference";
-import { Message } from "@/src/interface/interface_flex";
+import usePhotoAndFile from "./usePhotoAndFile";
 
 const Color = getColor();
 const WINDOW_HEIGHT = Dimensions.get('window').height;

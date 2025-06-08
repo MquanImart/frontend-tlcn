@@ -1,11 +1,11 @@
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { ResizeMode, Video } from "expo-av";
-import React from "react";
-import { useState } from "react";
-import { Modal, View, StyleSheet, Image, Text, TouchableOpacity, Alert } from "react-native"
-import Icon from "react-native-vector-icons/MaterialIcons";
 import * as FileSystem from "expo-file-system";
+import { Image } from 'expo-image';
 import * as MediaLibrary from "expo-media-library";
+import React, { useState } from "react";
+import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface DetailsPhotoProps {
     source: MyPhoto | null;

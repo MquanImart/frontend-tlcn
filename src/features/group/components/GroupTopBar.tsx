@@ -1,11 +1,12 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, Alert } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
-import getColor from "@/src/styles/Color";
 import restClient from "@/src/shared/services/RestClient";
+import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import React from "react";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const Color = getColor();
 const groupsClient = restClient.apiClient.service("apis/groups");

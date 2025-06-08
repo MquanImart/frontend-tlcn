@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Dimensions,
-} from "react-native";
 import { Article } from "@/src/features/newfeeds/interface/article";
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
+import React, { useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const colors = getColor();
 const { width: SCREEN_WIDTH } = Dimensions.get("window");

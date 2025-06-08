@@ -1,6 +1,7 @@
 import getColor from "@/src/styles/Color";
+import { Image } from 'expo-image';
 import { useEffect, useState } from "react";
-import { Platform, View, Image, ActivityIndicator, Text, Dimensions, StyleSheet } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
 
 interface MapMessageProps {
