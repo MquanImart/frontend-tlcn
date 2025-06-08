@@ -604,7 +604,11 @@ export default function useNewFeed(
   };
 
   const changeScreen = (nameScreen: "SearchNavigation" | "MessageNavigation") => {
-    navigation.navigate(nameScreen);
+    if (nameScreen === "SearchNavigation") {
+      navigation.navigate("SearchNavigation", {}); 
+    } else {
+      navigation.navigate(nameScreen);
+    }
   };
 
   const recordView = async (articleId: string) => {
