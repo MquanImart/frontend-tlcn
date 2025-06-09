@@ -61,13 +61,11 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
         limit: limit.toString(),
         skip: skip.toString(),
       }).toString();
-      console.log("API query:", queryParams);
 
       const result = await restClient.apiClient.service(`apis/users/search?${queryParams}`).find({
         headers: { "Cache-Control": "no-cache" },
       });
 
-      console.log("API response:", JSON.stringify(result));
 
       if (result.success) {
         const users: Friend[] = Array.isArray(result.data) ? result.data : [];
@@ -75,11 +73,9 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
         const filteredData = users.filter(
           (friend: Friend) => friend._id !== userId && !allFriends.some(existing => existing._id === friend._id)
         );
-        console.log("Filtered data:", filteredData);
 
         setAllFriends(prev => {
           const newFriends = reset ? filteredData : [...prev, ...filteredData];
-          console.log("Updated allFriends:", newFriends);
           return newFriends;
         });
         setTotal(result.total || filteredData.length);
