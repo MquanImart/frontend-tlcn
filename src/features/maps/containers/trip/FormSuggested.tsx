@@ -12,7 +12,8 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { CLocation, Trip } from "@/src/interface/interface_detail";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import ResultSuggested from "./ResultSuggested";
 
 export interface SuggestedDetails {
@@ -32,6 +33,7 @@ interface FormSuggestedProps {
 }
 
 const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSuggestedProps) => {
+  useTheme();
   const [startDateTime, setStartDateTime] = useState(new Date());
   const [useTime, setUseTime] = useState(false);
 
@@ -177,7 +179,6 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
   );
 };
 
-const Color = getColor();
 const styles = StyleSheet.create({
     item: { 
         flexDirection: "row", 

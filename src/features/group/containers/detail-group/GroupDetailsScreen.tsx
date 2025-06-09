@@ -8,7 +8,8 @@ import GroupPostApproval from "@/src/features/group/containers/detail-group/tabs
 import GroupMySelf from "@/src/features/group/containers/detail-group/tabs/GroupMySelf";
 import GroupMembers from "@/src/features/group/containers/detail-group/tabs/GroupMembers";
 import GroupHeader from "@/src/features/group/components/GroupHeader";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import InviteFriendsModal from "../../components/InviteFriendsModal";
 import EditGroupScreen from "../../components/EditGroupScreen";
 import GroupTopBar from "../../components/GroupTopBar";
@@ -19,13 +20,12 @@ import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
 import PostDialog from "@/src/features/newfeeds/components/PostDialog/PostDialog";
 import { useGroupDetailsScreen } from "./useGroupDetailsScreen";
 
-const Color = getColor();
-
 interface GroupDetailsScreenProps {
   route: RouteProp<GroupParamList, "GroupDetailsScreen">;
 }
 
 const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
+  useTheme();
   const { groupId, currentUserId } = route.params;
   const {
     selectedTab,

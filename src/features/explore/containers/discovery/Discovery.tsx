@@ -1,7 +1,8 @@
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { View, StyleSheet, Animated, TouchableOpacity, Text, TextInput, Dimensions, ActivityIndicator } from "react-native"
 import RecentPage from "../../components/RecentPage";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CardExplore from "../../components/CardExplore";
 import { FlatList } from "react-native-gesture-handler";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
@@ -17,6 +18,7 @@ const WINDOW_HEIGHT = Dimensions.get('window').height;
 
 type TabbarNavigationProp = StackNavigationProp<TabbarStackParamList, 'Menu'>;
 const Discovery = () => {
+    useTheme();
     const tabbarNavigation = useNavigation<TabbarNavigationProp>();
     const { tabbarPosition,handleScroll} = useScrollTabbar();
     const { 
@@ -98,7 +100,6 @@ const Discovery = () => {
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         flex: 1,

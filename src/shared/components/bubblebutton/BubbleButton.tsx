@@ -1,14 +1,15 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface BubbleButtonProps {
   onPress: () => void;
 }
 
 const BubbleButton: React.FC<BubbleButtonProps> = ({ onPress }) => {
-  const Color = getColor();
+  useTheme()
 
   return (
     <TouchableOpacity

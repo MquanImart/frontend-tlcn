@@ -1,7 +1,6 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, TextInput } from "react-native"
-
-const Color = getColor();
 
 interface SearchMessagesProps {
     search: string; 
@@ -11,7 +10,7 @@ interface SearchMessagesProps {
 }
 
 const SearchMessages = ({refInput, search, setSearch, setIsSearch} : SearchMessagesProps) => {
-
+    useTheme();
     const focusTextInput = () => {
         setIsSearch(true);
     };

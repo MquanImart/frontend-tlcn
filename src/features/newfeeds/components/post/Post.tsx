@@ -4,7 +4,8 @@ import { usePostActions } from "@/src/features/newfeeds/components/post/usePost"
 import ReportModal from "@/src/features/newfeeds/components/ReportModal/ReportModal";
 import { Article } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -20,8 +21,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-const Color = getColor();
 
 interface PostProps {
   article: Article;
@@ -49,6 +48,7 @@ const Post: React.FC<PostProps> = ({
   deleteArticle,
   editArticle,
 }) => {
+  useTheme();
   const navigation = useNavigation<NewFeedNavigationProp>();
   const [userRole, setUserRole] = useState<string | null>(null);
 

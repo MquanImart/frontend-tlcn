@@ -1,6 +1,7 @@
 import AdminAccountNavigation from '@/src/shared/routes/AdminAccountNavigation';
 import AdminArticleNavigation from '@/src/shared/routes/AdminArticleNavigation';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
@@ -8,8 +9,7 @@ import React from 'react';
 const Tab = createBottomTabNavigator();
 
 const AdminTabNavigator: React.FC = () => {
-  const Color = getColor();
-
+  useTheme()
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

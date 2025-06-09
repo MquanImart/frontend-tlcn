@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { Image } from 'expo-image';
@@ -17,14 +18,13 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import { useCreatePageTab } from "./useCreatePageTab";
 
-const Color = getColor();
-
 interface CreatePageTabProps {
   userId: string;
   handleScroll: (event: any) => void;
 }
 
 const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
+  useTheme();
   const {
     pageName,
     setPageName,

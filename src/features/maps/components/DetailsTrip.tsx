@@ -1,5 +1,6 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CardLocationTrip from "./CardLocationTrip";
@@ -23,6 +24,7 @@ interface DetailsTripProps {
 type MapNavigationProp = StackNavigationProp<MapStackParamList, "CustomMap">;
 
 const DetailsTrip = ({closeDetails, currState, trip, setTrip, suggestedForm}: DetailsTripProps) => {
+    useTheme();
     const navigation = useNavigation<MapNavigationProp>();
     const [visibleSearch, setVisibleSearch] = useState<boolean>(false);
     const [currAddress, setCurrAddress] = useState<string | null>(null);
@@ -200,7 +202,6 @@ const DetailsTrip = ({closeDetails, currState, trip, setTrip, suggestedForm}: De
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
       flex: 1,

@@ -1,14 +1,13 @@
 import { Page, User } from "@/src/interface/interface_reference";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import usePageMembers from "./usePageMembers";
-
-const Color = getColor();
 
 interface PageMembersProps {
   page: Page;
@@ -44,6 +43,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
   navigation,
   onLongPress,
 }) => {
+  useTheme()
   const handlePress = () => {
     console.log(`Navigating to profile for user: ${userId}`);
     if (userId === currentUserId) {

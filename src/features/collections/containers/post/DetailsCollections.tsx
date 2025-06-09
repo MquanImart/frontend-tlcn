@@ -1,7 +1,8 @@
 import CButton from "@/src/shared/components/button/CButton";
 import CHeader from "@/src/shared/components/header/CHeader";
 import { CollectionStackParamList } from "@/src/shared/routes/CollectionNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { View, StyleSheet, ActivityIndicator } from "react-native"
@@ -12,7 +13,6 @@ import useDetails from "./useDetails";
 import InputCollectionModal from "../../components/InputCollectionModal";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
 
-const Color = getColor();
 type RouteParams = {
     collectionId: string;
 };
@@ -20,6 +20,7 @@ type RouteParams = {
 type CollectionsNavigationProp = StackNavigationProp<CollectionStackParamList, "Collections">;
 
 const DetailsCollections = () => {
+    useTheme();
     const route = useRoute();
     const { collectionId } = route.params as RouteParams;
     const navigation = useNavigation<CollectionsNavigationProp>();

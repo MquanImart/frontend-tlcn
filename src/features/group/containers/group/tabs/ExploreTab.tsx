@@ -1,6 +1,7 @@
 import GroupCard from "@/src/features/group/components/GroupCard";
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
@@ -15,14 +16,13 @@ import {
 } from "react-native";
 import { useExplore } from "./useExplore";
 
-const Color = getColor();
-
 interface ExploreTabProps {
   userId: string;
   handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
+  useTheme();
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { groupsNotJoined, loading, error, handleJoinGroup, loadMoreGroups, isLoadingMore, fetchGroups } =
     useExplore(userId);

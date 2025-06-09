@@ -1,7 +1,8 @@
 import { Comment } from '@/src/features/reel/interface/reels';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import restClient from '@/src/shared/services/RestClient';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
@@ -29,7 +30,6 @@ interface ReelProps {
   userId: string;
 }
 
-const Color = getColor();
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const UsersClient = restClient.apiClient.service('apis/users');
 const reelsClient = restClient.apiClient.service('apis/reels');
@@ -43,6 +43,7 @@ export const SingleReel: React.FC<ReelProps> = ({
   setVideoRef,
   userId,
 }) => {
+  useTheme()
   const navigation = useNavigation<ReelNavigationProp>();
   const videoRef = useRef<Video>(null);
   const [paused, setPaused] = useState(false);

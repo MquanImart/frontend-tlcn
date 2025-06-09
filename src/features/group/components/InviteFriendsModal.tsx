@@ -1,6 +1,7 @@
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
 import { Image } from 'expo-image';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,7 +15,6 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
 const groupsClient = restClient.apiClient.service("apis/groups");
 const notificationsClient = restClient.apiClient.service("apis/notifications"); // Thêm API thông báo
 
@@ -44,7 +44,7 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
   const [friendsList, setFriendsList] = useState<User[]>([]);
   const [selectedFriends, setSelectedFriends] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
+  useTheme();
   // 🛠 Fetch danh sách bạn bè có thể mời
   useEffect(() => {
     if (visible) {

@@ -1,6 +1,7 @@
 import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, Text, ActivityIndicator } from "react-native"
 import HeaderDirection from "./HeaderDirection";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import MapView, { Marker, Polyline } from "react-native-maps";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -14,6 +15,7 @@ import { useEffect, useState } from "react";
 
 
 const Directions = () => {
+    useTheme();
     const route = useRoute<RouteProp<MapStackParamList, "Directions">>();
     const { start, end } = route.params || {};
     const [isMapReady, setIsMapReady] = useState(false);
@@ -148,8 +150,6 @@ const Directions = () => {
     </TouchableWithoutFeedback>
   )
 }
-
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
       flex: 1,

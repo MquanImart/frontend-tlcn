@@ -1,7 +1,8 @@
 import CHeader from "@/src/shared/components/header/CHeader";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
@@ -21,13 +22,12 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import { useEditPage } from "./useEditPage";
 
-const Color = getColor();
-
 interface EditPageProps {
   route: RouteProp<PageStackParamList, "EditPage">;
 }
 
 const EditPage: React.FC<EditPageProps> = ({ route }) => {
+  useTheme()
   const page = route.params.page;
   const navigation = useNavigation<NavigationProp<PageStackParamList>>();
 

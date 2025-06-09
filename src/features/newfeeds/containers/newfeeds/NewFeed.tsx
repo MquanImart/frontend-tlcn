@@ -6,7 +6,8 @@ import ChatBubble from "@/src/shared/components/chatbubble/ChatBubble";
 import { CHeaderIconNewFeed } from "@/src/shared/components/header/CHeaderIcon";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import React, { useEffect, useRef, useState } from "react";
@@ -29,10 +30,10 @@ import Post from "../../components/post/Post";
 import PostDialog from "../../components/PostDialog/PostDialog";
 import { Article } from "../../interface/article";
 
-const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 export default function NewFeed() {
+  useTheme();
   const [articles, setArticles] = useState<Article[]>([]);
   const viewedArticles = useRef<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1); // Thêm state để quản lý trang hiện tại

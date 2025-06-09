@@ -1,19 +1,20 @@
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import React, { useRef, useState } from "react";
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
-const Color = getColor();
 
 type OtpForgotRouteProp = RouteProp<AuthStackParamList, "OtpForgot">;
 type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const OtpForgot = () => {
+    useTheme();
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const otpRefs = useRef<Array<TextInput | null>>([]);
     const navigation = useNavigation<LoginNavigationProp>();

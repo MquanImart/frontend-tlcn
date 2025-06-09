@@ -1,10 +1,10 @@
 import { CollectionStackParamList } from "@/src/shared/routes/CollectionNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-const Color = getColor();
 
 export interface CollectionsCardProps {
     _id:string;
@@ -15,6 +15,7 @@ export interface CollectionsCardProps {
 type CollectionsNavigationProp = StackNavigationProp<CollectionStackParamList, "Collections">;
 
 const CollectionsCard = ({_id, name, img} : CollectionsCardProps) => {
+    useTheme();
     const navigation = useNavigation<CollectionsNavigationProp>();
 
     return (

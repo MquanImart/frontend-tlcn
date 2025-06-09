@@ -4,7 +4,8 @@ import Post from "@/src/features/newfeeds/components/post/Post";
 import { Article } from "@/src/features/newfeeds/interface/article";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -31,7 +32,6 @@ import usePost from "./usePost";
 type PostSearchRouteProp = RouteProp<SearchStackParamList, "SearchPost">;
 type PostSearchNavigationProp = StackNavigationProp<SearchStackParamList, "SearchPost">;
 
-const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface PostSearchProps {
@@ -39,6 +39,7 @@ interface PostSearchProps {
 }
 
 const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
+  useTheme()
   const navigation = useNavigation<PostSearchNavigationProp>();
   const { textSearch: initialTextSearch } = route.params;
   const [searchText, setSearchText] = useState<string>(

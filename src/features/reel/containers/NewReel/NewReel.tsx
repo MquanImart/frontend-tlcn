@@ -16,12 +16,12 @@ import {
 import { Ionicons, Feather } from '@expo/vector-icons';
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import * as ImagePicker from 'expo-image-picker';
 import { Video, ResizeMode } from 'expo-av';
 import restClient from '@/src/shared/services/RestClient';
 const reelsClient = restClient.apiClient.service("apis/reels");
-const Color = getColor();
 
 interface NewReelProps {
   isModalVisible: boolean;
@@ -32,6 +32,7 @@ interface NewReelProps {
 }
 
 const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoading, onReelCreated, userId }) => {
+  useTheme()
   const [content, setContent] = useState('');
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState('');

@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View, Text, Alert } from "react-native";
 import FriendCard from "@/src/features/friends/components/FriendCard";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { ButtonActions } from "@/src/features/friends/components/ActionsCard";
 import restClient from "@/src/shared/services/RestClient";
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-
-const Color = getColor();
 
 export interface Friend {
   _id: string;
@@ -25,6 +24,14 @@ interface SearchUserProps {
 }
 
 const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation }) => {
+  useTheme()
+  const [showAllUsers, setShowAllUsers] = useState(false);
+  const [allFriends, setAllFriends] = useState<Friend[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const toggleShowAllUsers = () => {
+    setShowAllUsers(!showAllUsers);
+  };
   const [allFriends, setAllFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1); // Biến page để quản lý phân trang

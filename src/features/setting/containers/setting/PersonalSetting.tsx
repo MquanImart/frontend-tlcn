@@ -12,7 +12,8 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChangePasswordDialog from "../../components/ChangePasswordDialog";
@@ -24,7 +25,6 @@ import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
-const Color = getColor();
 
 const UsersClient = restClient.apiClient.service("apis/users");
 const AccountsClient = restClient.apiClient.service("apis/accounts");
@@ -55,6 +55,7 @@ interface ReusableButtonProps {
 }
 
 const ReusableButton = ({ label, iconName, onPress, extraInfo }: ReusableButtonProps) => {
+  useTheme()
   return (
     <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
       <View style={styles.contentContainer}>

@@ -1,14 +1,15 @@
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { TouchableOpacity, View, StyleSheet } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
 type ExploreNavigation = StackNavigationProp<ExploreStackParamList, "Discovery">;
 
 const HeaderProvice = () => {
+    useTheme();
     const navigation = useNavigation<ExploreNavigation>();
     return (
         <View style={styles.container}>

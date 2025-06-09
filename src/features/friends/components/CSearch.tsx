@@ -1,7 +1,7 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
 
-const Color = getColor();
 
 interface CSearchProps {
     handleSearch: () => void;
@@ -9,7 +9,7 @@ interface CSearchProps {
     text: string;
 }
 const CSearch = ({ text, handleChange, handleSearch } : CSearchProps) => {
-
+    useTheme();
     return (
         <View style={styles.container}>
             <TextInput

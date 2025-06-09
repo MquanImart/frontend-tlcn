@@ -1,9 +1,8 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-
-const Color = getColor();
 
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
 
@@ -14,6 +13,7 @@ interface MemberCardProps {
 }
 
 const MemberCard: React.FC<MemberCardProps> = ({ name, avatar, description }) => {
+  useTheme()
   const avatarSource = avatar && avatar.trim() !== "" 
     ? { uri: avatar } 
     : { uri: DEFAULT_AVATAR }; 

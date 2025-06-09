@@ -1,9 +1,9 @@
-import getColor from "@/src/styles/Color";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
-const Color = getColor();
 
 export interface Tab {
   label: string;
@@ -31,6 +31,7 @@ const TabBarCustom: React.FC<TabBarProps> = ({
   activeTextStyle = {},
   inactiveTextStyle = {},
 }) => {
+  useTheme();
   return (
     <View style={[styles.container, style]}>
       {tabs.map((tab) => (

@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useState } from "react";
 import { Modal, View, StyleSheet, Text, TouchableOpacity, Dimensions, Alert } from "react-native"
 import SearchPlace from "../containers/directions/SearchPlace";
@@ -16,6 +17,7 @@ interface ModalCreateTripProps {
 }
 
 const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTripProps) => {
+    useTheme();
     const [visiableSearch, setVisiableSearch] = useState<'START' | 'END' | null>(null);
     const [startLocation, setStartLocation] = useState<CLocation | null>(null);
     const [endLocation, setEndLocation] = useState<CLocation | null>(null);
@@ -126,8 +128,6 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
         </Modal>
     )
 }
-
-const Color = getColor();
 
 const styles = StyleSheet.create({
     container: {

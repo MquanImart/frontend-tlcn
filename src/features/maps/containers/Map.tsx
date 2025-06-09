@@ -1,7 +1,8 @@
 import { View, StyleSheet, Animated } from "react-native"
 import MapView, { Marker } from "react-native-maps";
 import HeaderMap from "../components/HeaderMap";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CardDetails from "../components/CardDetails";
 import ListSaveLocation from "./saved/ListSaved";
 import useMap from "./useMap";
@@ -9,10 +10,8 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
 
 
-
-const Color = getColor();
-
 const CustomMap = () => {
+  useTheme()
   const route = useRoute<RouteProp<MapStackParamList, "CustomMap">>();
   const {lat, long} = route.params || {};
 

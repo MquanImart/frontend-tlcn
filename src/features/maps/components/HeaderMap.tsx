@@ -1,5 +1,6 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, TextInput, Dimensions, Text, TouchableOpacity } from "react-native"
 import { FlatList } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -10,7 +11,6 @@ import { useCallback } from "react";
 
 const WIDTH_SCREEN = Dimensions.get('window').width;
 const HEIGHT_SCREEN = Dimensions.get('window').height;
-const Color = getColor();
 
 interface HeaderMapProps {
     startTab?: string;
@@ -20,7 +20,7 @@ interface HeaderMapProps {
 }
 
 const HeaderMap = ({startTab, rightPress, getDetails, closeDetails}: HeaderMapProps) => {
-    
+    useTheme();
     const {
         currTab, listSearch, 
         search, tabsMap, isSearch,

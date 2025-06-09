@@ -1,9 +1,8 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const Color = getColor();
 
 interface MemberRequestItemProps {
   name: string;
@@ -20,6 +19,7 @@ const MemberRequestItem: React.FC<MemberRequestItemProps> = ({
   onAccept,
   onReject,
 }) => {
+  useTheme();
   return (
     <View style={[styles.container, styles.shadowEffect]}>
       {/* Avatar & Thông tin */}

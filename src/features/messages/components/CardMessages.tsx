@@ -2,7 +2,8 @@ import { Conversation, ConversationSettings } from "@/src/interface/interface_fl
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -12,7 +13,6 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "rea
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import useMessages from "../containers/useMessage";
 
-const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages">;
 
 export interface CardMessagesProps {
@@ -20,6 +20,7 @@ export interface CardMessagesProps {
 }
 
 const CardMessages = ({conversation}: CardMessagesProps) => {
+    useTheme();
     const { cardData, setting } = useCardMessage(conversation); 
     if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
     return (

@@ -1,5 +1,6 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color"
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet } from "react-native"
 import CollectionsCard from "../../components/CollectionsCard";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -7,13 +8,12 @@ import { ViewCardCollection } from "./interface";
 import InputCollectionModal from "../../components/InputCollectionModal";
 import { useState } from "react";
 
-const Color = getColor();
-
 interface ListCollectionsProps {
     collections: ViewCardCollection[];
     createCollection: (name: string) => void;
 }
 const ListCollections = ({ collections, createCollection }: ListCollectionsProps ) => {
+    useTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const handleInput = (value: string) => {
         createCollection(value);

@@ -2,7 +2,8 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -14,14 +15,13 @@ import SearchUser from "./SearchUser";
 type SearchUserAndGroupNavigationProp = StackNavigationProp<SearchStackParamList, "SearchUserAndGroup">;
 type SearchUserAndGroupRouteProp = RouteProp<SearchStackParamList, "SearchUserAndGroup">;
 
-const Color = getColor();
-
 interface SearchUserAndGroupProps {
   navigation: SearchUserAndGroupNavigationProp;
   route: SearchUserAndGroupRouteProp;
 }
 
 const SearchUserAndGroup: React.FC<SearchUserAndGroupProps> = ({ route, navigation }) => {
+  useTheme()
   const { textSearch: initialTextSearch, userId } = route.params;
   const [searchText, setSearchText] = useState<string>(initialTextSearch || "");
   const tabs: TabProps[] = [

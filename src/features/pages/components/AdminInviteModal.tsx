@@ -1,10 +1,9 @@
 import React from "react";
 import { View, Text, Modal, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-const Color = getColor();
 
 interface AdminInviteModalProps {
   visible: boolean;
@@ -15,6 +14,7 @@ interface AdminInviteModalProps {
 }
 
 const AdminInviteModal: React.FC<AdminInviteModalProps> = ({ visible, invites, onAccept, onDecline, onClose }) => {
+  useTheme()
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalContainer}>

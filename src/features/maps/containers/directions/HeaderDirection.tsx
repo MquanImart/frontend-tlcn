@@ -1,5 +1,6 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, TextInput, Dimensions, TouchableOpacity, Text } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useState } from "react";
@@ -10,7 +11,6 @@ import { useNavigation } from "@react-navigation/native";
 import { LocationRoute } from "./interfaceAPIRoute";
 
 const WIDTH_SCREEN = Dimensions.get('window').width;
-const Color = getColor();
 
 interface TabMapProps {
     label: string;
@@ -31,6 +31,7 @@ interface HeaderDirectionProps {
     reverseRoute: (value: "DRIVE" | "WALK" | "MOTORCYCLE") => void;
 }
 const HeaderDirection = ({startLocation, endLocation, openSearch, changeTransport, reverseRoute} : HeaderDirectionProps) => {
+    useTheme();
     const navigation = useNavigation<MapNavigationProp>();
     const [currTab, setCurrTab] = useState<"DRIVE" | "WALK" | "MOTORCYCLE">(tabsMap[0].key);
     

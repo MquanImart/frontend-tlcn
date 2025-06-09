@@ -1,5 +1,6 @@
 import { Message, UserDisplay } from "@/src/interface/interface_flex";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { ResizeMode, Video } from "expo-av";
 import { Image } from 'expo-image';
 import { useRef, useState } from "react";
@@ -11,7 +12,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
 const WINDOW_WIDTH =  Dimensions.get('window').width;
-const Color = getColor();
 
 interface MessageProps {
     user: UserDisplay;
@@ -37,6 +37,7 @@ const parseLatLong = (addressString: string) : {lat: number, long: number} => {
 };
     
 const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
+    useTheme();
     const videoRef = useRef(null);  
     const [visiable, setVisiable] = useState<boolean>(false);
     const navigation = useNavigation<ChatNavigation>();

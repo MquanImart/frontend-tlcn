@@ -1,5 +1,6 @@
 import ConvertDimension from "@/src/shared/utils/ConvertDimension";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -16,7 +17,7 @@ interface CardExploreProps {
 }
 
 const CardExplore = ({images, name, country, size, onPress} : CardExploreProps) => {
-
+    useTheme();
     return (
         <TouchableOpacity style={[styles.container, 
             {width: ConvertDimension(size.width), height: ConvertDimension(size.height)}]}
@@ -37,7 +38,6 @@ const CardExplore = ({images, name, country, size, onPress} : CardExploreProps) 
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         borderRadius: 20,

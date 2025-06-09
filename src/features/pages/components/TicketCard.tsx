@@ -1,10 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ticket } from "@/src/interface/interface_reference";
-
-const Color = getColor();
 
 interface TicketCardProps {
   ticket: Ticket;
@@ -12,6 +11,7 @@ interface TicketCardProps {
 }
 
 const TicketCard: React.FC<TicketCardProps> = ({ ticket, onDeleteTicket }) => {
+  useTheme()
   return (
     <View style={styles.cardContainer}>
       <View style={styles.leftBorder} />

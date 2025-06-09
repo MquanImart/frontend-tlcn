@@ -1,5 +1,6 @@
 import env from "@/env";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -9,7 +10,7 @@ interface DetailsImagesProps {
   details: PlaceData;
 }
 const DetailsImages = ({details} : DetailsImagesProps) => {
-
+  useTheme();
   const [images, setImages] = useState<string | null>(null);
 
   useEffect(() => {
@@ -51,7 +52,6 @@ const DetailsImages = ({details} : DetailsImagesProps) => {
   );
 };
 
-const Color = getColor();
 const styles = StyleSheet.create({
   container: {
     width: '100%', height: 150,

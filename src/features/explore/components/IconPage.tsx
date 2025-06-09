@@ -1,13 +1,13 @@
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Color = getColor();
 type NavigationProps = StackNavigationProp<ExploreStackParamList, 'Discovery'>;
 interface IconPageProps {
     avt: MyPhoto;
@@ -16,8 +16,8 @@ interface IconPageProps {
 }
 
 const IconPage = ({avt, name, _id}: IconPageProps) => {
+    useTheme();
     const navigation = useNavigation<NavigationProps>();
-
     const handleNavigateToPage = async (pageId: string) => {
       const userId = await AsyncStorage.getItem("userId");
       if (userId) {

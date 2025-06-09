@@ -1,9 +1,9 @@
 
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-const Color = getColor();
 // Define the types for the props
 interface UserCardProps {
   name: string;
@@ -20,6 +20,7 @@ const UserCard: React.FC<UserCardProps> = ({
   imageUrl,
   onButtonPress,
 }) => {
+  useTheme()
   return (
     <View style={styles.cardContainer}>
       <Image source={{ uri: imageUrl }} style={styles.image} />

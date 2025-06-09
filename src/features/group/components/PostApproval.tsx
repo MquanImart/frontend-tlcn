@@ -1,5 +1,6 @@
 import { Article } from "@/src/features/newfeeds/interface/article";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React, { useState } from "react";
 import {
@@ -11,7 +12,6 @@ import {
   View,
 } from "react-native";
 
-const Color = getColor();
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface PostProps {
@@ -22,7 +22,7 @@ interface PostProps {
 
 const PostApproval: React.FC<PostProps> = ({ article, onAccept, onReject }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  useTheme();
   const handleScroll = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const currentIndex = Math.round(offsetX / SCREEN_WIDTH);

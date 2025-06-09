@@ -1,9 +1,9 @@
 import { Text, View, StyleSheet } from "react-native"
 import PostCard from "../../components/PostCard";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { ViewCardArticle, ViewCardCollection } from "./interface";
 
-const Color = getColor();
 
 interface RecentsViewProps {
     recentPost: ViewCardArticle[];
@@ -12,7 +12,7 @@ interface RecentsViewProps {
     listCollections: ViewCardCollection[];
 }
 const RecentsView = ({recentPost, deleteArticle, changeCollection, listCollections} : RecentsViewProps) => {
-
+    useTheme();
     return (
         <View style={styles.container}>
             <Text style={styles.textTilte}>Đã lưu gần đây</Text>

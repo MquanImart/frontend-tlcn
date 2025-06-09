@@ -1,6 +1,7 @@
 import CHeader from "@/src/shared/components/header/CHeader";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
@@ -8,10 +9,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import PersonalSetting from "./PersonalSetting";
 import PrivacySetting from "./PrivacySetting";
 import ScreenSetting from "./ScreenSetting";
-const Color = getColor();
 
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 const Setting = () => {
+    useTheme()
     const navigationMenu = useNavigation<MenuNavigationProp>();
     const [activeTab, setActiveTab] = useState("screen"); // Tab hiện tại
 

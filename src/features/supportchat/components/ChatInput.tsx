@@ -1,9 +1,8 @@
 import React from "react";
 import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
-
-const Color = getColor();
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface ChatInputProps {
   inputText: string;

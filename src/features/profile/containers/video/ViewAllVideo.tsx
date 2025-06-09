@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { useEffect } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -6,13 +7,12 @@ import DetailsPhoto from "../../components/DetailsPhoto";
 import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
 import useViewAllVideo from "./useViewAllVideo";
 
-const Color = getColor();
-
 interface ViewAllVideoProps {
   userId: string; // Thêm userId như một prop
 }
 
 const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
+  useTheme()
   const {
     thumbnails,
     setThumbnails,

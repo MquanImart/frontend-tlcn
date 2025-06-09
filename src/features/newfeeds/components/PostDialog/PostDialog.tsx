@@ -1,6 +1,7 @@
 import { Address } from "@/src/interface/interface_reference";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import React, { useState } from "react";
@@ -14,8 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-const Color = getColor();
 
 interface PostDialogProps {
   isModalVisible: boolean;
@@ -74,6 +73,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
   MapPickerDialog,
   isLocationLoading,
 }) => {
+  useTheme();
   const [isPrivacyModalVisible, setPrivacyModalVisible] = useState(false);
 
   const togglePrivacyModal = () => setPrivacyModalVisible(!isPrivacyModalVisible);

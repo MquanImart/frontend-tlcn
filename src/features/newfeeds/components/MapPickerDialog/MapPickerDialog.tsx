@@ -1,5 +1,6 @@
 import { Address } from "@/src/interface/interface_reference";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import { Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
@@ -8,7 +9,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import useMapPicker from "./useMapPicker";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-const Color = getColor();
 
 interface MapPickerDialogProps {
   isVisible: boolean;
@@ -17,6 +17,7 @@ interface MapPickerDialogProps {
 }
 
 const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, onConfirm }) => {
+  useTheme();
   const {
     location,
     mapRef,

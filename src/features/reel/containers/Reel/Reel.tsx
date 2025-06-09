@@ -1,7 +1,8 @@
 import { Reels } from '@/src/features/reel/interface/reels';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -29,7 +30,6 @@ import NewReel from '../NewReel/NewReel';
 import { SingleReel } from './SingleReel';
 import useReels from './useReels';
 
-const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, 'Menu'>;
@@ -37,6 +37,7 @@ type ReelNavigationProp = StackNavigationProp<ReelStackParamList, 'Reel'>;
 type ReelListRouteProp = RouteProp<ReelStackParamList, 'Reel'>;
 
 export default function ReelsList() {
+  useTheme()
   const [reels, setReels] = useState<Reels[]>([]);
   const navigation = useNavigation<SettingNavigationProp>();
   const navigationReel = useNavigation<ReelNavigationProp>();

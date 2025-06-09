@@ -1,6 +1,7 @@
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import { useCallback } from "react";
@@ -9,13 +10,11 @@ import { CardActionsDetails } from "../../components/CardActionsDetails";
 import RenameGroupModal from "../../components/RenameGroupModal";
 import useDetails from "./useDetails";
 
-const Color = getColor();
-
 
 const DetailsConversations = () => {
+    useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "Details">>();
     const { defaultConversation, isFriend } = route.params || {};
-    
     const { 
         onPressHeaderLeft,
         listActionMessage, listActionUser,

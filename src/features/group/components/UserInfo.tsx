@@ -1,9 +1,8 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const Color = getColor();
 
 interface UserInfoProps {
   groupName: string;
@@ -14,7 +13,7 @@ interface UserInfoProps {
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({ groupName, role, joinDate, onPress }) => {
-
+  useTheme();
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       {/* Tên nhóm */}

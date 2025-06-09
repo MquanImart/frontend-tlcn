@@ -8,9 +8,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CButton from "@/src/shared/components/button/CButton"; // Import CButton
-import getColor from "@/src/styles/Color"; // Import theme-based colors
-
-const Color = getColor();
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface ReportModalProps {
   isVisible: boolean;
@@ -27,13 +26,12 @@ const ReportModal: React.FC<ReportModalProps> = ({
   setSelectedReason,
   onSubmit,
 }) => {
-  
+  useTheme();
   const reportReasons = [
     "Nội dung không phù hợp",
     "Thông tin sai lệch",
     "Spam",
-    "Lạm dụng",
-    "Khác",
+    "Lạm dụng"
   ];
 
   return (

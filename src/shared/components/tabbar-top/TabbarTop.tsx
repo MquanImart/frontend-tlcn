@@ -1,10 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
 import { FlatList } from "react-native-gesture-handler";
-
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useState } from "react";
 
-const Color = getColor();
 
 export interface TabProps{
     label: string;
@@ -20,6 +19,7 @@ interface TabbarTopProps{
 
 
 const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
+    useTheme()
     return (
         <TouchableOpacity style={isCurrentTab?styles.currenttab:styles.tab} onPress={onPressTab}>
             <Text style={isCurrentTab?styles.currenttext:styles.text}>{label}</Text>
@@ -28,7 +28,7 @@ const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
 }
 
 const TabbarTop = ({tabs, startTab, setTab} : TabbarTopProps) => {
-    
+    useTheme()
     return (
         <View style={styles.container}>
             {/* <FlatList style={styles.listTabs} data={tabs} renderItem={({item}) => 

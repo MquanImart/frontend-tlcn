@@ -3,7 +3,8 @@ import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -30,7 +31,7 @@ const WINDOW_HEIGHT = Dimensions.get("window").height;
 const HEIGHT_HEADER = WINDOW_HEIGHT - 300;
 
 const CityProvince = () => {
-  const Color = getColor();
+  useTheme();
   const route = useRoute<RouteProp<ExploreStackParamList, "CityProvice">>();
   const { provinceId } = route.params || {};
   const {
@@ -243,7 +244,6 @@ const CityProvince = () => {
   );
 };
 
-const Color = getColor();
 const styles = StyleSheet.create({
   container: {
     flex: 1,

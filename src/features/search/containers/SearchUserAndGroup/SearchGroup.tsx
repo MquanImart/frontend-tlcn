@@ -2,13 +2,15 @@ import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, StyleSheet, View, Text, Alert } from "react-native";
 import GroupCard from "@/src/features/group/components/GroupCard";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
+import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import restClient from "@/src/shared/services/RestClient";
 import { Group } from "@/src/features/newfeeds/interface/article";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-
-const Color = getColor();
+  
 const groupsClient = restClient.apiClient.service("apis/groups");
 const usersClient = restClient.apiClient.service("apis/users");
 interface SearchGroupProps {
@@ -18,6 +20,7 @@ interface SearchGroupProps {
 }
 
 const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigation }) => {
+  useTheme()
   const [allGroups, setAllGroups] = useState<Group[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);

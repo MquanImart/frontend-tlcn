@@ -7,7 +7,8 @@ import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
@@ -19,13 +20,12 @@ import PageMembers from "./tabs/PageMembers";
 import PageTickets from "./tabs/PageTickets";
 import usePageScreen from "./usePageScreen";
 
-const Color = getColor();
-
 interface PageScreenProps {
   route: RouteProp<PageStackParamList, "PageScreen">;
 }
 
 const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
+  useTheme()
   const navigation = useNavigation<NavigationProp<ExploreStackParamList>>(); 
   const pageId = route.params?.pageId;
 

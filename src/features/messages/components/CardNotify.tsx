@@ -1,8 +1,7 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
-
-const Color = getColor();
 
 interface CardNotifyProps {
     text: string;
@@ -12,7 +11,7 @@ interface CardNotifyProps {
 }
 
 const CardNotify = ({text, onPress, ischoose} : CardNotifyProps) => {
-
+    useTheme();
     return (
         <TouchableOpacity style={styles.cardActions} onPress={onPress}>
             <Text style={styles.textActions}>{text}</Text>

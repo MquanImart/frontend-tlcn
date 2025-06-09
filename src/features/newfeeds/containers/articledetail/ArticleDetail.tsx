@@ -3,7 +3,8 @@ import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentI
 import Post from "@/src/features/newfeeds/components/post/Post";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -26,7 +27,6 @@ import {
 import Modal from "react-native-modal";
 import useArticleDetail from "./useArticleDetail";
 
-const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 type ArticleDetailNavigationProp = StackNavigationProp<NewFeedParamList, "ArticleDetail">;
@@ -37,6 +37,7 @@ interface RouteParams {
 }
 
 export default function ArticleDetail() {
+  useTheme();
   const navigation = useNavigation<ArticleDetailNavigationProp>();
   const route = useRoute();
   const { articleId, commentId } = route.params as RouteParams;

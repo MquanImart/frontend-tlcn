@@ -1,4 +1,5 @@
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ReportRow from '../../components/ReportRow';
@@ -13,15 +14,14 @@ interface ReportModalScreenProps {
 }
 
 const { width, height } = Dimensions.get('window');
-const Color = getColor();
 const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
   visible,
   onClose,
   reports: initialReports,
   onReportUpdated,
 }) => {
+  useTheme();
   const { error, setError, handleUpdateReport } = useReportModal(onReportUpdated);
-  const Color = getColor();
   const [reports, setReports] = useState<Report[]>(initialReports);
 
   // Cập nhật reports khi initialReports thay đổi

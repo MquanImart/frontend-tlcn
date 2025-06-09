@@ -1,6 +1,7 @@
 import { View, StyleSheet, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator } from "react-native"
 import HeaderBoxChat from "../../components/HeaderBoxChat";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import InputText from "../../components/InputText";
@@ -11,10 +12,9 @@ import { Message } from "@/src/interface/interface_flex";
 import { MessageReceive, MessageSend } from "./Message";
 import { useCallback } from "react";
 
-const Color = getColor();
-
 
 const Conversations = () => {
+  useTheme();
   const route = useRoute<RouteProp<ChatStackParamList, "BoxChat">>();
   const { conversationId, isFriend, friend } = route.params || {};
   const { 

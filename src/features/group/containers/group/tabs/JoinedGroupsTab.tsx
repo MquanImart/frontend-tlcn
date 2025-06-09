@@ -1,6 +1,7 @@
 import GroupCard from "@/src/features/group/components/GroupCard";
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
@@ -15,14 +16,13 @@ import {
 } from "react-native";
 import { useJoinedGroups } from "./useJoinedGroups";
 
-const Color = getColor();
-
 interface JoinedGroupsTabProps {
   userId: string;
   handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
+  useTheme();
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { savedGroups, loading, error, loadMoreGroups, isLoadingMore, fetchSavedGroups } =
     useJoinedGroups(userId);

@@ -1,5 +1,6 @@
 import { NewFeedParamList } from '@/src/shared/routes/NewFeedNavigation';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -22,7 +23,6 @@ interface ArticleRowProps {
   article: Article;
   onPress: () => void; // Mở báo cáo
 }
-const Color = getColor();
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList>;
 
 const { width } = Dimensions.get('window');
@@ -30,7 +30,7 @@ const MEDIA_SIZE = width * 0.22; // Kích thước media item nhỏ hơn để h
 const MAX_MEDIA_ITEMS = 4; // Giới hạn số lượng media hiển thị
 
 const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
-  const Color = getColor();
+  useTheme();
   const hasReports = article.reports && article.reports.length > 0;
   const navigation = useNavigation<NewFeedNavigationProp>();
 

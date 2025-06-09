@@ -1,6 +1,7 @@
 import { Comment } from "@/src/features/newfeeds/interface/article";
 import timeAgo from "@/src/shared/utils/TimeAgo";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
@@ -20,7 +21,6 @@ import {
 import { useCommentVisibility } from "./useCommentVisibility";
 import { useReplyInput } from "./useReplyInput";
 
-const Color = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
 
 interface CommentItemProps {
@@ -40,6 +40,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   level = 1,
   isHighlighted = false, // Default to false
 }) => {
+  useTheme();
   const { areRepliesVisible, toggleReplies } = useCommentVisibility();
   const {
     isReplyInputVisible,

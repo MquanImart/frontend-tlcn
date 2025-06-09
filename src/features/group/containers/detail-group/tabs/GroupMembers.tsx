@@ -1,13 +1,12 @@
 import MemberCard from "@/src/features/group/components/MemberCard";
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { useGroupMembers } from "./useGroupMembers";
-
-const Color = getColor();
 
 interface GroupMembersProps {
   groupId: string;
@@ -23,6 +22,7 @@ interface Member {
 }
 
 const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, role }) => {
+  useTheme();
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { loading, groupData, handleLongPress } = useGroupMembers(groupId, currentUserId, role);
 

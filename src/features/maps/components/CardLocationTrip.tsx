@@ -1,6 +1,7 @@
 import { CLocation } from "@/src/interface/interface_detail"
 import CIconButton from "@/src/shared/components/button/CIconButton"
-import getColor from "@/src/styles/Color"
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons"
 
@@ -12,7 +13,7 @@ interface CardLocationTripProps {
     changePosition?: (up: boolean) => void;
 }
 const CardLocationTrip = ( { location, isChange = false, onClick, deletePress, changePosition } : CardLocationTripProps) => {
-
+    useTheme();
     return(
         <TouchableOpacity style={[styles.cardCotent, styles.shadow]}
             onPress={() => {onClick(location._id)}}
@@ -59,8 +60,6 @@ const CardLocationTrip = ( { location, isChange = false, onClick, deletePress, c
         </TouchableOpacity>
     )
 }
-
-const Color = getColor();
 const styles = StyleSheet.create({
     cardCotent: {
         width: '100%',

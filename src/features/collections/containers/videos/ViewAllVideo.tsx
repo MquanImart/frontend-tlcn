@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { useEffect } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -11,10 +12,8 @@ interface ViewAllImagesProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
 }
 
-const Color = getColor();
-
 const ViewAllVideo = ({label, handleScroll}: ViewAllImagesProps) => {
-    
+    useTheme()
     const {thumbnails, setThumbnails, selectedPhoto, handleSelectedPhoto, dataVideo,
       isModalVisible, closeModal} = useViewAllVideo();
 

@@ -3,7 +3,8 @@ import CButton from "@/src/shared/components/button/CButton";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
@@ -13,11 +14,11 @@ import React, { useRef, useState } from "react";
 import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
 type NavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 type IDVerificationRouteProp = RouteProp<AuthStackParamList, "IDVerification">;
 
 const extractCCCDData = async (imageUri: string, mimeType: string = 'image/jpeg') => {
+    useTheme();
     try {
         const formData = new FormData();
         formData.append('cccdImage', {

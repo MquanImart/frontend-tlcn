@@ -1,6 +1,7 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -25,6 +26,7 @@ interface CardDetailsProps {
 }
 
 const CardDetails = ({details, location, closeDetails, pressDirection}: CardDetailsProps) => {
+  useTheme();
   const currentDate = new Date(Date.now());
   const [saved, setSaved] = useState<boolean | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -169,7 +171,6 @@ const CardDetails = ({details, location, closeDetails, pressDirection}: CardDeta
   )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
       flex: 1,

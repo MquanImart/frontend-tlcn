@@ -3,11 +3,11 @@ import CIconButton from "../button/CIconButton"
 import Icon from "react-native-vector-icons/MaterialIcons"
 import { TabItemProps } from "./TabbarInterface"
 import { Dimensions } from "react-native";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import useTabbar from "./useTabbar";
 import { useEffect } from "react";
 
-const Color = getColor();
 const screenWidth = Dimensions.get("window").width; // Chiều rộng màn hình
 
 const TabItem : TabItemProps[] = [
@@ -22,6 +22,7 @@ interface TabbarProps {
     startTab?: string;
 }
 const Tabbar = ({startTab}: TabbarProps) => {
+    useTheme()
     const {handleChangeTab} = useTabbar();
 
     return (

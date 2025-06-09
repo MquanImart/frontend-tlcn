@@ -1,12 +1,12 @@
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet"; // Import showActionSheet
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Color = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
 
 interface MemberCardProps {
@@ -33,7 +33,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
   onLongPress,
 }) => {
   const avatarSource = avatar && avatar.trim() !== "" ? { uri: avatar } : { uri: DEFAULT_AVATAR };
-
+  useTheme();
   const handlePress = () => {
     console.log("Navigating to profile for user:", memberUserId);
     if (memberUserId === currentUserId) {

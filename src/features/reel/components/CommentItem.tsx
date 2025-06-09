@@ -1,5 +1,6 @@
 import timeAgo from "@/src/shared/utils/TimeAgo";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
@@ -20,7 +21,6 @@ import { Comment } from "../interface/reels";
 import { useCommentVisibility } from "./useCommentVisibility";
 import { useReplyInput } from "./useReplyInput";
 
-const Color = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
 
 interface CommentItemProps {
@@ -47,6 +47,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
     handleReplyChange,
     resetReplyContent,
   } = useReplyInput();
+  useTheme()
 
   const [selectedMedia, setSelectedMedia] = React.useState<ImagePicker.ImagePickerAsset[]>([]);
   const [imageLoading, setImageLoading] = React.useState<{ [key: string]: boolean }>({});

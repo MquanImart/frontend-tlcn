@@ -1,12 +1,12 @@
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SearchConversations } from "../containers/list-messages/useListMessages";
 
-const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages">;
 
 export interface CardMessagesProps {
@@ -14,6 +14,7 @@ export interface CardMessagesProps {
 }
 
 const CardSearch = ({cardData}: CardMessagesProps) => {
+    useTheme();
     const navigation = useNavigation<ChatNavigationProp>();
 
     if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>

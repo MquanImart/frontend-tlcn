@@ -1,12 +1,11 @@
 import { Page, User } from "@/src/interface/interface_reference";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MemberCard from "../../../components/MemberCard";
 import usePageInvitations from "./usePageInvitations";
-
-const Color = getColor();
 
 interface PageInvitationsProps {
   page: Page;
@@ -20,6 +19,7 @@ interface UserWithAvatar extends User {
 }
 
 const PageInvitations: React.FC<PageInvitationsProps> = ({ page, currentUserId, role, updatePage }) => {
+  useTheme()
   const { pendingAdmins, loading, handleRemoveAdmin } = usePageInvitations(page, updatePage);
 
   const handleLongPress = (userId: string) => {

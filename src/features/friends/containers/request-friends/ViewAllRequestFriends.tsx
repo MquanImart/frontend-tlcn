@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color"
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, TouchableWithoutFeedback, Keyboard } from "react-native"
 import FriendCard, { FriendCardProps } from "../../components/FriendCard";
 import CSearch from "../../components/CSearch";
@@ -9,8 +10,6 @@ import { RouteProp, useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import useAllRequest from "./useAllRequest";
 import { ButtonActions } from "../../components/ActionsCard";
-
-const Color = getColor();
 
 type ViewAllRequestFriendsRouteProp = RouteProp<
   FriendsStackParamList,
@@ -24,6 +23,7 @@ type ViewAllRequestFriendsProps = {
 type CollectionsNavigationProp = StackNavigationProp<FriendsStackParamList, "ViewAllRequestFriends">;
 
 const ViewAllRequestFriends = ({ route }: ViewAllRequestFriendsProps) => {
+    useTheme();
     const navigation = useNavigation<CollectionsNavigationProp>();
     const { isSendMe, data } = route.params;
 

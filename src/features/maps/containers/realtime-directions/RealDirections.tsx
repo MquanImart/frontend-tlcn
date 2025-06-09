@@ -4,12 +4,12 @@ import useRealDirections from './useRealDirections';
 import { MapStackParamList } from '@/src/shared/routes/MapNavigation';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CIconButton from '@/src/shared/components/button/CIconButton';
 
-const Color = getColor();
-
 const RealDirections = () => {
+    useTheme();
     const route = useRoute<RouteProp<MapStackParamList, "Realtime">>();
     const {locations} = route.params || {};
     const { 

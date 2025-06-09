@@ -9,12 +9,11 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'; // Thêm Ionicons
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Thêm AsyncStorage
-import getColor from "@/src/styles/Color";
 import restClient from "@/src/shared/services/RestClient";
-
-const Color = getColor();
 
 interface ChangePasswordDialogProps {
   visible: boolean;
@@ -26,6 +25,7 @@ interface ChangePasswordDialogProps {
 const accountClient = restClient.apiClient.service("apis/accounts");
 
 const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePasswordDialogProps) => {
+  useTheme()
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

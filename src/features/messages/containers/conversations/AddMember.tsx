@@ -1,6 +1,7 @@
 import { View, StyleSheet, TouchableWithoutFeedback, Text } from "react-native"
 import SearchMessages from "../../components/SearchMessages";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CardUser from "../../components/CardUser";
 import { FlatList } from "react-native-gesture-handler";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
@@ -9,9 +10,8 @@ import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import useNewGroupChat from "../list-messages/useNewGroupChat";
 
-const Color = getColor();
-
 const AddMember = () => {
+    useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "AddMember">>();
     const { conversationId, defaultChoose } = route.params || {};
     const { 

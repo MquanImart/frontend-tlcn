@@ -3,7 +3,8 @@ import MessageModal from "@/src/shared/components/form-message-addfriend/AddMess
 import CHeader from "@/src/shared/components/header/CHeader";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Image } from 'expo-image';
@@ -23,7 +24,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
 import { ChatStackParamList, StrangeChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
-const Color = getColor();
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
@@ -45,7 +45,8 @@ const Profile = () => {
   const [receivedRequestId, setReceivedRequestId] = useState<string | null>(null);
   const [showFormAddFriend, setShowFormAddFriend] = useState<boolean>(false);
   const [canViewProfile, setCanViewProfile] = useState<boolean>(true);
-  const [isFriend, setIsFriend] = useState<boolean>(false); // Tách isFriend thành state riêng
+  const [isFriend, setIsFriend] = useState<boolean>(false);
+  useTheme()
 
   const tabs: TabProps[] = [
     { label: "Hình ảnh" },

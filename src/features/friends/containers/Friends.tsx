@@ -5,14 +5,13 @@ import RequestFriends from "./request-friends/RequestFriends";
 import { useState } from "react";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AllFriends from "./all-friends/AllFriends";
 import SuggestFriends from "./suggest-friends/SuggestFriends";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
-
-const Color = getColor();
 
 const tabs : TabProps[] = [
     {label: "Lời mời"},
@@ -22,6 +21,7 @@ const tabs : TabProps[] = [
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 
 const Friends = () => {
+    useTheme();
     const navigationMenu = useNavigation<MenuNavigationProp>();
     const [currTab, setCurrTab] = useState<string>(tabs.length > 0?tabs[0].label:''); 
     const { tabbarPosition, handleScroll} = useScrollTabbar();
