@@ -46,7 +46,7 @@ const CInput = forwardRef<TextInput, CustomInputProps>(
         return (
             <View style={[styles.container, { borderColor: defaultStyles.borderColor, borderRadius: defaultStyles.radius }]}>
                 <TextInput
-                    ref={ref} // Gán ref để điều khiển focus từ bên ngoài
+                    ref={ref}
                     style={[
                         styles.input,
                         {
@@ -56,7 +56,7 @@ const CInput = forwardRef<TextInput, CustomInputProps>(
                             fontSize: defaultStyles.fontSize,
                             fontWeight: defaultStyles.fontWeight,
                             backgroundColor: "#fff",
-                            borderColor:"#fff"
+                            borderColor: "#fff"
                         },
                     ]}
                     placeholder={inputPlaceholder}
@@ -66,8 +66,8 @@ const CInput = forwardRef<TextInput, CustomInputProps>(
                     secureTextEntry={isPasswordInput && !isPasswordVisible}
                     onChangeText={onChangeText}
                     value={value}
-                    returnKeyType={returnKeyType} 
-                    onSubmitEditing={onSubmitEditing} // Xử lý sự kiện khi nhấn Enter
+                    returnKeyType={returnKeyType}
+                    onSubmitEditing={onSubmitEditing}
                 />
                 {isPasswordInput && (
                     <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
@@ -78,6 +78,9 @@ const CInput = forwardRef<TextInput, CustomInputProps>(
         );
     }
 );
+
+// Thêm displayName cho component
+CInput.displayName = "CInput";
 
 const styles = StyleSheet.create({
     container: {

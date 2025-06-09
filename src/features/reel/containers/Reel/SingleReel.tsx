@@ -244,7 +244,7 @@ export const SingleReel: React.FC<ReelProps> = ({
     if (isOwnPost) {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ['Hủy', 'Xóa bài viết', 'Chỉnh sửa'],
+          options: ['Hủy', 'Xóa bài viết'],
           destructiveButtonIndex: 1,
           cancelButtonIndex: 0,
         },

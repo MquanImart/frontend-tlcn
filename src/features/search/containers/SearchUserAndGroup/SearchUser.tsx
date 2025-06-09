@@ -1,6 +1,5 @@
-// src/features/search/containers/SearchUser/SearchUser.tsx
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View, Text } from "react-native";
+import { ScrollView, StyleSheet, View, Text, Alert } from "react-native";
 import FriendCard from "@/src/features/friends/components/FriendCard";
 import CButton from "@/src/shared/components/button/CButton";
 import { useTheme } from '@/src/contexts/ThemeContext';
@@ -10,7 +9,6 @@ import restClient from "@/src/shared/services/RestClient";
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
 
 export interface Friend {
   _id: string;
@@ -34,6 +32,12 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
   const toggleShowAllUsers = () => {
     setShowAllUsers(!showAllUsers);
   };
+  const [allFriends, setAllFriends] = useState<Friend[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1); // Biến page để quản lý phân trang
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 5;
 
   const HandleButton = (_id: string) => {
     return ButtonActions({
@@ -45,19 +49,53 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
     });
   };
 
-  const getAllFriends = async () => {
+  const getAllFriends = async (reset: boolean = false, currentPage: number = page) => {
+    console.log("textSearch:", textSearch);
+    if (!textSearch.trim() || (!reset && !hasMore)) {
+      if (!textSearch.trim()) {
+        setAllFriends([]);
+        setTotal(0);
+        setPage(1);
+        setHasMore(true);
+      }
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const result = await restClient.apiClient.service(`apis/users`).find({});
+      // Tính skip từ page
+      const skip = reset ? 0 : (currentPage - 1) * limit;
+      const queryParams = new URLSearchParams({
+        displayName: textSearch.trim(),
+        limit: limit.toString(),
+        skip: skip.toString(),
+      }).toString();
+
+      const result = await restClient.apiClient.service(`apis/users/search?${queryParams}`).find({
+        headers: { "Cache-Control": "no-cache" },
+      });
+
+
       if (result.success) {
-        const filteredData = result.data.filter(
-          (friend: Friend) => friend._id !== userId
+        const users: Friend[] = Array.isArray(result.data) ? result.data : [];
+        // Loại bỏ người dùng hiện tại và trùng lặp
+        const filteredData = users.filter(
+          (friend: Friend) => friend._id !== userId && !allFriends.some(existing => existing._id === friend._id)
         );
-        setAllFriends(filteredData);
+
+        setAllFriends(prev => {
+          const newFriends = reset ? filteredData : [...prev, ...filteredData];
+          return newFriends;
+        });
+        setTotal(result.total || filteredData.length);
+        setHasMore(filteredData.length > 0 && skip + filteredData.length < (result.total || filteredData.length));
       } else {
+        Alert.alert("Lỗi tìm kiếm", result.message || "Không thể lấy danh sách người dùng");
         console.error("API trả về không thành công:", result);
       }
-    } catch (error) {
+    } catch (error: any) {
+      Alert.alert("Lỗi hệ thống", error.message || "Đã xảy ra lỗi khi lấy danh sách người dùng");
       console.error("Lỗi khi lấy danh sách bạn bè:", error);
     } finally {
       setIsLoading(false);
@@ -65,35 +103,39 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
   };
 
   useEffect(() => {
-    getAllFriends();
-  }, []);
+    setPage(1); // Reset page về 1 khi tìm kiếm mới
+    setAllFriends([]);
+    setHasMore(true);
+    getAllFriends(true, 1); // Lấy trang đầu tiên
+  }, [textSearch]);
 
-  const normalizedSearch = removeVietnameseTones(textSearch);
-
-  const filteredFriends = allFriends
-    ? allFriends.filter((item) => {
-        const normalizedName = removeVietnameseTones(item?.displayName || "");
-        return normalizedName.includes(normalizedSearch);
-      })
-    : [];
+  const handleLoadMore = () => {
+    if (!isLoading && hasMore) {
+      setPage(prevPage => {
+        const newPage = prevPage + 1; // Tăng page trước khi gọi API
+        getAllFriends(false, newPage); // Gọi API với page mới
+        return newPage;
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
+      {isLoading && page === 1 ? (
         <Text style={styles.loadingText}>Đang tải...</Text>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {filteredFriends.length === 0 ? (
+          {allFriends.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
                 {textSearch
                   ? `Không tìm thấy người dùng nào cho "${textSearch}"`
-                  : "Không tìm thấy người dùng"}
+                  : "Vui lòng nhập từ khóa để tìm kiếm"}
               </Text>
             </View>
           ) : (
             <>
-              {filteredFriends.map((item) => (
+              {allFriends.map((item) => (
                 <View key={item._id} style={styles.boxCard}>
                   <FriendCard
                     _id={item._id}
@@ -105,15 +147,17 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
                   />
                 </View>
               ))}
-              {!showAllUsers && (
+              {isLoading && <Text style={styles.loadingText}>Đang tải thêm...</Text>}
+              {hasMore && (
                 <View style={styles.buttonContainer}>
                   <CButton
                     label="Xem thêm kết quả khác"
-                    onSubmit={toggleShowAllUsers}
+                    onSubmit={handleLoadMore}
+                    disabled={isLoading} // Vô hiệu hóa nút khi đang tải
                     style={{
                       width: "100%",
                       height: 40,
-                      backColor: Color.mainColor1,
+                      backColor: isLoading ? Color.textColor3 : Color.mainColor1, // Màu xám khi disabled
                       textColor: Color.white_homologous,
                       fontSize: 14,
                       fontWeight: "bold",

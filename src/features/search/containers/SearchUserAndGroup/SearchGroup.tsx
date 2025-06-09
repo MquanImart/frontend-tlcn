@@ -1,17 +1,18 @@
-// src/features/search/containers/SearchGroup/SearchGroup.tsx
+import React, { useEffect, useState, useCallback } from "react";
+import { ScrollView, StyleSheet, View, Text, Alert } from "react-native";
 import GroupCard from "@/src/features/group/components/GroupCard";
-import { useExplore } from "@/src/features/group/containers/group/tabs/useExplore";
-import { useJoinedGroups } from "@/src/features/group/containers/group/tabs/useJoinedGroups";
-import { useMyGroups } from "@/src/features/group/containers/group/tabs/useMyGroups";
 import CButton from "@/src/shared/components/button/CButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
+import restClient from "@/src/shared/services/RestClient";
+import { Group } from "@/src/features/newfeeds/interface/article";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-
+import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
+  
+const groupsClient = restClient.apiClient.service("apis/groups");
+const usersClient = restClient.apiClient.service("apis/users");
 interface SearchGroupProps {
   textSearch: string;
   userId: string;
@@ -20,117 +21,130 @@ interface SearchGroupProps {
 
 const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigation }) => {
   useTheme()
-  const { myGroups, loading: myGroupsLoading, error: myGroupsError } = useMyGroups(userId);
-  const { savedGroups, loading: joinedGroupsLoading, error: joinedGroupsError } = useJoinedGroups(userId);
-  const { groupsNotJoined, loading: exploreLoading, error: exploreError, handleJoinGroup } = useExplore(userId);
+  const [allGroups, setAllGroups] = useState<Group[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 5;
 
-  const [visibleMyGroupsCount, setVisibleMyGroupsCount] = useState(3);
-  const [visibleJoinedGroupsCount, setVisibleJoinedGroupsCount] = useState(3);
-  const [visibleNotJoinedGroupsCount, setVisibleNotJoinedGroupsCount] = useState(3);
-
-  const normalizedSearch = removeVietnameseTones(textSearch);
-
-  const filterGroups = (groups: any[]) =>
-    groups.filter((group) => {
-      if (!group.groupName) return false;
-      const normalizedName = removeVietnameseTones(group.groupName);
-      return normalizedName.includes(normalizedSearch);
-    });
-
-  const filteredMyGroups = filterGroups(myGroups);
-  const filteredJoinedGroups = filterGroups(savedGroups);
-  const filteredNotJoinedGroups = filterGroups(groupsNotJoined);
-
-  const loading = myGroupsLoading || joinedGroupsLoading || exploreLoading;
-  const error = [myGroupsError, joinedGroupsError, exploreError].filter((err) => err).join("; ") || null;
-
-  const onJoinGroup = (groupId: string) => {
-    handleJoinGroup(groupId).catch((err) => {
-      console.error("Lỗi khi tham gia nhóm:", err);
-    });
+  const handleJoinGroup = async (groupId: string) => {
+    try {
+      await groupsClient.create(
+        { groupId, userId },
+      );
+      setAllGroups((prev) => prev.filter((group) => group._id !== groupId));
+    } catch (error: any) {
+      Alert.alert("Lỗi", "Không thể tham gia nhóm. Vui lòng thử lại.");
+      console.error("Lỗi khi tham gia nhóm:", error);
+    }
   };
 
-  const noopJoinGroup = (groupId: string) => {};
+  const fetchGroups = useCallback(
+    async (newPage = 1, append = false) => {
+      if (newPage > totalPages && totalPages !== 0) return;
 
-  const renderGroupSection = (
-    groups: any[],
-    visibleCount: number,
-    setVisibleCount: (count: number) => void,
-    allowJoin: boolean = false
-  ) => (
-    <>
-      {groups.slice(0, visibleCount).map((item) => (
-        <GroupCard
-          key={item._id}
-          group={item}
-          currentUserId={userId}
-          onJoinGroup={allowJoin ? onJoinGroup : noopJoinGroup}
-          onViewGroup={() =>
-            navigation.navigate("GroupDetailsScreen", {
-              groupId: item._id,
-              currentUserId: userId,
-            })
-          }
-        />
-      ))}
-      {visibleCount < groups.length && (
-        <View style={styles.buttonContainer}>
-          <CButton
-            label="Xem thêm"
-            onSubmit={() => setVisibleCount(visibleCount + 3)}
-            style={{
-              width: "100%",
-              height: 50,
-              backColor: Color.mainColor1,
-              textColor: Color.white_homologous,
-              fontSize: 16,
-              fontWeight: "bold",
-              radius: 25,
-              flex_direction: "row",
-            }}
-          />
-        </View>
-      )}
-    </>
+      setIsLoading(!append);
+      setIsLoadingMore(append);
+
+      try {
+      const skip =   (page - 1) * limit;
+      const queryParams = new URLSearchParams({
+        groupName: textSearch.trim(),
+        userId: userId,
+        limit: limit.toString(),
+        skip: skip.toString(),
+      }).toString();
+
+      const response = await restClient.apiClient.service(`apis/users/groups/search?${queryParams}`).find({
+      });
+        if (response.success) {
+          const validGroups = (response.data || []).filter(
+            (group: Group) => group && group._id
+          );
+          setAllGroups((prev) => (append ? [...prev, ...validGroups] : validGroups));
+          setTotalPages(response.totalPages || Math.ceil(response.total / limit));
+          setPage(newPage);
+        } else {
+          Alert.alert("Lỗi tìm kiếm", response.message || "Không thể lấy danh sách nhóm");
+          console.error("API trả về không thành công:", response);
+        }
+      } catch (error: any) {
+        Alert.alert("Lỗi hệ thống", error.message || "Đã xảy ra lỗi khi lấy danh sách nhóm");
+        console.error("Lỗi khi lấy danh sách nhóm:", error);
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [textSearch, totalPages]
   );
 
-  const totalGroups = filteredMyGroups.length + filteredJoinedGroups.length + filteredNotJoinedGroups.length;
+  const handleLoadMore = useCallback(() => {
+    if (!isLoadingMore && page < totalPages) {
+      fetchGroups(page + 1, true);
+    }
+  }, [page, totalPages, isLoadingMore, fetchGroups]);
+
+  useEffect(() => {
+    setPage(1);
+    setAllGroups([]);
+    setTotalPages(1);
+    fetchGroups(1, false);
+  }, [textSearch, fetchGroups]);
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Đang tải...</Text>
-        </View>
-      ) : error ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>{error}</Text>
-        </View>
-      ) : totalGroups === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            {textSearch ? `Không tìm thấy nhóm nào cho "${textSearch}"` : "Không tìm thấy nhóm"}
-          </Text>
-        </View>
+      {isLoading && page === 1 ? (
+        <Text style={styles.loadingText}>Đang tải...</Text>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {renderGroupSection(
-            filteredMyGroups,
-            visibleMyGroupsCount,
-            setVisibleMyGroupsCount,
-            false
-          )}
-          {renderGroupSection(
-            filteredJoinedGroups,
-            visibleJoinedGroupsCount,
-            setVisibleJoinedGroupsCount,
-            false
-          )}
-          {renderGroupSection(
-            filteredNotJoinedGroups,
-            visibleNotJoinedGroupsCount,
-            setVisibleNotJoinedGroupsCount,
-            true
+          {allGroups.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                {textSearch
+                  ? `Không tìm thấy nhóm nào cho "${textSearch}"`
+                  : "Vui lòng nhập từ khóa để tìm kiếm hoặc không có nhóm nào"}
+              </Text>
+            </View>
+          ) : (
+            <>
+              {allGroups.map((item) => (
+                <View key={item._id} style={styles.boxCard}>
+                  <GroupCard
+                    group={item}
+                    currentUserId={userId}
+                    onJoinGroup={handleJoinGroup}
+                    onViewGroup={() =>
+                      navigation.navigate("GroupDetailsScreen", {
+                        groupId: item._id,
+                        currentUserId: userId,
+                      })
+                    }
+                  />
+                </View>
+              ))}
+              {isLoadingMore && <Text style={styles.loadingText}>Đang tải thêm...</Text>}
+              {page < totalPages && (
+                <View style={styles.buttonContainer}>
+                  <CButton
+                    label="Xem thêm kết quả khác"
+                    onSubmit={handleLoadMore}
+                    disabled={isLoadingMore}
+                    style={{
+                      width: "100%",
+                      height: 40,
+                      backColor: isLoadingMore ? Color.textColor3 : Color.mainColor1,
+                      textColor: Color.white_homologous,
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      radius: 20,
+                      flex_direction: "row",
+                    }}
+                  />
+                </View>
+              )}
+            </>
           )}
         </ScrollView>
       )}
@@ -141,12 +155,22 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5,
     backgroundColor: Color.backGround,
   },
   scrollContent: {
     flexGrow: 1,
+    paddingVertical: 10,
     paddingBottom: 20,
+  },
+  boxCard: {
+    width: "95%",
+    alignSelf: "center",
+  },
+  loadingText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: Color.textColor1,
   },
   emptyContainer: {
     flex: 1,

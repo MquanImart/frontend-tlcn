@@ -208,7 +208,7 @@ const ProfileScreen = () => {
       setLoading(true);
       const result = await restClient.apiClient
         .service("apis/accounts/updatePassword")
-        .create({ email, oldPassword, newPassword });
+        .create({ email, newPassword: newPassword });
       if (!result.success) {
         throw new Error(result.message || "Lỗi khi đổi mật khẩu từ server");
       }
@@ -229,27 +229,6 @@ const ProfileScreen = () => {
     setPreferences(updatedPreferences);
   };
 
-  const handleIntroFocus = () => {
-    setTimeout(() => {
-      scrollViewRef.current?.scrollTo({ y: 300, animated: true });
-    }, 100);
-  };
-
-  if (loading && !isPasswordModalVisible && !isPreferencesModalVisible && !isIDModalVisible) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (error && !isPasswordModalVisible && !isPreferencesModalVisible && !isIDModalVisible) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
