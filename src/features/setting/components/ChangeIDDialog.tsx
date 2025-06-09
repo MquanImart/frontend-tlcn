@@ -47,7 +47,7 @@ interface ChangeIDDialogProps {
 }
 
 const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeIDDialogProps) => {
-  useTheme()
+  useTheme();
   const [selectedImage, setSelectedImage] = useState<{ uri: string; type: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -109,7 +109,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
       const cccdData = response.data;
       console.log("Extracted CCCD Data:", cccdData);
 
-      // Tạo các trường chi tiết của address từ placeOfResidence
+      // Create detailed address fields from placeOfResidence
       let province = "";
       let district = "";
       let ward = "";
@@ -125,7 +125,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
         ward = addressParts[addressParts.length - 3] || "";
         street = addressParts[0] || "";
 
-        // Gọi API Nominatim để lấy lat, lon
+        // Call Nominatim API to get lat, lon
         const fullAddress = `${ward}, ${district}, ${province}`.trim();
         try {
           const nominatimResponse = await axios.get(
@@ -189,22 +189,22 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
     setIsLoading(true);
 
     try {
-      // Trích xuất dữ liệu CCCD và địa chỉ
+      // Extract CCCD data and address
       const extractedData = await extractCCCDData(selectedImage.uri);
       const updatedCCCD = extractedData.cccd;
       const updatedAddress = extractedData.address;
 
-      // Kiểm tra xem người dùng đã có CCCD chưa
+      // Check if user already has CCCD
       let identificationId = null;
       let isExistingCCCD = false;
       if (user.identification && initialCCCD && initialCCCD.number) {
-        identificationId = user.identification; // Lấy ID từ user.identification
+        identificationId = user.identification; // Get ID from user.identification
         if (initialCCCD.number === updatedCCCD.number) {
           isExistingCCCD = true;
         }
       }
 
-      // Chuẩn bị dữ liệu CCCD
+      // Prepare CCCD data
       const cccdUpdateData = {
         number: updatedCCCD.number,
         fullName: updatedCCCD.fullName,
@@ -216,15 +216,15 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
         dateOfExpiry: updatedCCCD.dateOfExpiry,
       };
 
-      // Cập nhật hoặc tạo mới CCCD
+      // Update or create new CCCD
       let cccdResponse;
       if (identificationId && isExistingCCCD) {
-        // Cập nhật CCCD hiện có
+        // Update existing CCCD
         cccdResponse = await restClient.apiClient
           .service("apis/identifications")
           .patch(identificationId, cccdUpdateData);
       } else {
-        // Tạo mới CCCD
+        // Create new CCCD
         const formData = new FormData();
         formData.append("cccdImage", {
           uri: selectedImage.uri,
@@ -237,7 +237,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
           .service("apis/identifications")
           .create(formData);
 
-        // Cập nhật user.identification
+        // Update user.identification
         if (cccdResponse.success && cccdResponse.data._id) {
           await restClient.apiClient
             .service("users")
@@ -249,13 +249,13 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
         throw new Error(cccdResponse.message || "Không thể cập nhật/tạo CCCD.");
       }
 
-      // Kiểm tra xem địa chỉ có tồn tại không
+      // Check if address exists
       let addressId = null;
       if (user.address) {
-        addressId = user.address; // Lấy ID từ user.address
+        addressId = user.address; // Get ID from user.address
       }
 
-      // Chuẩn bị dữ liệu địa chỉ
+      // Prepare address data
       const addressUpdateData = {
         province: updatedAddress.province,
         district: updatedAddress.district,
@@ -267,20 +267,20 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
         userId: user._id,
       };
 
-      // Cập nhật hoặc tạo mới địa chỉ
+      // Update or create new address
       let addressResponse;
       if (addressId) {
-        // Cập nhật địa chỉ hiện có
+        // Update existing address
         addressResponse = await restClient.apiClient
           .service("apis/addresses")
           .patch(addressId, addressUpdateData);
       } else {
-        // Tạo địa chỉ mới
+        // Create new address
         addressResponse = await restClient.apiClient
           .service("apis/addresses")
           .create(addressUpdateData);
 
-        // Cập nhật user.address
+        // Update user.address
         if (addressResponse.success && addressResponse.data._id) {
           await restClient.apiClient
             .service("users")
@@ -311,7 +311,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
     }
   };
 
-  // Hàm chuyển đổi giới tính sang tiếng Việt
+  // Function to convert sex to Vietnamese
   const getSexInVietnamese = (sex: string) => {
     return sex === "male" ? "Nam" : sex === "female" ? "Nữ" : sex;
   };
@@ -324,33 +324,33 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
-        <View style={styles.dialog}>
+        <View style={[styles.dialog, { backgroundColor: Color.background }]}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Thay đổi căn cước công dân</Text>
+            <Text style={[styles.headerTitle, { color: Color.textPrimary }]}>Thay đổi căn cước công dân</Text>
             <TouchableOpacity onPress={onClose} disabled={isLoading}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textSecondary} />
             </TouchableOpacity>
           </View>
 
-          {/* Hiển thị thông tin CCCD hiện tại */}
+          {/* Display current CCCD information */}
           {initialCCCD ? (
             <View style={styles.currentCCCD}>
-              <Text style={styles.label}>Thông tin hiện tại:</Text>
-              <Text style={styles.info}>Số CCCD: {initialCCCD.number}</Text>
-              <Text style={styles.info}>Họ tên: {initialCCCD.fullName}</Text>
-              <Text style={styles.info}>Ngày sinh: {initialCCCD.dateOfBirth}</Text>
-              <Text style={styles.info}>Giới tính: {getSexInVietnamese(initialCCCD.sex)}</Text>
-              <Text style={styles.info}>Quốc tịch: {initialCCCD.nationality}</Text>
-              <Text style={styles.info}>Nơi sinh: {initialCCCD.placeOfOrigin}</Text>
-              <Text style={styles.info}>Nơi cư trú: {initialCCCD.placeOfResidence}</Text>
-              <Text style={styles.info}>Ngày hết hạn: {initialCCCD.dateOfExpiry}</Text>
+              <Text style={[styles.label, { color: Color.textPrimary }]}>Thông tin hiện tại:</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Số CCCD: {initialCCCD.number}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Họ tên: {initialCCCD.fullName}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Ngày sinh: {initialCCCD.dateOfBirth}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Giới tính: {getSexInVietnamese(initialCCCD.sex)}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Quốc tịch: {initialCCCD.nationality}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Nơi sinh: {initialCCCD.placeOfOrigin}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Nơi cư trú: {initialCCCD.placeOfResidence}</Text>
+              <Text style={[styles.info, { color: Color.textSecondary }]}>Ngày hết hạn: {initialCCCD.dateOfExpiry}</Text>
             </View>
           ) : (
-            <Text style={styles.info}>Chưa có thông tin CCCD.</Text>
+            <Text style={[styles.info, { color: Color.textSecondary }]}>Chưa có thông tin CCCD.</Text>
           )}
 
-          {/* Chọn hoặc chụp ảnh CCCD mới */}
-          <Text style={styles.label}>Tải lên CCCD mới:</Text>
+          {/* Select or take new CCCD photo */}
+          <Text style={[styles.label, { color: Color.textPrimary }]}>Tải lên CCCD mới:</Text>
           <View style={styles.tools}>
             <TouchableOpacity
               style={styles.toolButton}
@@ -358,7 +358,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
               disabled={isLoading}
             >
               <Ionicons name="image-outline" size={34} color={Color.mainColor1} />
-              <Text style={styles.toolText}>Ảnh</Text>
+              <Text style={[styles.toolText, { color: Color.textPrimary }]}>Ảnh</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.toolButton}
@@ -366,25 +366,25 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
               disabled={isLoading}
             >
               <Ionicons name="camera-outline" size={34} color={Color.mainColor1} />
-              <Text style={styles.toolText}>Chụp</Text>
+              <Text style={[styles.toolText, { color: Color.textPrimary }]}>Chụp</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Hiển thị ảnh đã chọn */}
+          {/* Display selected image */}
           {selectedImage && (
             <View style={styles.imageWrapper}>
               <Image source={{ uri: selectedImage.uri }} style={styles.selectedImage} />
               <TouchableOpacity
-                style={styles.removeImage}
+                style={[styles.removeImage, { backgroundColor: Color.backgroundTertiary }]}
                 onPress={handleRemoveImage}
                 disabled={isLoading}
               >
-                <Ionicons name="close" size={18} color={Color.textColor2} />
+                <Ionicons name="close" size={18} color={Color.textOnMain1} />
               </TouchableOpacity>
             </View>
           )}
 
-          {/* Nút hành động */}
+          {/* Action buttons */}
           <View style={styles.buttonContainer}>
             <CButton
               label="Hủy"
@@ -395,7 +395,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
                 backColor: "transparent",
                 textColor: Color.mainColor1,
                 fontSize: 16,
-                borderColor: Color.mainColor2,
+                borderColor: Color.border, // Using 'border' from your colors
                 borderWidth: 1,
                 radius: 25,
               }}
@@ -406,8 +406,8 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
               style={{
                 width: "45%",
                 height: 50,
-                backColor: isLoading ? Color.borderColor1 : Color.mainColor1,
-                textColor: Color.white_homologous,
+                backColor: isLoading ? Color.backgroundTertiary : Color.mainColor1, // Using backgroundTertiary for disabled state
+                textColor: Color.textOnMain1, // Using textOnMain1 for text on main color button
                 fontSize: 16,
                 radius: 25,
               }}
@@ -437,7 +437,6 @@ const styles = StyleSheet.create({
   },
   dialog: {
     width: "90%",
-    backgroundColor: Color.backGround,
     borderRadius: 15,
     padding: 20,
     elevation: 5,
@@ -451,7 +450,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
   },
   currentCCCD: {
     width: "100%",
@@ -460,12 +458,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Color.textColor1,
     marginBottom: 10,
   },
   info: {
     fontSize: 14,
-    color: Color.textColor3,
     marginBottom: 5,
   },
   tools: {
@@ -479,7 +475,6 @@ const styles = StyleSheet.create({
   toolText: {
     fontSize: 16,
     marginTop: 4,
-    color: Color.textColor1,
   },
   imageWrapper: {
     position: "relative",
@@ -495,7 +490,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 5,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: "rgba(0,0,0,0.6)", // Keeping this as a semi-transparent black for visual consistency for a close button overlay
     borderRadius: 15,
     padding: 6,
   },

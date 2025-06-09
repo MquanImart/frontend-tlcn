@@ -1,3 +1,4 @@
+// src/shared/components/map/MapPickerDialog.tsx
 import { Address } from "@/src/interface/interface_reference";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
@@ -37,11 +38,11 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
   if (!isVisible) return null;
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.searchContainer, isSearch && styles.searchContainerFull]}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
+      <View style={[styles.searchContainer, isSearch && { backgroundColor: Color.background }]}>
         <View style={styles.searchBox}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: Color.background }]}
             onPress={() => {
               if (isSearch) {
                 setIsSearch(false);
@@ -50,36 +51,37 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
               }
             }}
           >
-            <Icon name="chevron-left" size={30} color={Color.white_contrast} />
+            {/* White contrast for back button, assuming textOnMain1 is white on dark mainColor1 or dark on light mainColor1 */}
+            <Icon name="chevron-left" size={30} color={Color.textPrimary} /> 
           </TouchableOpacity>
           <TextInput
-            style={[styles.searchInput, isSearch && styles.inputSearchFocus]}
+            style={[styles.searchInput, isSearch && { backgroundColor: Color.backgroundSecondary }, { color: Color.textPrimary }]}
             placeholder="Tìm kiếm địa điểm"
-            placeholderTextColor={Color.textColor3}
+            placeholderTextColor={Color.textTertiary}
             value={search}
             onChangeText={(text) => fetchPlaces(text)}
             onFocus={() => setIsSearch(true)}
           />
           {search.length > 0 && (
             <TouchableOpacity onPress={() => setSearch("")} style={styles.deleteTextSearch}>
-              <Icon name="close" size={20} color="gray" />
+              <Icon name="close" size={20} color={Color.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
         {isSearch && listSearch.length > 0 && (
-          <View style={styles.suggestionsContainer}>
+          <View style={[styles.suggestionsContainer, { backgroundColor: Color.background }]}>
             <FlatList
               style={styles.boxSearch}
               data={listSearch}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.cardSearch}
+                  style={[styles.cardSearch, { borderBottomColor: Color.backgroundSecondary }]}
                   key={item.placePrediction.placeId}
                   onPress={() => getLatLngFromPlaceId(item.placePrediction.placeId)}
                 >
                   <View style={styles.cardSearchContent}>
-                    <Icon name="place" size={20} color={Color.textColor3} style={styles.cardSearchIcon} />
-                    <Text style={styles.textSearch}>{item.placePrediction.text.text}</Text>
+                    <Icon name="place" size={20} color={Color.textSecondary} style={styles.cardSearchIcon} />
+                    <Text style={[styles.textSearch, { color: Color.textPrimary }]}>{item.placePrediction.text.text}</Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -109,7 +111,7 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
               longitude: location.coords.longitude,
             }}
             title="Vị trí của tôi"
-            pinColor="blue"
+            pinColor={Color.mainColor1}
           />
         )}
         {selectedMarker && (
@@ -128,7 +130,7 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
           style={[styles.confirmButton, { backgroundColor: Color.mainColor1 }]}
           onPress={confirmLocation}
         >
-          <Text style={[styles.buttonText, { color: Color.textColor2 }]}>Xác nhận vị trí này</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Xác nhận vị trí này</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -143,13 +145,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: Color.backGround,
+    // Background color set dynamically in JSX
   },
-  closeButton: {
+  closeButton: { // This style is defined but not used in MapPickerDialog component
     position: "absolute",
     top: 40,
     left: 20,
-    backgroundColor: Color.borderColor1,
     borderRadius: 16,
     width: 32,
     height: 32,
@@ -162,9 +163,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
-  closeButtonText: {
+  closeButtonText: { // This style is defined but not used in MapPickerDialog component
     fontSize: 20,
-    color: Color.textColor1,
     fontWeight: "600",
   },
   searchContainer: {
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   searchContainerFull: {
-    backgroundColor: Color.backGround,
+    // backgroundColor handled directly in JSX using Color.background
   },
   searchBox: {
     flexDirection: "row",
@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
   backButton: {
     width: 50,
     height: 50,
-    backgroundColor: Color.backGround,
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
@@ -205,10 +204,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
     borderRadius: 25,
-    backgroundColor: Color.backGround,
   },
   inputSearchFocus: {
-    backgroundColor: Color.backGround2,
+    // backgroundColor handled directly in JSX using Color.backgroundSecondary
   },
   deleteTextSearch: {
     position: "absolute",
@@ -216,8 +214,7 @@ const styles = StyleSheet.create({
     top: 15,
   },
   suggestionsContainer: {
-    maxHeight: SCREEN_HEIGHT * 0.4, // Giới hạn chiều cao tối đa là 40% màn hình
-    backgroundColor: Color.backGround,
+    maxHeight: SCREEN_HEIGHT * 0.4,
     borderRadius: 12,
     marginTop: 5,
     paddingVertical: 5,
@@ -229,7 +226,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: Color.backGround2,
   },
   cardSearchContent: {
     flexDirection: "row",
@@ -240,7 +236,6 @@ const styles = StyleSheet.create({
   },
   textSearch: {
     fontSize: 16,
-    color: Color.textColor1,
   },
   map: {
     flex: 1,

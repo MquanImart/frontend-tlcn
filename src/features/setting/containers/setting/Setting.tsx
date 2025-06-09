@@ -11,8 +11,9 @@ import PrivacySetting from "./PrivacySetting";
 import ScreenSetting from "./ScreenSetting";
 
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
+
 const Setting = () => {
-    useTheme()
+    useTheme(); // This hook should initialize Color with the correct theme values
     const navigationMenu = useNavigation<MenuNavigationProp>();
     const [activeTab, setActiveTab] = useState("screen"); // Tab hiện tại
 
@@ -29,8 +30,8 @@ const Setting = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <CHeader label="Cài đặt" backPress={() => {navigationMenu.goBack()}}/>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
+            <CHeader label="Cài đặt" backPress={() => { navigationMenu.goBack() }} />
             {/* Tabs */}
             <View style={styles.tabContainer}>
                 <TouchableOpacity
@@ -40,13 +41,14 @@ const Setting = () => {
                     <Text
                         style={[
                             styles.tabText,
-                            activeTab === "screen" && styles.activeTabText,
+                            { color: Color.textSecondary }, // Default tab text color
+                            activeTab === "screen" && { color: Color.textPrimary, fontWeight: 'bold' }, // Active tab text color
                         ]}
                     >
                         Màn hình
                     </Text>
                     {activeTab === "screen" && (
-                        <View style={styles.activeTabIndicator} />
+                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor1 }]} />
                     )}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -56,13 +58,14 @@ const Setting = () => {
                     <Text
                         style={[
                             styles.tabText,
-                            activeTab === "privacy" && styles.activeTabText,
+                            { color: Color.textSecondary }, // Default tab text color
+                            activeTab === "privacy" && { color: Color.textPrimary, fontWeight: 'bold' }, // Active tab text color
                         ]}
                     >
                         Riêng tư
                     </Text>
                     {activeTab === "privacy" && (
-                        <View style={styles.activeTabIndicator} />
+                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor1 }]} />
                     )}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -72,13 +75,14 @@ const Setting = () => {
                     <Text
                         style={[
                             styles.tabText,
-                            activeTab === "personal" && styles.activeTabText,
+                            { color: Color.textSecondary }, // Default tab text color
+                            activeTab === "personal" && { color: Color.textPrimary, fontWeight: 'bold' }, // Active tab text color
                         ]}
                     >
                         Cá nhân
                     </Text>
                     {activeTab === "personal" && (
-                        <View style={styles.activeTabIndicator} />
+                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor1 }]} />
                     )}
                 </TouchableOpacity>
             </View>
@@ -89,36 +93,37 @@ const Setting = () => {
     );
 };
 export default Setting;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.white_homologous,
+        // backgroundColor will be set dynamically based on Color.background
     },
     tabContainer: {
         flexDirection: "row",
         justifyContent: "space-around",
         marginTop: 10,
+        // Assuming tabs are always visible, no specific background needed here,
+        // it will inherit from the parent container or have its own default transparent.
     },
     tab: {
         alignItems: "center",
     },
     tabText: {
         fontSize: 18,
-        color: Color.textColor3,
+        // color will be set dynamically based on Color.textSecondary or Color.textPrimary
     },
     activeTabText: {
-        color: Color.white_contrast,
-        fontWeight: "bold",
+        // color and fontWeight set inline in JSX
     },
     activeTabIndicator: {
         height: 2,
         width: 30,
-        backgroundColor: Color.white_contrast,
+        // backgroundColor will be set dynamically based on Color.mainColor1
         marginTop: 5,
     },
     contentContainer: {
         flex: 1,
         padding: 15,
     },
-
 });

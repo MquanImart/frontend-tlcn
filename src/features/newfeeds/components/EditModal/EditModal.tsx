@@ -1,3 +1,4 @@
+// src/features/newfeeds/components/EditModal/EditModal.tsx
 import CButton from "@/src/shared/components/button/CButton";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
@@ -25,7 +26,7 @@ interface EditModalProps {
   setEditHashtags: (hashtags: string[]) => void;
   onSave: () => void;
   onCancel: () => void;
-  isLoading: boolean; // thêm prop isLoading
+  isLoading: boolean;
 }
 
 const EditModal: React.FC<EditModalProps> = ({
@@ -38,7 +39,7 @@ const EditModal: React.FC<EditModalProps> = ({
   setEditHashtags,
   onSave,
   onCancel,
-  isLoading, // nhận isLoading
+  isLoading,
 }) => {
   useTheme();
   const [isScopeModalVisible, setScopeModalVisible] = useState(false);
@@ -49,7 +50,7 @@ const EditModal: React.FC<EditModalProps> = ({
   const isValidHashtag = (tag: string) => /^#[A-Za-z0-9_]+$/.test(tag);
 
   const handleAddHashtag = () => {
-    if (isLoading) return; // không cho thao tác khi loading
+    if (isLoading) return;
 
     const newTag = hashtagInput.trim();
     if (newTag) {
@@ -73,53 +74,49 @@ const EditModal: React.FC<EditModalProps> = ({
     <>
       <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
         <View style={styles.overlay}>
-          <View style={styles.dialog}>
-            {/* Header */}
+          <View style={[styles.dialog, { backgroundColor: Color.background }]}>
             <View style={styles.header}>
-              <Text style={[styles.title, { color: Color.textColor1 }]}>Chỉnh sửa bài viết</Text>
+              <Text style={[styles.title, { color: Color.textPrimary }]}>Chỉnh sửa bài viết</Text>
               <TouchableOpacity onPress={onCancel} disabled={isLoading}>
                 <Ionicons
                   name="close"
                   size={24}
-                  color={isLoading ? Color.textColor3 : Color.textColor1}
+                  color={isLoading ? Color.textTertiary : Color.textPrimary}
                 />
               </TouchableOpacity>
             </View>
 
-            {/* Nội dung bài viết */}
             <TextInput
               style={[
                 styles.textInput,
                 {
-                  borderColor: Color.borderColor1,
-                  color: Color.textColor1,
-                  backgroundColor: Color.backGround,
+                  borderColor: Color.border,
+                  color: Color.textPrimary,
+                  backgroundColor: Color.background,
                 },
               ]}
               placeholder="Nhập nội dung bài viết"
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary}
               value={editContent}
               onChangeText={setEditContent}
               multiline
               editable={!isLoading}
             />
 
-            {/* Chọn phạm vi bài viết */}
             <TouchableOpacity
-              style={[styles.scopeSelector, { borderColor: Color.borderColor1 }]}
+              style={[styles.scopeSelector, { borderColor: Color.border }]}
               onPress={toggleScopeModal}
               disabled={isLoading}
             >
-              <Text style={[styles.scopeText, { color: Color.textColor1 }]}>{editScope}</Text>
-              <Ionicons name="chevron-down" size={16} color={Color.textColor3} />
+              <Text style={[styles.scopeText, { color: Color.textPrimary }]}>{editScope}</Text>
+              <Ionicons name="chevron-down" size={16} color={Color.textSecondary} />
             </TouchableOpacity>
 
-            {/* Input thêm hashtag */}
-            <View style={styles.hashtagInputContainer}>
+            <View style={[styles.hashtagInputContainer, { borderColor: Color.border }]}>
               <TextInput
-                style={[styles.hashtagInput, { color: Color.textColor1 }]}
+                style={[styles.hashtagInput, { color: Color.textPrimary }]}
                 placeholder="Thêm hashtag..."
-                placeholderTextColor={Color.textColor3}
+                placeholderTextColor={Color.textTertiary}
                 value={hashtagInput}
                 onChangeText={setHashtagInput}
                 onSubmitEditing={handleAddHashtag}
@@ -129,20 +126,19 @@ const EditModal: React.FC<EditModalProps> = ({
                 <Ionicons
                   name="add-circle"
                   size={26}
-                  color={isLoading ? Color.textColor3 : Color.mainColor1}
+                  color={isLoading ? Color.textTertiary : Color.mainColor1}
                 />
               </TouchableOpacity>
             </View>
 
-            {/* Hiển thị danh sách hashtag */}
             <View style={styles.hashtagContainer}>
               <FlatList
                 data={editHashtags}
                 horizontal
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                  <View style={styles.hashtag}>
-                    <Text style={styles.hashtagText}>{item}</Text>
+                  <View style={[styles.hashtag, { backgroundColor: Color.backgroundSecondary }]}>
+                    <Text style={[styles.hashtagText, { color: Color.textPrimary }]}>{item}</Text>
                     <TouchableOpacity
                       style={styles.hashtagClose}
                       onPress={() => setEditHashtags(editHashtags.filter((_, i) => i !== index))}
@@ -151,7 +147,7 @@ const EditModal: React.FC<EditModalProps> = ({
                       <Ionicons
                         name="close-circle"
                         size={18}
-                        color={isLoading ? Color.textColor3 : Color.textColor3}
+                        color={isLoading ? Color.textTertiary : Color.textSecondary}
                       />
                     </TouchableOpacity>
                   </View>
@@ -159,7 +155,6 @@ const EditModal: React.FC<EditModalProps> = ({
               />
             </View>
 
-            {/* Nút lưu */}
             <CButton
               label={isLoading ? "Đang lưu..." : "Lưu"}
               onSubmit={onSave}
@@ -167,7 +162,7 @@ const EditModal: React.FC<EditModalProps> = ({
                 width: "100%",
                 height: 50,
                 backColor: Color.mainColor1,
-                textColor: "#FFFFFF",
+                textColor: Color.textOnMain1, // Sử dụng textOnMain1 cho màu chữ trên nút chính
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,
@@ -176,14 +171,13 @@ const EditModal: React.FC<EditModalProps> = ({
               disabled={isLoading}
             >
               {isLoading && (
-                <ActivityIndicator size="small" color="#FFFFFF" style={{ marginLeft: 10 }} />
+                <ActivityIndicator size="small" color={Color.textOnMain1} style={{ marginLeft: 10 }} />
               )}
             </CButton>
           </View>
         </View>
       </Modal>
 
-      {/* Modal chọn phạm vi */}
       <Modal
         visible={isScopeModalVisible}
         transparent
@@ -191,8 +185,8 @@ const EditModal: React.FC<EditModalProps> = ({
         onRequestClose={toggleScopeModal}
       >
         <View style={styles.scopeOverlay}>
-          <View style={[styles.scopeDialog, { backgroundColor: Color.backGround }]}>
-            <Text style={[styles.scopeTitle, { color: Color.textColor1 }]}>Chọn chế độ hiển thị</Text>
+          <View style={[styles.scopeDialog, { backgroundColor: Color.background }]}>
+            <Text style={[styles.scopeTitle, { color: Color.textPrimary }]}>Chọn chế độ hiển thị</Text>
             {["Công khai", "Bạn bè", "Riêng tư"].map((option) => (
               <TouchableOpacity
                 key={option}
@@ -206,9 +200,9 @@ const EditModal: React.FC<EditModalProps> = ({
                 <Ionicons
                   name={option === "Công khai" ? "earth" : option === "Bạn bè" ? "people" : "lock-closed"}
                   size={20}
-                  color={Color.textColor3}
+                  color={Color.textSecondary}
                 />
-                <Text style={[styles.scopeOptionText, { color: Color.textColor1 }]}>{option}</Text>
+                <Text style={[styles.scopeOptionText, { color: Color.textPrimary }]}>{option}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -217,8 +211,6 @@ const EditModal: React.FC<EditModalProps> = ({
     </>
   );
 };
-
-export default EditModal;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -229,7 +221,6 @@ const styles = StyleSheet.create({
   },
   dialog: {
     width: "90%",
-    backgroundColor: Color.backGround,
     borderRadius: 10,
     padding: 20,
     shadowColor: "#000",
@@ -290,7 +281,6 @@ const styles = StyleSheet.create({
   hashtag: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround2,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
@@ -298,7 +288,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   hashtagText: {
-    color: Color.textColor1,
     fontSize: 14,
     fontWeight: "bold",
   },
@@ -331,3 +320,5 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
+
+export default EditModal;

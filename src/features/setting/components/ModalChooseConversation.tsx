@@ -37,6 +37,7 @@ const ModalChooseConversation = ({ visible, onCancel }: {
         handleConfirm();
         onCancel();
     }
+
     const renderConversationItem = ({ item }: { item: Conversation }) => {
         const isSelected = selectedConversations.includes(item._id);
         const user = getInfoUser(item);
@@ -50,12 +51,13 @@ const ModalChooseConversation = ({ visible, onCancel }: {
                         require('@/src/assets/images/default/default_user.png'))} 
                         style={styles.images}
                     />
-                    <Text style={styles.text}>{user?.name}</Text>
+                    {/* Ensure text is wrapped in Text component and uses dynamic colors */}
+                    <Text style={[styles.text, { color: Color.textPrimary }]}>{user?.name}</Text>
                 </View>}
                 <View >
                     <Icon 
                         name={isSelected? "radio-button-on": "radio-button-off"} 
-                        size={24} color={Color.white_contrast} 
+                        size={24} color={Color.mainColor1} // Use dynamic color for the icon
                     />    
                 </View>
             </TouchableOpacity>
@@ -70,8 +72,9 @@ const ModalChooseConversation = ({ visible, onCancel }: {
           onRequestClose={onCancel}
         >
           <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.title}>Chọn cuộc trò chuyện</Text>
+            <View style={[styles.modalContent, { backgroundColor: Color.background }]}> {/* Apply dynamic background */}
+              {/* Ensure text is wrapped in Text component and uses dynamic colors */}
+              <Text style={[styles.title, { color: Color.textPrimary }]}>Chọn cuộc trò chuyện</Text>
               {conversations && conversations.length > 0 ? (
                 <FlatList
                   data={conversations.filter((conversation) => conversation.type !== 'page')}
@@ -80,14 +83,16 @@ const ModalChooseConversation = ({ visible, onCancel }: {
                   style={styles.list}
                 />
               ) : (
-                <Text style={styles.noData}>Không có cuộc trò chuyện nào</Text>
+                // Ensure text is wrapped in Text component and uses dynamic colors
+                <Text style={[styles.noData, { color: Color.textSecondary }]}>Không có cuộc trò chuyện nào</Text>
               )}
               <View style={styles.buttonContainer}>
-                <Button title="Hủy" onPress={onCancel} color="#ff4444" />
+                <Button title="Hủy" onPress={onCancel} color={Color.error} /> {/* Use dynamic color for button */}
                 <Button
                   title="Xác nhận"
                   onPress={handleSubmit}
                   disabled={selectedConversations.length === 0}
+                  color={Color.mainColor1} // Use dynamic color for button
                 />
               </View>
             </View>
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-      backgroundColor: '#fff',
+      // backgroundColor will be set by dynamic colors
       borderRadius: 10,
       padding: 20,
       width: '90%',
@@ -215,6 +220,7 @@ const styles = StyleSheet.create({
     title: {
       fontSize: 18,
       fontWeight: 'bold',
+      // color will be set by dynamic colors
       marginBottom: 10,
       textAlign: 'center',
     },
@@ -223,7 +229,7 @@ const styles = StyleSheet.create({
     },
     noData: {
       textAlign: 'center',
-      color: '#666',
+      // color will be set by dynamic colors
       marginVertical: 20,
     },
     buttonContainer: {
@@ -247,7 +253,7 @@ const styles = StyleSheet.create({
         borderRadius: 50
     },
     text: {
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
     }
 });
 

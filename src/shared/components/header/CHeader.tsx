@@ -6,21 +6,23 @@ import { colors as Color } from '@/src/styles/DynamicColors';
 interface CHeaderProps {
   label: string;
   backPress?: () => void;
-  showBackButton?: boolean; // Thêm props này để kiểm soát hiển thị nút Back
-  labelColor?: string; // Thêm prop này để nhận màu chữ cho label
-  iconColor?: string; // Thêm prop này để nhận màu icon
+  showBackButton?: boolean; // Add this prop to control back button visibility
+  labelColor?: string;     // Add this prop for label text color
+  iconColor?: string;      // Add this prop for icon color
 }
 
-
 const CHeader = ({ label, backPress, labelColor, iconColor, showBackButton = true }: CHeaderProps) => {
-  useTheme()
+  useTheme(); // Ensure the theme context is used to get updated colors
+
   return (
     <View style={styles.container}>
       {showBackButton && (
         <TouchableOpacity onPress={backPress} style={styles.buttonBack}>
+          {/* Use default iconColor from theme if not provided */}
           <Icon name="arrow-back" size={35} color={iconColor || Color.mainColor1} />
         </TouchableOpacity>
       )}
+      {/* Use default labelColor from theme if not provided */}
       <Text style={[styles.textLabel, { color: labelColor || Color.mainColor1 }]}>{label}</Text>
     </View>
   );

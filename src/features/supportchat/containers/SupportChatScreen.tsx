@@ -22,7 +22,7 @@ import { useSupportChatScreen } from "./useSupportChatScreen";
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
 
 const SupportChatScreen: React.FC = () => {
-  useTheme()
+  useTheme();
   const initialMessages: Message[] = [
     { id: "1", text: "Xin chào! Tôi có thể giúp gì cho bạn?", isUser: false },
   ];
@@ -43,13 +43,13 @@ const SupportChatScreen: React.FC = () => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.safeContainer, { backgroundColor: Color.background }]}>
+      <View style={[styles.header, { backgroundColor: Color.mainColor1 }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={28} color={Color.white_homologous} />
+          <Ionicons name="arrow-back" size={28} color={Color.textOnMain1} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Image
@@ -57,7 +57,7 @@ const SupportChatScreen: React.FC = () => {
             style={styles.avatar}
             resizeMode="contain"
           />
-          <Text style={styles.headerText}>Hỗ trợ</Text>
+          <Text style={[styles.headerText, { color: Color.textOnMain1 }]}>Hỗ trợ</Text>
         </View>
       </View>
       <KeyboardAvoidingView
@@ -79,13 +79,11 @@ const SupportChatScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: Color.backGround,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    backgroundColor: Color.mainColor1,
   },
   backButton: {
     padding: 5,
@@ -102,7 +100,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   headerText: {
-    color: Color.white_homologous,
     fontSize: 20,
     fontWeight: "bold",
   },

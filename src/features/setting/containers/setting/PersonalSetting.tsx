@@ -10,6 +10,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from '@/src/contexts/ThemeContext';
@@ -23,13 +24,12 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
+
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 
 const UsersClient = restClient.apiClient.service("apis/users");
 const AccountsClient = restClient.apiClient.service("apis/accounts");
-const myPhotosClient = restClient.apiClient.service("apis/myphotos");
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 interface Preference {
   id: string;
@@ -55,31 +55,32 @@ interface ReusableButtonProps {
 }
 
 const ReusableButton = ({ label, iconName, onPress, extraInfo }: ReusableButtonProps) => {
-  useTheme()
+  useTheme();
   return (
-    <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
+    <TouchableOpacity style={[styles.buttonContainer, { backgroundColor: Color.backgroundSecondary, shadowColor: Color.textSecondary }]} onPress={onPress}>
       <View style={styles.contentContainer}>
-        <Ionicons name={iconName} size={24} color={Color.white_contrast} style={styles.icon} />
-        <Text style={styles.label}>{label}</Text>
+        <Ionicons name={iconName} size={24} color={Color.textPrimary} style={styles.icon} />
+        <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
       </View>
       {extraInfo ? (
-        <Text style={styles.extraInfo}>{extraInfo}</Text>
+        <Text style={[styles.extraInfo, { color: Color.textSecondary }]}>{extraInfo}</Text>
       ) : (
-        <Ionicons name="chevron-forward" size={24} color={Color.white_contrast} />
+        <Ionicons name="chevron-forward" size={24} color={Color.textPrimary} />
       )}
     </TouchableOpacity>
   );
 };
 
 const ProfileScreen = () => {
+  useTheme();
   const [userId, setUserId] = useState<string | null>(null);
   const [initialUsername, setInitialUsername] = useState("");
   const [initialIntro, setInitialIntro] = useState("");
   const [initialHashtag, setInitialHashtag] = useState("");
   const [username, setUsername] = useState("");
   const [intro, setIntro] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState(""); // This password state is not directly displayed, only passed to dialog
+  const [email, setEmail] = useState(""); // This email state is not directly displayed, only used in logic
   const [hashtag, setHashtag] = useState("");
   const [cccdData, setCccdData] = useState<CCCDData | null>(null);
   const [isChanged, setIsChanged] = useState(false);
@@ -90,70 +91,91 @@ const ProfileScreen = () => {
   const [isPreferencesModalVisible, setPreferencesModalVisible] = useState(false);
   const [isIDModalVisible, setIDModalVisible] = useState(false);
   const [preferences, setPreferences] = useState<Preference[]>([]);
-  const [user,setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const navigationMenu = useNavigation<MenuNavigationProp>();
+
   const getUserId = async () => {
     try {
       const id = await AsyncStorage.getItem("userId");
       setUserId(id);
     } catch (err) {
       console.error("Lỗi khi lấy userId:", err);
+      setError("Không thể lấy ID người dùng. Vui lòng thử lại.");
     }
   };
 
   const fetchUserData = async (id: string) => {
     try {
       setLoading(true);
-      const userData = await UsersClient.get(id);
-      if (userData.success) {
-        const displayName = userData.data.displayName || "Chưa đặt tên";
-        const aboutMe = userData.data.aboutMe || "Chưa có giới thiệu";
-        const userHashtag = userData.data.hashtag || `#${id.slice(-4)}`;
-        const accountID = userData.data.account;
-        const identificationID = userData.data.identification;
+      const userDataResponse = await UsersClient.get(id);
+      if (!userDataResponse.success) {
+        throw new Error(userDataResponse.message || "Không thể tải dữ liệu người dùng.");
+      }
+      const userData = userDataResponse.data;
 
-        const accountData = await AccountsClient.get(accountID);
-        const password = accountData.data.password || "Chưa có mật khẩu";
-        const email = accountData.data.email || "Chưa có email";
+      const displayName = userData.displayName || "Chưa đặt tên";
+      const aboutMe = userData.aboutMe || "Chưa có giới thiệu";
+      const userHashtag = userData.hashtag || `#${id.slice(-4)}`;
+      const accountID = userData.account;
+      const identificationID = userData.identification;
 
-        const identificationData = await restClient.apiClient
+      // Fetch account data
+      let accountEmail = "Không có email";
+      let accountPassword = "Không có mật khẩu";
+      if (accountID) {
+        const accountDataResponse = await AccountsClient.get(accountID);
+        if (accountDataResponse.success) {
+          accountEmail = accountDataResponse.data.email || accountEmail;
+          accountPassword = accountDataResponse.data.password || accountPassword;
+        } else {
+          console.warn("Could not fetch account data:", accountDataResponse.message);
+        }
+      }
+
+      // Fetch identification data
+      let cccd: CCCDData | null = null;
+      if (identificationID) {
+        const identificationDataResponse = await restClient.apiClient
           .service("apis/identifications")
           .get(identificationID);
-        const cccd = identificationData.success
-          ? {
-              number: identificationData.data.number || "",
-              fullName: identificationData.data.fullName || "",
-              dateOfBirth: identificationData.data.dateOfBirth || "",
-              sex: identificationData.data.sex || "",
-              nationality: identificationData.data.nationality || "",
-              placeOfOrigin: identificationData.data.placeOfOrigin || "",
-              placeOfResidence: identificationData.data.placeOfResidence || "",
-              dateOfExpiry: identificationData.data.dateOfExpiry || "",
-            }
-          : null;
-
-        const hobbiesResponse = await UsersClient.get(`${id}/hobbies`);
-        const hobbies = hobbiesResponse.success
-          ? hobbiesResponse.data.map((hobby: any) => ({
-              id: hobby._id,
-              name: hobby.name,
-            }))
-          : [];
-
-        setEmail(email);
-        setPassword(password);
-        setInitialUsername(displayName);
-        setInitialIntro(aboutMe);
-        setInitialHashtag(userHashtag);
-        setUsername(displayName);
-        setIntro(aboutMe);
-        setHashtag(userHashtag);
-        setPreferences(hobbies);
-        setCccdData(cccd);
-        setUser(userData.data);
+        if (identificationDataResponse.success) {
+          cccd = {
+            number: identificationDataResponse.data.number || "",
+            fullName: identificationDataResponse.data.fullName || "",
+            dateOfBirth: identificationDataResponse.data.dateOfBirth || "",
+            sex: identificationDataResponse.data.sex || "",
+            nationality: identificationDataResponse.data.nationality || "",
+            placeOfOrigin: identificationDataResponse.data.placeOfOrigin || "",
+            placeOfResidence: identificationDataResponse.data.placeOfResidence || "",
+            dateOfExpiry: identificationDataResponse.data.dateOfExpiry || "",
+          };
+        } else {
+          console.warn("Could not fetch identification data:", identificationDataResponse.message);
+        }
       }
-    } catch (err) {
-      setError("Không thể tải dữ liệu hồ sơ");
+
+      // Fetch hobbies
+      const hobbiesResponse = await UsersClient.get(`${id}/hobbies`);
+      const hobbies = hobbiesResponse.success && Array.isArray(hobbiesResponse.data)
+        ? hobbiesResponse.data.map((hobby: any) => ({
+            id: hobby._id,
+            name: hobby.name,
+          }))
+        : [];
+
+      setEmail(accountEmail);
+      setPassword(accountPassword);
+      setInitialUsername(displayName);
+      setInitialIntro(aboutMe);
+      setInitialHashtag(userHashtag);
+      setUsername(displayName);
+      setIntro(aboutMe);
+      setHashtag(userHashtag);
+      setPreferences(hobbies);
+      setCccdData(cccd);
+      setUser(userData);
+    } catch (err: any) {
+      setError(err.message || "Không thể tải dữ liệu hồ sơ.");
       console.error("Lỗi khi lấy dữ liệu người dùng:", err);
     } finally {
       setLoading(false);
@@ -163,7 +185,7 @@ const ProfileScreen = () => {
   useEffect(() => {
     const hasChanges = username !== initialUsername || intro !== initialIntro;
     setIsChanged(hasChanges);
-  }, [username, intro]);
+  }, [username, intro, initialUsername, initialIntro]);
 
   useEffect(() => {
     getUserId();
@@ -176,7 +198,10 @@ const ProfileScreen = () => {
   }, [userId]);
 
   const handleSaveChanges = async () => {
-    if (!userId) return;
+    if (!userId) {
+      setError("ID người dùng không khả dụng.");
+      return;
+    }
     try {
       setLoading(true);
       const updateData = { displayName: username, aboutMe: intro };
@@ -185,11 +210,12 @@ const ProfileScreen = () => {
         setInitialUsername(username);
         setInitialIntro(intro);
         setIsChanged(false);
+        setError(null);
       } else {
-        throw new Error("Không thể lưu thay đổi");
+        throw new Error(response.message || "Không thể lưu thay đổi.");
       }
-    } catch (err) {
-      setError("Lỗi khi lưu thay đổi");
+    } catch (err: any) {
+      setError(err.message || "Lỗi khi lưu thay đổi.");
       console.error("Lỗi khi lưu hồ sơ:", err);
     } finally {
       setLoading(false);
@@ -197,25 +223,26 @@ const ProfileScreen = () => {
   };
 
   const handleChangePassword = async (oldPassword: string, newPassword: string) => {
-    if (!userId) return;
+    if (!user?.account) { // Ensure user and account are available
+      throw new Error("Thông tin tài khoản không khả dụng.");
+    }
     if (newPassword.length < 6) {
-      throw new Error("Mật khẩu mới phải có ít nhất 6 ký tự");
+      throw new Error("Mật khẩu mới phải có ít nhất 6 ký tự.");
     }
     if (newPassword === oldPassword) {
-      throw new Error("Mật khẩu mới không được giống mật khẩu cũ");
+      throw new Error("Mật khẩu mới không được giống mật khẩu cũ.");
     }
     try {
       setLoading(true);
-      const result = await restClient.apiClient
-        .service("apis/accounts/updatePassword")
-        .create({ email, newPassword: newPassword });
+      const result = await AccountsClient.patch(`${user.account}/updatePassword`, { password: oldPassword, newPassword: newPassword });
       if (!result.success) {
-        throw new Error(result.message || "Lỗi khi đổi mật khẩu từ server");
+        throw new Error(result.message || "Lỗi khi đổi mật khẩu từ server.");
       }
       setPassword(newPassword);
+      setError(null);
     } catch (err: any) {
       console.error("Lỗi khi đổi mật khẩu:", err);
-      throw new Error(err.message || "Lỗi không xác định khi đổi mật khẩu");
+      throw new Error(err.message || "Lỗi không xác định khi đổi mật khẩu.");
     } finally {
       setLoading(false);
     }
@@ -229,20 +256,39 @@ const ProfileScreen = () => {
     setPreferences(updatedPreferences);
   };
 
+  if (loading && !userId) {
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
+        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <Text style={{ color: Color.textPrimary, marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
+
+  if (error && !loading) {
+    return (
+      <View style={[styles.errorContainer, { backgroundColor: Color.background }]}>
+        <Text style={[styles.errorText, { color: Color.error }]}>Lỗi: {error}</Text>
+        <TouchableOpacity onPress={() => { getUserId(); setError(null); }} style={{ marginTop: 20 }}>
+          <Text style={{ color: Color.mainColor1, fontSize: 16 }}>Thử lại</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: Color.background }}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 50}
       >
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={styles.container}
+          contentContainerStyle={styles.scrollViewContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.sectionTitle}>Cài đặt hồ sơ</Text>
+          <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>Cài đặt hồ sơ</Text>
 
           <View style={styles.buttonSection}>
             <ReusableButton
@@ -263,18 +309,48 @@ const ProfileScreen = () => {
           </View>
 
           <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>Thông tin cá nhân</Text>
+            <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>Thông tin cá nhân</Text>
+            <View style={[styles.inputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
+                <Text style={[styles.inputLabel, { color: Color.textSecondary }]}>Tên người dùng:</Text>
+                <TextInput
+                    style={[styles.textInput, { color: Color.textPrimary }]}
+                    value={username}
+                    onChangeText={setUsername}
+                    placeholder="Tên của bạn"
+                    placeholderTextColor={Color.textSecondary}
+                    onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                />
+            </View>
+            <View style={[styles.inputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
+                <Text style={[styles.inputLabel, { color: Color.textSecondary }]}>Giới thiệu bản thân:</Text>
+                <TextInput
+                    style={[styles.textArea, { color: Color.textPrimary }]}
+                    value={intro}
+                    onChangeText={setIntro}
+                    placeholder="Giới thiệu về bản thân"
+                    placeholderTextColor={Color.textSecondary}
+                    multiline
+                    onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                />
+            </View>
+            {/* Reusable button for navigation/displaying hashtag */}
             <ReusableButton
-              label={username}
+              label={user?.displayName || "Tên người dùng"}
               iconName="person-outline"
               extraInfo={hashtag}
-              onPress={() =>navigationMenu.navigate("MyProfile", { screen: "MyProfile", params: { userId: userId! } })}
+              onPress={() => navigationMenu.navigate("MyProfile", { screen: "MyProfile", params: { userId: userId! } })}
             />
           </View>
 
           {isChanged && (
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges} disabled={loading}>
-              <Text style={styles.saveText}>{loading ? "Đang lưu..." : "Lưu thay đổi"}</Text>
+            <TouchableOpacity
+              style={[styles.saveButton, { backgroundColor: loading ? Color.backgroundTertiary : Color.mainColor1 }]}
+              onPress={handleSaveChanges}
+              disabled={loading}
+            >
+              <Text style={[styles.saveText, { color: Color.textOnMain1 }]}>
+                {loading ? "Đang lưu..." : "Lưu thay đổi"}
+              </Text>
             </TouchableOpacity>
           )}
         </ScrollView>
@@ -305,16 +381,13 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Color.white_homologous,
+  scrollViewContent: {
     padding: 15,
     paddingBottom: 30,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: Color.white_contrast,
-    marginBottom: 15,
   },
   buttonSection: {
     marginBottom: 20,
@@ -326,16 +399,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Color.white_homologous,
     borderRadius: 10,
     paddingHorizontal: 15,
     paddingVertical: 12,
     marginVertical: 5,
-    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 2, // Keep elevation for Android shadows
   },
   contentContainer: {
     flexDirection: "row",
@@ -343,7 +414,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: Color.white_contrast,
     marginLeft: 10,
   },
   icon: {
@@ -351,30 +421,36 @@ const styles = StyleSheet.create({
   },
   extraInfo: {
     fontSize: 14,
-    color: Color.textColor3,
   },
   inputContainer: {
     marginTop: 15,
-  },
-  textArea: {
     borderWidth: 1,
-    borderColor: Color.textColor3,
     borderRadius: 10,
     padding: 12,
+    marginBottom: 10,
+  },
+  inputLabel: {
+    fontSize: 14,
+    marginBottom: 5,
+    fontWeight: 'bold',
+  },
+  textInput: {
+    fontSize: 16,
+    paddingVertical: 5,
+  },
+  textArea: {
     fontSize: 16,
     height: 120,
     textAlignVertical: "top",
-    backgroundColor: Color.white_homologous,
+    paddingVertical: 5,
   },
   saveButton: {
-    backgroundColor: Color.mainColor1,
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
   },
   saveText: {
-    color: Color.white_homologous,
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -389,7 +465,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   errorText: {
-    color: "red",
     fontSize: 16,
   },
 });

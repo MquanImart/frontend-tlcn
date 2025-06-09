@@ -10,7 +10,7 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
-  useTheme()
+  useTheme();
   const formatMessage = () => {
     if (!message.boldRanges || message.isUser) {
       return (
@@ -28,11 +28,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
 
-    // Sắp xếp boldRanges theo start để xử lý đúng thứ tự
     const sortedRanges = [...message.boldRanges].sort((a, b) => a.start - b.start);
 
     for (const range of sortedRanges) {
-      // Thêm phần văn bản trước đoạn in đậm
       if (range.start > lastIndex) {
         parts.push(
           <Text
@@ -46,7 +44,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           </Text>
         );
       }
-      // Thêm phần in đậm bằng style
       parts.push(
         <Text
           key={range.start}
@@ -62,7 +59,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       lastIndex = range.end;
     }
 
-    // Thêm phần văn bản còn lại
     if (lastIndex < message.text.length) {
       parts.push(
         <Text
@@ -85,6 +81,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       style={[
         styles.messageBubble,
         message.isUser ? styles.userMessage : styles.supportMessage,
+        { backgroundColor: message.isUser ? Color.mainColor1 : Color.backgroundSecondary }, // Dynamic background
       ]}
     >
       {formatMessage()}
@@ -101,20 +98,18 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: "flex-end",
-    backgroundColor: Color.mainColor1,
   },
   supportMessage: {
     alignSelf: "flex-start",
-    backgroundColor: Color.backGround2,
   },
   messageText: {
     fontSize: 14,
   },
   userText: {
-    color: Color.white_homologous,
+    color: Color.textOnMain1, // Text color for user messages
   },
   supportText: {
-    color: Color.textColor1,
+    color: Color.textPrimary, // Text color for support messages
   },
 });
 
