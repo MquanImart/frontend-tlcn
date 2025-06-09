@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Thêm Ionicons
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Thêm AsyncStorage
 import getColor from "@/src/styles/Color";
 import restClient from "@/src/shared/services/RestClient";
 
@@ -18,9 +19,10 @@ const Color = getColor();
 interface ChangePasswordDialogProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (oldPassword: string, newPassword: string) => Promise<void>;
+  onSave: ( oldPassword: string, newPassword: string) => Promise<void>; // Cập nhật để nhận accountId
   loading: boolean;
 }
+
 const accountClient = restClient.apiClient.service("apis/accounts");
 
 const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePasswordDialogProps) => {
@@ -28,32 +30,67 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  
+  const [accountId, setAccountId] = useState<string | null>(null); // State để lưu accountId
+
   // State để kiểm soát ẩn/hiện mật khẩu
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSave = async () => {
-            const passWordCheck = await restClient.apiClient
-            .service("apis/accounts/compare-password")
-            .create({
-                password: oldPassword
-            });
-    if (!passWordCheck.success) {
-      setPasswordError("Mật khẩu cũ không chính xác");
-    return}        
-    if (newPassword !== confirmPassword) {
-      setPasswordError("Mật khẩu mới và xác nhận mật khẩu không khớp");
-      return;
+  // Lấy accountId từ AsyncStorage khi component mount
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('accountId'); // Giả sử accountId được lưu với key 'accountId'
+        if (id) {
+          setAccountId(id);
+          console.log("Account ID:", id); // Kiểm tra xem accountId có được lấy thành công không
+        } else {
+          setPasswordError("Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy accountId từ AsyncStorage:", error);
+        setPasswordError("Lỗi hệ thống, vui lòng thử lại.");
+      }
+    };
+
+    if (visible) {
+      fetchAccountId(); // Chỉ lấy accountId khi modal hiển thị
     }
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      setPasswordError("Vui lòng điền đầy đủ các trường");
+  }, [visible]);
+
+  const handleSave = async () => {
+    if (!accountId) {
+      setPasswordError("Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.");
       return;
     }
 
     try {
-      await onSave(oldPassword, newPassword);
+      // Kiểm tra mật khẩu cũ
+      const passWordCheck = await restClient.apiClient
+        .service("apis/accounts/compare-password")
+        .create({
+          idAccount: accountId, // Truyền accountId thay vì chỉ password
+          password: oldPassword,
+        });
+
+      if (!passWordCheck.success) {
+        setPasswordError("Mật khẩu cũ không chính xác");
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setPasswordError("Mật khẩu mới và xác nhận mật khẩu không khớp");
+        return;
+      }
+
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        setPasswordError("Vui lòng điền đầy đủ các trường");
+        return;
+      }
+
+      // Gọi hàm onSave với accountId
+      await onSave( oldPassword, newPassword);
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -69,6 +106,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
     setNewPassword("");
     setConfirmPassword("");
     setPasswordError(null);
+    setAccountId(null); // Reset accountId khi đóng modal
     onClose();
   };
 
@@ -90,7 +128,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 style={styles.modalInput}
                 placeholder="Mật khẩu cũ"
                 placeholderTextColor={Color.textColor3}
-                secureTextEntry={!showOldPassword} // Ẩn/hiện dựa trên state
+                secureTextEntry={!showOldPassword}
                 value={oldPassword}
                 onChangeText={setOldPassword}
               />
@@ -200,7 +238,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '100%',
-    position: 'relative', // Để định vị icon mắt
+    position: 'relative',
     marginBottom: 15,
   },
   modalInput: {
@@ -209,7 +247,7 @@ const styles = StyleSheet.create({
     borderColor: Color.textColor3,
     borderRadius: 8,
     padding: 10,
-    paddingRight: 40, // Để dành chỗ cho icon
+    paddingRight: 40,
     fontSize: 16,
     backgroundColor: Color.white_homologous,
   },
@@ -217,7 +255,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     top: '50%',
-    transform: [{ translateY: -12 }], // Căn giữa theo chiều dọc
+    transform: [{ translateY: -12 }],
   },
   errorText: {
     color: 'red',
