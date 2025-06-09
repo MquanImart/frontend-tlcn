@@ -21,7 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Video, ResizeMode } from 'expo-av';
 import restClient from '@/src/shared/services/RestClient';
 const reelsClient = restClient.apiClient.service("apis/reels");
-const colors = getColor();
+const Color = getColor();
 
 interface NewReelProps {
   isModalVisible: boolean;
@@ -148,11 +148,11 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
   const getScopeIcon = (scope: string) => {
     switch (scope) {
       case 'Công khai':
-        return <Ionicons name="earth" size={18} color={colors.textColor3} />;
+        return <Ionicons name="earth" size={18} color={Color.textColor3} />;
       case 'Riêng tư':
-        return <Ionicons name="lock-closed" size={18} color={colors.textColor3} />;
+        return <Ionicons name="lock-closed" size={18} color={Color.textColor3} />;
       default:
-        return <Ionicons name="earth" size={18} color={colors.textColor3} />;
+        return <Ionicons name="earth" size={18} color={Color.textColor3} />;
     }
   };
 
@@ -163,7 +163,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.overlay}
         >
-          <View style={[styles.dialog, { backgroundColor: colors.backGround }]}>
+          <View style={[styles.dialog, { backgroundColor: Color.backGround }]}>
             <View style={{ marginTop: -60 }}>
               <CHeader
                 label="Tạo Thước Phim"
@@ -178,14 +178,14 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               disabled={isLoading || uploading}
             >
               {getScopeIcon(scope)}
-              <Text style={[styles.scopeText, { color: colors.textColor1 }]}>{scope}</Text>
-              <Ionicons name="chevron-down" size={18} color={colors.textColor3} />
+              <Text style={[styles.scopeText, { color: Color.textColor1 }]}>{scope}</Text>
+              <Ionicons name="chevron-down" size={18} color={Color.textColor3} />
             </TouchableOpacity>
 
             <Modal visible={isPrivacyModalVisible} transparent animationType="fade">
               <View style={styles.scopeOverlay}>
-                <View style={[styles.scopeModal, { backgroundColor: colors.backGround }]}>
-                  <Text style={[styles.scopeTitle, { color: colors.textColor1 }]}>
+                <View style={[styles.scopeModal, { backgroundColor: Color.backGround }]}>
+                  <Text style={[styles.scopeTitle, { color: Color.textColor1 }]}>
                     Chọn phạm vi hiển thị
                   </Text>
                   {['Công khai', 'Riêng tư'].map((option) => (
@@ -198,7 +198,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                       }}
                     >
                       {getScopeIcon(option)}
-                      <Text style={[styles.scopeOptionText, { color: colors.textColor1 }]}>
+                      <Text style={[styles.scopeOptionText, { color: Color.textColor1 }]}>
                         {option}
                       </Text>
                     </TouchableOpacity>
@@ -221,22 +221,22 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                   onPress={removeVideo}
                   disabled={isLoading || uploading}
                 >
-                  <Ionicons name="close" size={18} color={colors.textColor2} />
+                  <Ionicons name="close" size={18} color={Color.textColor2} />
                 </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity style={styles.uploadButton} onPress={pickVideo} disabled={isLoading || uploading}>
-                <Feather name="video" size={40} color={colors.mainColor1} />
-                <Text style={[styles.uploadText, { color: colors.textColor1 }]}>
+                <Feather name="video" size={40} color={Color.mainColor1} />
+                <Text style={[styles.uploadText, { color: Color.textColor1 }]}>
                   Chọn video từ thiết bị
                 </Text>
               </TouchableOpacity>
             )}
 
             <TextInput
-              style={[styles.textInput, { color: colors.textColor1, borderColor: colors.borderColor1 }]}
+              style={[styles.textInput, { color: Color.textColor1, borderColor: Color.borderColor1 }]}
               placeholder="Mô tả thước phim của bạn..."
-              placeholderTextColor={colors.textColor3}
+              placeholderTextColor={Color.textColor3}
               value={content}
               onChangeText={setContent}
               multiline
@@ -246,9 +246,9 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
 
             <View style={styles.hashtagContainer}>
               <TextInput
-                style={[styles.hashtagInput, { color: colors.textColor1 }]}
+                style={[styles.hashtagInput, { color: Color.textColor1 }]}
                 placeholder="#hashtag"
-                placeholderTextColor={colors.textColor3}
+                placeholderTextColor={Color.textColor3}
                 value={hashtagInput}
                 onChangeText={setHashtagInput}
                 onSubmitEditing={handleAddHashtag}
@@ -256,7 +256,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                 blurOnSubmit={true}
               />
               <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading || uploading}>
-                <Ionicons name="add-circle" size={26} color={colors.mainColor1} />
+                <Ionicons name="add-circle" size={26} color={Color.mainColor1} />
               </TouchableOpacity>
             </View>
 
@@ -269,7 +269,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                       onPress={() => handleRemoveHashtag(index)}
                       disabled={isLoading || uploading}
                     >
-                      <Ionicons name="close-circle" size={18} color={colors.textColor3} />
+                      <Ionicons name="close-circle" size={18} color={Color.textColor3} />
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -283,8 +283,8 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               style={{
                 width: '100%',
                 height: 50,
-                backColor: uploading ? colors.borderColor1 : colors.mainColor1,
-                textColor: colors.textColor2,
+                backColor: uploading ? Color.borderColor1 : Color.mainColor1,
+                textColor: Color.textColor2,
                 radius: 10,
                 fontSize: 16,
                 fontWeight: 'bold',
@@ -293,7 +293,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               {uploading && (
                 <ActivityIndicator
                   size="small"
-                  color={colors.textColor2}
+                  color={Color.textColor2}
                   style={styles.loadingIndicator}
                 />
               )}
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
     marginBottom: 15,
   },
   scopeText: { fontSize: 14, marginLeft: 8 },
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
     marginBottom: 15,
   },
   uploadText: {
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   hashtagItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.borderColor1,
+    backgroundColor: Color.borderColor1,
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   hashtagText: {
-    color: colors.textColor1,
+    color: Color.textColor1,
     fontSize: 14,
     marginRight: 5,
   },

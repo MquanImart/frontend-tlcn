@@ -8,9 +8,8 @@ interface TabBarProps {
   onSelectTab: (tab: string) => void;
   unreadCount: number;
 }
-
+const Color = getColor();
 const TabBar: React.FC<TabBarProps> = ({ selectedTab, onSelectTab, unreadCount }) => {
-  const colors = getColor();
   const tabs = ["Tất cả", "Chưa đọc", "Đã đọc"];
 
   return (
@@ -44,8 +43,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: getColor().borderColor1,
-    backgroundColor: getColor().backGround,
+    borderBottomColor: Color.borderColor1,
+    backgroundColor: Color.backGround,
   },
   tab: {
     flex: 1,
@@ -55,15 +54,15 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: getColor().mainColor2,
+    borderBottomColor: Color.mainColor2,
   },
   tabText: {
     fontSize: 16,
-    color: getColor().textColor3,
+    color: Color.textColor3,
     textAlign: "center",
   },
   activeTabText: {
-    color: getColor().mainColor2,
+    color: Color.mainColor2,
     fontWeight: "bold",
   },
   unreadBadge: {

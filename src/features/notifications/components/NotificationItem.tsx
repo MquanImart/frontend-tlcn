@@ -15,7 +15,7 @@ interface NotificationItemProps {
   onDelete: () => void;
   handleOptions: (onMarkAsRead: () => void, onMarkAsUnread: () => void, onDelete: () => void) => void;
 }
-
+const Color = getColor();
 const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   onMarkAsRead,
@@ -23,7 +23,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   onDelete,
   handleOptions,
 }) => {
-  const colors = getColor();
   const navigation = useNavigation<NativeStackNavigationProp<NotificationParamList>>();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
@@ -145,8 +144,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           style={styles.avatar}
         />
         <View style={styles.notificationContent}>
-          <Text style={[styles.notificationMessage, { color: colors.textColor1 }]}>
-            <Text style={[styles.boldText, { color: colors.textColor1 }]}>
+          <Text style={[styles.notificationMessage, { color: Color.textColor1 }]}>
+            <Text style={[styles.boldText, { color: Color.textColor1 }]}>
               {notification?.senderId?.displayName || "Người dùng ẩn danh"}
             </Text>{" "}
             {notification?.message || "Không có nội dung"}
@@ -158,7 +157,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           </Text>
         </View>
         {notification?.status === "unread" && (
-          <View style={[styles.unreadDot, { backgroundColor: colors.mainColor2 }]} />
+          <View style={[styles.unreadDot, { backgroundColor: Color.mainColor2 }]} />
         )}
       </TouchableOpacity>
     </View>
@@ -177,8 +176,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: getColor().borderColor1,
-    backgroundColor: getColor().backGround, // Fixed from backGround
+    borderBottomColor: Color.borderColor1,
+    backgroundColor: Color.backGround, // Fixed from backGround
   },
   avatar: {
     width: 50,
@@ -198,7 +197,7 @@ const styles = StyleSheet.create({
   notificationTime: {
     fontSize: 12,
     marginTop: 4,
-    color: getColor().borderColor1,
+    color: Color.borderColor1,
   },
   unreadDot: {
     width: 10,

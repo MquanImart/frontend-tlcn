@@ -29,7 +29,7 @@ import CHeader from '../../components/Header';
 import { SingleReel } from './SingleReel';
 import useReels from './useReels';
 
-const colors = getColor();
+const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, 'Menu'>;
@@ -112,7 +112,7 @@ export default function ReelDetail() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor1} />
       </View>
     );
   }
@@ -139,8 +139,8 @@ export default function ReelDetail() {
         <CHeader
           label="Reel"
           backPress={() => navigation.goBack()}
-          labelColor={colors.backGround1}
-          iconColor={colors.backGround1}
+          labelColor={Color.backGround1}
+          iconColor={Color.backGround1}
         />
       </View>
 
@@ -157,13 +157,13 @@ export default function ReelDetail() {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
               <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+                <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
                   {calculateTotalComments(currentReel?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={colors.textColor1} />
+                  <Ionicons name="close" size={24} color={Color.textColor1} />
                 </TouchableOpacity>
               </View>
 
@@ -193,20 +193,20 @@ export default function ReelDetail() {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={colors.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor1} />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={colors.textColor3}
+                  placeholderTextColor={Color.textColor3}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment} disabled={isLoading}>
                   {isLoading ? (
-                    <ActivityIndicator size="small" color={colors.mainColor1} />
+                    <ActivityIndicator size="small" color={Color.mainColor1} />
                   ) : (
-                    <Ionicons name="send" size={20} color={colors.mainColor1} />
+                    <Ionicons name="send" size={20} color={Color.mainColor1} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -267,20 +267,20 @@ const styles = StyleSheet.create({
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: colors.textColor1,
+    color: Color.textColor1,
     paddingHorizontal: 10,
   },
   commentList: {

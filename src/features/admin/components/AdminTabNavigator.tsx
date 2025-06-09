@@ -8,7 +8,7 @@ import React from 'react';
 const Tab = createBottomTabNavigator();
 
 const AdminTabNavigator: React.FC = () => {
-  const colors = getColor();
+  const Color = getColor();
 
   return (
     <Tab.Navigator
@@ -22,11 +22,11 @@ const AdminTabNavigator: React.FC = () => {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: colors.mainColor1,
-        tabBarInactiveTintColor: colors.textColor3,
+        tabBarActiveTintColor: Color.mainColor1,
+        tabBarInactiveTintColor: Color.textColor3,
         tabBarStyle: {
-          backgroundColor: colors.backGround,
-          borderTopColor: colors.borderColor1,
+          backgroundColor: Color.backGround,
+          borderTopColor: Color.borderColor1,
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,

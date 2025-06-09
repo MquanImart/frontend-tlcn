@@ -10,7 +10,7 @@ import ReportModalScreen from '../ReportModal/ReportModal';
 import useAdminArticleList from './useAdminArticleList';
 
 const { height, width } = Dimensions.get('window');
-
+const Color = getColor();
 const AdminArticleListScreen: React.FC = () => {
   const {
     articles,
@@ -87,7 +87,7 @@ const AdminArticleListScreen: React.FC = () => {
       <SafeAreaView style={styles.loadingContainer}>
         <CHeader label="Danh sách bài viết" showBackButton={false} />
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={getColor().mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor1} />
         </View>
       </SafeAreaView>
     );
@@ -98,14 +98,14 @@ const AdminArticleListScreen: React.FC = () => {
       <SafeAreaView style={styles.errorContainer}>
         <CHeader label="Danh sách bài viết" showBackButton={false} />
         <View style={styles.centerContent}>
-          <Text style={[styles.errorText, { color: getColor().textColor1 }]}>{error}</Text>
+          <Text style={[styles.errorText, { color: Color.textColor1 }]}>{error}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: getColor().backGround, maxHeight: height }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Color.backGround, maxHeight: height }]}>
       <CHeader label="Danh sách bài viết" showBackButton={false} />
       <View style={styles.content}>
         {/* Integrate TabBarCustom here */}
@@ -130,7 +130,7 @@ const AdminArticleListScreen: React.FC = () => {
           windowSize={5}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={[styles.noArticles, { color: getColor().textColor3 }]}>
+            <Text style={[styles.noArticles, { color: Color.textColor3 }]}>
               Không có bài viết nào
             </Text>
           }
@@ -142,13 +142,13 @@ const AdminArticleListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: getColor().mainColor1,
-                  textColor: getColor().white_homologous,
+                  backColor: Color.mainColor1,
+                  textColor: Color.white_homologous,
                   radius: 8,
                 }}
                 disabled={currentPage === 1}
               />
-              <Text style={[styles.pageText, { color: getColor().textColor1 }]}>
+              <Text style={[styles.pageText, { color: Color.textColor1 }]}>
                 Trang {currentPage} / {totalPages}
               </Text>
               <CButton
@@ -157,8 +157,8 @@ const AdminArticleListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: getColor().mainColor1,
-                  textColor: getColor().white_homologous,
+                  backColor: Color.mainColor1,
+                  textColor: Color.white_homologous,
                   radius: 8,
                 }}
                 disabled={currentPage === totalPages}
@@ -180,7 +180,7 @@ const AdminArticleListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
   },
   content: {
     flex: 1,
@@ -192,11 +192,11 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
   },
   centerContent: {
     flex: 1,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: getColor().backGround1,
+    backgroundColor: Color.backGround1,
     borderRadius: 12,
     marginTop: 16,
     marginHorizontal: 8,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    color: getColor().textColor1,
+    color: Color.textColor1,
     minWidth: 80,
   },
   filterContainer: { // This style is no longer used directly but kept for reference
@@ -243,12 +243,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginHorizontal: 0, // Adjust as needed
     borderRadius: 8,
-    backgroundColor: getColor().backGround2, // Match the original button background
+    backgroundColor: Color.backGround2, // Match the original button background
     elevation: 0, // Remove shadow if not desired
     shadowOpacity: 0,
   },
   activeTabStyle: {
-    backgroundColor: getColor().mainColor1,
+    backgroundColor: Color.mainColor1,
     borderRadius: 8, // Apply radius to active tab
     paddingHorizontal: 15, // Adjust padding
     paddingVertical: 10,
@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   activeTextStyle: {
-    color: getColor().white_homologous, // Match original button text color
+    color: Color.white_homologous, // Match original button text color
     fontSize: 14,
     fontWeight: 'bold',
     marginLeft: 5,
   },
   inactiveTextStyle: {
-    color: getColor().textColor1, // Match original button text color
+    color: Color.textColor1, // Match original button text color
     fontSize: 14,
   },
 });

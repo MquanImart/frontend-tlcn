@@ -18,7 +18,7 @@ import MessageList from "../components/MessageList";
 import { Message } from "../interface/Message";
 import { useSupportChatScreen } from "./useSupportChatScreen";
 
-const colors = getColor();
+const Color = getColor();
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
 
 const SupportChatScreen: React.FC = () => {
@@ -48,7 +48,7 @@ const SupportChatScreen: React.FC = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={28} color={colors.white_homologous} />
+          <Ionicons name="arrow-back" size={28} color={Color.white_homologous} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Image
@@ -78,13 +78,13 @@ const SupportChatScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    backgroundColor: colors.mainColor1,
+    backgroundColor: Color.mainColor1,
   },
   backButton: {
     padding: 5,
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   headerText: {
-    color: colors.white_homologous,
+    color: Color.white_homologous,
     fontSize: 20,
     fontWeight: "bold",
   },

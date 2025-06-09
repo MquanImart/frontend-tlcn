@@ -30,7 +30,7 @@ const WINDOW_HEIGHT = Dimensions.get("window").height;
 const HEIGHT_HEADER = WINDOW_HEIGHT - 300;
 
 const CityProvince = () => {
-  const colors = getColor();
+  const Color = getColor();
   const route = useRoute<RouteProp<ExploreStackParamList, "CityProvice">>();
   const { provinceId } = route.params || {};
   const {
@@ -134,7 +134,7 @@ const CityProvince = () => {
               ListFooterComponent={
                 isLoadingArticles ? (
                   <View style={styles.footer}>
-                    <ActivityIndicator size="large" color={colors.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor1} />
                   </View>
                 ) : null
               }
@@ -173,7 +173,7 @@ const CityProvince = () => {
                     </View>
                   ) : (
                     <View style={styles.centered}>
-                      <ActivityIndicator size="large" color={colors.mainColor1} />
+                      <ActivityIndicator size="large" color={Color.mainColor1} />
                     </View>
                   )
                 ) : pages ? (
@@ -191,7 +191,7 @@ const CityProvince = () => {
                   </View>
                 ) : (
                   <View style={styles.centered}>
-                    <ActivityIndicator size="large" color={colors.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor1} />
                   </View>
                 )}
               </View>
@@ -228,7 +228,7 @@ const CityProvince = () => {
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={24} color={colors.mainColor1} />
+                  <Ionicons name="send" size={24} color={Color.mainColor1} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -236,7 +236,7 @@ const CityProvince = () => {
         </View>
       ) : (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor1} />
         </View>
       )}
     </View>

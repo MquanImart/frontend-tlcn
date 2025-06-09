@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const colors = getColor();
+const Color = getColor();
 
 interface GroupCardProps {
   group: Group;
@@ -103,7 +103,7 @@ export default GroupCard;
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 15,
     padding: 10,
     marginBottom: 10,
@@ -125,17 +125,17 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.textColor1,
+    color: Color.textColor1,
     marginBottom: 5,
   },
   groupType: {
     fontSize: 12,
-    color: colors.textColor3,
+    color: Color.textColor3,
     marginBottom: 5,
   },
   introduction: {
     fontSize: 12,
-    color: colors.textColor1,
+    color: Color.textColor1,
     marginBottom: 10,
   },
   buttonContainer: {
@@ -151,13 +151,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   joinButton: {
-    backgroundColor: colors.mainColor1,
+    backgroundColor: Color.mainColor1,
   },
   viewButton: {
-    backgroundColor: colors.mainColor1,
+    backgroundColor: Color.mainColor1,
   },
   pendingButton: {
-    backgroundColor: colors.mainColor1,  
+    backgroundColor: Color.mainColor1,  
   },
   buttonText: {
     fontSize: 12,

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Message } from "../interface/Message";
 import getColor from "@/src/styles/Color";
 
-const colors = getColor();
+const Color = getColor();
 
 const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
   const formatMessage = () => {
@@ -67,16 +67,16 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: colors.mainColor1,
-    color: colors.white_homologous,
+    backgroundColor: Color.mainColor1,
+    color: Color.white_homologous,
   },
   botMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.textColor1,
+    backgroundColor: Color.textColor1,
   },
   messageText: {
     fontSize: 16,
-    color: colors.textColor1,
+    color: Color.textColor1,
   },
 });
 

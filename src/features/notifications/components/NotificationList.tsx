@@ -20,7 +20,7 @@ interface NotificationListProps {
   isLoadingMore: boolean;
   loading?: boolean;
 }
-
+const Color = getColor();
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
   selectedTab,
@@ -33,8 +33,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
   isLoadingMore,
   loading = false,
 }) => {
-  const colors = getColor();
-
   const filteredNotifications = notifications.filter((notification) => {
     if (selectedTab === "Tất cả") return true;
     if (selectedTab === "Đã đọc") return notification.status === "read";
@@ -45,8 +43,8 @@ const NotificationList: React.FC<NotificationListProps> = ({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.mainColor1} />
-        <Text style={[styles.loadingText, { color: colors.textColor1 }]}>
+        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <Text style={[styles.loadingText, { color: Color.textColor1 }]}>
           Đang tải thông báo...
         </Text>
       </View>
@@ -56,7 +54,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   if (filteredNotifications.length === 0) {
     return (
       <View style={styles.noNotifications}>
-        <Text style={[styles.noNotificationsText, { color: colors.textColor1 }]}>
+        <Text style={[styles.noNotificationsText, { color: Color.textColor1 }]}>
           Không có thông báo
         </Text>
       </View>
@@ -84,8 +82,8 @@ const NotificationList: React.FC<NotificationListProps> = ({
       ListFooterComponent={
         isLoadingMore ? (
           <View style={styles.footerLoading}>
-            <ActivityIndicator size="large" color={colors.mainColor1} />
-            <Text style={[styles.loadingText, { color: colors.textColor1 }]}>
+            <ActivityIndicator size="large" color={Color.mainColor1} />
+            <Text style={[styles.loadingText, { color: Color.textColor1 }]}>
               Đang tải thêm...
             </Text>
           </View>

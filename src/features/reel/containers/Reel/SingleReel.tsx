@@ -29,7 +29,7 @@ interface ReelProps {
   userId: string;
 }
 
-const colors = getColor();
+const Color = getColor();
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const UsersClient = restClient.apiClient.service('apis/users');
 const reelsClient = restClient.apiClient.service('apis/reels');
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   followingButton: {
-    backgroundColor: colors.mainColor1,
+    backgroundColor: Color.mainColor1,
   },
   followText: {
     fontSize: 14,
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   followingText: {
-    color: colors.white_homologous,
+    color: Color.white_homologous,
   },
   iconGroup: {
     position: 'absolute',

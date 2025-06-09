@@ -12,7 +12,7 @@ import usePageHome from "./usePageHome";
 import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
 import PostDialog from "@/src/features/newfeeds/components/PostDialog/PostDialog";
 
-const colors = getColor();
+const Color = getColor();
 
 interface PageHomeProps {
   page: Page; 
@@ -40,7 +40,7 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
 
   
   return (
-    <View style={[styles.container, { backgroundColor: colors.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
       <FlatList
         data={articles|| []}
         keyExtractor={(item) => item._id}
@@ -64,13 +64,13 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
           <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={colors.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textColor1} />
             </TouchableOpacity>
           </View>
 
@@ -92,18 +92,18 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
               style={[
                 styles.commentInput,
                 {
-                  borderColor: colors.borderColor1,
-                  color: colors.textColor1,
-                  backgroundColor: colors.backGround,
+                  borderColor: Color.borderColor1,
+                  color: Color.textColor1,
+                  backgroundColor: Color.backGround,
                 },
               ]}
               placeholder="Thêm bình luận..."
-              placeholderTextColor={colors.textColor3}
+              placeholderTextColor={Color.textColor3}
               value={newReply}
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={24} color={colors.mainColor1} />
+              <Ionicons name="send" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     paddingVertical: 10,
   },
   commentInput: {

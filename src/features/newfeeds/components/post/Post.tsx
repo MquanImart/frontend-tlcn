@@ -21,7 +21,7 @@ import {
   View,
 } from "react-native";
 
-const colors = getColor();
+const Color = getColor();
 
 interface PostProps {
   article: Article;
@@ -179,12 +179,12 @@ const Post: React.FC<PostProps> = ({
   const getScopeIcon = (scope: string) => {
     switch (scope) {
       case "Công khai":
-        return <Ionicons name="earth-outline" size={14} color={colors.textColor3} />;
+        return <Ionicons name="earth-outline" size={14} color={Color.textColor3} />;
       case "Bạn bè":
-        return <Ionicons name="people-outline" size={14} color={colors.textColor3} />;
+        return <Ionicons name="people-outline" size={14} color={Color.textColor3} />;
       case "Riêng tư":
         return (
-          <Ionicons name="lock-closed-outline" size={14} color={colors.textColor3} />
+          <Ionicons name="lock-closed-outline" size={14} color={Color.textColor3} />
         );
       default:
         return null;
@@ -212,7 +212,7 @@ const Post: React.FC<PostProps> = ({
           <View style={styles.userInfo}>
             <View style={styles.userAndGroup}>
               <Text
-                style={[styles.username, { color: colors.textColor1 }]}
+                style={[styles.username, { color: Color.textColor1 }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -220,12 +220,12 @@ const Post: React.FC<PostProps> = ({
               </Text>
               {article.groupID && (
                 <>
-                  <Text style={[styles.groupSeparator, { color: colors.textColor3 }]}>
+                  <Text style={[styles.groupSeparator, { color: Color.textColor3 }]}>
                     •
                   </Text>
                   <TouchableOpacity onPress={handleGroupPress}>
                     <Text
-                      style={[styles.groupName, { color: colors.mainColor2 }]}
+                      style={[styles.groupName, { color: Color.mainColor2 }]}
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -237,7 +237,7 @@ const Post: React.FC<PostProps> = ({
             </View>
             {article.address && (
               <Text
-                style={[styles.location, { color: colors.textColor3 }]}
+                style={[styles.location, { color: Color.textColor3 }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -246,7 +246,7 @@ const Post: React.FC<PostProps> = ({
             )}
             <View style={styles.scopeContainer}>
               {getScopeIcon(normalizedScope)}
-              <Text style={[styles.scopeText, { color: colors.textColor3 }]}>
+              <Text style={[styles.scopeText, { color: Color.textColor3 }]}>
                 {normalizedScope}
               </Text>
             </View>
@@ -260,7 +260,7 @@ const Post: React.FC<PostProps> = ({
           <Ionicons
             name="ellipsis-vertical"
             size={20}
-            color={isAdmin ? colors.textColor3 : colors.textColor1}
+            color={isAdmin ? Color.textColor3 : Color.textColor1}
           />
         </TouchableOpacity>
       </View>
@@ -277,7 +277,7 @@ const Post: React.FC<PostProps> = ({
             <Ionicons
               name={isLiked ? "heart" : "heart-outline"}
               size={28}
-              color={isAdmin ? colors.textColor3 : isLiked ? "red" : colors.textColor1}
+              color={isAdmin ? Color.textColor3 : isLiked ? "red" : Color.textColor1}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -287,7 +287,7 @@ const Post: React.FC<PostProps> = ({
             <Ionicons
               name="chatbubble-outline"
               size={28}
-              color={isAdmin ? colors.textColor3 : colors.textColor1}
+              color={isAdmin ? Color.textColor3 : Color.textColor1}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -297,7 +297,7 @@ const Post: React.FC<PostProps> = ({
             <Ionicons
               name="paper-plane-outline"
               size={28}
-              color={isAdmin ? colors.textColor3 : colors.textColor1}
+              color={isAdmin ? Color.textColor3 : Color.textColor1}
             />
           </TouchableOpacity>
         </View>
@@ -308,16 +308,16 @@ const Post: React.FC<PostProps> = ({
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
             size={28}
-            color={isAdmin ? colors.textColor3 : isSaved ? colors.mainColor2 : colors.textColor1}
+            color={isAdmin ? Color.textColor3 : isSaved ? Color.mainColor2 : Color.textColor1}
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
-        <Text style={[styles.likes, { color: colors.textColor1 }]}>
+        <Text style={[styles.likes, { color: Color.textColor1 }]}>
           {article.emoticons?.length || 0} lượt thích
         </Text>
-        <Text style={[styles.description, { color: colors.textColor1 }]}>
+        <Text style={[styles.description, { color: Color.textColor1 }]}>
           {article.content}
         </Text>
         {article.hashTag && article.hashTag.length > 0 && (
@@ -328,7 +328,7 @@ const Post: React.FC<PostProps> = ({
                 onPress={() => handleHashtagPress(tag)} // Gọi hàm mới khi bấm
               >
                 <Text
-                  style={[styles.hashtag, { color: colors.mainColor2 }]}
+                  style={[styles.hashtag, { color: Color.mainColor2 }]}
                 >
                   {tag} {/* Hiển thị tag nguyên bản từ backend */}
                 </Text>
@@ -336,7 +336,7 @@ const Post: React.FC<PostProps> = ({
             ))}
           </View>
         )}
-        <Text style={[styles.timestamp, { color: colors.textColor3 }]}>
+        <Text style={[styles.timestamp, { color: Color.textColor3 }]}>
           {new Date(article.createdAt).toLocaleDateString("vi-VN", {
             day: "2-digit",
             month: "long",

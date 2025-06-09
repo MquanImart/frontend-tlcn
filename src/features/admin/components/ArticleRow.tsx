@@ -22,7 +22,7 @@ interface ArticleRowProps {
   article: Article;
   onPress: () => void; // Mở báo cáo
 }
-
+const Color = getColor();
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList>;
 
 const { width } = Dimensions.get('window');
@@ -30,7 +30,7 @@ const MEDIA_SIZE = width * 0.22; // Kích thước media item nhỏ hơn để h
 const MAX_MEDIA_ITEMS = 4; // Giới hạn số lượng media hiển thị
 
 const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
-  const colors = getColor();
+  const Color = getColor();
   const hasReports = article.reports && article.reports.length > 0;
   const navigation = useNavigation<NewFeedNavigationProp>();
 
@@ -114,8 +114,8 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
         style={[
           styles.card,
           {
-            backgroundColor: hasReports ? '#FFF1F1' : colors.backGround,
-            borderLeftColor: hasReports ? '#FF3B30' : colors.borderColor1,
+            backgroundColor: hasReports ? '#FFF1F1' : Color.backGround,
+            borderLeftColor: hasReports ? '#FF3B30' : Color.borderColor1,
           },
         ]}
         activeOpacity={0.7}
@@ -167,15 +167,15 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
           )}
           <View style={styles.cardContent}>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: colors.textColor3 }]}>ID:</Text>
-              <Text style={[styles.value, { color: colors.textColor1 }]}>
+              <Text style={[styles.label, { color: Color.textColor3 }]}>ID:</Text>
+              <Text style={[styles.value, { color: Color.textColor1 }]}>
                 {article._id.slice(-6)}
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: colors.textColor3 }]}>Nội dung:</Text>
+              <Text style={[styles.label, { color: Color.textColor3 }]}>Nội dung:</Text>
               <Text
-                style={[styles.value, { color: colors.textColor1 }]}
+                style={[styles.value, { color: Color.textColor1 }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
@@ -183,7 +183,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: colors.textColor3 }]}>Báo cáo:</Text>
+              <Text style={[styles.label, { color: Color.textColor3 }]}>Báo cáo:</Text>
               <View style={styles.reportContainer}>
                 {hasReports ? (
                   <>
@@ -193,7 +193,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
                     </Text>
                   </>
                 ) : (
-                  <Text style={[styles.value, { color: colors.textColor1 }]}>Không</Text>
+                  <Text style={[styles.value, { color: Color.textColor1 }]}>Không</Text>
                 )}
               </View>
             </View>
@@ -212,7 +212,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
           <View style={styles.modalOverlay}>
             <Animated.View style={[styles.menuContainer, menuStyle]}>
               <TouchableOpacity style={styles.menuItem} onPress={handleViewDetail}>
-                <Text style={[styles.menuText, { color: colors.textColor1 }]}>
+                <Text style={[styles.menuText, { color: Color.textColor1 }]}>
                   Xem bài viết chi tiết
                 </Text>
               </TouchableOpacity>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     height: MEDIA_SIZE,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: getColor().borderColor1,
+    borderColor: Color.borderColor1,
   },
   playOverlay: {
     position: 'absolute',
@@ -300,14 +300,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: getColor().textColor3,
+    color: Color.textColor3,
     lineHeight: 20,
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: getColor().textColor1,
+    color: Color.textColor1,
     lineHeight: 20,
   },
   reportContainer: {
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   menuContainer: {
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 12,
     padding: 8,
     width: 240,

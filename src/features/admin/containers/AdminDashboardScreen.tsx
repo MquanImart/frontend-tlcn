@@ -3,9 +3,10 @@ import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import AdminTabNavigator from '../components/AdminTabNavigator';
 
+const Color = getColor();
 const AdminDashboardScreen: React.FC = () => {
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: getColor().backGround }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Color.backGround }]}>
       <AdminTabNavigator />
     </SafeAreaView>
   );

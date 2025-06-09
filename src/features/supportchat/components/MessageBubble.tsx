@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { Message } from "../interface/Message";
 import getColor from "@/src/styles/Color";
 
-const colors = getColor();
+const Color = getColor();
 
 interface MessageBubbleProps {
   message: Message;
@@ -100,20 +100,20 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: "flex-end",
-    backgroundColor: colors.mainColor1,
+    backgroundColor: Color.mainColor1,
   },
   supportMessage: {
     alignSelf: "flex-start",
-    backgroundColor: colors.backGround2,
+    backgroundColor: Color.backGround2,
   },
   messageText: {
     fontSize: 14,
   },
   userText: {
-    color: colors.white_homologous,
+    color: Color.white_homologous,
   },
   supportText: {
-    color: colors.textColor1,
+    color: Color.textColor1,
   },
 });
 

@@ -19,7 +19,7 @@ import {
 import Modal from "react-native-modal";
 import { useGroupMySelf } from "./useGroupMySelf";
 
-const colors = getColor();
+const Color = getColor();
 
 interface GroupMySelfProps {
   groupId: string;
@@ -104,7 +104,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
       <Text style={styles.infoText}>Bài viết trong nhóm</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color={colors.mainColor1} style={styles.loading} />
+        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -132,7 +132,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchUserArticles(1)}
-              colors={[colors.mainColor1]}
+              colors={[Color.mainColor1]}
             />
           }
           onEndReached={loadMoreArticles}
@@ -140,7 +140,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={colors.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : null
           }
@@ -158,13 +158,13 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
           <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={colors.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textColor1} />
             </TouchableOpacity>
           </View>
 
@@ -188,18 +188,18 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
               style={[
                 styles.commentInput,
                 {
-                  borderColor: colors.borderColor1,
-                  color: colors.textColor1,
-                  backgroundColor: colors.backGround,
+                  borderColor: Color.borderColor1,
+                  color: Color.textColor1,
+                  backgroundColor: Color.backGround,
                 },
               ]}
               placeholder="Viết bình luận..."
-              placeholderTextColor={colors.textColor3}
+              placeholderTextColor={Color.textColor3}
               value={newReply}
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={20} color={colors.mainColor1} />
+              <Ionicons name="send" size={20} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>
@@ -214,17 +214,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
   },
   infoText: {
     fontSize: 18,
-    color: colors.textColor1,
+    color: Color.textColor1,
     marginBottom: 10,
     fontWeight: "bold",
   },
   noInviteText: {
     fontSize: 16,
-    color: colors.textColor3,
+    color: Color.textColor3,
     textAlign: "center",
     marginVertical: 10,
   },
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     paddingVertical: 10,
   },
   commentInput: {
@@ -284,13 +284,13 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    color: colors.mainColor1,
+    color: Color.mainColor1,
     marginTop: 10,
     fontWeight: "bold",
   },
   emptyText: {
     fontSize: 16,
-    color: colors.textColor3,
+    color: Color.textColor3,
     textAlign: "center",
     marginTop: 20,
   },
