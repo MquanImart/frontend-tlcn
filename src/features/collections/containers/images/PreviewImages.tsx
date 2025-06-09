@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     textViewAll: {
-        color: Color.textColor3
+        color: Color.gray4
     },
     boxImages: {
         maxHeight: 400, width: '100%'

@@ -1,11 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ResizeMode, Video } from 'expo-av';
-import { MyPhoto } from '@/src/interface/interface_flex';
 
-interface VideoPlayerProps{
-  source: MyPhoto;
-}
 const VideoPlayer = () => {
   const videoRef = React.useRef(null);
 

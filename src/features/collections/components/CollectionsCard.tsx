@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         width: '100%',
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: Color.backGround
+        borderColor: Color.white
     },
     images: {
         width: '100%',
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 
         position: "absolute",
         bottom: 10, right: 30,
-        backgroundColor: Color.backGround,
+        backgroundColor: Color.white,
         borderRadius: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
