@@ -3,7 +3,8 @@ import { Collection } from "@/src/interface/interface_reference";
 import CButton from "@/src/shared/components/button/CButton";
 import { CollectionStackParamList } from "@/src/shared/routes/CollectionNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
@@ -12,8 +13,6 @@ import { Animated, Button, Modal, StyleSheet, Text, TouchableOpacity, View } fro
 import { FlatList } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { ViewCardCollection } from "../containers/post/interface";
-
-const Color = getColor();
 
 export interface PostCardProps {
     _id: string;
@@ -33,6 +32,7 @@ export interface PostCardProps {
 type CollectionNavigationProp = StackNavigationProp<CollectionStackParamList>;
 
 const PostCard = ({ _id, collectionId, content, author, savedDate, img, deleteArticle, changeCollection, listCollections }: PostCardProps) => {
+  useTheme()
   const navigation = useNavigation<CollectionNavigationProp>();
   const [expanded, setExpanded] = useState(false);
   const [animationHeight] = useState(new Animated.Value(100));

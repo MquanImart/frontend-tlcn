@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import getColor from "@/src/styles/Color";
-const Color = getColor();
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface WeatherCardProps {
   city: string;
@@ -22,6 +22,7 @@ const getBackgroundImage = (description: string) => {
 };
 
 const WeatherCard: React.FC<WeatherCardProps> = ({ city, temperature, description, high, low }) => {
+  useTheme()
   return (
     <ImageBackground source={getBackgroundImage(description)} style={styles.card} imageStyle={{ borderRadius: 12 }}>
       <View style={styles.overlay}>

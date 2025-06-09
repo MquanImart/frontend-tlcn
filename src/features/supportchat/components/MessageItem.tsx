@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Message } from "../interface/Message";
-import getColor from "@/src/styles/Color";
-
-const Color = getColor();
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
+  useTheme()
   const formatMessage = () => {
     if (!message.boldRanges || message.isUser) {
       return <Text style={styles.messageText}>{message.text}</Text>;

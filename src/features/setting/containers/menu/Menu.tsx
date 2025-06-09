@@ -4,7 +4,8 @@ import CHeader from "@/src/shared/components/header/CHeader";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import restClient from "@/src/shared/services/RestClient"; // Import restClient
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -14,7 +15,6 @@ import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from "reac
 import { useMenu } from "./useMenu";
 
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
-const Color = getColor();
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
@@ -26,6 +26,7 @@ interface CategoryItem {
 }
 
 const Menu = () => {
+  useTheme()
   const navigation = useNavigation<SettingNavigationProp>();
   const navigationMenu = useNavigation<MenuNavigationProp>();
   const [userID, setUserID] = useState<string | null>(null);

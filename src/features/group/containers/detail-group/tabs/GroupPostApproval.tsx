@@ -1,5 +1,6 @@
 import PostApproval from "@/src/features/group/components/PostApproval";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import {
   ActivityIndicator,
@@ -12,8 +13,6 @@ import {
 } from "react-native";
 import { useGroupPostApproval } from "./useGroupPostApproval";
 
-const Color = getColor();
-
 interface GroupPostApprovalProps {
   groupId: string;
   currentUserId: string;
@@ -21,6 +20,7 @@ interface GroupPostApprovalProps {
 }
 
 const GroupPostApproval: React.FC<GroupPostApprovalProps> = ({ groupId, role }) => {
+  useTheme();
   const {
     pendingPosts,
     loading,

@@ -1,8 +1,8 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
-const Color = getColor();
 interface ToggleSwitchProps {
   label: string;
   icon?:any; // Tùy chọn: Thêm icon nếu cần
@@ -12,6 +12,7 @@ interface ToggleSwitchProps {
 }
 
 const ToggleSwitch = ({ label, icon, onToggle, initialValue = false }: ToggleSwitchProps) => {
+  useTheme()
   const [isEnabled, setIsEnabled] = useState(initialValue);
 
   const toggleSwitch = () => {

@@ -3,15 +3,15 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { MessagesDrawerParamList } from "@/src/shared/routes/MessageNavigation";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Color = getColor();
-
 type MessagesNavigationProp = DrawerNavigationProp<MessagesDrawerParamList, "Tin nhắn">;
 const SettingsMessages = () => {
+    useTheme();
     const navigation = useNavigation<MessagesNavigationProp>();
     const [setting, setSetting] = useState<{
         profileVisibility: boolean;

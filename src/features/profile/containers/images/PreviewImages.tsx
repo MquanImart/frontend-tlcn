@@ -1,9 +1,8 @@
 import { MyPhoto } from "@/src/interface/interface_flex";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-
-const Color = getColor();
 
 interface PreviewImagesProps {
     handleSelected: (_id: string) => void;
@@ -11,6 +10,7 @@ interface PreviewImagesProps {
 }
 
 const PreviewImages = ({ handleSelected, src }: PreviewImagesProps) => {
+    useTheme()
     return (
         <View style={styles.container}>
             <View style={styles.boxTitle}>

@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, FlatList, ActivityIndicator } from "react-native"
 import CardTrip from "../../components/CardTrip";
 import CIconButton from "@/src/shared/components/button/CIconButton";
@@ -10,6 +11,7 @@ import ModalCreateTrip from "../../components/ModalCreateTrip";
 import HeaderTrip from "./HeaderTrip";
 
 const ListTrip = () => {
+    useTheme();
     const [visible, setVisible] = useState<boolean>(false);
     const { trips, getListTrip, createTrip, deleteTrip } = useListTrip();
     
@@ -52,7 +54,6 @@ const ListTrip = () => {
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -2,7 +2,8 @@ import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
@@ -21,10 +22,10 @@ import {
     View
 } from "react-native";
 
-const Color = getColor();
 type RegisterNavigationProp = StackNavigationProp<AuthStackParamList, "IDVerification">;
 
 const Register = () => {
+    useTheme();
     const [emailOrPhone, setEmailOrPhone] = useState<string>('');
     const [password, setPassword] = useState<string>(""); 
     const [confirmPassword, setConfirmPassword] = useState<string>("");

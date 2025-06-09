@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import restClient from '@/src/shared/services/RestClient';
 
-const Color = getColor();
 const hobbiesClient = restClient.apiClient.service("apis/hobbies");
 const UsersClient = restClient.apiClient.service("apis/users");
 
@@ -33,6 +33,7 @@ interface ChangePreferencesDialogProps {
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPreferences }: ChangePreferencesDialogProps) => {
+  useTheme();
   const [open, setOpen] = useState(false);
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>(initialPreferences.map(pref => pref.id));
   const [currentPreferences, setCurrentPreferences] = useState<Preference[]>(initialPreferences);

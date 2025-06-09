@@ -1,6 +1,7 @@
 import { Group } from "@/src/features/newfeeds/interface/article";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
@@ -19,8 +20,6 @@ import {
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const Color = getColor();
-
 interface EditGroupProps {
   group: Group;
   onCancel: () => void;
@@ -36,6 +35,7 @@ const hobbiesClient = restClient.apiClient.service("apis/hobbies");
 const groupsClient = restClient.apiClient.service("apis/groups");
 
 const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) => {
+  
   const [groupName, setGroupName] = useState(group?.groupName || "");
   const [groupDescription, setGroupDescription] = useState(group?.introduction || "");
   const [hobbyOpen, setHobbyOpen] = useState(false);
@@ -47,6 +47,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
   const [groupType, setGroupType] = useState<"public" | "private">(group?.type || "public");
   const [typeOpen, setTypeOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  useTheme();
 
   useEffect(() => {
     const fetchHobbies = async () => {

@@ -2,7 +2,8 @@ import { View, StyleSheet, Text, Alert } from "react-native"
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { CardNotify, CardNotifyProps } from "../../components/CardNotify";
 import { useEffect, useState } from "react";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
@@ -12,7 +13,6 @@ import CButton from "@/src/shared/components/button/CButton";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Color = getColor();
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "NewChat">;
 
 
@@ -26,6 +26,7 @@ const options : CardNotifyProps[] = [
 ]
 
 const SettingsNotify = () => {
+    useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "SettingsNotify">>();
     const { conversation } = route.params || {};
     const navigation = useNavigation<ChatNavigationProp>();

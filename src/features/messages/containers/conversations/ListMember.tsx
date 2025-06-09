@@ -2,7 +2,8 @@ import { Conversation } from "@/src/interface/interface_flex";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity,
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMember">;
 
 const ListMember = () => {
+    useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "ListMember">>();
     const { conversation } = route.params || {};
     const [userId, setUserId] = useState<string|null>(null);
@@ -131,8 +133,6 @@ const ListMember = () => {
         </View>
     );
 };
-
-const Color = getColor();
 
 const styles = StyleSheet.create({
     container: {

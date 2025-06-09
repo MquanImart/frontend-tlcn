@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
 
-const Color = getColor();
 type PreferenceSelectionNavigationProp = StackNavigationProp<
   AuthStackParamList,
   "PreferenceSelection"
@@ -15,6 +15,7 @@ type PreferenceSelectionNavigationProp = StackNavigationProp<
 type PreferenceSelectionRouteProp = RouteProp<AuthStackParamList, "PreferenceSelection">;
 
 const PreferenceSelection = () => {
+  useTheme();
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const navigation = useNavigation<PreferenceSelectionNavigationProp>();

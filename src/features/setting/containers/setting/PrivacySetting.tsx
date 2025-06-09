@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, TouchableOpacity } from "react-native";
 import ToggleSwitch from "../../components/ToggleSwitch";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ModalChooseConversation from "../../components/ModalChooseConversation";
 
 const UsersClient = restClient.apiClient.service("apis/users");
-const Color = getColor();
 
 const ScreenSetting = () => {
+  useTheme()
   const [isLoading, setIsLoading] = useState(true); // Trạng thái tải dữ liệu
   const [isMessageAllowed, setIsMessageAllowed] = useState(false); // Cho phép nhập tin nhắn
   const [isProfilePublic, setIsProfilePublic] = useState(false); // Truy cập trang cá nhân
   const [isPrivate, setIsPrivate] = useState(false); // Cài đặt riêng tư
   const [userId, setUserId] = useState<string | null>(null); // Lưu userId từ AsyncStorage
-
   const [visible, setVisible] = useState<boolean>(false);
 
   // Lấy userId từ AsyncStorage

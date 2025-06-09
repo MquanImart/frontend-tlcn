@@ -1,5 +1,6 @@
 import { MyPhoto } from "@/src/interface/interface_flex";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -11,9 +12,8 @@ interface ViewAllImagesProps {
     handleSelected: (_id: string) => void;
 }
 
-const Color = getColor();
-
 const ViewAllImages = ({label, src, onBack, handleScroll, handleSelected}: ViewAllImagesProps) => {
+    useTheme();
     return (
         <View style={styles.container}>
             <View style={styles.boxTitle}>

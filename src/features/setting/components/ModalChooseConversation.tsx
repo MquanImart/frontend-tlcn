@@ -1,7 +1,8 @@
 import { Conversation } from "@/src/interface/interface_flex";
 import { MyPhoto } from "@/src/interface/interface_reference";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { Image } from 'expo-image';
@@ -9,12 +10,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
-
 const ModalChooseConversation = ({ visible, onCancel }: {
     visible: boolean;
     onCancel: () => void;
   }) => {
+    useTheme()
     const { 
         getuserId,
         toggleConversation,

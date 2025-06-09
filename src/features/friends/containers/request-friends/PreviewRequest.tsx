@@ -1,10 +1,10 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Text, TouchableOpacity, View, StyleSheet, ActivityIndicator } from "react-native"
 import FriendCard from "../../components/FriendCard";
 import { FriendCardData } from "./useRequestFriends";
 import { ButtonActions } from "../../components/ActionsCard";
 
-const Color = getColor();
 
 interface PreviewRequestProps {
     label: string;
@@ -15,7 +15,7 @@ interface PreviewRequestProps {
 }
 
 const PreviewRequest = ({label, onPressViewAll, data, isSendMe, ReplyRequest}: PreviewRequestProps) => {
-    
+    useTheme();
     const HandleButton = (isSendMe: boolean, _id: string) => {
         if (isSendMe) {
             return ButtonActions({ label: ["Đồng ý", "Từ chối"],actions: [() => {ReplyRequest(_id, "approved")}, () => {ReplyRequest(_id, "rejected")}], _id: _id})

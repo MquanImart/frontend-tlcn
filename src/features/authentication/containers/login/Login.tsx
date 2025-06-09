@@ -2,7 +2,8 @@ import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -23,10 +24,10 @@ import {
 } from "react-native";
 
 const accountClient = restClient.apiClient.service("apis/accounts");
-const Color = getColor();
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
+  useTheme();
   const [emailOrPhone, setEmailOrPhone] = useState<string>("phanquanhcmute@gmail.com");
   const [password, setPassword] = useState<string>("123456");
   const navigation = useNavigation<AuthNavigationProp>();

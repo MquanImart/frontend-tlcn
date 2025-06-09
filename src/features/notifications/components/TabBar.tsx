@@ -1,15 +1,17 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface TabBarProps {
   selectedTab: string;
   onSelectTab: (tab: string) => void;
   unreadCount: number;
 }
-const Color = getColor();
+
 const TabBar: React.FC<TabBarProps> = ({ selectedTab, onSelectTab, unreadCount }) => {
+  useTheme();
   const tabs = ["Tất cả", "Chưa đọc", "Đã đọc"];
 
   return (

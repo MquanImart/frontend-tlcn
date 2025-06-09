@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { Notification } from "../interface/INotification";
@@ -20,7 +21,6 @@ interface NotificationListProps {
   isLoadingMore: boolean;
   loading?: boolean;
 }
-const Color = getColor();
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
   selectedTab,
@@ -33,6 +33,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   isLoadingMore,
   loading = false,
 }) => {
+  useTheme();
   const filteredNotifications = notifications.filter((notification) => {
     if (selectedTab === "Tất cả") return true;
     if (selectedTab === "Đã đọc") return notification.status === "read";

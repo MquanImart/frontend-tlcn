@@ -1,11 +1,10 @@
 import CardPage from "@/src/features/explore/components/CardPage";
 import { PageProvince } from "@/src/features/explore/containers/city-province/interface";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import useMyPagesTab from "./useMyPagesTab";
-
-const Color = getColor();
 
 interface MyPagesTabProps {
   userId: string;
@@ -13,6 +12,7 @@ interface MyPagesTabProps {
 }
 
 const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
+  useTheme();
   const { filledData, handleNavigateToPage, loading, error } = useMyPagesTab(userId);
 
   if (loading) {

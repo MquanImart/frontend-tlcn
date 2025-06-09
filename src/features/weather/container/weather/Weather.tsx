@@ -3,19 +3,19 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native
 import SearchBar from "./SearchBar";
 import WeatherCard from "./weatherCard";
 import CHeader from "@/src/shared/components/header/CHeader";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { WeatherStackParamList } from "@/src/shared/routes/WeatherNavigation";
 import axios from "axios";
 
-const Color = getColor();
-
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 type WeatherNavigationProp = StackNavigationProp<WeatherStackParamList, "WeatherDetail">;
 
 const Weather: React.FC = () => {
+  useTheme()
   const navigationMenu = useNavigation<MenuNavigationProp>();
   const navigationWeather = useNavigation<WeatherNavigationProp>();
 

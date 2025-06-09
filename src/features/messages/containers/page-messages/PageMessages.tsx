@@ -1,10 +1,10 @@
 import { View, StyleSheet, Animated, ActivityIndicator } from "react-native";
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import SearchMessages from "../../components/SearchMessages";
 import CardMessages from "../../components/CardMessages";
 import { FlatList } from "react-native-gesture-handler";
-
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { useCallback, useEffect } from "react";
@@ -12,9 +12,8 @@ import CardSearch from "../../components/CardSearch";
 import { useFocusEffect } from "@react-navigation/native";
 import usePageMessages from "./usePageMessages";
 
-const Color = getColor();
-
 const PageMessages = () => {
+  useTheme();
   const { inputRef, 
     search, searchUser, 
     isSearch, setIsSearch,

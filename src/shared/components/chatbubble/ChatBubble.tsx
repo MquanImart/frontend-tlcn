@@ -1,17 +1,17 @@
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-const Color = getColor();
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
 
 const ChatBubble: React.FC = () => {
+  useTheme()
   const navigation = useNavigation<StackNavigationProp<NewFeedParamList>>();
-
   const handlePress = () => {
     navigation.navigate("SupportChatNavigation"); // Điều hướng đến SupportChatNavigation
   };

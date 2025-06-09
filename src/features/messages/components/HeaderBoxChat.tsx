@@ -1,8 +1,7 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
-
-const Color = getColor();
 
 interface HeaderBoxChatProps {
     name: string;
@@ -10,7 +9,7 @@ interface HeaderBoxChatProps {
     onPressIconRight: () => void;
 }
 const HeaderBoxChat = ({name, onPressIconLeft, onPressIconRight} : HeaderBoxChatProps) => {
-
+    useTheme();
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={onPressIconLeft}>

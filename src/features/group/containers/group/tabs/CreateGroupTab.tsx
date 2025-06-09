@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import React from "react";
@@ -16,14 +17,13 @@ import {
 import DropDownPicker from "react-native-dropdown-picker";
 import useCreateGroup from "./useCreateGroup";
 
-const Color = getColor();
-
 interface CreateGroupProps {
   userId: string;
   handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
+  useTheme();
   const {
     groupName,
     setGroupName,

@@ -1,7 +1,8 @@
 import TabBarCustom, { Tab } from '@/src/features/group/components/TabBarCustom';
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader'; // Import TabBarCustom and Tab interface
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
 import { ActivityIndicator, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import ArticleRow from '../../components/ArticleRow';
@@ -10,8 +11,8 @@ import ReportModalScreen from '../ReportModal/ReportModal';
 import useAdminArticleList from './useAdminArticleList';
 
 const { height, width } = Dimensions.get('window');
-const Color = getColor();
 const AdminArticleListScreen: React.FC = () => {
+  useTheme();
   const {
     articles,
     loading,

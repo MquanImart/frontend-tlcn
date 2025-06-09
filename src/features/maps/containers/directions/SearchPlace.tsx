@@ -1,6 +1,7 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { callGetGoogleApi, callPostGoogleApi } from "@/src/shared/services/API_Google";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useState } from "react";
 import { TextInput, TouchableOpacity, View, StyleSheet, FlatList, Dimensions, Text, Alert, Linking } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -10,7 +11,6 @@ import * as Location from "expo-location";
 
 const WIDTH_SCREEN = Dimensions.get('window').width;
 const HEIGHT_SCREEN = Dimensions.get('window').height;
-const Color = getColor();
 
 interface SearchPlaceProps {
     onBack: () => void;
@@ -18,7 +18,7 @@ interface SearchPlaceProps {
 }
 
 const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
-
+    useTheme();
     const [search, setSearch] = useState<string>("");
     const [listSearch, setListSearch] = useState<PlaceSuggestion[]>([]);
 

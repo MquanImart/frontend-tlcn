@@ -1,13 +1,15 @@
-import getColor from "@/src/styles/Color";
 import { Image } from 'expo-image';
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface MapMessageProps {
     addressString: string;
 }
 const MapMessage= ({addressString} : MapMessageProps) => {
+    useTheme();
     const [loading, setLoading] = useState<boolean>(false);
     const [mapRegion, setMapRegion] = useState<Region | null>(null);
 
@@ -64,8 +66,6 @@ const MapMessage= ({addressString} : MapMessageProps) => {
         </View>
     )
 }
-
-const Color = getColor();
 
 const styles = StyleSheet.create({
   mapContainer: {

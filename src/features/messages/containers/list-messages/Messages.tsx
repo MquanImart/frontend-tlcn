@@ -1,6 +1,7 @@
 import { View, StyleSheet, Animated, ActivityIndicator } from "react-native";
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import SearchMessages from "../../components/SearchMessages";
 import CardMessages from "../../components/CardMessages";
 import { FlatList } from "react-native-gesture-handler";
@@ -12,9 +13,8 @@ import useListMessages from "./useListMessages";
 import CardSearch from "../../components/CardSearch";
 import { useFocusEffect } from "@react-navigation/native";
 
-const Color = getColor();
-
 const Messages = () => {
+  useTheme();
   const { inputRef, 
     search, searchUser, 
     isSearch, setIsSearch,

@@ -1,9 +1,9 @@
 // src/features/pages/containers/tabs/LocationInfo.tsx (Đã sửa)
-
 import { Location as MapLocationType } from "@/src/features/maps/containers/directions/interfaceLocation";
 import { Page } from "@/src/interface/interface_reference";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation"; // Đảm bảo đúng PageStackParamList
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
@@ -14,8 +14,6 @@ import MapView, { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useLocationInfo from "./useLocationInfo";
 
-const Color = getColor();
-
 interface LocationInfoProps {
   page: Page;
   currentUserId: string;
@@ -24,6 +22,7 @@ interface LocationInfoProps {
 }
 type LocationInfoNavigationProp = StackNavigationProp<PageStackParamList, "MapNavigation">;
 const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, onMessagePress }) => {
+  useTheme()
   const navigation = useNavigation<LocationInfoNavigationProp>();
   const time = page.timeOpen && page.timeClose ? `${page.timeOpen} - ${page.timeClose}` : "Không có thông tin";
   const { address, error, loading } = useLocationInfo(page.address || "");

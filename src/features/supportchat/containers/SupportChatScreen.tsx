@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Image } from 'expo-image';
@@ -18,10 +19,10 @@ import MessageList from "../components/MessageList";
 import { Message } from "../interface/Message";
 import { useSupportChatScreen } from "./useSupportChatScreen";
 
-const Color = getColor();
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
 
 const SupportChatScreen: React.FC = () => {
+  useTheme()
   const initialMessages: Message[] = [
     { id: "1", text: "Xin chào! Tôi có thể giúp gì cho bạn?", isUser: false },
   ];

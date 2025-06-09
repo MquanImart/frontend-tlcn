@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native"
 import SavedLocations from "../../components/SavedLocations";
 import { FlatList } from "react-native-gesture-handler";
@@ -13,7 +14,7 @@ interface ListSaveLocationProps {
     setOpen: (value: boolean) => void;
 }
 const ListSaveLocation = ({clickItem, open, setOpen} : ListSaveLocationProps) => {
-
+    useTheme();
     const { savedLocations, getSavedLocation, deleteLocation } = useListSaved();
 
     useEffect(() => {
@@ -39,7 +40,6 @@ const ListSaveLocation = ({clickItem, open, setOpen} : ListSaveLocationProps) =>
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         width: '100%',

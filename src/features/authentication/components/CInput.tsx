@@ -2,9 +2,6 @@ import React, { useState, forwardRef } from "react";
 import { TextInput, StyleSheet, View, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import ConvertDimension from "@/src/shared/utils/ConvertDimension";
-import getColor from "@/src/styles/Color";
-
-const Color = getColor();
 
 interface CustomInputProps {
     placeholder: string;

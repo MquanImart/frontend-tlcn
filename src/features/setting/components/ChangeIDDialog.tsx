@@ -1,6 +1,7 @@
 import CButton from "@/src/shared/components/button/CButton";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { Image } from 'expo-image';
@@ -15,8 +16,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-const Color = getColor();
 
 interface CCCDData {
   number: string;
@@ -48,6 +47,7 @@ interface ChangeIDDialogProps {
 }
 
 const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeIDDialogProps) => {
+  useTheme()
   const [selectedImage, setSelectedImage] = useState<{ uri: string; type: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 

@@ -2,14 +2,13 @@ import { MyPhoto } from "@/src/interface/interface_reference";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const Color = getColor();
 
 export interface FriendCardProps {
     _id: string;
@@ -27,6 +26,7 @@ type NavigationProp = NativeStackNavigationProp<MenuStackParamList>;
 type ProfileNavigationProp = StackNavigationProp<SearchStackParamList>;
 
 const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate, button, profile}: FriendCardProps) => {
+    useTheme();
     const menuNavigation = useNavigation<NavigationProp>();
     const profileNavigation = useNavigation<ProfileNavigationProp>();
 

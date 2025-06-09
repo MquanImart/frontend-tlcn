@@ -1,6 +1,7 @@
 import { Page } from "@/src/interface/interface_reference";
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -8,7 +9,6 @@ import AddTicketModal from "../../../components/AddTicketModal";
 import TicketList from "../../../components/TicketList";
 import usePageTickets from "./usePageTickets";
 
-const Color = getColor();
 
 interface PageTicketsProps {
   page: Page;
@@ -18,6 +18,7 @@ interface PageTicketsProps {
 }
 
 const PageTickets: React.FC<PageTicketsProps> = ({ page, role , updatePage}) => {
+  useTheme()
   const [modalVisible, setModalVisible] = useState(false);
   const {
     ticketList,

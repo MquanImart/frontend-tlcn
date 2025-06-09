@@ -2,13 +2,15 @@ import CHeader from "@/src/shared/components/header/CHeader";
 import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import NotificationList from "../../components/NotificationList";
 import useNotificationScreen from "./useNotificationScreen";
 
 const NotificationScreen: React.FC = () => {
+  useTheme()
   const {
     notifications,
     selectedTab,
@@ -25,7 +27,6 @@ const NotificationScreen: React.FC = () => {
   } = useNotificationScreen();
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
-  const Color = getColor();
 
   const tabs = [
     { label: "Tất cả" },

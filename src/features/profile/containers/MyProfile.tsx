@@ -1,6 +1,7 @@
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import restClient from '@/src/shared/services/RestClient';
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -17,10 +18,10 @@ const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
-const Color = getColor();
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 const MyProfile = () => {
+    useTheme()
     const navigation = useNavigation<ProfileNavigationProp>();
     const [user, setUser] = useState<any>(null);
     const [avt, setAvt] = useState<any>(null);

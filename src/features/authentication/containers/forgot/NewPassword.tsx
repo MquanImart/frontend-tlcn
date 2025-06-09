@@ -6,13 +6,14 @@ import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet
 
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 type NewPasswordRouteProp = RouteProp<AuthStackParamList, "NewPassword">;
 type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
-const Color = getColor();
 const NewPassword = () => {
+    useTheme();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const passwordRef = useRef<TextInput | null>(null);

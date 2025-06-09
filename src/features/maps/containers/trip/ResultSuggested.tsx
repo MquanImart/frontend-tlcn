@@ -2,7 +2,8 @@ import { View, StyleSheet, Text, Animated, Dimensions, ActivityIndicator, Toucha
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import useTrip from "./useTrip";
 import { SuggestedDetails } from "./FormSuggested";
 import restClient from "@/src/shared/services/RestClient";
@@ -17,7 +18,6 @@ export interface LocationProps{
   longitude: number;
 }
 
-const Color = getColor();
 
 interface ResultSuggestedProps{
     input: SuggestedDetails;
@@ -34,7 +34,7 @@ interface RouteDetail {
 }
 
 const ResultSuggested = ({ input, handleSubmitChange } : ResultSuggestedProps) => {
-
+  useTheme();
   const { trip, getTrip } = useTrip(input.tripId);
 
   const translateY = useRef(new Animated.Value(0)).current;

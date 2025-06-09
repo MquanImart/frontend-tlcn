@@ -1,5 +1,6 @@
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -13,8 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-const Color = getColor();
 
 interface EditModalProps {
   visible: boolean;
@@ -41,6 +40,7 @@ const EditModal: React.FC<EditModalProps> = ({
   onCancel,
   isLoading, // nhận isLoading
 }) => {
+  useTheme();
   const [isScopeModalVisible, setScopeModalVisible] = useState(false);
   const [hashtagInput, setHashtagInput] = useState("");
 

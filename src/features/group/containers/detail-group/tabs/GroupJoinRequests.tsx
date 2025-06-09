@@ -1,5 +1,6 @@
 import MemberRequestItem from "@/src/features/group/components/MemberRequestItem";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from "react";
 import {
   ActivityIndicator,
@@ -14,8 +15,6 @@ import {
   View,
 } from "react-native";
 import { useGroupJoinRequests } from "./useGroupJoinRequests";
-
-const Color = getColor();
 
 interface GroupJoinRequestsProps {
   groupId: string;
@@ -47,7 +46,7 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
     isLoadingMore,
     fetchPendingMembers,
   } = useGroupJoinRequests(groupId);
-
+  useTheme();
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

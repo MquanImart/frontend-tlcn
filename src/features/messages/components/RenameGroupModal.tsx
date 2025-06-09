@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, TextInput, Button, StyleSheet, Modal, Text } from "react-native";
 
 interface RenameGroupModalProps {
@@ -9,8 +11,9 @@ interface RenameGroupModalProps {
 }
 
 const RenameGroupModal: React.FC<RenameGroupModalProps> = ({ visible, currentName, onRename, onCancel }) => {
+  useTheme();
   const [newName, setNewName] = useState(currentName);
-
+  
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>

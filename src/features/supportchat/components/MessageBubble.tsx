@@ -1,15 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Message } from "../interface/Message";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
-const Color = getColor();
 
 interface MessageBubbleProps {
   message: Message;
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+  useTheme()
   const formatMessage = () => {
     if (!message.boldRanges || message.isUser) {
       return (

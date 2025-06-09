@@ -8,16 +8,16 @@ import JoinedGroupsTab from "@/src/features/group/containers/group/tabs/JoinedGr
 import MyGroupsTab from "@/src/features/group/containers/group/tabs/MyGroupsTab";
 import CreateGroupTab from "@/src/features/group/containers/group/tabs/CreateGroupTab";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Color = getColor();
-
 const GroupScreen = () => {
+  useTheme();
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();

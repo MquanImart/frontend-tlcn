@@ -1,5 +1,6 @@
 import { View, StyleSheet, ActivityIndicator, Text } from "react-native"
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import SearchMessages from "../../components/SearchMessages";
 import { FlatList } from "react-native-gesture-handler";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
@@ -9,10 +10,8 @@ import { useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import CardStrangeMessage from "../../components/CardStrangeMessage";
 
-const Color = getColor();
-
 const StrangeMessages = () => {
-
+    useTheme();
     const { 
       search, searchUser, 
       isSearch, setIsSearch,

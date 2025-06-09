@@ -1,4 +1,5 @@
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Report } from '../interface';
@@ -9,8 +10,8 @@ interface ReportRowProps {
 }
 
 const { width } = Dimensions.get('window');
-const Color = getColor();
 const ReportRow: React.FC<ReportRowProps> = ({ report, onUpdate }) => {
+  useTheme();
   const reporterName = report._idReporter 
   const reportId = report._id || 'N/A';
   const reportStatus = report.status || 'pending';

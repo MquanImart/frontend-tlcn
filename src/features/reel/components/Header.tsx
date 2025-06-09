@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface CHeaderProps {
   label: string;
@@ -12,8 +13,6 @@ interface CHeaderProps {
   rightIcon?: string;         // Name of the right icon (MaterialIcons)
 }
 
-const Color = getColor();
-
 const CHeader = ({ 
   label, 
   backPress, 
@@ -23,6 +22,7 @@ const CHeader = ({
   showBackButton = true, 
   rightIcon = "add"  // Default right icon is "add"
 }: CHeaderProps) => {
+  useTheme()
   return (
     <View style={styles.container}>
       {showBackButton && (

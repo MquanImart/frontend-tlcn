@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -6,8 +7,6 @@ import restClient from "../../services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Conversation } from "@/src/interface/interface_flex";
 import socket from "../../services/socketio";
-
-const Color = getColor();
 
 interface HeaderMessagesProps {
     label: string;
@@ -20,7 +19,7 @@ interface HeaderMessagesProps {
 }
 
 const CHeaderIcon = ({label, IconLeft, onPressLeft, IconRight, onPressRight, textRight, borderIcon}: HeaderMessagesProps) => {
-
+    useTheme()
     return (
         <View style={styles.container}>
             <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressLeft}>

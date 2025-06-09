@@ -2,7 +2,8 @@ import { ButtonActions } from "@/src/features/friends/components/ActionsCard";
 import FriendCard from "@/src/features/friends/components/FriendCard";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -13,9 +14,9 @@ import useSearch from "./useSearch";
 import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
 
 type SearchNavigationProp = StackNavigationProp<SearchStackParamList, "Search">;
-const Color = getColor();
 
 const Search: React.FC = () => {
+  useTheme()
   const navigation = useNavigation<SearchNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
 

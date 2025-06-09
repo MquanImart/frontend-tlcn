@@ -1,6 +1,7 @@
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader';
-import getColor from '@/src/styles/Color';
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
 import { ActivityIndicator, Alert, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -9,9 +10,8 @@ import { Account } from '@/src/interface/interface_reference';
 import useAdminAccountList from './useAdminAccountList';
 
 const { height, width } = Dimensions.get('window');
-const Color = getColor();
 const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => void }> = ({ account, onDelete }) => {
-
+  useTheme();
   const confirmDelete = () => {
     Alert.alert(
       'Xác nhận xóa tài khoản',

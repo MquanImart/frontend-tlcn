@@ -2,20 +2,19 @@ import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import FriendCard from "../../components/FriendCard";
 import { ButtonActions } from "../../components/ActionsCard";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import useSuggestFriends from "./useSuggestFriends";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 import MessageModal from "../../../../shared/components/form-message-addfriend/AddMessages";
-
-const Color = getColor();
 
 interface SuggestFriendsProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
 }
 
 const SuggestFriends = ({handleScroll} : SuggestFriendsProps) => {
-
+    useTheme();
     const { filterFriends, getAllFriends, addFriends, deleteFriends,
         isAddFriends, onCloseModel, onOpenModel, selectedFriends
      } = useSuggestFriends();

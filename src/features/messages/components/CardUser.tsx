@@ -1,11 +1,11 @@
 import { MyPhoto } from "@/src/interface/interface_reference";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
 export interface CardUserProps {
     _id: string;
     avt: MyPhoto | null;
@@ -16,6 +16,7 @@ export interface CardUserProps {
     radio: boolean;
 }
 const CardUser = ({_id, avt, name, selected, onPress, icon, radio} : CardUserProps) => {
+    useTheme();
     const [isChoose, setIsChoose] = useState<boolean>(false);
 
     const handlePress = () => {

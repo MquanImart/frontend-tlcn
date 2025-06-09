@@ -1,10 +1,9 @@
 import { Group } from "@/src/features/newfeeds/interface/article";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const Color = getColor();
 
 interface GroupCardProps {
   group: Group;
@@ -14,6 +13,7 @@ interface GroupCardProps {
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({ group, currentUserId, onJoinGroup, onViewGroup }) => {
+  useTheme();
   const isGroupCreator = group.idCreater === currentUserId;
   const currentUserMember = group.members?.find((member) => member.idUser._id === currentUserId);
 

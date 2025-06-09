@@ -1,5 +1,6 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { ILocation } from "../containers/interfaceSaved";
@@ -11,7 +12,7 @@ interface SavedLocationsProps {
 }
 
 const SavedLocations = ({ location, deletePress, onPress } : SavedLocationsProps) => {
-
+    useTheme();
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.title}
@@ -36,7 +37,6 @@ const SavedLocations = ({ location, deletePress, onPress } : SavedLocationsProps
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         width: '90%',

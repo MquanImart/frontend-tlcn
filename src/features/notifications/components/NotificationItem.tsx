@@ -1,5 +1,6 @@
 import { NotificationParamList } from "@/src/shared/routes/NotificationNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage"; // For fetching currentUserId
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -15,7 +16,6 @@ interface NotificationItemProps {
   onDelete: () => void;
   handleOptions: (onMarkAsRead: () => void, onMarkAsUnread: () => void, onDelete: () => void) => void;
 }
-const Color = getColor();
 const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   onMarkAsRead,
@@ -23,6 +23,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   onDelete,
   handleOptions,
 }) => {
+  useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<NotificationParamList>>();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 

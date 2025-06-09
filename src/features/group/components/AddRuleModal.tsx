@@ -7,9 +7,8 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import getColor from "@/src/styles/Color";
-
-const Color = getColor();
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface AddRuleModalProps {
   isVisible: boolean;
@@ -22,6 +21,7 @@ const AddRuleModal: React.FC<AddRuleModalProps> = ({
   onClose,
   onAddRule,
 }) => {
+  useTheme();
   const [newRule, setNewRule] = useState("");
 
   const handleAdd = () => {

@@ -1,14 +1,15 @@
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { FlatList, } from "react-native-gesture-handler";
 import IconPage from "./IconPage";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { HistoryPage } from "@/src/interface/interface_flex";
 
 interface RecentPagePops {
     recent: HistoryPage[] | null;
 }
 const RecentPage = ({recent} : RecentPagePops) => {
-
+    useTheme();
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Đã xem gần đây</Text>
@@ -29,7 +30,6 @@ const RecentPage = ({recent} : RecentPagePops) => {
     )
 }
 
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         width: '100%',

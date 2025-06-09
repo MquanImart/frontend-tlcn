@@ -3,15 +3,14 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View, Text } from "react-native";
 import FriendCard from "@/src/features/friends/components/FriendCard";
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { ButtonActions } from "@/src/features/friends/components/ActionsCard";
 import restClient from "@/src/shared/services/RestClient";
 import { MyPhoto } from "@/src/interface/interface_reference";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
-
-const Color = getColor();
 
 export interface Friend {
   _id: string;
@@ -27,6 +26,7 @@ interface SearchUserProps {
 }
 
 const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation }) => {
+  useTheme()
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [allFriends, setAllFriends] = useState<Friend[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);

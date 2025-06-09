@@ -1,9 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color"; 
-
-const Color = getColor(); 
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface RuleItemProps {
   index: number;
@@ -12,6 +11,7 @@ interface RuleItemProps {
 }
 
 const RuleItem: React.FC<RuleItemProps> = ({ index, text, onDelete }) => {
+  useTheme();
   return (
     <View style={[styles.container, { backgroundColor: Color.backGround }]}>
       <View style={styles.ruleInfo}>

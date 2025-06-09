@@ -1,6 +1,7 @@
 import { Address, MyPhoto, Page } from "@/src/interface/interface_reference";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,7 +13,6 @@ import AdminInviteModal from "./AdminInviteModal";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 const IMAGE_HEIGHT = (SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 15);
-const Color = getColor();
 
 type NavigationProp = StackNavigationProp<PageStackParamList>;
 
@@ -45,6 +45,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   acceptAdminInvite,
   declineAdminInvite,
 }) => {
+  useTheme()
   const navigation = useNavigation<NavigationProp>();
 
   return (

@@ -3,10 +3,9 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text, FlatList, TouchableOpacity } from "react-native";
 import RuleItem from "@/src/features/group/components/RuleItem";
 import AddRuleModal from "@/src/features/group/components/AddRuleModal";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useGroupRules } from "./useGroupRules"; // Import the custom hook
-
-const Color = getColor();
 
 interface GroupRulesProps {
   groupId: string;
@@ -15,6 +14,7 @@ interface GroupRulesProps {
 }
 
 const GroupRules: React.FC<GroupRulesProps> = ({ groupId, currentUserId, role }) => {
+  useTheme();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { rules, addRule, deleteRule } = useGroupRules(groupId); 
 

@@ -3,7 +3,8 @@ import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTo
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
@@ -12,8 +13,6 @@ import CollectionsImages from "./images/CollectionsImages";
 import CollectionPost from "./post/CollectionsPost";
 import CollectionsVideos from "./videos/CollectionsVideos";
 
-const Color = getColor();
-
 const tabs : TabProps[] = [
     {label: 'Hình ảnh'},
     {label: 'Video'},
@@ -21,6 +20,7 @@ const tabs : TabProps[] = [
   ];
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 const Collections = () => {
+    useTheme()
     const navigationMenu = useNavigation<MenuNavigationProp>();
     const [currTab, setCurrTab] = useState<string>(tabs.length > 0?tabs[0].label:''); 
     const { tabbarPosition, handleScroll} = useScrollTabbar();

@@ -3,7 +3,8 @@ import CHeader from "@/src/shared/components/header/CHeader";
 import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -12,11 +13,10 @@ import { StyleSheet, Text, View } from "react-native";
 import CreatePageTab from "./tab/CreatePageTab";
 import MyPagesTab from "./tab/MyPagesTab";
 
-const Color = getColor();
-
 type MyPagesNavigationProp = StackNavigationProp<PageStackParamList, "MyPage">;
 
 const MyPagesScreen = () => {
+  useTheme();
   const navigation = useNavigation<MyPagesNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Add loading state

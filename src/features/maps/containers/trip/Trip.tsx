@@ -2,7 +2,8 @@ import { View, StyleSheet, Text, Animated, TouchableOpacity, Dimensions } from "
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import HeaderMap from "../../components/HeaderMap";
@@ -16,9 +17,8 @@ export interface LocationProps{
   longitude: number;
 }
 
-const Color = getColor();
-
 const TripScreen = () => {
+  useTheme();
   const route = useRoute<RouteProp<MapStackParamList, "Trip">>();
   const { tripId } = route.params || {};
 

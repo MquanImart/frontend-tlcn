@@ -1,11 +1,10 @@
 import CButton from "@/src/shared/components/button/CButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const Color = getColor();
 
 interface InviteAdminModalProps {
   visible: boolean;
@@ -28,6 +27,7 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
   inviteDate,
   inviterAvatar,
 }) => {
+  useTheme();
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>

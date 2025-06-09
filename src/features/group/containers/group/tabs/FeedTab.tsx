@@ -1,7 +1,8 @@
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -16,14 +17,13 @@ import {
 import Modal from "react-native-modal";
 import { useFeed } from "./useFeed";
 
-const Color = getColor();
-
 interface FeedTabProps {
   userId: string;
   handleScroll: (event: { nativeEvent: { contentOffset: { y: any } } }) => void;
 }
 
 const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
+  useTheme();
   const { articleGroups, setArticleGroups, loading, error, loadMoreArticles, isLoadingMore } =
     useFeed(userId);
   const {

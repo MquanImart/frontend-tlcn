@@ -1,4 +1,5 @@
-import getColor from "@/src/styles/Color"
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, TouchableWithoutFeedback, Keyboard, Modal } from "react-native"
 import FriendCard from "../../components/FriendCard";
 import CSearch from "../../components/CSearch";
@@ -7,13 +8,12 @@ import useAllFriends from "./useAllFriends";
 import { useFocusEffect } from "@react-navigation/native";
 import { ButtonActions } from "../../components/ActionsCard";
 
-const Color = getColor();
-
 interface AllFriendsProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
 }
 
 const AllFriends = ({handleScroll}: AllFriendsProps) => {
+    useTheme();
     const {filterFriends, search, setSearch, handleSearch, getAllFriends, unFriends} = useAllFriends();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);

@@ -1,9 +1,9 @@
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { FlatList } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
 
 interface ButtonActionsProps {
     text: string;
@@ -16,7 +16,7 @@ interface CardActionsDetailsProps {
     buttons: ButtonActionsProps[];
 }
 const CardActionsDetails = ({label, buttons} : CardActionsDetailsProps) => {
-
+    useTheme();
     return (
         <View style={styles.container}>
             <Text style={styles.label}>{label}</Text>

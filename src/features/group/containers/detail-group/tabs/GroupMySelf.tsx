@@ -3,7 +3,8 @@ import UserInfo from "@/src/features/group/components/UserInfo";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -19,8 +20,6 @@ import {
 import Modal from "react-native-modal";
 import { useGroupMySelf } from "./useGroupMySelf";
 
-const Color = getColor();
-
 interface GroupMySelfProps {
   groupId: string;
   currentUserId: string;
@@ -29,6 +28,7 @@ interface GroupMySelfProps {
 }
 
 const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role, onRoleUpdated }) => {
+  useTheme();
   const {
     articles,
     setArticles,

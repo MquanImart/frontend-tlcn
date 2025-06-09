@@ -1,8 +1,8 @@
 import CButton from "@/src/shared/components/button/CButton"
-import getColor from "@/src/styles/Color"
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet } from "react-native"
 
-const Color = getColor();
 
 export interface ButtonFriendsProps {
     actions: (() => void)[];
@@ -11,7 +11,7 @@ export interface ButtonFriendsProps {
 }
 
 export const ButtonActions = ({actions, label, _id} : ButtonFriendsProps) => {
-
+    useTheme();
     const width = label.length > 1? "48%" : "96%";
     
     return (

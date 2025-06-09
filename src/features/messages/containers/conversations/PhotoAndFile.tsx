@@ -2,7 +2,8 @@ import { Message } from "@/src/interface/interface_flex";
 import { MyPhoto } from "@/src/interface/interface_reference";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ResizeMode, Video } from "expo-av";
@@ -13,13 +14,13 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import usePhotoAndFile from "./usePhotoAndFile";
 
-const Color = getColor();
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 const IMAGE_SIZE = Dimensions.get('window').width / 2 - 4;
 
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "NewChat">;
 
 const PhotoAndFile = () =>{
+    useTheme();
     const tabs : TabProps[] = [
         {label: 'Ảnh'},
         {label: 'Video'},

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Modal, TouchableOpacity, Alert } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ticket } from "@/src/interface/interface_reference";
-
-const Color = getColor();
 
 interface AddTicketModalProps {
   visible: boolean;
@@ -14,6 +13,7 @@ interface AddTicketModalProps {
 }
 
 const AddTicketModal: React.FC<AddTicketModalProps> = ({ visible, onClose, onAddTicket, pageId }) => {
+  useTheme()
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");

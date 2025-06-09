@@ -1,5 +1,6 @@
 import ConvertDimension from "@/src/shared/utils/ConvertDimension";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -22,6 +23,7 @@ const CardPage = ({
   size,
   onPress,
 }: CardExploreProps) => {
+  useTheme(); 
   return (
     <TouchableOpacity
       style={[
@@ -58,7 +60,6 @@ const CardPage = ({
   );
 };
 
-const Color = getColor();
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "red", // Có thể bỏ nếu không cần màu nền đỏ

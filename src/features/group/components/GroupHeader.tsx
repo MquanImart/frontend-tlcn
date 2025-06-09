@@ -1,13 +1,12 @@
 import { Group } from "@/src/features/newfeeds/interface/article";
 import CButton from "@/src/shared/components/button/CButton";
 import CIconButton from "@/src/shared/components/button/CIconButton";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
-const Color = getColor();
 
 interface GroupHeaderProps {
   group: Group;
@@ -20,6 +19,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   role,
   onInvite
 }) => {
+  useTheme();
   const isJoined = role === "Member" || role === "Admin" || role === "Owner";
 
   return (

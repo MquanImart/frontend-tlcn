@@ -1,7 +1,8 @@
 import { Trip } from "@/src/interface/interface_detail";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native"
@@ -18,7 +19,7 @@ interface CardTripProps {
 const CardTrip = ({ trip, deleteTrip }: CardTripProps) => {
     const navigation = useNavigation<MapNavigationProp>();
     const [visible, setVisible] = useState<boolean>(false);
-
+    useTheme();
     const onConfirm = () => {
         deleteTrip(trip._id);
         setVisible(false);
@@ -119,8 +120,6 @@ const CardTrip = ({ trip, deleteTrip }: CardTripProps) => {
         </View>
     )
 }
-
-const Color = getColor();
 const styles = StyleSheet.create({
     container: {
         width: '90%',

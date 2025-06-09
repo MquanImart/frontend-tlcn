@@ -12,10 +12,10 @@ import Post from "@/src/features/newfeeds/components/post/Post";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import useProfilePost from "./useProfilePost";
 
-const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // Nhận userId như một prop
@@ -24,6 +24,7 @@ interface ProfilePostProps {
 }
 
 export default function ProfilePost({ userId }: ProfilePostProps) {
+  useTheme()
   const {
     articles,
     isModalVisible,

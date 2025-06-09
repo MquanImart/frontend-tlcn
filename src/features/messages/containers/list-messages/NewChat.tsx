@@ -1,7 +1,8 @@
 import { View, StyleSheet, TouchableWithoutFeedback, Text, TouchableOpacity } from "react-native"
 import SearchMessages from "../../components/SearchMessages";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CardUser from "../../components/CardUser";
 import { FlatList } from "react-native-gesture-handler";
 import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
@@ -9,10 +10,8 @@ import useNewChat from "./useNewChat";
 import { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
-const Color = getColor();
-
 const NewChat = () => {
-    
+    useTheme();
   const {
     dismissKeyboard, goBack,
     inputRef, filterUser,

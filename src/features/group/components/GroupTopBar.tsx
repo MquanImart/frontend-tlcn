@@ -1,14 +1,14 @@
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { showActionSheet } from "@/src/shared/components/showActionSheet/showActionSheet";
 import restClient from "@/src/shared/services/RestClient";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import React from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Color = getColor();
 const groupsClient = restClient.apiClient.service("apis/groups");
 
 interface GroupTopBarProps {
@@ -29,7 +29,7 @@ const GroupTopBar: React.FC<GroupTopBarProps> = ({
   onDeleteGroup,
 }) => {
   const insets = useSafeAreaInsets();
-
+  useTheme();
   // 🛠 Xử lý cập nhật trạng thái thành viên (chỉ dùng cho Admin/Member)
   const handleUpdateMemberStatus = async (userId: string, state: "rejected" | "remove-admin") => {
     try {

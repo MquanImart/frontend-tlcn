@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 
 interface CHeaderProps {
   label: string;
@@ -10,10 +11,9 @@ interface CHeaderProps {
   iconColor?: string; // Thêm prop này để nhận màu icon
 }
 
-const Color = getColor();
-
 
 const CHeader = ({ label, backPress, labelColor, iconColor, showBackButton = true }: CHeaderProps) => {
+  useTheme()
   return (
     <View style={styles.container}>
       {showBackButton && (

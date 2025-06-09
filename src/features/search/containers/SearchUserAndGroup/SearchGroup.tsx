@@ -6,12 +6,11 @@ import { useMyGroups } from "@/src/features/group/containers/group/tabs/useMyGro
 import CButton from "@/src/shared/components/button/CButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-
-const Color = getColor();
 
 interface SearchGroupProps {
   textSearch: string;
@@ -20,6 +19,7 @@ interface SearchGroupProps {
 }
 
 const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigation }) => {
+  useTheme()
   const { myGroups, loading: myGroupsLoading, error: myGroupsError } = useMyGroups(userId);
   const { savedGroups, loading: joinedGroupsLoading, error: joinedGroupsError } = useJoinedGroups(userId);
   const { groupsNotJoined, loading: exploreLoading, error: exploreError, handleJoinGroup } = useExplore(userId);

@@ -1,6 +1,7 @@
 import { View, StyleSheet, TouchableWithoutFeedback, Text } from "react-native"
 import SearchMessages from "../../components/SearchMessages";
-import getColor from "@/src/styles/Color";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import CardUser from "../../components/CardUser";
 import { FlatList } from "react-native-gesture-handler";
 import InputName from "../../components/InputName";
@@ -10,9 +11,8 @@ import { useCallback } from "react";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
-const Color = getColor();
-
 const NewGroupChat = () => {
+    useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "NewGroupChat">>();
     const { defaultChoose } = route.params || {};
     const { 

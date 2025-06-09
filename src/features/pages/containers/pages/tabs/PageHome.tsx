@@ -5,14 +5,11 @@ import Post from "@/src/features/newfeeds/components/post/Post";
 import Modal from "react-native-modal";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import { Ionicons } from "@expo/vector-icons";
-import getColor from "@/src/styles/Color";
-import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePostDialog";
+import { useTheme } from '@/src/contexts/ThemeContext';
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Page } from "@/src/interface/interface_reference";
 import usePageHome from "./usePageHome";
-import BubbleButton from "@/src/shared/components/bubblebutton/BubbleButton";
-import PostDialog from "@/src/features/newfeeds/components/PostDialog/PostDialog";
 
-const Color = getColor();
 
 interface PageHomeProps {
   page: Page; 
@@ -21,6 +18,7 @@ interface PageHomeProps {
 }
 
 const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
+  useTheme()
   const { articles, setArticles, loading } = usePageHome(page.listArticle || []);
   const {
     isModalVisible,
