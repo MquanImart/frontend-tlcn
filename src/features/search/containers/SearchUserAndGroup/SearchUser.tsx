@@ -25,13 +25,6 @@ interface SearchUserProps {
 
 const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation }) => {
   useTheme()
-  const [showAllUsers, setShowAllUsers] = useState(false);
-  const [allFriends, setAllFriends] = useState<Friend[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const toggleShowAllUsers = () => {
-    setShowAllUsers(!showAllUsers);
-  };
   const [allFriends, setAllFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1); // Biến page để quản lý phân trang

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, StyleSheet, View, Text, Alert } from "react-native";
 import GroupCard from "@/src/features/group/components/GroupCard";
 import CButton from "@/src/shared/components/button/CButton";
-import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';

@@ -47,7 +47,7 @@ const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate,
     return (
         <View key={`view-${_id}`} style={styles.container}>
             <View style={styles.boxImages}>
-                <Image style={styles.images} source={ img.length > 0 ? {uri: img[0].url} : require("@/src/assets/images/default/default_user_male.png")}/>
+                <Image style={styles.images} source={ img.length > 0 ? {uri: img[0].url} : require("@/src/assets/images/default/default_user.png")}/>
             </View>
             <View style={styles.boxContent}>
                 <TouchableOpacity style={styles.boxTilte} 
