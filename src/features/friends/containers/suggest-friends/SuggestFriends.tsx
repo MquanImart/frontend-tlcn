@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import FriendCard from "../../components/FriendCard";
 import { ButtonActions } from "../../components/ActionsCard";
@@ -16,13 +16,14 @@ interface SuggestFriendsProps {
 const SuggestFriends = ({handleScroll} : SuggestFriendsProps) => {
     useTheme();
     const { filterFriends, getAllFriends, addFriends, deleteFriends,
-        isAddFriends, onCloseModel, onOpenModel, selectedFriends
+        isAddFriends, onCloseModel, onOpenModel, selectedFriends,
+        handleLoadMore, skip,
      } = useSuggestFriends();
 
     useFocusEffect(
         useCallback(() => {
             const load = async () => {
-                await getAllFriends();
+                await getAllFriends(skip);
             }
             load();
         }, [])
@@ -55,6 +56,9 @@ const SuggestFriends = ({handleScroll} : SuggestFriendsProps) => {
                 />
                 </View>
             }/>
+            <TouchableOpacity style={styles.boxMore} onPress={handleLoadMore}>  
+                <Text style={styles.textMore}>Gợi ý thêm</Text>
+            </TouchableOpacity>
             <MessageModal visible={isAddFriends} onClose={onCloseModel} onSend={onSend}/>
         </View>
     )
@@ -80,6 +84,21 @@ const styles = StyleSheet.create({
     boxCard: {
         width: '90%',
         alignSelf: 'center'
+    },
+    boxMore: {
+        width: '90%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        backgroundColor: Color.mainColor1,
+        borderRadius: 10,
+        padding: 10,
+        marginVertical: 25
+    },
+    textMore: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: Color.white
     }
 })
 

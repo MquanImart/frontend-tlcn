@@ -18,14 +18,12 @@ const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 const MyProfile = () => {
     useTheme()
     const navigation = useNavigation<ProfileNavigationProp>();
     const [user, setUser] = useState<any>(null);
-    const [avt, setAvt] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState("picture");
+    const [avt, setAvt] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
@@ -57,7 +55,7 @@ const MyProfile = () => {
                     const myAvt = await myPhotosClient.get(userData.data.avt[userData.data.avt.length - 1]);
                     setAvt(myAvt.data.url);
                 } else {
-                    setAvt(DEFAULT_AVATAR);
+                    setAvt(null);
                 }
             }
         } catch (err) {
@@ -111,7 +109,9 @@ const MyProfile = () => {
                     <Text style={styles.bio}>{error}</Text>
                 ) : (
                     <>
-                        <Image source={{ uri: avt }} style={styles.profileImage} />
+                        <Image source={avt? { uri: avt } : require('@/src/assets/images/default/default_user.png')} 
+                            style={styles.profileImage} 
+                        />
                         <TouchableOpacity>
                             <Text style={styles.name}>
                                 {user?.displayName || "Không có tên"}

@@ -14,8 +14,6 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import { useMenu } from "./useMenu";
 
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
-
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 
@@ -155,7 +153,7 @@ const Menu = () => {
     );
   }
 
-  if (!user || !avt) {
+  if (!user) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />
@@ -171,7 +169,7 @@ const Menu = () => {
       <View style={styles.infavatar}>
         <CIconButton
           label={user.displayName}
-          icon={<Image source={{ uri: avt }} style={styles.avatar} />}
+          icon={<Image source={avt? { uri: avt } : require('@/src/assets/images/default/default_user.png')} style={styles.avatar} />}
           onSubmit={() => navigationMenu.navigate("MyProfile", { screen: "MyProfile", params: { userId: userID! } })}
           style={{
             width: "90%",
@@ -195,7 +193,7 @@ const Menu = () => {
             <View style={styles.shortcut}>
               <CIconButton
                 label={item.groupName}
-                icon={<Image source={{ uri: item.avt?.url || DEFAULT_AVATAR }} style={styles.icon} />}
+                icon={<Image source={item.avt? { uri: item.avt.url } : require('@/src/assets/images/default/default_page.jpg')} style={styles.icon} />}
                 onSubmit={() => navigateToGroup(item._id)}
                 style={{
                   flex_direction: "column",

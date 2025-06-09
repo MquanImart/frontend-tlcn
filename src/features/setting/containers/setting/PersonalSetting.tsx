@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
@@ -21,15 +20,11 @@ import ChangePreferencesDialog from "../../components/ChangePreferencesDialog";
 import ChangeIDDialog from "../../components/ChangeIDDialog";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
-import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
-type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 
 const UsersClient = restClient.apiClient.service("apis/users");
 const AccountsClient = restClient.apiClient.service("apis/accounts");
-const myPhotosClient = restClient.apiClient.service("apis/myphotos");
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 interface Preference {
   id: string;

@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 interface CategoryItem {
   id: string;
@@ -34,7 +33,7 @@ export const useMenu = (userID: string) => {
           const myAvt = await myPhotosClient.get(userData.data.avt[userData.data.avt.length - 1]);
           setAvt(myAvt.data.url);
         } else {
-          setAvt(DEFAULT_AVATAR);
+          setAvt(null);
         }
       }
     } catch (err) {

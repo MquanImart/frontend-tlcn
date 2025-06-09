@@ -19,19 +19,27 @@ const useSuggestFriends = () => {
     const [isAddFriends, setIsAddFriends] = useState<boolean>(false);
     const [selectedFriends, setSelectedFriends] = useState<string | null>(null);
 
+    const [skip, setSkip] = useState<number>(0);
+
     useEffect(() => {
         if (allFriends){
             setFilterFriends(allFriends);
         }
     }, [allFriends]);
 
-    const getAllFriends = async () => {
+    const getAllFriends = async (currSkip: number) => {
         const userId = await AsyncStorage.getItem("userId");
         if (!userId) return alert("Bạn cần xác nhận thông tin người dùng");
         const friendsAPI = restClient.apiClient.service(`apis/users/${userId}/suggest`);
-        const result = await friendsAPI.find({});
+        const result = await friendsAPI.find({skip: currSkip, limit: 5});
         if (result.success){
-            setAllFriends(result.data);
+            if (allFriends){
+                setAllFriends([
+                ...allFriends, ...result.data
+                ]);
+            } else {
+                setAllFriends(result.data);
+            }
         }
     }
 
@@ -49,6 +57,7 @@ const useSuggestFriends = () => {
             setFilterFriends((prevFriends) => 
                 prevFriends ? prevFriends.filter(friend => friend.friend._id !== friendId) : null
             );
+            setSkip(skip - 1);
         }
     }
 
@@ -67,13 +76,18 @@ const useSuggestFriends = () => {
         setIsAddFriends(true);
         setSelectedFriends(_id)
     }
-        
+    
+    const handleLoadMore = () => {
+        getAllFriends(skip + 5);
+        setSkip(skip + 5);
+    }
+    
     return {
-        filterFriends, 
+        filterFriends, skip, setSkip,
         getAllFriends, 
         addFriends, deleteFriends,
         isAddFriends, onCloseModel, onOpenModel,
-        selectedFriends
+        selectedFriends, handleLoadMore
     }
 }
 

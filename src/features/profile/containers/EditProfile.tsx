@@ -14,14 +14,13 @@ type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "EditPro
 
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 const EditProfile = () => {
   const navigation = useNavigation<ProfileNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
-  const [avatar, setAvatar] = useState(DEFAULT_AVATAR);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [newAvatarUri, setNewAvatarUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +28,7 @@ const EditProfile = () => {
   // Lưu trạng thái ban đầu
   const [initialDisplayName, setInitialDisplayName] = useState("");
   const [initialBio, setInitialBio] = useState("");
-  const [initialAvatar, setInitialAvatar] = useState(DEFAULT_AVATAR);
+  const [initialAvatar, setInitialAvatar] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
   const getUserId = async () => {
@@ -48,7 +47,7 @@ const EditProfile = () => {
       if (userData.success) {
         const fetchedDisplayName = userData.data.displayName || "";
         const fetchedBio = userData.data.aboutMe || "";
-        let fetchedAvatar = DEFAULT_AVATAR;
+        let fetchedAvatar = null;
         
         if (userData.data.avt?.length > 0) {
           const myAvt = await myPhotosClient.get(userData.data.avt[userData.data.avt.length - 1]);
@@ -177,7 +176,9 @@ const EditProfile = () => {
       ) : (
         <View style={styles.content}>
           <TouchableOpacity style={styles.avatarContainer} onPress={handleImageSelection}>
-            <Image source={{ uri: newAvatarUri || avatar }} style={styles.avatar} />
+            <Image source={newAvatarUri && avatar ?{ uri: newAvatarUri || avatar } 
+              : require('@/src/assets/images/default/default_user.png')} style={styles.avatar} 
+            />
             <View style={styles.cameraIcon}>
               <MaterialIcons name="photo-camera" size={32} color="#4B164C" />
             </View>
