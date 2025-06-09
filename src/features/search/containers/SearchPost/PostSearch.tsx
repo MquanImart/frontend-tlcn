@@ -31,7 +31,7 @@ import usePost from "./usePost";
 type PostSearchRouteProp = RouteProp<SearchStackParamList, "SearchPost">;
 type PostSearchNavigationProp = StackNavigationProp<SearchStackParamList, "SearchPost">;
 
-const colors = getColor();
+const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface PostSearchProps {
@@ -120,7 +120,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backGround }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: Color.backGround }]}>
       <View style={styles.containerSearch}>
         <CIconButton
           icon={<Ionicons name="arrow-back" size={24} color="#000" />}
@@ -128,8 +128,8 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
           style={{
             width: 40,
             height: 50,
-            backColor: colors.white_homologous,
-            textColor: colors.white_contrast,
+            backColor: Color.white_homologous,
+            textColor: Color.white_contrast,
             fontSize: 16,
             fontWeight: "normal",
             radius: 0,
@@ -157,8 +157,8 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
           style={{
             width: 50,
             height: 50,
-            backColor: colors.white_homologous,
-            textColor: colors.white_contrast,
+            backColor: Color.white_homologous,
+            textColor: Color.white_contrast,
             fontSize: 16,
             fontWeight: "normal",
             radius: 20,
@@ -182,11 +182,11 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
       >
         {isSearching ? (
           <View style={styles.loadingContainer}>
-            <Text style={{ color: colors.textColor3 }}>Đang tìm kiếm...</Text>
+            <Text style={{ color: Color.textColor3 }}>Đang tìm kiếm...</Text>
           </View>
         ) : articles.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: colors.textColor3 }]}>
+            <Text style={[styles.emptyText, { color: Color.textColor3 }]}>
               {searchText.trim()
                 ? `Không tìm thấy bài viết nào cho ${searchText}`
                 : "Nhập hashtag để tìm kiếm"}
@@ -207,7 +207,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
         )}
         {loadingMore && (
           <View style={styles.loadingMoreContainer}>
-            <Text style={{ color: colors.textColor3 }}>Đang tải thêm bài viết...</Text>
+            <Text style={{ color: Color.textColor3 }}>Đang tải thêm bài viết...</Text>
           </View>
         )}
       </ScrollView>
@@ -225,13 +225,13 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
               <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+                <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
                   {calculateTotalComments(currentArticle?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={colors.textColor1} />
+                  <Ionicons name="close" size={24} color={Color.textColor1} />
                 </TouchableOpacity>
               </View>
 
@@ -261,17 +261,17 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={colors.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor1} />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={colors.textColor3}
+                  placeholderTextColor={Color.textColor3}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={20} color={colors.mainColor1} />
+                  <Ionicons name="send" size={20} color={Color.mainColor1} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   containerSearch: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.white_homologous,
+    backgroundColor: Color.white_homologous,
     borderRadius: 25,
     margin: 10,
     paddingHorizontal: 5,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.backGround2,
+    backgroundColor: Color.backGround2,
     borderRadius: 25,
     position: "relative",
   },
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 20,
     paddingRight: 40,
-    backgroundColor: colors.backGround2,
+    backgroundColor: Color.backGround2,
   },
   clearButton: {
     position: "absolute",
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -361,20 +361,20 @@ const styles = StyleSheet.create({
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: colors.textColor1,
+    color: Color.textColor1,
     paddingHorizontal: 10,
   },
   commentList: {

@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-const colors = getColor();
+const Color = getColor();
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 interface PostProps {
@@ -102,7 +102,7 @@ export default PostApproval;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.white_homologous,
+    backgroundColor: Color.white_homologous,
     borderRadius: 15,
     padding: 15,
     marginVertical: 10,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
   },
   header: {
     flexDirection: "row",
@@ -131,16 +131,16 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.textColor1,
+    color: Color.textColor1,
   },
   handle: {
     fontSize: 14,
-    color: colors.textColor3,
+    color: Color.textColor3,
     marginTop: 3,
   },
   contentText: {
     fontSize: 16,
-    color: colors.textColor1,
+    color: Color.textColor1,
     marginBottom: 10,
     lineHeight: 22,
   },
@@ -183,13 +183,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   acceptButton: {
-    backgroundColor: colors.mainColor1,
+    backgroundColor: Color.mainColor1,
   },
   rejectButton: {
     backgroundColor: "#FF3B30", 
   },
   buttonText: {
-    color: colors.textColor2,
+    color: Color.textColor2,
     fontWeight: "bold",
     fontSize: 14,
   },

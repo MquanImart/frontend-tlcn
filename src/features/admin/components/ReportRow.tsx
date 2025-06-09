@@ -9,10 +9,8 @@ interface ReportRowProps {
 }
 
 const { width } = Dimensions.get('window');
-
+const Color = getColor();
 const ReportRow: React.FC<ReportRowProps> = ({ report, onUpdate }) => {
-  const colors = getColor();
-
   const reporterName = report._idReporter 
   const reportId = report._id || 'N/A';
   const reportStatus = report.status || 'pending';
@@ -22,7 +20,7 @@ const ReportRow: React.FC<ReportRowProps> = ({ report, onUpdate }) => {
       style={[
         styles.card,
         {
-          backgroundColor: reportStatus === 'pending' ? colors.backGround : colors.backGround2,
+          backgroundColor: reportStatus === 'pending' ? Color.backGround : Color.backGround2,
           borderLeftColor:
             reportStatus === 'pending' ? '#FF9500' : reportStatus === 'accepted' ? '#34C759' : '#FF3B30',
         },
@@ -30,27 +28,27 @@ const ReportRow: React.FC<ReportRowProps> = ({ report, onUpdate }) => {
     >
       <View style={styles.cardContent}>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>ID:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>{reportId}</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>ID:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>{reportId}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Người báo cáo:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>{reporterName}</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Người báo cáo:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>{reporterName}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Lý do:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]} numberOfLines={2}>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Lý do:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]} numberOfLines={2}>
             {report.reason || 'Không có lý do'}
           </Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Ngày:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Ngày:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>
             {report.reportDate ? new Date(report.reportDate).toLocaleDateString('vi-VN') : 'N/A'}
           </Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Trạng thái:</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Trạng thái:</Text>
           <Text
             style={[
               styles.value,
@@ -77,14 +75,14 @@ const ReportRow: React.FC<ReportRowProps> = ({ report, onUpdate }) => {
               onPress={() => onUpdate(report._id || '', 'accepted')}
               disabled={!report._id}
             >
-              <Text style={[styles.actionText, { color: colors.white_homologous }]}>Duyệt</Text>
+              <Text style={[styles.actionText, { color: Color.white_homologous }]}>Duyệt</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: '#FF3B30' }]}
               onPress={() => onUpdate(report._id || '', 'rejected')}
               disabled={!report._id}
             >
-              <Text style={[styles.actionText, { color: colors.white_homologous }]}>Từ chối</Text>
+              <Text style={[styles.actionText, { color: Color.white_homologous }]}>Từ chối</Text>
             </TouchableOpacity>
           </>
         )}
@@ -119,13 +117,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: getColor().textColor3,
+    color: Color.textColor3,
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: getColor().textColor1,
+    color: Color.textColor1,
   },
   actions: {
     flexDirection: 'row',

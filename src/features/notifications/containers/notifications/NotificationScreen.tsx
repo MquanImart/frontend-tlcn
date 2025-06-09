@@ -25,7 +25,7 @@ const NotificationScreen: React.FC = () => {
   } = useNotificationScreen();
 
   const { tabbarPosition, handleScroll } = useScrollTabbar();
-  const colors = getColor();
+  const Color = getColor();
 
   const tabs = [
     { label: "Tất cả" },
@@ -34,7 +34,7 @@ const NotificationScreen: React.FC = () => {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
       <CHeader label="Thông báo" showBackButton={false} />
       <TabbarTop tabs={tabs} startTab={selectedTab} setTab={setSelectedTab} />
       <NotificationList

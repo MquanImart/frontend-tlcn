@@ -9,9 +9,8 @@ import { Account } from '@/src/interface/interface_reference';
 import useAdminAccountList from './useAdminAccountList';
 
 const { height, width } = Dimensions.get('window');
-
+const Color = getColor();
 const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => void }> = ({ account, onDelete }) => {
-  const colors = getColor();
 
   const confirmDelete = () => {
     Alert.alert(
@@ -33,26 +32,26 @@ const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => 
       style={[
         styles.card,
         {
-          backgroundColor: account._destroy ? colors.backGround2 : colors.backGround,
+          backgroundColor: account._destroy ? Color.backGround2 : Color.backGround,
           borderLeftColor: account.state === 'online' ? '#34C759' : '#FF3B30',
         },
       ]}
     >
       <View style={styles.cardContent}>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Email:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>{account.email}</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Email:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>{account.email}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>SĐT:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>{account.phone || 'N/A'}</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>SĐT:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>{account.phone || 'N/A'}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Vai trò:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>{account.role}</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Vai trò:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>{account.role}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Trạng thái:</Text>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Trạng thái:</Text>
           <Text
             style={[
               styles.value,
@@ -63,8 +62,8 @@ const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => 
           </Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: colors.textColor3 }]}>Tạo lúc:</Text>
-          <Text style={[styles.value, { color: colors.textColor1 }]}>
+          <Text style={[styles.label, { color: Color.textColor3 }]}>Tạo lúc:</Text>
+          <Text style={[styles.value, { color: Color.textColor1 }]}>
             {new Date(account.createdAt).toLocaleDateString('vi-VN')}
           </Text>
         </View>
@@ -74,7 +73,7 @@ const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => 
           style={[styles.actionButton, { backgroundColor: '#FF3B30' }]}
           onPress={confirmDelete}
         >
-          <Text style={[styles.actionText, { color: colors.white_homologous }]}>Xóa</Text>
+          <Text style={[styles.actionText, { color: Color.white_homologous }]}>Xóa</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -160,7 +159,7 @@ const AdminAccountListScreen: React.FC = () => {
       <SafeAreaView style={styles.loadingContainer}>
         <CHeader label="Danh sách tài khoản" showBackButton={false} />
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={getColor().mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor1} />
         </View>
       </SafeAreaView>
     );
@@ -171,14 +170,14 @@ const AdminAccountListScreen: React.FC = () => {
       <SafeAreaView style={styles.errorContainer}>
         <CHeader label="Danh sách tài khoản" showBackButton={false} />
         <View style={styles.centerContent}>
-          <Text style={[styles.errorText, { color: getColor().textColor1 }]}>{error}</Text>
+          <Text style={[styles.errorText, { color: Color.textColor1 }]}>{error}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: getColor().backGround, maxHeight: height }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Color.backGround, maxHeight: height }]}>
       <CHeader label="Danh sách tài khoản" showBackButton={false} />
       <View style={styles.content}>
         <TabBarCustom
@@ -201,7 +200,7 @@ const AdminAccountListScreen: React.FC = () => {
           windowSize={5}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={[styles.noAccounts, { color: getColor().textColor3 }]}>
+            <Text style={[styles.noAccounts, { color: Color.textColor3 }]}>
               Không có tài khoản nào
             </Text>
           }
@@ -213,13 +212,13 @@ const AdminAccountListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: getColor().mainColor1,
-                  textColor: getColor().white_homologous,
+                  backColor: Color.mainColor1,
+                  textColor: Color.white_homologous,
                   radius: 8,
                 }}
                 disabled={currentPage === 1}
               />
-              <Text style={[styles.pageText, { color: getColor().textColor1 }]}>
+              <Text style={[styles.pageText, { color: Color.textColor1 }]}>
                 Trang {currentPage} / {totalPages}
               </Text>
               <CButton
@@ -228,8 +227,8 @@ const AdminAccountListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: getColor().mainColor1,
-                  textColor: getColor().white_homologous,
+                  backColor: Color.mainColor1,
+                  textColor: Color.white_homologous,
                   radius: 8,
                 }}
                 disabled={currentPage === totalPages}
@@ -245,7 +244,7 @@ const AdminAccountListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
   },
   content: {
     flex: 1,
@@ -257,11 +256,11 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: getColor().backGround,
+    backgroundColor: Color.backGround,
   },
   centerContent: {
     flex: 1,
@@ -278,7 +277,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: getColor().backGround1,
+    backgroundColor: Color.backGround1,
     borderRadius: 12,
     marginTop: 16,
     marginHorizontal: 8,
@@ -289,7 +288,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    color: getColor().textColor1,
+    color: Color.textColor1,
     minWidth: 80,
   },
   filterContainer: {
@@ -328,13 +327,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: getColor().textColor3,
+    color: Color.textColor3,
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: getColor().textColor1,
+    color: Color.textColor1,
   },
   actionButton: {
     paddingVertical: 8,
@@ -352,12 +351,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginHorizontal: 0,
     borderRadius: 8,
-    backgroundColor: getColor().backGround2,
+    backgroundColor: Color.backGround2,
     elevation: 0,
     shadowOpacity: 0,
   },
   activeTabStyle: {
-    backgroundColor: getColor().mainColor1,
+    backgroundColor: Color.mainColor1,
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -369,13 +368,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   activeTextStyle: {
-    color: getColor().white_homologous,
+    color: Color.white_homologous,
     fontSize: 14,
     fontWeight: 'bold',
     marginLeft: 5,
   },
   inactiveTextStyle: {
-    color: getColor().textColor1,
+    color: Color.textColor1,
     fontSize: 14,
   },
 });

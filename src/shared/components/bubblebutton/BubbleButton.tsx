@@ -8,15 +8,15 @@ interface BubbleButtonProps {
 }
 
 const BubbleButton: React.FC<BubbleButtonProps> = ({ onPress }) => {
-  const colors = getColor();
+  const Color = getColor();
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: colors.mainColor2 }]}
+      style={[styles.button, { backgroundColor: Color.mainColor2 }]}
       activeOpacity={0.8}
       onPress={onPress}
     >
-      <Ionicons name="add" size={30} color={colors.textColor2} />
+      <Ionicons name="add" size={30} color={Color.textColor2} />
     </TouchableOpacity>
   );
 };

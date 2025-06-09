@@ -26,7 +26,7 @@ import {
 import Modal from "react-native-modal";
 import useArticleDetail from "./useArticleDetail";
 
-const colors = getColor();
+const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 type ArticleDetailNavigationProp = StackNavigationProp<NewFeedParamList, "ArticleDetail">;
@@ -65,7 +65,7 @@ export default function ArticleDetail() {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.backGround }]}
+      style={[styles.container, { backgroundColor: Color.backGround }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
@@ -78,8 +78,8 @@ export default function ArticleDetail() {
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.mainColor1} />
-          <Text style={[styles.loadingText, { color: colors.textColor1 }]}>Đang tải...</Text>
+          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <Text style={[styles.loadingText, { color: Color.textColor1 }]}>Đang tải...</Text>
         </View>
       ) : currentArticle ? (
         <View style={styles.postContainer}>
@@ -94,7 +94,7 @@ export default function ArticleDetail() {
         </View>
       ) : (
         <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: colors.textColor1 }]}>Không thể tải bài viết</Text>
+          <Text style={[styles.loadingText, { color: Color.textColor1 }]}>Không thể tải bài viết</Text>
         </View>
       )}
 
@@ -111,13 +111,13 @@ export default function ArticleDetail() {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
               <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+                <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
                   {calculateTotalComments()} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={colors.textColor1} />
+                  <Ionicons name="close" size={24} color={Color.textColor1} />
                 </TouchableOpacity>
               </View>
 
@@ -157,21 +157,21 @@ export default function ArticleDetail() {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={colors.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor1} />
                 </TouchableOpacity>
                 <TextInput
-                  style={[styles.commentInput, { color: colors.textColor1 }]}
+                  style={[styles.commentInput, { color: Color.textColor1 }]}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={colors.textColor3}
+                  placeholderTextColor={Color.textColor3}
                   value={newReply}
                   onChangeText={setNewReply}
                   multiline
                 />
                 {isCommentChecking ? (
-                  <ActivityIndicator size="small" color={colors.mainColor1} />
+                  <ActivityIndicator size="small" color={Color.mainColor1} />
                 ) : (
                   <TouchableOpacity onPress={handleAddComment}>
-                    <Ionicons name="send" size={20} color={colors.mainColor1} />
+                    <Ionicons name="send" size={20} color={Color.mainColor1} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -222,15 +222,15 @@ const styles = StyleSheet.create({
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
   },
   commentInput: {
     flex: 1,

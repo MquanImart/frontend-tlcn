@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 
-const colors = getColor();
+const Color = getColor();
 
 interface EditModalProps {
   visible: boolean;
@@ -76,12 +76,12 @@ const EditModal: React.FC<EditModalProps> = ({
           <View style={styles.dialog}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={[styles.title, { color: colors.textColor1 }]}>Chỉnh sửa bài viết</Text>
+              <Text style={[styles.title, { color: Color.textColor1 }]}>Chỉnh sửa bài viết</Text>
               <TouchableOpacity onPress={onCancel} disabled={isLoading}>
                 <Ionicons
                   name="close"
                   size={24}
-                  color={isLoading ? colors.textColor3 : colors.textColor1}
+                  color={isLoading ? Color.textColor3 : Color.textColor1}
                 />
               </TouchableOpacity>
             </View>
@@ -91,13 +91,13 @@ const EditModal: React.FC<EditModalProps> = ({
               style={[
                 styles.textInput,
                 {
-                  borderColor: colors.borderColor1,
-                  color: colors.textColor1,
-                  backgroundColor: colors.backGround,
+                  borderColor: Color.borderColor1,
+                  color: Color.textColor1,
+                  backgroundColor: Color.backGround,
                 },
               ]}
               placeholder="Nhập nội dung bài viết"
-              placeholderTextColor={colors.textColor3}
+              placeholderTextColor={Color.textColor3}
               value={editContent}
               onChangeText={setEditContent}
               multiline
@@ -106,20 +106,20 @@ const EditModal: React.FC<EditModalProps> = ({
 
             {/* Chọn phạm vi bài viết */}
             <TouchableOpacity
-              style={[styles.scopeSelector, { borderColor: colors.borderColor1 }]}
+              style={[styles.scopeSelector, { borderColor: Color.borderColor1 }]}
               onPress={toggleScopeModal}
               disabled={isLoading}
             >
-              <Text style={[styles.scopeText, { color: colors.textColor1 }]}>{editScope}</Text>
-              <Ionicons name="chevron-down" size={16} color={colors.textColor3} />
+              <Text style={[styles.scopeText, { color: Color.textColor1 }]}>{editScope}</Text>
+              <Ionicons name="chevron-down" size={16} color={Color.textColor3} />
             </TouchableOpacity>
 
             {/* Input thêm hashtag */}
             <View style={styles.hashtagInputContainer}>
               <TextInput
-                style={[styles.hashtagInput, { color: colors.textColor1 }]}
+                style={[styles.hashtagInput, { color: Color.textColor1 }]}
                 placeholder="Thêm hashtag..."
-                placeholderTextColor={colors.textColor3}
+                placeholderTextColor={Color.textColor3}
                 value={hashtagInput}
                 onChangeText={setHashtagInput}
                 onSubmitEditing={handleAddHashtag}
@@ -129,7 +129,7 @@ const EditModal: React.FC<EditModalProps> = ({
                 <Ionicons
                   name="add-circle"
                   size={26}
-                  color={isLoading ? colors.textColor3 : colors.mainColor1}
+                  color={isLoading ? Color.textColor3 : Color.mainColor1}
                 />
               </TouchableOpacity>
             </View>
@@ -151,7 +151,7 @@ const EditModal: React.FC<EditModalProps> = ({
                       <Ionicons
                         name="close-circle"
                         size={18}
-                        color={isLoading ? colors.textColor3 : colors.textColor3}
+                        color={isLoading ? Color.textColor3 : Color.textColor3}
                       />
                     </TouchableOpacity>
                   </View>
@@ -166,7 +166,7 @@ const EditModal: React.FC<EditModalProps> = ({
               style={{
                 width: "100%",
                 height: 50,
-                backColor: colors.mainColor1,
+                backColor: Color.mainColor1,
                 textColor: "#FFFFFF",
                 fontSize: 16,
                 fontWeight: "bold",
@@ -191,8 +191,8 @@ const EditModal: React.FC<EditModalProps> = ({
         onRequestClose={toggleScopeModal}
       >
         <View style={styles.scopeOverlay}>
-          <View style={[styles.scopeDialog, { backgroundColor: colors.backGround }]}>
-            <Text style={[styles.scopeTitle, { color: colors.textColor1 }]}>Chọn chế độ hiển thị</Text>
+          <View style={[styles.scopeDialog, { backgroundColor: Color.backGround }]}>
+            <Text style={[styles.scopeTitle, { color: Color.textColor1 }]}>Chọn chế độ hiển thị</Text>
             {["Công khai", "Bạn bè", "Riêng tư"].map((option) => (
               <TouchableOpacity
                 key={option}
@@ -206,9 +206,9 @@ const EditModal: React.FC<EditModalProps> = ({
                 <Ionicons
                   name={option === "Công khai" ? "earth" : option === "Bạn bè" ? "people" : "lock-closed"}
                   size={20}
-                  color={colors.textColor3}
+                  color={Color.textColor3}
                 />
-                <Text style={[styles.scopeOptionText, { color: colors.textColor1 }]}>{option}</Text>
+                <Text style={[styles.scopeOptionText, { color: Color.textColor1 }]}>{option}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   dialog: {
     width: "90%",
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 10,
     padding: 20,
     shadowColor: "#000",
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   hashtag: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.backGround2,
+    backgroundColor: Color.backGround2,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   hashtagText: {
-    color: colors.textColor1,
+    color: Color.textColor1,
     fontSize: 14,
     fontWeight: "bold",
   },

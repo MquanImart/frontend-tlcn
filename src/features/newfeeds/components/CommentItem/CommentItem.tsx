@@ -20,7 +20,7 @@ import {
 import { useCommentVisibility } from "./useCommentVisibility";
 import { useReplyInput } from "./useReplyInput";
 
-const colors = getColor();
+const Color = getColor();
 const DEFAULT_AVATAR = "https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png";
 
 interface CommentItemProps {
@@ -100,7 +100,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       onPress={() => openImageModal(item.url || DEFAULT_AVATAR)}
     >
       {imageLoading[item._id] && (
-        <ActivityIndicator style={styles.loading} size="small" color={colors.mainColor1} />
+        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor1} />
       )}
       <Image
         source={{ uri: item.url || DEFAULT_AVATAR }}
@@ -132,10 +132,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
       <View style={styles.commentRow}>
         <Image source={{ uri: avatarUrl }} style={styles.avatar} />
         <View style={styles.content}>
-          <Text style={[styles.username, { color: colors.textColor1 }]}>
+          <Text style={[styles.username, { color: Color.textColor1 }]}>
             {comment._iduser?.displayName || "Unknown"}
           </Text>
-          <Text style={[styles.text, { color: colors.textColor1 }]}>{comment.content}</Text>
+          <Text style={[styles.text, { color: Color.textColor1 }]}>{comment.content}</Text>
 
           {mediaList.length > 0 && (
             <FlatList
@@ -153,18 +153,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
               <Ionicons
                 name={isLiked ? "heart" : "heart-outline"}
                 size={14}
-                color={isLiked ? "red" : colors.textColor3}
+                color={isLiked ? "red" : Color.textColor3}
               />
-              <Text style={[styles.count, { color: isLiked ? "red" : colors.textColor3 }]}>
+              <Text style={[styles.count, { color: isLiked ? "red" : Color.textColor3 }]}>
                 {comment.emoticons?.length || 0}
               </Text>
             </TouchableOpacity>
-            <Text style={[styles.separator, { color: colors.textColor3 }]}>·</Text>
+            <Text style={[styles.separator, { color: Color.textColor3 }]}>·</Text>
             <TouchableOpacity onPress={toggleReplyInput}>
-              <Text style={[styles.actionText, { color: colors.mainColor1 }]}>Phản hồi</Text>
+              <Text style={[styles.actionText, { color: Color.mainColor1 }]}>Phản hồi</Text>
             </TouchableOpacity>
-            <Text style={[styles.separator, { color: colors.textColor3 }]}>·</Text>
-            <Text style={[styles.time, { color: colors.textColor3 }]}>{timeAgo(comment.createdAt)}</Text>
+            <Text style={[styles.separator, { color: Color.textColor3 }]}>·</Text>
+            <Text style={[styles.time, { color: Color.textColor3 }]}>{timeAgo(comment.createdAt)}</Text>
           </View>
         </View>
       </View>
@@ -182,18 +182,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
           )}
           <View style={styles.replyInputContainer}>
             <TouchableOpacity onPress={pickMedia}>
-              <Ionicons name="image" size={24} color={colors.mainColor1} />
+              <Ionicons name="image" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
             <TextInput
-              style={[styles.replyInput, { color: colors.textColor1 }]}
+              style={[styles.replyInput, { color: Color.textColor1 }]}
               placeholder="Viết phản hồi..."
-              placeholderTextColor={colors.textColor3}
+              placeholderTextColor={Color.textColor3}
               value={replyContent}
               onChangeText={handleReplyChange}
               multiline
             />
             <TouchableOpacity onPress={handleSubmitReply}>
-              <Ionicons name="send" size={20} color={colors.mainColor1} />
+              <Ionicons name="send" size={20} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>
@@ -201,7 +201,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
       {replies.length > 0 && (
         <TouchableOpacity onPress={toggleReplies}>
-          <Text style={[styles.toggleReplies, { color: colors.mainColor1 }]}>
+          <Text style={[styles.toggleReplies, { color: Color.mainColor1 }]}>
             {areRepliesVisible ? "Ẩn bớt" : `Xem tất cả ${replies.length} phản hồi`}
           </Text>
         </TouchableOpacity>
@@ -240,12 +240,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 12, backgroundColor: colors.backGround },
+  container: { padding: 12, backgroundColor: Color.backGround },
   highlighted: {
-    backgroundColor: colors.mainColor1 + "33", // Light highlight with transparency
+    backgroundColor: Color.mainColor1 + "33", // Light highlight with transparency
   },
   commentRow: { flexDirection: "row", alignItems: "flex-start" },
-  avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: colors.backGround },
+  avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: Color.backGround },
   content: { flex: 1 },
   username: { fontWeight: "bold", fontSize: 15 },
   text: { fontSize: 14, marginTop: 4, lineHeight: 20 },
@@ -260,17 +260,17 @@ const styles = StyleSheet.create({
   replyInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
   },
   replyInput: { flex: 1, fontSize: 14, paddingHorizontal: 10, maxHeight: 100 },
   toggleReplies: { fontSize: 14, marginVertical: 6, marginLeft: 50, fontWeight: "600" },
   mediaGrid: { marginTop: 8 },
   mediaItem: { width: "48%", margin: "1%", aspectRatio: 1, position: "relative" },
-  mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: colors.backGround },
+  mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: Color.backGround },
   loading: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center" },
   mediaPreview: { width: 80, height: 80, marginRight: 10, borderRadius: 5 },
   modalOverlay: {

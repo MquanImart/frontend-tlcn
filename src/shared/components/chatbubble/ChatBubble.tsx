@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-const colors = getColor();
+const Color = getColor();
 const ROBOT_IMAGE = "https://cdn-icons-png.flaticon.com/512/4712/4712105.png";
 
 const ChatBubble: React.FC = () => {
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 30,
-    backgroundColor: colors.mainColor2,
+    backgroundColor: Color.mainColor2,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",

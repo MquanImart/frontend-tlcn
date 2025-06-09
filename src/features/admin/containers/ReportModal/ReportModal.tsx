@@ -13,7 +13,7 @@ interface ReportModalScreenProps {
 }
 
 const { width, height } = Dimensions.get('window');
-
+const Color = getColor();
 const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
   visible,
   onClose,
@@ -21,7 +21,7 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
   onReportUpdated,
 }) => {
   const { error, setError, handleUpdateReport } = useReportModal(onReportUpdated);
-  const colors = getColor();
+  const Color = getColor();
   const [reports, setReports] = useState<Report[]>(initialReports);
 
   // Cập nhật reports khi initialReports thay đổi
@@ -69,8 +69,8 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={[styles.modalContainer, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
-        <View style={[styles.modalContent, { width: width * 0.9, maxHeight: height * 0.8, backgroundColor: colors.backGround }]}>
-          <Text style={[styles.modalTitle, { color: colors.textColor1 }]}>
+        <View style={[styles.modalContent, { width: width * 0.9, maxHeight: height * 0.8, backgroundColor: Color.backGround }]}>
+          <Text style={[styles.modalTitle, { color: Color.textColor1 }]}>
             Danh sách báo cáo
           </Text>
           {safeReports.length > 0 ? (
@@ -89,7 +89,7 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
               windowSize={5}
             />
           ) : (
-            <Text style={[styles.noReports, { color: colors.textColor3 }]}>
+            <Text style={[styles.noReports, { color: Color.textColor3 }]}>
               Không có báo cáo nào
             </Text>
           )}
@@ -97,10 +97,10 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
             <Text style={[styles.errorText, { color: 'red' }]}>{error}</Text>
           )}
           <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: colors.mainColor2 }]}
+            style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
             onPress={onClose}
           >
-            <Text style={[styles.closeButtonText, { color: colors.white_homologous }]}>Đóng</Text>
+            <Text style={[styles.closeButtonText, { color: Color.white_homologous }]}>Đóng</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: getColor().borderColor1,
+    borderColor: Color.borderColor1,
     elevation: 5,
   },
   modalTitle: {

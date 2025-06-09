@@ -29,7 +29,7 @@ import NewReel from '../NewReel/NewReel';
 import { SingleReel } from './SingleReel';
 import useReels from './useReels';
 
-const colors = getColor();
+const Color = getColor();
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, 'Menu'>;
@@ -223,7 +223,7 @@ export default function ReelsList() {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.loadingMoreContainer}>
-                <ActivityIndicator size="large" color={colors.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : !hasMore && reels.length > 0 ? (
               <View style={styles.loadingMoreContainer}>
@@ -237,11 +237,11 @@ export default function ReelsList() {
       <View style={styles.headerContainer}>
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={35} color={colors.backGround1} style={styles.headerIcon} />
+            <Ionicons name="arrow-back" size={35} color={Color.backGround1} style={styles.headerIcon} />
           </TouchableOpacity>
           <Text style={styles.headerLabel}>Reels</Text>
           <TouchableOpacity onPress={toggleNewReelModal}>
-            <Ionicons name="add" size={35} color={colors.backGround1} style={styles.headerIcon} />
+            <Ionicons name="add" size={35} color={Color.backGround1} style={styles.headerIcon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -259,13 +259,13 @@ export default function ReelsList() {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
               <View style={styles.commentHeader}>
                 <Text style={styles.commentTitle}>
                   {calculateTotalComments(currentReel?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={colors.textColor1}  />
+                  <Ionicons name="close" size={24} color={Color.textColor1}  />
                 </TouchableOpacity>
               </View>
 
@@ -295,20 +295,20 @@ export default function ReelsList() {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={colors.mainColor1}  />
+                  <Ionicons name="image" size={24} color={Color.mainColor1}  />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={colors.textColor3}
+                  placeholderTextColor={Color.textColor3}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment} disabled={isCommentLoading}>
                   {isCommentLoading ? (
-                    <ActivityIndicator size="small" color={colors.mainColor1} />
+                    <ActivityIndicator size="small" color={Color.mainColor1} />
                   ) : (
-                    <Ionicons name="send" size={20} color={colors.mainColor1}  />
+                    <Ionicons name="send" size={20} color={Color.mainColor1}  />
                   )}
                 </TouchableOpacity>
               </View>
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   emptyContainer: {
     flex: 1,
@@ -395,20 +395,20 @@ const styles = StyleSheet.create({
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.backGround,
+    backgroundColor: Color.backGround,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: colors.borderColor1,
+    borderColor: Color.borderColor1,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: colors.textColor1,
+    color: Color.textColor1,
     paddingHorizontal: 10,
   },
   commentList: {

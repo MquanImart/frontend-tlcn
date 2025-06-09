@@ -17,7 +17,7 @@ import {
 import Modal from "react-native-modal";
 import { useGroupHome } from "./useGroupHome";
 
-const colors = getColor();
+const Color = getColor();
 
 interface GroupHomeProps {
   groupId: string;
@@ -55,9 +55,9 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
   } = useNewFeed(articles, setArticles);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
       {loading ? (
-        <ActivityIndicator size="large" color={colors.mainColor1} style={styles.loading} />
+        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -87,7 +87,7 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={colors.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : null
           }
@@ -103,13 +103,13 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: colors.backGround }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
           <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: colors.textColor1 }]}>
+            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={colors.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textColor1} />
             </TouchableOpacity>
           </View>
 
@@ -131,18 +131,18 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
               style={[
                 styles.commentInput,
                 {
-                  borderColor: colors.borderColor1,
-                  color: colors.textColor1,
-                  backgroundColor: colors.backGround,
+                  borderColor: Color.borderColor1,
+                  color: Color.textColor1,
+                  backgroundColor: Color.backGround,
                 },
               ]}
               placeholder="Thêm bình luận..."
-              placeholderTextColor={colors.textColor3}
+              placeholderTextColor={Color.textColor3}
               value={newReply}
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={24} color={colors.mainColor1} />
+              <Ionicons name="send" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    color: colors.mainColor1,
+    color: Color.mainColor1,
     marginTop: 10,
     fontWeight: "bold",
   },
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: colors.borderColor1,
+    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: colors.borderColor1,
+    borderTopColor: Color.borderColor1,
     paddingVertical: 10,
   },
   commentInput: {
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   noArticlesText: {
     textAlign: "center",
     fontSize: 16,
-    color: colors.textColor3,
+    color: Color.textColor3,
     marginTop: 20,
   },
   footer: {
