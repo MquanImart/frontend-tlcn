@@ -79,7 +79,7 @@ const PostCard = ({ _id, collectionId, content, author, savedDate, img, deleteAr
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.option} onPress={toggleExpand}>
-          <Icon name={expanded ? "expand-less" : "expand-more"} size={30} color={Color.mainColor1} />
+          <Icon name={expanded ? "expand-less" : "expand-more"} size={30} color={Color.mainColor2} />
         </TouchableOpacity>
       </View>
       {expanded && (
@@ -90,8 +90,8 @@ const PostCard = ({ _id, collectionId, content, author, savedDate, img, deleteAr
             style={{
               width: "30%",
               height: 40,
-              textColor: Color.mainColor1,
-              borderColor: Color.mainColor1,
+              textColor: Color.mainColor2,
+              borderColor: Color.mainColor2,
               borderWidth: 1,
             }}
           />
@@ -101,8 +101,8 @@ const PostCard = ({ _id, collectionId, content, author, savedDate, img, deleteAr
             style={{
               width: "60%",
               height: 40,
-              textColor: Color.white,
-              backColor: Color.mainColor1,
+              textColor: Color.textColor2,
+              backColor: Color.mainColor2,
             }}
           />
         </View>

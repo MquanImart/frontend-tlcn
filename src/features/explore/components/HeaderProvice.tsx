@@ -14,7 +14,7 @@ const HeaderProvice = () => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.button} onPress={() => {navigation.goBack()}}>
-                <Icon name={"chevron-left"} size={30} color={Color.white_homologous}/>
+                <Icon name={"chevron-left"} size={30} color={Color.white_white}/>
             </TouchableOpacity>
         </View>
     )

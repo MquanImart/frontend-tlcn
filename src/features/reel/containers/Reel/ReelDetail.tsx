@@ -113,7 +113,7 @@ export default function ReelDetail() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
       </View>
     );
   }
@@ -194,7 +194,7 @@ export default function ReelDetail() {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
@@ -205,9 +205,9 @@ export default function ReelDetail() {
                 />
                 <TouchableOpacity onPress={handleAddComment} disabled={isLoading}>
                   {isLoading ? (
-                    <ActivityIndicator size="small" color={Color.mainColor1} />
+                    <ActivityIndicator size="small" color={Color.mainColor2} />
                   ) : (
-                    <Ionicons name="send" size={20} color={Color.mainColor1} />
+                    <Ionicons name="send" size={20} color={Color.mainColor2} />
                   )}
                 </TouchableOpacity>
               </View>

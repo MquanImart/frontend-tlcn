@@ -1,7 +1,7 @@
 import GroupCard from "@/src/features/group/components/GroupCard";
 import { GroupParamList } from "@/src/shared/routes/GroupNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo import đúng
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
@@ -22,7 +22,7 @@ interface ExploreTabProps {
 }
 
 const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
-  useTheme();
+  useTheme(); // Kích hoạt theme context
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { groupsNotJoined, loading, error, handleJoinGroup, loadMoreGroups, isLoadingMore, fetchGroups } =
     useExplore(userId);
@@ -36,25 +36,25 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
 
   if (loading) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Đang tải...</Text>
+      <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Đang tải...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>{error}</Text>
+      <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.error }]}>{error}</Text>
         <TouchableOpacity onPress={() => fetchGroups(1)}>
-          <Text style={styles.retryText}>Thử lại</Text>
+          <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {groupsNotJoined.length > 0 ? (
         <FlatList
           data={groupsNotJoined}
@@ -75,7 +75,7 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : null
           }
@@ -83,13 +83,13 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchGroups(1)}
-              colors={[Color.mainColor1]}
+              colors={[Color.mainColor2]}
             />
           }
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Không có nhóm nào để khám phá!</Text>
+        <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
+          <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Không có nhóm nào để khám phá!</Text>
         </View>
       )}
     </View>
@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: Color.backGround,
   },
   emptyContainer: {
     flex: 1,
@@ -112,7 +111,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
     fontStyle: "italic",
   },
   footer: {
@@ -121,7 +119,6 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    color: Color.mainColor1,
     marginTop: 10,
     fontWeight: "bold",
   },

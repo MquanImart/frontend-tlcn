@@ -2,16 +2,15 @@ import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, StyleSheet, View, Text, Alert } from "react-native";
 import GroupCard from "@/src/features/group/components/GroupCard";
 import CButton from "@/src/shared/components/button/CButton";
-import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import restClient from "@/src/shared/services/RestClient";
 import { Group } from "@/src/features/newfeeds/interface/article";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
-  
+
 const groupsClient = restClient.apiClient.service("apis/groups");
-const usersClient = restClient.apiClient.service("apis/users");
+
 interface SearchGroupProps {
   textSearch: string;
   userId: string;
@@ -19,7 +18,7 @@ interface SearchGroupProps {
 }
 
 const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigation }) => {
-  useTheme()
+  useTheme();
   const [allGroups, setAllGroups] = useState<Group[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -29,9 +28,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
 
   const handleJoinGroup = async (groupId: string) => {
     try {
-      await groupsClient.create(
-        { groupId, userId },
-      );
+      await groupsClient.create({ groupId, userId });
       setAllGroups((prev) => prev.filter((group) => group._id !== groupId));
     } catch (error: any) {
       Alert.alert("Lỗi", "Không thể tham gia nhóm. Vui lòng thử lại.");
@@ -43,20 +40,33 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
     async (newPage = 1, append = false) => {
       if (newPage > totalPages && totalPages !== 0) return;
 
+      // Reset state nếu textSearch rỗng
+      if (textSearch.trim() === "") {
+        setAllGroups([]);
+        setTotalPages(1);
+        setPage(1);
+        setIsLoading(false);
+        setIsLoadingMore(false);
+        return;
+      }
+
       setIsLoading(!append);
       setIsLoadingMore(append);
 
       try {
-      const skip =   (page - 1) * limit;
-      const queryParams = new URLSearchParams({
-        groupName: textSearch.trim(),
-        userId: userId,
-        limit: limit.toString(),
-        skip: skip.toString(),
-      }).toString();
+        console.log("Fetching groups with textSearch:", textSearch); // Log để debug
+        const skip = (newPage - 1) * limit;
+        const queryParams = new URLSearchParams({
+          groupName: textSearch.trim(),
+          userId: userId,
+          limit: limit.toString(),
+          skip: skip.toString(),
+        }).toString();
 
-      const response = await restClient.apiClient.service(`apis/users/groups/search?${queryParams}`).find({
-      });
+        const response = await restClient.apiClient
+          .service(`apis/users/groups/search?${queryParams}`)
+          .find({ headers: { 'Cache-Control': 'no-cache' } });
+
         if (response.success) {
           const validGroups = (response.data || []).filter(
             (group: Group) => group && group._id
@@ -76,7 +86,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
         setIsLoadingMore(false);
       }
     },
-    [textSearch, totalPages]
+    [textSearch, userId, totalPages, limit]
   );
 
   const handleLoadMore = useCallback(() => {
@@ -86,9 +96,6 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
   }, [page, totalPages, isLoadingMore, fetchGroups]);
 
   useEffect(() => {
-    setPage(1);
-    setAllGroups([]);
-    setTotalPages(1);
     fetchGroups(1, false);
   }, [textSearch, fetchGroups]);
 
@@ -133,7 +140,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
                     style={{
                       width: "100%",
                       height: 40,
-                      backColor: isLoadingMore ? Color.textColor3 : Color.mainColor1,
+                      backColor: isLoadingMore ? Color.textColor3 : Color.mainColor2,
                       textColor: Color.white_homologous,
                       fontSize: 14,
                       fontWeight: "bold",

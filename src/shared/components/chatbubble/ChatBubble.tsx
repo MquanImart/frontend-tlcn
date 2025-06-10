@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 30,
+    // Đã thay đổi màu nền từ Color.mainColor2 sang Color.mainColor2
     backgroundColor: Color.mainColor2,
     justifyContent: "center",
     alignItems: "center",

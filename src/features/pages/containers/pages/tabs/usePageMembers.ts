@@ -126,7 +126,6 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
           state: "pending",
           joinDate: Date.now(),
         },
-        // Do NOT include removeFollower
       });
 
       if (response.success) {
@@ -147,12 +146,18 @@ const usePageMembers = (page: Page, role: string, updatePage: () => void) => {
         updatePage();
         Alert.alert("Thành công", "Đã gửi lời mời làm quản trị viên.");
       } else {
-        Alert.alert("Lỗi", response.message || "Không thể mời làm quản trị viên.");
-        console.error("❌ Error inviting admin:", response.message);
+        if (response.message === undefined) {
+          Alert.alert("Thông báo", "Đã có lời mời người này làm quản trị viên rồi.");
+        } else {
+          Alert.alert("Lỗi", response.message || "Không thể mời làm quản trị viên.");
+        }
       }
-    } catch (error) {
-      console.error("❌ Error inviting admin:", error);
-      Alert.alert("Lỗi", "Đã xảy ra lỗi khi mời làm quản trị viên.");
+    } catch (error: any) { // Cần cast error sang `any` để truy cập thuộc tính `message`
+      if (error.message && error.message.includes("duplicate")) { // Kiểm tra thông báo lỗi từ phía client nếu có
+        Alert.alert("Thông báo", "Đã có lời mời người này làm quản trị viên rồi.");
+      } else {
+        Alert.alert("Lỗi", "Đã xảy ra lỗi khi mời làm quản trị viên.");
+      }
     }
   };
 

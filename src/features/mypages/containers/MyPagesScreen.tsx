@@ -9,7 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import CreatePageTab from "./tab/CreatePageTab";
 import MyPagesTab from "./tab/MyPagesTab";
 
@@ -19,7 +19,7 @@ const MyPagesScreen = () => {
   useTheme();
   const navigation = useNavigation<MyPagesNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<string>("Page của tôi");
   const { tabbarPosition, handleScroll } = useScrollTabbar();
 
@@ -34,7 +34,6 @@ const MyPagesScreen = () => {
     }
   };
 
-  // Fetch userId on mount
   useEffect(() => {
     getUserId();
   }, []);
@@ -51,16 +50,17 @@ const MyPagesScreen = () => {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <View style={styles.loading}>
-          <Text>Đang tải...</Text>
+        <View style={[styles.loading, { backgroundColor: Color.background }]}>
+          <ActivityIndicator size="large" color={Color.mainColor2} />
+          <Text style={{ color: Color.textSecondary, marginTop: 10 }}>Đang tải...</Text>
         </View>
       );
     }
 
     if (!userId) {
       return (
-        <View style={styles.loading}>
-          <Text>Không tìm thấy userId</Text>
+        <View style={[styles.loading, { backgroundColor: Color.background }]}>
+          <Text style={{ color: Color.textPrimary }}>Không tìm thấy userId</Text>
         </View>
       );
     }
@@ -78,17 +78,17 @@ const MyPagesScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <CHeader label="Page" showBackButton={true} backPress={handleBackPress} />
       <TabBarCustom
         tabs={tabs}
         selectedTab={selectedTab}
         onSelectTab={(tab) => setSelectedTab(tab)}
-        style={styles.tabBarStyle}
-        activeTabStyle={styles.activeTabStyle}
-        inactiveTabStyle={styles.inactiveTabStyle}
-        activeTextStyle={styles.activeTextStyle}
-        inactiveTextStyle={styles.inactiveTextStyle}
+        style={[styles.tabBarStyle, { backgroundColor: Color.backgroundSecondary }]}
+        activeTabStyle={[styles.activeTabStyle, { backgroundColor: Color.mainColor2 }]}
+        inactiveTabStyle={[styles.inactiveTabStyle, { backgroundColor: 'transparent' }]}
+        activeTextStyle={[styles.activeTextStyle, { color: Color.textOnMain2 }]}
+        inactiveTextStyle={[styles.inactiveTextStyle, { color: Color.textSecondary }]}
       />
       <View style={styles.content}>{renderContent()}</View>
       <CTabbar tabbarPosition={tabbarPosition} />
@@ -99,26 +99,21 @@ const MyPagesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
   },
   tabBarStyle: {
     marginHorizontal: 15,
     marginTop: 10,
     marginBottom: 20,
+    borderRadius: 8,
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor1,
+    borderRadius: 8,
   },
-  inactiveTabStyle: {
-    backgroundColor: "transparent",
-  },
+  inactiveTabStyle: {},
   activeTextStyle: {
-    color: Color.textColor2,
     fontWeight: "bold",
   },
-  inactiveTextStyle: {
-    color: Color.textColor3,
-  },
+  inactiveTextStyle: {},
   content: {
     flex: 1,
   },

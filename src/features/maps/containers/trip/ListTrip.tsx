@@ -43,7 +43,7 @@ const ListTrip = () => {
                     style={{
                     width: 200,
                     height: 50,
-                    backColor: Color.mainColor1,
+                    backColor: Color.mainColor2,
                     textColor: Color.textColor2,
                     radius: 50,
                     shadow: true

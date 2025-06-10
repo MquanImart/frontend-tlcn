@@ -14,13 +14,13 @@ interface AdminInviteModalProps {
 }
 
 const AdminInviteModal: React.FC<AdminInviteModalProps> = ({ visible, invites, onAccept, onDecline, onClose }) => {
-  useTheme()
+  useTheme();
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
-            <Icon name="close" size={24} color={Color.textColor1} />
+            <Icon name="close" size={24} color={Color.textPrimary} />
           </TouchableOpacity>
 
           <Text style={styles.modalTitle}>Lời mời làm quản trị viên</Text>
@@ -41,8 +41,8 @@ const AdminInviteModal: React.FC<AdminInviteModalProps> = ({ visible, invites, o
                       style={{
                         width: "45%",
                         height: 40,
-                        backColor: Color.mainColor1,
-                        textColor: Color.textColor2,
+                        backColor: Color.mainColor2,
+                        textColor: Color.textOnMain2, // Màu chữ trên mainColor2
                         fontSize: 14,
                         fontWeight: "bold",
                         radius: 8,
@@ -54,8 +54,8 @@ const AdminInviteModal: React.FC<AdminInviteModalProps> = ({ visible, invites, o
                       style={{
                         width: "45%",
                         height: 40,
-                        backColor: Color.textColor3,
-                        textColor: Color.textColor2,
+                        backColor: Color.backgroundTertiary,
+                        textColor: Color.textSecondary,
                         fontSize: 14,
                         fontWeight: "bold",
                         radius: 8,
@@ -83,12 +83,12 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "85%",
-    backgroundColor: Color.white_homologous,
+    backgroundColor: Color.background, // Sử dụng background hoặc backgroundSecondary
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
     elevation: 10,
-    shadowColor: "#000", 
+    shadowColor: Color.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -102,23 +102,23 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
+    color: Color.textPrimary,
     marginBottom: 12,
   },
   noInvitesText: {
     fontSize: 16,
-    color: Color.textColor3,
+    color: Color.textSecondary,
     marginVertical: 10,
   },
   inviteItem: {
     width: "100%",
     paddingVertical: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: Color.borderColor1,
+    borderBottomColor: Color.border,
   },
   inviteText: {
     fontSize: 16,
-    color: Color.textColor1,
+    color: Color.textPrimary,
     textAlign: "center",
     marginBottom: 10,
   },

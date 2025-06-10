@@ -1,3 +1,4 @@
+// src/shared/components/header/CHeaderIcon.tsx
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import { useEffect, useState } from "react";
@@ -23,12 +24,12 @@ const CHeaderIcon = ({label, IconLeft, onPressLeft, IconRight, onPressRight, tex
     return (
         <View style={styles.container}>
             <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressLeft}>
-                <Icon name={IconLeft} size={24} color={Color.white_contrast} />
+                <Icon name={IconLeft} size={24} color={Color.textPrimary} />
             </TouchableOpacity>
-            <Text style={styles.label}>{label}</Text>
+            <Text style={[styles.label, { color: Color.mainColor2 }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
-                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor1} />}
-                {textRight && <Text style={styles.textIcon}>{textRight}</Text>}
+                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
+                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}
             </TouchableOpacity> : <View style={styles.placeHolder}/>}
         </View>
     )
@@ -38,6 +39,9 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
     const [numMessages, setNumMessages] = useState<number>(0);
     const [userId, setUserId] = useState<string|null>(null);
     const [conversations, setConversations] = useState<Conversation[] | null>(null);
+
+    // Bổ sung useTheme để cập nhật màu động
+    useTheme();
 
     useEffect(() => {
         getUserId();
@@ -130,14 +134,14 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
     return (
         <View style={styles.container}>
             <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressLeft}>
-                <Icon name={IconLeft} size={24} color={Color.white_contrast} />
+                <Icon name={IconLeft} size={24} color={Color.textPrimary} />
             </TouchableOpacity>
-            <Text style={styles.label}>{label}</Text>
+            <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
-                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor1} />}
-                {textRight && <Text style={styles.textIcon}>{textRight}</Text>}
-                {numMessages !== 0 && <View style={styles.messages}>
-                    <Text style={styles.textMessages}>{numMessages}</Text>
+                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
+                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}
+                {numMessages !== 0 && <View style={[styles.messages, { backgroundColor: Color.error }]}>
+                    <Text style={[styles.textMessages, { color: Color.textOnMain2 }]}>{numMessages}</Text>
                 </View>}
             </TouchableOpacity> : <View style={styles.placeHolder}/>}
         </View>
@@ -164,19 +168,17 @@ const styles = StyleSheet.create({
     },
     textIcon: {
         paddingHorizontal: 5,
-        color: Color.mainColor1
     },
     borderIcon: {
         borderWidth: 0.5,
         borderRadius: 50,
-        borderColor: Color.textColor3
+        borderColor: Color.border,
     },
     placeHolder: {
         width: 20
     },
     messages: {
         width: 12, height: 12,
-        backgroundColor: 'red',
         borderRadius: 6,
         position:'absolute',
         top: 0, right: 0,
@@ -184,7 +186,6 @@ const styles = StyleSheet.create({
     },
     textMessages: {
         fontSize: 10,
-        color: 'white',
         fontWeight: 'bold'
     }
 })

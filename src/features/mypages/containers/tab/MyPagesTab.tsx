@@ -17,17 +17,17 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
-        <Text>Đang tải...</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <ActivityIndicator size="large" color={Color.mainColor2} />
+        <Text style={{ color: Color.textSecondary }}>Đang tải...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={{ color: "red" }}>Lỗi: {error}</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={{ color: Color.error }}>Lỗi: {error}</Text>
       </View>
     );
   }
@@ -39,8 +39,8 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
     return (
       <CardPage
         images={item.avt?.url || null}
-        name={item.name} // name là required trong Page
-        country={"Viet Nam"} // Giá trị mặc định vì Page không có country
+        name={item.name}
+        country={"Viet Nam"}
         size={{ width: "32%", height: 160 }}
         onPress={() => handleNavigateToPage(item._id)}
       />
@@ -48,7 +48,7 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <FlatList
         data={filledData}
         renderItem={renderPageItem}
@@ -66,7 +66,6 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
   },
   listContent: {
     paddingBottom: 20,
@@ -77,8 +76,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   filler: {
-    width: "32%", // Phải khớp với width của CardPage
-    height: 160, // Phải khớp với height của CardPage
+    width: "32%",
+    height: 160,
     backgroundColor: "transparent",
   },
   centered: {

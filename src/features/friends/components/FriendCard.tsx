@@ -3,7 +3,7 @@ import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Ensure this import is correct
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -26,7 +26,7 @@ type NavigationProp = NativeStackNavigationProp<MenuStackParamList>;
 type ProfileNavigationProp = StackNavigationProp<SearchStackParamList>;
 
 const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate, button, profile}: FriendCardProps) => {
-    useTheme();
+    useTheme(); // Ensures dynamic colors are available
     const menuNavigation = useNavigation<NavigationProp>();
     const profileNavigation = useNavigation<ProfileNavigationProp>();
 
@@ -45,22 +45,37 @@ const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate,
     };
 
     return (
-        <View key={`view-${_id}`} style={styles.container}>
+        <View key={`view-${_id}`} style={[
+            styles.container,
+            {
+                backgroundColor: Color.background,
+                shadowColor: Color.shadow,
+            }
+        ]}>
             <View style={styles.boxImages}>
-                <Image style={styles.images} source={ img.length > 0 ? {uri: img[0].url} : require("@/src/assets/images/default/default_user.png")}/>
+                <Image
+                    style={styles.images}
+                    source={ img && img.length > 0 && img[0].url ? {uri: img[0].url} : require("@/src/assets/images/default/default_user.png")}
+                />
             </View>
             <View style={styles.boxContent}>
-                <TouchableOpacity style={styles.boxTilte} 
+                <TouchableOpacity
+                    style={styles.boxTilte}
                     onPress={goToProfile}
                 >
-                    <Text style={styles.title}>{name}</Text>
-                    <Text style={styles.textDate}>{sendDate?timeAgo(sendDate) :""}</Text>
+                    {/* Apply dynamic text color */}
+                    <Text style={[styles.title, { color: Color.textPrimary }]}>{name}</Text>
+                    {/* Apply dynamic text color */}
+                    <Text style={[styles.textDate, { color: Color.textSecondary }]}>{sendDate ? timeAgo(sendDate) : ""}</Text>
                 </TouchableOpacity>
                 <View style={styles.boxSame}>
-                    {sameFriends !== undefined && <Text style={styles.textSame}>{sameFriends} bạn chung</Text>}
-                    {sameGroups !== undefined && <Text style={styles.textSame}>{sameGroups} nhóm chung</Text>}
+                    {/* Apply dynamic text color */}
+                    {sameFriends !== undefined && <Text style={[styles.textSame, { color: Color.textSecondary }]}>{sameFriends} bạn chung</Text>}
+                    {/* Apply dynamic text color */}
+                    {sameGroups !== undefined && <Text style={[styles.textSame, { color: Color.textSecondary }]}>{sameGroups} nhóm chung</Text>}
                 </View>
-                <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">{aboutMe}</Text>
+                {/* Apply dynamic text color */}
+                <Text style={[styles.content, { color: Color.textPrimary }]} numberOfLines={2} ellipsizeMode="tail">{aboutMe}</Text>
                 {button()}
             </View>
         </View>
@@ -73,8 +88,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 10,
         paddingVertical: 10,
-        backgroundColor: Color.backGround,
-        shadowColor: Color.white_contrast,
+        // backgroundColor and shadowColor are now applied inline in the component's style prop
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
@@ -103,10 +117,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: 'bold',
-        fontSize: 17
+        fontSize: 17,
+        // color is applied inline
     },
     textDate: {
-        fontSize: 8
+        fontSize: 8,
+        // color is applied inline
     },
     boxSame: {
         flexDirection: 'row'
@@ -114,9 +130,11 @@ const styles = StyleSheet.create({
     textSame: {
         fontSize: 10,
         paddingRight: 10,
+        // color is applied inline
     },
     content: {
-        fontSize: 12
+        fontSize: 12,
+        // color is applied inline
     }
 })
 

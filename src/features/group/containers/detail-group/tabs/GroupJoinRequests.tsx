@@ -46,28 +46,36 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
     isLoadingMore,
     fetchPendingMembers,
   } = useGroupJoinRequests(groupId);
-  useTheme();
+  useTheme(); // Kích hoạt theme context
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: Color.background }]} // Sử dụng màu nền động
     >
       <View style={styles.innerContainer}>
         <TextInput
-          style={styles.searchInput}
+          style={[
+            styles.searchInput,
+            {
+              borderColor: Color.border,
+              backgroundColor: Color.backgroundSecondary,
+              color: Color.textPrimary,
+            },
+          ]}
           placeholder="Nhập tên thành viên"
-          placeholderTextColor={Color.textColor3}
+          placeholderTextColor={Color.textTertiary} // Sử dụng màu placeholder động
           value={searchText}
           onChangeText={setSearchText}
         />
 
         {loading ? (
-          <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
+          <ActivityIndicator size="large" color={Color.mainColor2} style={styles.loading} />
         ) : error ? (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text> {/* Sử dụng màu lỗi động */}
             <TouchableOpacity onPress={() => fetchPendingMembers(1)}>
-              <Text style={styles.retryText}>Thử lại</Text>
+              <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text> {/* Sử dụng màu động */}
             </TouchableOpacity>
           </View>
         ) : (
@@ -88,14 +96,14 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
               />
             )}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>Không có yêu cầu nào</Text>
+              <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Không có yêu cầu nào</Text> // Sử dụng màu chữ động
             }
             onEndReached={loadMoreRequests}
             onEndReachedThreshold={0.5}
             ListFooterComponent={
               isLoadingMore ? (
                 <View style={styles.footer}>
-                  <ActivityIndicator size="large" color={Color.mainColor1} />
+                  <ActivityIndicator size="large" color={Color.mainColor2} />
                 </View>
               ) : null
             }
@@ -103,7 +111,7 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
               <RefreshControl
                 refreshing={loading}
                 onRefresh={() => fetchPendingMembers(1)}
-                colors={[Color.mainColor1]}
+                colors={[Color.mainColor2]} // Màu cho refresh indicator
               />
             }
           />
@@ -118,7 +126,7 @@ export default GroupJoinRequests;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    // backgroundColor: Color.backGround, // Moved to inline style for dynamic update
   },
   innerContainer: {
     flex: 1,
@@ -127,17 +135,17 @@ const styles = StyleSheet.create({
   searchInput: {
     height: 40,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    // borderColor: Color.borderColor1, // Moved to inline style
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
-    backgroundColor: "#fff",
-    color: Color.textColor1,
+    // backgroundColor: "#fff", // Moved to inline style
+    // color: Color.textColor1, // Moved to inline style
   },
   emptyText: {
     textAlign: "center",
     fontSize: 16,
-    color: Color.textColor3,
+    // color: Color.textColor3, // Moved to inline style
     marginTop: 20,
   },
   loading: {
@@ -150,12 +158,12 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: "red",
+    // color: "red", // Moved to inline style
     textAlign: "center",
   },
   retryText: {
     fontSize: 16,
-    color: Color.mainColor1,
+    // color: Color.mainColor2, // Moved to inline style
     marginTop: 10,
     fontWeight: "bold",
   },

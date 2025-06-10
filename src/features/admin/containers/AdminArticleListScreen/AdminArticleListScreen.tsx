@@ -1,8 +1,9 @@
 import TabBarCustom, { Tab } from '@/src/features/group/components/TabBarCustom';
 import CButton from '@/src/shared/components/button/CButton';
-import CHeader from '@/src/shared/components/header/CHeader'; // Import TabBarCustom and Tab interface
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import CHeader from '@/src/shared/components/header/CHeader';
+// Loại bỏ các import liên quan đến theme động
+// import { useTheme } from '@/src/contexts/ThemeContext';
+// import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
 import { ActivityIndicator, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import ArticleRow from '../../components/ArticleRow';
@@ -11,8 +12,9 @@ import ReportModalScreen from '../ReportModal/ReportModal';
 import useAdminArticleList from './useAdminArticleList';
 
 const { height, width } = Dimensions.get('window');
+
 const AdminArticleListScreen: React.FC = () => {
-  useTheme();
+  // Loại bỏ useTheme()
   const {
     articles,
     loading,
@@ -26,7 +28,7 @@ const AdminArticleListScreen: React.FC = () => {
     currentPage,
     setCurrentPage,
     filter,
-    setFilter, // This is now handleFilterChange from the hook
+    setFilter,
   } = useAdminArticleList();
 
   const renderArticle = ({ item }: { item: Article }) => (
@@ -45,14 +47,12 @@ const AdminArticleListScreen: React.FC = () => {
     }
   };
 
-  // Define tabs for TabBarCustom
   const tabs: Tab[] = [
     { label: 'Tất cả', icon: 'list' },
     { label: 'Đã xóa', icon: 'delete' },
     { label: 'Có báo cáo', icon: 'report' },
   ];
 
-  // Map filter state to TabBarCustom's selectedTab
   const getSelectedTabLabel = (currentFilter: string) => {
     switch (currentFilter) {
       case 'all':
@@ -66,7 +66,6 @@ const AdminArticleListScreen: React.FC = () => {
     }
   };
 
-  // Map TabBarCustom's selected label to filter state
   const handleTabSelect = (tabLabel: string) => {
     switch (tabLabel) {
       case 'Tất cả':
@@ -88,7 +87,7 @@ const AdminArticleListScreen: React.FC = () => {
       <SafeAreaView style={styles.loadingContainer}>
         <CHeader label="Danh sách bài viết" showBackButton={false} />
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color="#4B164C" />
         </View>
       </SafeAreaView>
     );
@@ -99,28 +98,28 @@ const AdminArticleListScreen: React.FC = () => {
       <SafeAreaView style={styles.errorContainer}>
         <CHeader label="Danh sách bài viết" showBackButton={false} />
         <View style={styles.centerContent}>
-          <Text style={[styles.errorText, { color: Color.textColor1 }]}>{error}</Text>
+          <Text style={[styles.errorText, { color: '#212121' }]}>{error}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: Color.backGround, maxHeight: height }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: '#F5F5F5', maxHeight: height }]}>
       <CHeader label="Danh sách bài viết" showBackButton={false} />
+      {/* Ensure no literal whitespace/newlines directly between View and its immediate children. */}
+      {/* If this is the culprit, compacting these lines often resolves it. */}
       <View style={styles.content}>
-        {/* Integrate TabBarCustom here */}
         <TabBarCustom
           tabs={tabs}
           selectedTab={getSelectedTabLabel(filter)}
           onSelectTab={handleTabSelect}
-          style={styles.tabBarCustomStyle}
-          activeTabStyle={styles.activeTabStyle}
+          style={[styles.tabBarCustomStyle, { backgroundColor: '#E0E0E0' }]}
+          activeTabStyle={[styles.activeTabStyle, { backgroundColor: '#4B164C' }]}
           inactiveTabStyle={styles.inactiveTabStyle}
-          activeTextStyle={styles.activeTextStyle}
-          inactiveTextStyle={styles.inactiveTextStyle}
+          activeTextStyle={[styles.activeTextStyle, { color: '#FFFFFF' }]}
+          inactiveTextStyle={[styles.inactiveTextStyle, { color: '#212121' }]}
         />
-
         <FlatList
           data={articles}
           renderItem={renderArticle}
@@ -131,25 +130,25 @@ const AdminArticleListScreen: React.FC = () => {
           windowSize={5}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={[styles.noArticles, { color: Color.textColor3 }]}>
+            <Text style={[styles.noArticles, { color: '#9E9E9E' }]}>
               Không có bài viết nào
             </Text>
           }
           ListFooterComponent={
-            <View style={styles.paginationContainer}>
+            <View style={[styles.paginationContainer, { backgroundColor: '#F8F8F8' }]}>
               <CButton
                 label="Trước"
                 onSubmit={handlePrevPage}
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: Color.mainColor1,
-                  textColor: Color.white_homologous,
+                  backColor: '#4B164C',
+                  textColor: '#FFFFFF',
                   radius: 8,
                 }}
                 disabled={currentPage === 1}
               />
-              <Text style={[styles.pageText, { color: Color.textColor1 }]}>
+              <Text style={[styles.pageText, { color: '#212121' }]}>
                 Trang {currentPage} / {totalPages}
               </Text>
               <CButton
@@ -158,8 +157,8 @@ const AdminArticleListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: Color.mainColor1,
-                  textColor: Color.white_homologous,
+                  backColor: '#4B164C',
+                  textColor: '#FFFFFF',
                   radius: 8,
                 }}
                 disabled={currentPage === totalPages}
@@ -181,7 +180,7 @@ const AdminArticleListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: '#F5F5F5',
   },
   content: {
     flex: 1,
@@ -193,11 +192,11 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: '#F5F5F5',
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: '#F5F5F5',
   },
   centerContent: {
     flex: 1,
@@ -214,21 +213,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: Color.backGround1,
     borderRadius: 12,
     marginTop: 16,
     marginHorizontal: 8,
     alignSelf: 'center',
     width: width * 0.95,
+    backgroundColor: '#F8F8F8',
   },
   pageText: {
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    color: Color.textColor1,
     minWidth: 80,
   },
-  filterContainer: { // This style is no longer used directly but kept for reference
+  filterContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 12,
@@ -239,19 +237,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 20,
   },
-  // Styles for TabBarCustom
   tabBarCustomStyle: {
     marginBottom: 12,
-    marginHorizontal: 0, // Adjust as needed
+    marginHorizontal: 0,
     borderRadius: 8,
-    backgroundColor: Color.backGround2, // Match the original button background
-    elevation: 0, // Remove shadow if not desired
+    elevation: 0,
     shadowOpacity: 0,
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor1,
-    borderRadius: 8, // Apply radius to active tab
-    paddingHorizontal: 15, // Adjust padding
+    borderRadius: 8,
+    paddingHorizontal: 15,
     paddingVertical: 10,
   },
   inactiveTabStyle: {
@@ -261,13 +256,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   activeTextStyle: {
-    color: Color.white_homologous, // Match original button text color
     fontSize: 14,
     fontWeight: 'bold',
     marginLeft: 5,
   },
   inactiveTextStyle: {
-    color: Color.textColor1, // Match original button text color
     fontSize: 14,
   },
 });

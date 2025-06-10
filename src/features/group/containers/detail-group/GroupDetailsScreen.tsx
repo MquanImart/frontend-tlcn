@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, FlatList } from "react-native";
+import { View, StyleSheet, Text, FlatList, ActivityIndicator } from "react-native";
 import TabBarCustom from "@/src/features/group/components/TabBarCustom";
 import GroupHome from "@/src/features/group/containers/detail-group/tabs/GroupHome";
 import GroupRules from "@/src/features/group/containers/detail-group/tabs/GroupRules";
@@ -9,7 +9,7 @@ import GroupMySelf from "@/src/features/group/containers/detail-group/tabs/Group
 import GroupMembers from "@/src/features/group/containers/detail-group/tabs/GroupMembers";
 import GroupHeader from "@/src/features/group/components/GroupHeader";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo đã import Color
 import InviteFriendsModal from "../../components/InviteFriendsModal";
 import EditGroupScreen from "../../components/EditGroupScreen";
 import GroupTopBar from "../../components/GroupTopBar";
@@ -65,9 +65,9 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
     handleMapPointSelect,
     clearLocation,
     isLocationLoading,
-    MapPickerDialog, 
+    MapPickerDialog,
     isMapPickerVisible,
-    setMapPickerVisible, 
+    setMapPickerVisible,
     setPageID,
     openMapPicker
   } = useGroupDetailsScreen(groupId, currentUserId);
@@ -85,8 +85,14 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
 
   const filteredTabs = allTabs.filter(tab => tab.roles.includes(userRole));
 
-  if (!groupState) {
-    return <View style={styles.container}><Text>Loading...</Text></View>;
+  // Added a check for initial loading state for userRole as well if it affects rendering
+  if (!groupState || !userRole) {
+    return (
+      <View style={[styles.container, {backgroundColor: Color.background, justifyContent: 'center', alignItems: 'center'}]}>
+        <ActivityIndicator size="large" color={Color.mainColor2} />
+        <Text style={{color: Color.textPrimary, marginTop: 10}}>Đang tải dữ liệu nhóm...</Text>
+      </View>
+    );
   }
 
   const renderTabContent = () => {
@@ -109,12 +115,12 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: Color.background}]}>
       {isEditingGroup ? (
         <EditGroupScreen group={groupState} onCancel={() => setIsEditingGroup(false)} onSave={handleSaveGroup} />
       ) : (
         <>
-          <View style={styles.fixedTopBar}>
+          <View style={[styles.fixedTopBar, { backgroundColor: Color.mainColor2 }]}>
             <GroupTopBar
               groupId={groupId}
               groupName={groupState?.groupName || ""}
@@ -130,7 +136,7 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
             onScroll={handleScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
-            data={[1]}
+            data={[1]} // FlatList requires data, [1] is a common workaround for single-item lists
             renderItem={() => (
               <>
                 <GroupHeader
@@ -152,16 +158,18 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
                   tabs={filteredTabs}
                   selectedTab={selectedTab}
                   onSelectTab={setSelectedTab}
-                  style={styles.tabBarStyle}
-                  activeTabStyle={styles.activeTabStyle}
-                  inactiveTabStyle={styles.inactiveTabStyle}
-                  activeTextStyle={styles.activeTextStyle}
-                  inactiveTextStyle={styles.inactiveTextStyle}
+                  style={[styles.tabBarStyle, { backgroundColor: Color.backgroundSecondary }]} // Added dynamic background color
+                  activeTabStyle={{ backgroundColor: Color.mainColor2 }} // Inline dynamic color
+                  inactiveTabStyle={{ backgroundColor: 'transparent' }} // Inline static color
+                  activeTextStyle={{ color: Color.textOnMain2, fontWeight: 'bold' }} // Inline dynamic color
+                  inactiveTextStyle={{ color: Color.textSecondary }} // Inline dynamic color
                 />
 
                 {renderTabContent()}
               </>
             )}
+            // You might want to consider adding a `keyExtractor` if your data array was more complex
+            keyExtractor={(item, index) => String(index)}
           />
         </>
       )}
@@ -202,19 +210,40 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
 export default GroupDetailsScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Color.backGround },
+  container: {
+    flex: 1,
+    // backgroundColor: Color.background, // Moved to inline for flexibility
+  },
   fixedTopBar: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: Color.mainColor1,
+    // backgroundColor: Color.mainColor2, // Moved to inline for flexibility
   },
-  tabBarStyle: { marginHorizontal: 15, marginTop: 10, marginBottom: 20 },
-  activeTabStyle: { backgroundColor: Color.mainColor1 },
-  inactiveTabStyle: { backgroundColor: "transparent" },
-  activeTextStyle: { color: "#fff", fontWeight: "bold" },
-  inactiveTextStyle: { color: Color.textColor3 },
-  content: { flex: 1, marginTop: 90, paddingBottom: 20 },
+  tabBarStyle: {
+    marginHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 20,
+    // backgroundColor: Color.backgroundSecondary, // Moved to inline for flexibility
+  },
+  activeTabStyle: {
+    backgroundColor: Color.mainColor2,
+  },
+  inactiveTabStyle: {
+    backgroundColor: "transparent",
+  },
+  activeTextStyle: {
+    color: Color.textOnMain2,
+    fontWeight: "bold",
+  },
+  inactiveTextStyle: {
+    color: Color.textSecondary,
+  },
+  content: {
+    flex: 1,
+    marginTop: 90,
+    paddingBottom: 20,
+  },
 });

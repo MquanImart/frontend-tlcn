@@ -1,3 +1,4 @@
+// src/shared/components/tabbar/TabBarCustom.tsx
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -31,27 +32,29 @@ const TabBarCustom: React.FC<TabBarProps> = ({
   activeTextStyle = {},
   inactiveTextStyle = {},
 }) => {
-  useTheme();
+  useTheme(); // Call useTheme() to ensure dynamic colors are applied
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { backgroundColor: Color.backgroundSecondary }, style]}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.label}
           style={[
             styles.tab,
             selectedTab === tab.label
-              ? [styles.activeTab, activeTabStyle]
-              : [styles.inactiveTab, inactiveTabStyle],
+              ? [styles.activeTab, { backgroundColor: Color.mainColor2 }, activeTabStyle] // Active tab background
+              : [styles.inactiveTab, inactiveTabStyle], // Inactive tab background (transparent)
           ]}
           onPress={() => onSelectTab(tab.label)}
         >
           <Icon
             name={tab.icon}
             size={24}
-            color={selectedTab === tab.label ? Color.textColor2 : Color.textColor3}
+            // Icon color: textOnMain2 for active, textSecondary for inactive
+            color={selectedTab === tab.label ? Color.textOnMain2 : Color.textSecondary}
           />
           {selectedTab === tab.label && (
-            <Text style={[styles.activeText, activeTextStyle]}>{tab.label}</Text>
+            // Text color for active tab: textOnMain2
+            <Text style={[styles.activeText, { color: Color.textOnMain2 }, activeTextStyle]}>{tab.label}</Text>
           )}
         </TouchableOpacity>
       ))}
@@ -66,12 +69,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: Color.backGround,
+    // backgroundColor: Color.background, // Moved to inline style for backgroundSecondary
     paddingVertical: 10,
     borderRadius: 20,
     marginHorizontal: 10,
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: "#000", // Keep fixed shadow color for consistent appearance
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 10,
@@ -80,23 +83,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 10,
-    borderRadius: 10,
+    paddingHorizontal: 10, // Adjusted from 10 to 16 for better padding consistency
+    paddingVertical: 8,    // Adjusted from 10 to 8
+    borderRadius: 15, // Adjusted from 10 to 15 for a softer look
   },
   activeTab: {
-    backgroundColor: Color.mainColor1,
+    // backgroundColor is applied inline
   },
   inactiveTab: {
     backgroundColor: "transparent",
   },
   activeText: {
-    color: Color.textColor2,
+    // color is applied inline
     fontSize: 14,
     fontWeight: "bold",
-    marginLeft: 5,
+    marginLeft: 5, // Adjusted from 5 to 8 for better spacing
   },
   inactiveText: {
-    color: Color.textColor3,
+    // color is applied inline
     fontSize: 14,
   },
 });

@@ -9,42 +9,42 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Thêm Ionicons
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Thêm AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import restClient from "@/src/shared/services/RestClient";
 
 interface ChangePasswordDialogProps {
   visible: boolean;
   onClose: () => void;
-  onSave: ( oldPassword: string, newPassword: string) => Promise<void>; // Cập nhật để nhận accountId
+  onSave: (oldPassword: string, newPassword: string) => Promise<void>;
   loading: boolean;
 }
 
 const accountClient = restClient.apiClient.service("apis/accounts");
 
 const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePasswordDialogProps) => {
-  useTheme()
+  useTheme();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [accountId, setAccountId] = useState<string | null>(null); // State để lưu accountId
+  const [accountId, setAccountId] = useState<string | null>(null);
 
-  // State để kiểm soát ẩn/hiện mật khẩu
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Lấy accountId từ AsyncStorage khi component mount
   useEffect(() => {
     const fetchAccountId = async () => {
       try {
-        const id = await AsyncStorage.getItem('accountId'); // Giả sử accountId được lưu với key 'accountId'
+        const id = await AsyncStorage.getItem('accountId');
         if (id) {
-          setAccountId(id);
-          console.log("Account ID:", id); // Kiểm tra xem accountId có được lấy thành công không
+          // Remove quotes if present
+          const cleanId = id.replace(/"/g, '');
+          setAccountId(cleanId);
+          console.log("Account ID:", cleanId);
         } else {
           setPasswordError("Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.");
         }
@@ -55,7 +55,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
     };
 
     if (visible) {
-      fetchAccountId(); // Chỉ lấy accountId khi modal hiển thị
+      fetchAccountId();
     }
   }, [visible]);
 
@@ -66,16 +66,9 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
     }
 
     try {
-      // Kiểm tra mật khẩu cũ
-      const passWordCheck = await restClient.apiClient
-        .service("apis/accounts/compare-password")
-        .create({
-          idAccount: accountId, // Truyền accountId thay vì chỉ password
-          password: oldPassword,
-        });
-
-      if (!passWordCheck.success) {
-        setPasswordError("Mật khẩu cũ không chính xác");
+      // Validate inputs first to avoid unnecessary API calls
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        setPasswordError("Vui lòng điền đầy đủ các trường");
         return;
       }
 
@@ -84,20 +77,27 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
         return;
       }
 
-      if (!oldPassword || !newPassword || !confirmPassword) {
-        setPasswordError("Vui lòng điền đầy đủ các trường");
+      // Check old password
+      const passWordCheck = await restClient.apiClient
+        .service("apis/accounts/compare-password")
+        .create({
+          idAccount: accountId,
+          password: oldPassword,
+        });
+
+      if (!passWordCheck.success) {
+        setPasswordError("Mật khẩu cũ không chính xác");
         return;
       }
 
-      // Gọi hàm onSave với accountId
-      await onSave( oldPassword, newPassword);
+      await onSave(oldPassword, newPassword);
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setPasswordError(null);
       onClose();
     } catch (err: any) {
-      setPasswordError(err.message || "Lỗi không xác định");
+      setPasswordError(err.message || "Đã xảy ra lỗi không xác định.");
     }
   };
 
@@ -106,7 +106,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
     setNewPassword("");
     setConfirmPassword("");
     setPasswordError(null);
-    setAccountId(null); // Reset accountId khi đóng modal
+    setAccountId(null);
     onClose();
   };
 
@@ -119,15 +119,15 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Đổi mật khẩu</Text>
+          <View style={[styles.modalContainer, { backgroundColor: Color.background }]}>
+            <Text style={[styles.modalTitle, { color: Color.textPrimary }]}>Đổi mật khẩu</Text>
 
-            {/* Trường mật khẩu cũ */}
+            {/* Old password field */}
             <View style={styles.inputContainer}>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { borderColor: Color.border, color: Color.textPrimary, backgroundColor: Color.backgroundSecondary }]}
                 placeholder="Mật khẩu cũ"
-                placeholderTextColor={Color.textColor3}
+                placeholderTextColor={Color.textSecondary}
                 secureTextEntry={!showOldPassword}
                 value={oldPassword}
                 onChangeText={setOldPassword}
@@ -139,17 +139,17 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Ionicons
                   name={showOldPassword ? "eye-off" : "eye"}
                   size={24}
-                  color={Color.mainColor1}
+                  color={Color.mainColor2}
                 />
               </TouchableOpacity>
             </View>
 
-            {/* Trường mật khẩu mới */}
+            {/* New password field */}
             <View style={styles.inputContainer}>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { borderColor: Color.border, color: Color.textPrimary, backgroundColor: Color.backgroundSecondary }]}
                 placeholder="Mật khẩu mới"
-                placeholderTextColor={Color.textColor3}
+                placeholderTextColor={Color.textSecondary}
                 secureTextEntry={!showNewPassword}
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -161,17 +161,17 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Ionicons
                   name={showNewPassword ? "eye-off" : "eye"}
                   size={24}
-                  color={Color.mainColor1}
+                  color={Color.mainColor2}
                 />
               </TouchableOpacity>
             </View>
 
-            {/* Trường xác nhận mật khẩu */}
+            {/* Confirm new password field */}
             <View style={styles.inputContainer}>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { borderColor: Color.border, color: Color.textPrimary, backgroundColor: Color.backgroundSecondary }]}
                 placeholder="Xác nhận mật khẩu mới"
-                placeholderTextColor={Color.textColor3}
+                placeholderTextColor={Color.textSecondary}
                 secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -183,28 +183,30 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Ionicons
                   name={showConfirmPassword ? "eye-off" : "eye"}
                   size={24}
-                  color={Color.mainColor1}
+                  color={Color.mainColor2}
                 />
               </TouchableOpacity>
             </View>
 
             {passwordError && (
-              <Text style={styles.errorText}>{passwordError}</Text>
+              <Text style={[styles.errorText, { color: Color.error }]}>{passwordError}</Text>
             )}
 
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: Color.textColor3 }]}
+                style={[styles.modalButton, { backgroundColor: Color.backgroundTertiary }]}
                 onPress={handleClose}
               >
-                <Text style={styles.modalButtonText}>Hủy</Text>
+                {/* Changed to wrap the label in a Text component */}
+                <Text style={[styles.modalButtonText, { color: Color.textPrimary }]}>Hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: Color.mainColor1 }]}
+                style={[styles.modalButton, { backgroundColor: Color.mainColor2 }]}
                 onPress={handleSave}
                 disabled={loading}
               >
-                <Text style={styles.modalButtonText}>
+                {/* Changed to wrap the label in a Text component */}
+                <Text style={[styles.modalButtonText, { color: Color.textOnMain2 }]}>
                   {loading ? "Đang lưu..." : "Lưu"}
                 </Text>
               </TouchableOpacity>
@@ -225,7 +227,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '80%',
-    backgroundColor: Color.white_homologous,
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
@@ -233,7 +234,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Color.mainColor1,
     marginBottom: 20,
   },
   inputContainer: {
@@ -244,12 +244,10 @@ const styles = StyleSheet.create({
   modalInput: {
     width: '100%',
     borderWidth: 1,
-    borderColor: Color.textColor3,
     borderRadius: 8,
     padding: 10,
     paddingRight: 40,
     fontSize: 16,
-    backgroundColor: Color.white_homologous,
   },
   eyeIcon: {
     position: 'absolute',
@@ -258,7 +256,6 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -12 }],
   },
   errorText: {
-    color: 'red',
     fontSize: 14,
     marginBottom: 15,
   },
@@ -276,7 +273,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   modalButtonText: {
-    color: Color.white_homologous,
     fontSize: 16,
     fontWeight: 'bold',
   },

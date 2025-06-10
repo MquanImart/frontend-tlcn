@@ -93,7 +93,7 @@ const OtpForgot = () => {
                         <CButton
                             label="Xác nhận"
                             onSubmit={handleVerifyOtp} // Gọi API khi nhấn "Xác nhận"
-                            style={{ width: "90%", height: 50, backColor: Color.mainColor1, textColor: "#fff", radius: 25 }}
+                            style={{ width: "90%", height: 50, backColor: Color.mainColor2, textColor: "#fff", radius: 25 }}
                         />
 
                         <TouchableOpacity>

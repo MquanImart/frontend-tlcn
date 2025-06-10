@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
+  Text, // Đảm bảo Text được import
   StyleSheet,
   TouchableOpacity,
   FlatList,
   Modal,
   Dimensions,
+  ActivityIndicator, // Đảm bảo ActivityIndicator được import
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo đường dẫn này đúng
+import { useTheme } from '@/src/contexts/ThemeContext'; // Ensure this path is correct
 import restClient from '@/src/shared/services/RestClient';
 
 const hobbiesClient = restClient.apiClient.service("apis/hobbies");
@@ -33,7 +34,7 @@ interface ChangePreferencesDialogProps {
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPreferences }: ChangePreferencesDialogProps) => {
-  useTheme();
+  useTheme(); // Kích hoạt theme context để truy cập màu động
   const [open, setOpen] = useState(false);
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>(initialPreferences.map(pref => pref.id));
   const [currentPreferences, setCurrentPreferences] = useState<Preference[]>(initialPreferences);
@@ -46,7 +47,7 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
       setSelectedPreferences(initialPreferences.map(pref => pref.id));
       setCurrentPreferences(initialPreferences);
       fetchAvailablePreferences();
-      setError(null);
+      setError(null); // Reset error khi mở dialog
     }
   }, [visible, initialPreferences]);
 
@@ -54,7 +55,6 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
     try {
       setLoading(true);
       const response = await hobbiesClient.find({});
-      console.log("Dữ liệu sở thích:", response.data); // Kiểm tra dữ liệu API
       if (response.success) {
         const hobbies = response.data.map((hobby: { name: string; _id: string }) => ({
           label: hobby.name,
@@ -62,44 +62,48 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
         }));
         setAvailablePreferences(hobbies);
         if (hobbies.length === 0) {
-          setError("Không có sở thích nào để hiển thị");
+          setError("Không có sở thích nào để hiển thị."); // Đảm bảo chuỗi này là một chuỗi
         }
       } else {
-        setError("Không thể tải danh sách sở thích");
+        setError(response.message || "Không thể tải danh sách sở thích."); // Đảm bảo chuỗi này là một chuỗi
       }
     } catch (err) {
-      setError("Lỗi khi tải sở thích");
+      setError("Lỗi khi tải sở thích."); // Đảm bảo chuỗi này là một chuỗi
       console.error("Lỗi:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Đồng bộ selectedPreferences với currentPreferences
   useEffect(() => {
-    const newPreferences = selectedPreferences
-      .map(id => {
-        const existingPref = currentPreferences.find(pref => pref.id === id);
-        if (existingPref) return existingPref;
-        const newPref = availablePreferences.find(pref => pref.value === id);
-        return newPref ? { id: newPref.value, name: newPref.label } : null;
-      })
-      .filter((pref): pref is Preference => pref !== null);
-    setCurrentPreferences(newPreferences);
-  }, [selectedPreferences, availablePreferences]);
+    // Đồng bộ selectedPreferences với currentPreferences
+    // Đảm bảo availablePreferences đã tải xong (hoặc không còn loading) trước khi đồng bộ
+    if (availablePreferences.length > 0 || !loading) {
+      const newPreferences = selectedPreferences
+        .map(id => {
+          const newPref = availablePreferences.find(pref => pref.value === id);
+          return newPref ? { id: newPref.value, name: newPref.label } : null;
+        })
+        .filter((pref): pref is Preference => pref !== null);
+      setCurrentPreferences(newPreferences);
+    }
+  }, [selectedPreferences, availablePreferences, loading]);
 
   const handleRemovePreference = (id: string) => {
     setSelectedPreferences(selectedPreferences.filter(prefId => prefId !== id));
   };
 
   const handleSave = async () => {
-    if (!userId) return;
+    if (!userId) {
+      setError("Không có ID người dùng để lưu sở thích."); // Đảm bảo chuỗi này là một chuỗi
+      return;
+    }
     try {
       setLoading(true);
       const hobbyNames = currentPreferences.map(pref => pref.name);
       const response = await UsersClient.patch(`${userId}/hobbies`, { hobbies: hobbyNames });
       if (!response.success) {
-        throw new Error(response.message || "Lỗi khi cập nhật sở thích");
+        throw new Error(response.message || "Lỗi khi cập nhật sở thích."); // Đảm bảo chuỗi này là một chuỗi
       }
 
       const updatedPreferences = response.data.map((hobby: any) => ({
@@ -109,18 +113,24 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
       onSave(updatedPreferences);
       onClose();
     } catch (err: any) {
-      setError(err.message || "Lỗi không xác định khi lưu sở thích");
+      setError(err.message || "Lỗi không xác định khi lưu sở thích."); // Đảm bảo chuỗi này là một chuỗi
     } finally {
       setLoading(false);
     }
   };
 
+  // Hàm tạo dữ liệu cho FlatList
   const renderContent = () => {
     if (loading) {
       return [
         {
           key: 'loading',
-          content: <Text style={styles.loadingText}>Đang tải...</Text>,
+          content: (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={Color.mainColor2} />
+              <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải...</Text>
+            </View>
+          ),
         },
       ];
     }
@@ -130,7 +140,7 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
         key: 'dropdown',
         content: (
           <View style={styles.dropdownContainer}>
-            <Text style={styles.label}>Chọn sở thích</Text>
+            <Text style={[styles.label, { color: Color.textPrimary }]}>Chọn sở thích</Text>
             <DropDownPicker
               open={open}
               setOpen={setOpen}
@@ -142,14 +152,16 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
               showTickIcon
               mode="BADGE"
               placeholder="Chọn sở thích"
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContent}
-              labelStyle={styles.dropdownLabel}
+              style={[styles.dropdown, { borderColor: Color.border, backgroundColor: Color.backgroundTertiary }]}
+              dropDownContainerStyle={[styles.dropdownContent, { borderColor: Color.border, backgroundColor: Color.backgroundTertiary }]}
+              labelStyle={[styles.dropdownLabel, { color: Color.textPrimary }]}
+              selectedItemLabelStyle={{ color: Color.mainColor2 }}
+              textStyle={{ color: Color.textPrimary }}
               listMode="SCROLLVIEW"
               zIndex={3000}
               zIndexInverse={1000}
               dropDownDirection="BOTTOM"
-              maxHeight={200} // Giới hạn hiển thị ~4 sở thích
+              maxHeight={200}
               scrollViewProps={{
                 showsVerticalScrollIndicator: true,
                 scrollEnabled: true,
@@ -162,7 +174,7 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
       },
       {
         key: 'currentPreferencesLabel',
-        content: <Text style={styles.label}>Sở thích hiện tại</Text>,
+        content: <Text style={[styles.label, { color: Color.textPrimary }]}>Sở thích hiện tại</Text>,
       },
       {
         key: 'currentPreferences',
@@ -171,21 +183,21 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
             currentPreferences.map((pref) => ({
               id: pref.id,
               content: (
-                <View style={styles.preferenceItem}>
-                  <Text style={styles.preferenceText}>• {pref.name}</Text>
+                <View style={[styles.preferenceItem, { backgroundColor: Color.backgroundSelected, borderColor: Color.border }]}>
+                  <Text style={[styles.preferenceText, { color: Color.textPrimary }]}>• {pref.name}</Text>
                   <TouchableOpacity onPress={() => handleRemovePreference(pref.id)}>
-                    <Ionicons name="close-circle" size={18} color={Color.mainColor1} />
+                    <Ionicons name="close-circle" size={18} color={Color.error} />
                   </TouchableOpacity>
                 </View>
               ),
             }))
           ) : (
-            <Text style={styles.noPreferencesText}>Chưa có sở thích nào được chọn</Text>
+            <Text style={[styles.noPreferencesText, { color: Color.textSecondary }]}>Chưa có sở thích nào được chọn</Text>
           ),
       },
       {
         key: 'error',
-        content: error ? <Text style={styles.errorText}>{error}</Text> : null,
+        content: error ? <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text> : null,
       },
     ];
   };
@@ -198,8 +210,8 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Chỉnh sửa sở thích</Text>
+        <View style={[styles.modalContainer, { backgroundColor: Color.backgroundSecondary }]}>
+          <Text style={[styles.modalTitle, { color: Color.textPrimary }]}>Chỉnh sửa sở thích</Text>
 
           <FlatList
             data={renderContent().flatMap(item =>
@@ -214,21 +226,22 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
             scrollEnabled={true}
             style={styles.flatList}
             contentContainerStyle={styles.flatListContent}
+            keyboardShouldPersistTaps="handled" // Giúp DropDownPicker không bị đóng khi chạm ra ngoài
           />
 
-          <View style={styles.modalButtonContainer}>
+          <View style={[styles.modalButtonContainer, { backgroundColor: Color.backgroundSecondary, borderTopColor: Color.border }]}>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: Color.textColor3 }]}
+              style={[styles.modalButton, { backgroundColor: Color.textTertiary }]}
               onPress={onClose}
             >
-              <Text style={styles.modalButtonText}>Hủy</Text>
+              <Text style={[styles.modalButtonText, { color: Color.textOnMain2 }]}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: Color.mainColor1 }]}
+              style={[styles.modalButton, { backgroundColor: Color.mainColor2 }]}
               onPress={handleSave}
               disabled={loading}
             >
-              <Text style={styles.modalButtonText}>
+              <Text style={[styles.modalButtonText, { color: Color.textOnMain2 }]}>
                 {loading ? "Đang lưu..." : "Lưu"}
               </Text>
             </TouchableOpacity>
@@ -248,47 +261,46 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '80%',
-    backgroundColor: Color.white_homologous,
     borderRadius: 10,
     padding: 20,
-    height: SCREEN_HEIGHT * 0.55, // Chiều cao cố định
+    height: SCREEN_HEIGHT * 0.55,
     maxHeight: SCREEN_HEIGHT * 0.85,
+    // Màu bóng giữ nguyên giá trị cứng vì không có biến shadowColor trong danh sách bạn cung cấp
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Color.white_contrast,
     marginBottom: 15,
     textAlign: 'center',
   },
   flatList: {
-    flex: 1, // Chiếm toàn bộ không gian khả dụng
-    maxHeight: SCREEN_HEIGHT * 0.85 - 100, // Trừ tiêu đề (~40px) và nút (~60px)
+    flex: 1,
+    maxHeight: SCREEN_HEIGHT * 0.85 - 100,
   },
   flatListContent: {
-    paddingBottom: 80, // Đảm bảo nút không che nội dung
+    paddingBottom: 80,
   },
   dropdownContainer: {
-    zIndex: 3000, // Đảm bảo DropDownPicker hiển thị trên cùng
+    zIndex: 3000,
     marginBottom: 15,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: Color.textColor1,
     marginBottom: 10,
     marginTop: 15,
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: Color.textColor3,
     borderRadius: 8,
-    backgroundColor: Color.white_homologous,
   },
   dropdownContent: {
     borderWidth: 1,
-    borderColor: Color.textColor3,
-    backgroundColor: Color.white_homologous,
     maxHeight: 200,
   },
   dropdownLabel: {
@@ -300,27 +312,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderRadius: 8,
-    backgroundColor: Color.backGround2,
     marginBottom: 5,
+    // Add border to items for better visual separation
+    borderWidth: 1, 
   },
   preferenceText: {
     fontSize: 16,
-    color: Color.textColor1,
   },
   noPreferencesText: {
     fontSize: 16,
-    color: Color.textColor3,
     textAlign: 'center',
     marginVertical: 10,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20, // Đảm bảo có đủ padding
+  },
   loadingText: {
     fontSize: 16,
-    color: Color.white_contrast,
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   errorText: {
-    color: 'red',
     fontSize: 14,
     marginTop: 10,
     textAlign: 'center',
@@ -331,12 +346,10 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: Color.textColor3,
     position: 'absolute',
     bottom: 20,
     left: 20,
     right: 20,
-    backgroundColor: Color.white_homologous, // Đảm bảo nút không bị trong suốt
   },
   modalButton: {
     flex: 1,
@@ -346,7 +359,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   modalButtonText: {
-    color: Color.white_homologous,
     fontSize: 16,
     fontWeight: 'bold',
   },

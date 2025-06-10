@@ -35,10 +35,16 @@ const IconPage = ({avt, name, _id}: IconPageProps) => {
         <TouchableOpacity style={styles.container}
             onPress={() => handleNavigateToPage(_id)}
         >
-            <View style={styles.boxImages}>
+            <View style={[styles.boxImages, { borderColor: Color.mainColor2 }]}>
                 <Image style={styles.images} source={{uri: avt.url}}/>
             </View>
-            <Text style={styles.textName} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
+            <Text
+                style={[styles.textName, { color: Color.mainColor2 }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+            >
+                {name}
+            </Text>
         </TouchableOpacity>
     )
 }
@@ -56,14 +62,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
-        borderColor: Color.mainColor2
     },
     images: {
         width: 50, height: 50,
         borderRadius: 50,
     },
     textName: {
-        color: Color.mainColor1,
         maxWidth: 60,
         fontSize: 10,
         fontWeight: '600',
@@ -71,4 +75,3 @@ const styles = StyleSheet.create({
     }
 })
 export default IconPage;
-

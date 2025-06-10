@@ -44,7 +44,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
         <Text style={[styles.loadingText, { color: Color.textColor1 }]}>
           Đang tải thông báo...
         </Text>
@@ -83,7 +83,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
       ListFooterComponent={
         isLoadingMore ? (
           <View style={styles.footerLoading}>
-            <ActivityIndicator size="large" color={Color.mainColor1} />
+            <ActivityIndicator size="large" color={Color.mainColor2} />
             <Text style={[styles.loadingText, { color: Color.textColor1 }]}>
               Đang tải thêm...
             </Text>

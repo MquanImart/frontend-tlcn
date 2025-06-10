@@ -106,11 +106,11 @@ const Weather: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <CHeader label="Thời tiết" backPress={() => navigationMenu.goBack()} />
       <SearchBar placeholder="Tìm tên thành phố" />
       {loading ? (
-        <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+        <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải dữ liệu...</Text>
       ) : (
         <FlatList
           data={weatherData}
@@ -145,12 +145,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: Color.white_homologous,
+    // backgroundColor được áp dụng inline
   },
   loadingText: {
     textAlign: "center",
     fontSize: 18,
-    color: Color.white_contrast,
+    // color được áp dụng inline
     marginTop: 20,
   },
 });

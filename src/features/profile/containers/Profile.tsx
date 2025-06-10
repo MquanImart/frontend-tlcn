@@ -358,22 +358,22 @@ const Profile = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: Color.background }]}>
       <CHeader label={user?.displayName || "Hồ sơ"} backPress={() => navigation.goBack()} />
       <View style={styles.profileInfo}>
         {loading ? (
-          <Text style={styles.bio}>Đang tải...</Text>
+          <Text style={[styles.bio, { color: Color.textSecondary }]}>Đang tải...</Text>
         ) : error ? (
-          <Text style={styles.bio}>{error}</Text>
+          <Text style={[styles.bio, { color: Color.error }]}>{error}</Text>
         ) : !user ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Không tìm thấy thông tin người dùng</Text>
+            <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Không tìm thấy thông tin người dùng</Text>
           </View>
         ) : !canViewProfile ? (
           <View style={styles.emptyContainer}>
             <Image source={avt? { uri: avt }: require('@/src/assets/images/default/default_user.png')} style={styles.profileImage} />
-            <Text style={styles.name}>{user?.displayName || "Không có tên"}</Text>
-            <Text style={styles.emptyText}>
+            <Text style={[styles.name, { color: Color.textPrimary }]}>{user?.displayName || "Không có tên"}</Text>
+            <Text style={[styles.emptyText, { color: Color.textSecondary }]}>
               Hồ sơ này không công khai. Vui lòng kết bạn để xem thêm thông tin.
             </Text>
             <View style={styles.buttonContainer}>
@@ -383,8 +383,8 @@ const Profile = () => {
                 style={{
                   width: "100%",
                   height: 40,
-                  backColor: friendRequestSent ? Color.textColor3 : Color.mainColor1,
-                  textColor: Color.white_homologous,
+                  backColor: friendRequestSent ? Color.backgroundTertiary : Color.mainColor2,
+                  textColor: friendRequestSent ? Color.textSecondary : Color.textOnMain1,
                   fontSize: 14,
                   fontWeight: "bold",
                   radius: 20,
@@ -399,27 +399,27 @@ const Profile = () => {
               source={avt? { uri: avt }: require('@/src/assets/images/default/default_user.png')}
               style={styles.profileImage}
             />
-            <Text style={styles.name}>{user?.displayName || "Không có tên"}</Text>
-            <Text style={styles.bio}>{user?.aboutMe || " "}</Text>
+            <Text style={[styles.name, { color: Color.textPrimary }]}>{user?.displayName || "Không có tên"}</Text>
+            <Text style={[styles.bio, { color: Color.textSecondary }]}>{user?.aboutMe || " "}</Text>
             <View style={styles.stats}>
               <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Người theo dõi</Text>
-                <Text style={styles.statValue}>{followersCount}</Text>
+                <Text style={[styles.statLabel, { color: Color.textSecondary }]}>Người theo dõi</Text>
+                <Text style={[styles.statValue, { color: Color.textPrimary }]}>{followersCount}</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Bạn bè</Text>
-                <Text style={styles.statValue}>{friendsCount}</Text>
+                <Text style={[styles.statLabel, { color: Color.textSecondary }]}>Bạn bè</Text>
+                <Text style={[styles.statValue, { color: Color.textPrimary }]}>{friendsCount}</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Đang theo dõi</Text>
-                <Text style={styles.statValue}>{followingCount}</Text>
+                <Text style={[styles.statLabel, { color: Color.textSecondary }]}>Đang theo dõi</Text>
+                <Text style={[styles.statValue, { color: Color.textPrimary }]}>{followingCount}</Text>
               </View>
             </View>
           </>
         )}
       </View>
       {!loading && !error && user && canViewProfile && (
-        <View style={styles.container2}>
+        <View style={[styles.container2, { backgroundColor: Color.background }]}>
           <View style={styles.buttonContainer}>
             <CButton
               label={
@@ -437,9 +437,9 @@ const Profile = () => {
                 height: 40,
                 backColor:
                   isFriend || friendRequestSent || hasReceivedRequest
-                    ? Color.textColor3
-                    : Color.mainColor1,
-                textColor: Color.white_homologous,
+                    ? Color.backgroundTertiary
+                    : Color.mainColor2,
+                textColor: Color.white_white,
                 fontSize: 14,
                 fontWeight: "bold",
                 radius: 20,
@@ -454,8 +454,8 @@ const Profile = () => {
               style={{
                 width: "100%",
                 height: 40,
-                backColor: isFollowing ? Color.textColor3 : Color.mainColor1,
-                textColor: Color.white_homologous,
+                backColor: isFollowing ? Color.backgroundTertiary : Color.mainColor2,
+                textColor: Color.white_white,
                 fontSize: 14,
                 fontWeight: "bold",
                 radius: 20,
@@ -470,8 +470,8 @@ const Profile = () => {
               style={{
                 width: "100%",
                 height: 40,
-                backColor: Color.mainColor1,
-                textColor: Color.white_homologous,
+                backColor: Color.mainColor2,
+                textColor: Color.white_white,
                 fontSize: 14,
                 fontWeight: "bold",
                 radius: 20,
@@ -482,7 +482,7 @@ const Profile = () => {
         </View>
       )}
       {!loading && !error && user && canViewProfile && (
-        <View style={{ flex: 1, backgroundColor: Color.backGround }}>
+        <View style={{ flex: 1, backgroundColor: Color.background, top: 10 }}>
           <View style={{ width: "100%", height: "100%" }}>
             <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
             {currTab === tabs[0].label ? (
@@ -503,7 +503,7 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.white_homologous,
+    // backgroundColor moved to inline style
   },
   container2: {
     flexDirection: "row",
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
     gap: 10,
-    backgroundColor: Color.white_homologous,
+    // backgroundColor moved to inline style
     paddingHorizontal: 10,
   },
   profileInfo: {
@@ -527,13 +527,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginTop: 10,
+    // color moved to inline style
   },
   bio: {
     textAlign: "center",
     fontSize: 16,
     width: "70%",
     marginVertical: 10,
-    color: Color.textColor4,
+    // color moved to inline style
   },
   stats: {
     flexDirection: "row",
@@ -547,12 +548,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 14,
-    color: Color.textColor4,
+    // color moved to inline style
   },
   statValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Color.white_contrast,
+    // color moved to inline style
   },
   emptyContainer: {
     flex: 1,
@@ -562,7 +563,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
+    // color moved to inline style
     fontStyle: "italic",
     textAlign: "center",
     marginVertical: 10,

@@ -33,7 +33,8 @@ const MemberCard: React.FC<MemberCardProps> = ({
   onLongPress,
 }) => {
   const avatarSource = avatar && avatar.trim() !== "" ? { uri: avatar } : { uri: DEFAULT_AVATAR };
-  useTheme();
+  useTheme(); // Ensure this hook is called to get the dynamic colors
+
   const handlePress = () => {
     console.log("Navigating to profile for user:", memberUserId);
     if (memberUserId === currentUserId) {
@@ -49,7 +50,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
     }
   };
 
-  const handleLongPress = () => {
+  const handleCardLongPress = () => {
     if (role === "Guest" || role === "Member") {
       console.log("Long-press disabled for role:", role);
       return;
@@ -66,15 +67,21 @@ const MemberCard: React.FC<MemberCardProps> = ({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      onLongPress={handleLongPress}
+      onLongPress={handleCardLongPress} // Use the local handler
       delayLongPress={300} // Explicitly set long-press delay
-      style={styles.card}
+      style={[
+        styles.card,
+        {
+          backgroundColor: Color.backgroundSecondary, // Changed to backgroundSecondary for card background
+          shadowColor: Color.mainColor2,
+        },
+      ]}
       activeOpacity={0.8}
     >
       <Image source={avatarSource} style={styles.avatar} />
       <View style={styles.info}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.description}>{description || "Không có mô tả"}</Text>
+        <Text style={[styles.name, { color: Color.textPrimary }]}>{name}</Text>
+        <Text style={[styles.description, { color: Color.textSecondary }]}>{description || "Không có mô tả"}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -86,11 +93,9 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
-    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 10,
@@ -108,11 +113,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Color.textColor1,
+    // color: Color.textPrimary, // Moved to inline
   },
   description: {
     fontSize: 14,
-    color: Color.textColor3,
     marginTop: 5,
+    // color: Color.textSecondary, // Moved to inline
   },
 });

@@ -8,34 +8,46 @@ interface UserInfoProps {
   groupName: string;
   role: string;
   joinDate: number;
-  inviterAvatar: string;
-  onPress?: () => void; // Thêm prop mới 
+  inviterAvatar: string; // This prop is defined but not used in the component
+  onPress?: () => void;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({ groupName, role, joinDate, onPress }) => {
-  useTheme();
+  useTheme(); // Ensure this hook is called to get the dynamic colors
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.container,
+        {
+          backgroundColor: Color.background, // Dynamic background
+          shadowColor: Color.mainColor2,
+          borderColor: Color.border, // Thêm viền động
+          borderWidth: 1, // Độ dày của viền
+        },
+      ]}
+    >
       {/* Tên nhóm */}
       <View style={styles.groupInfo}>
-        <Ionicons name="people-outline" size={20} color={Color.textColor1} />
-        <Text style={styles.groupName}>{groupName}</Text>
+        <Ionicons name="people-outline" size={20} color={Color.textPrimary} />
+        <Text style={[styles.groupName, { color: Color.textPrimary }]}>{groupName}</Text>
       </View>
 
       {/* Ngày tham gia và vai trò */}
       <View style={styles.infoRow}>
-        <Ionicons name="calendar-outline" size={20} color={Color.textColor1} />
-        <Text style={styles.infoText}>
+        <Ionicons name="calendar-outline" size={20} color={Color.textPrimary} />
+        <Text style={[styles.infoText, { color: Color.textPrimary }]}>
           Thành viên từ ngày:{" "}
-          <Text style={styles.highlight}>
+          <Text style={[styles.highlight, { color: Color.mainColor2 }]}>
             {new Date(joinDate).toLocaleDateString("vi-VN")}
           </Text>
         </Text>
       </View>
       <View style={styles.infoRow}>
-        <Ionicons name="briefcase-outline" size={20} color={Color.textColor1} />
-        <Text style={styles.infoText}>
-          Vai trò: <Text style={styles.highlight}>{role}</Text>
+        <Ionicons name="briefcase-outline" size={20} color={Color.textPrimary} />
+        <Text style={[styles.infoText, { color: Color.textPrimary }]}>
+          Vai trò: <Text style={[styles.highlight, { color: Color.mainColor2 }]}>{role}</Text>
         </Text>
       </View>
     </TouchableOpacity>
@@ -46,15 +58,14 @@ export default UserInfo;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Color.white_homologous,
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
-    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 6,
     elevation: 2,
+    // Các thuộc tính màu đã được chuyển lên inline styling ở trên, nên không cần ở đây nữa
   },
   groupInfo: {
     flexDirection: "row",
@@ -64,7 +75,6 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
     marginLeft: 10,
   },
   infoRow: {
@@ -74,22 +84,22 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 16,
-    color: Color.textColor1,
     marginLeft: 10,
   },
   highlight: {
     fontWeight: "bold",
-    color: Color.mainColor1,
   },
+  // Các kiểu dưới đây không được sử dụng trong component UserInfo,
+  // nhưng được giữ lại vì có thể được sử dụng ở nơi khác hoặc đã được lên kế hoạch.
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Giữ nguyên hoặc thay đổi tùy theo ý bạn
     justifyContent: "center",
     alignItems: "center",
   },
   modalContainer: {
     width: "90%",
-    backgroundColor: "white",
+    backgroundColor: "white", // Xem xét thay thế bằng Color.background hoặc màu động tương tự
     borderRadius: 10,
     padding: 20,
     shadowColor: "#000",
@@ -107,7 +117,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
+    color: Color.textPrimary,
   },
   modalContent: {
     flexDirection: "row",
@@ -125,11 +135,11 @@ const styles = StyleSheet.create({
   },
   inviteText: {
     fontSize: 16,
-    color: Color.textColor1,
+    color: Color.textPrimary,
   },
   inviteDate: {
     fontSize: 14,
-    color: Color.textColor3,
+    color: Color.textSecondary,
     marginTop: 5,
   },
   buttonContainer: {

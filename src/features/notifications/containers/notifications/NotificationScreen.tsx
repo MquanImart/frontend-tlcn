@@ -35,7 +35,7 @@ const NotificationScreen: React.FC = () => {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <CHeader label="Thông báo" showBackButton={false} />
       <TabbarTop tabs={tabs} startTab={selectedTab} setTab={setSelectedTab} />
       <NotificationList
