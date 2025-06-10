@@ -1,7 +1,7 @@
 import AdminAccountNavigation from '@/src/shared/routes/AdminAccountNavigation';
 import AdminArticleNavigation from '@/src/shared/routes/AdminArticleNavigation';
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+// Đã loại bỏ import { useTheme } từ '@/src/contexts/ThemeContext';
+// Đã loại bỏ import { colors as Color } từ '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
@@ -9,7 +9,7 @@ import React from 'react';
 const Tab = createBottomTabNavigator();
 
 const AdminTabNavigator: React.FC = () => {
-  useTheme()
+  // Đã loại bỏ useTheme()
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -22,11 +22,15 @@ const AdminTabNavigator: React.FC = () => {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: Color.mainColor2,
-        tabBarInactiveTintColor: Color.textColor3,
+        // Thay thế bằng mã màu hex cứng cho màu hoạt động
+        tabBarActiveTintColor: '#2196F3', // Đây có thể là mainColor2 từ lightColors
+        // Thay thế bằng mã màu hex cứng cho màu không hoạt động
+        tabBarInactiveTintColor: '#616161', // Đây có thể là textSecondary từ lightColors
         tabBarStyle: {
-          backgroundColor: Color.backGround,
-          borderTopColor: Color.borderColor1,
+          // Thay thế bằng mã màu hex cứng cho màu nền
+          backgroundColor: '#FFFFFF', // Đây có thể là background từ lightColors
+          // Thay thế bằng mã màu hex cứng cho màu đường viền trên
+          borderTopColor: '#E0E0E0', // Đây có thể là border từ lightColors
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,

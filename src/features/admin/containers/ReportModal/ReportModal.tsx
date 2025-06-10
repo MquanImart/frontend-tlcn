@@ -1,9 +1,8 @@
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+// Các import liên quan đến theme động đã được loại bỏ
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import ReportRow from '../../components/ReportRow';
-import { Report } from '../../interface/index';
+import ReportRow from '../../components/ReportRow'; // Đảm bảo đường dẫn này đúng
+import { Report } from '../../interface/index'; // Đảm bảo đường dẫn này đúng
 import useReportModal from './useReportModal';
 
 interface ReportModalScreenProps {
@@ -14,13 +13,15 @@ interface ReportModalScreenProps {
 }
 
 const { width, height } = Dimensions.get('window');
+
 const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
   visible,
   onClose,
   reports: initialReports,
   onReportUpdated,
 }) => {
-  useTheme();
+  // useTheme() đã được loại bỏ
+
   const { error, setError, handleUpdateReport } = useReportModal(onReportUpdated);
   const [reports, setReports] = useState<Report[]>(initialReports);
 
@@ -58,21 +59,27 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
           report._id === reportId ? { ...report, status } : report
         )
       );
-
-      onClose();
+      // Bạn có thể quyết định đóng modal sau khi cập nhật nếu muốn:
+      // onClose();
     }
   };
-
 
   const safeReports = Array.isArray(reports) ? reports : [];
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
+      {/* Loại bỏ khoảng trắng giữa các thẻ JSX con trực tiếp nếu có */}
       <View style={[styles.modalContainer, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
-        <View style={[styles.modalContent, { width: width * 0.9, maxHeight: height * 0.8, backgroundColor: Color.backGround }]}>
-          <Text style={[styles.modalTitle, { color: Color.textColor1 }]}>
+        <View style={[styles.modalContent, {
+          width: width * 0.9,
+          maxHeight: height * 0.8,
+          backgroundColor: '#F5F5F5', // Nền sáng
+          borderColor: '#D1C4E9',    // Viền màu tím nhạt hơn
+        }]}>
+          <Text style={[styles.modalTitle, { color: '#4B164C' }]}> {/* Màu tím đậm cho tiêu đề */}
             Danh sách báo cáo
           </Text>
+          {/* Loại bỏ khoảng trắng giữa các thẻ JSX con trực tiếp */}
           {safeReports.length > 0 ? (
             <FlatList
               data={safeReports}
@@ -89,7 +96,7 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
               windowSize={5}
             />
           ) : (
-            <Text style={[styles.noReports, { color: Color.textColor3 }]}>
+            <Text style={[styles.noReports, { color: '#9E9E9E' }]}> {/* Màu xám nhạt cho văn bản không có báo cáo */}
               Không có báo cáo nào
             </Text>
           )}
@@ -97,10 +104,10 @@ const ReportModalScreen: React.FC<ReportModalScreenProps> = ({
             <Text style={[styles.errorText, { color: 'red' }]}>{error}</Text>
           )}
           <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
+            style={[styles.closeButton, { backgroundColor: '#4B164C' }]} // Màu tím chủ đạo cho nút đóng
             onPress={onClose}
           >
-            <Text style={[styles.closeButtonText, { color: Color.white_homologous }]}>Đóng</Text>
+            <Text style={[styles.closeButtonText, { color: '#FFFFFF' }]}>Đóng</Text> {/* Chữ trắng trên nền tím */}
           </TouchableOpacity>
         </View>
       </View>
@@ -113,20 +120,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    // backgroundColor: 'rgba(0,0,0,0.5)' - Đặt inline
   },
   modalContent: {
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    // borderColor và backgroundColor đặt inline
     elevation: 5,
+    shadowColor: '#000', // Đổ bóng nhẹ
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 12,
     textAlign: 'center',
+    // color đặt inline
   },
   reportList: {
     maxHeight: height * 0.6,
@@ -137,11 +149,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
     paddingVertical: 10,
+    // color đặt inline
   },
   errorText: {
     fontSize: 12,
     marginBottom: 12,
     textAlign: 'center',
+    // color đặt inline
   },
   closeButton: {
     paddingVertical: 10,
@@ -150,10 +164,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
+    // backgroundColor đặt inline
   },
   closeButtonText: {
     fontSize: 14,
     fontWeight: '600',
+    // color đặt inline
   },
 });
 
