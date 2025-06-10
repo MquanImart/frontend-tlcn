@@ -104,12 +104,12 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
       <Text style={[styles.infoText, { color: Color.textPrimary }]}>Bài viết trong nhóm</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color={Color.mainColor2} style={styles.loading} />
+        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text>
           <TouchableOpacity onPress={() => fetchUserArticles(1)}>
-            <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
+            <Text style={[styles.retryText, { color: Color.mainColor1 }]}>Thử lại</Text>
           </TouchableOpacity>
         </View>
       ) : articles.length === 0 ? (
@@ -132,7 +132,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchUserArticles(1)}
-              colors={[Color.mainColor2]}
+              colors={[Color.mainColor1]}
             />
           }
           onEndReached={loadMoreArticles}
@@ -140,7 +140,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor2} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : null
           }
@@ -164,7 +164,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={Color.mainColor2} />
+              <Ionicons name="close" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
 
@@ -199,7 +199,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={20} color={Color.mainColor2} />
+              <Ionicons name="send" size={20} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>

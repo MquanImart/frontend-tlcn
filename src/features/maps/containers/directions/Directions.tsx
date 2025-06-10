@@ -122,7 +122,7 @@ const Directions = () => {
                     style={{
                     width: 100,
                     height: 40,
-                    backColor: Color.mainColor2,
+                    backColor: Color.mainColor1,
                     textColor: Color.textColor2,
                     radius: 50,
                     shadow: true

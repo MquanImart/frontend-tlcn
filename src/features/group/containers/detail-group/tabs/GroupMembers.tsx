@@ -55,7 +55,7 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
   return (
     <View style={[styles.container, { backgroundColor: Color.background }]}>
       {loading ? (
-        <ActivityIndicator size="large" color={Color.mainColor2} />
+        <ActivityIndicator size="large" color={Color.mainColor1} />
       ) : groupData ? (
         <>
           {/* Ensure groupData.idCreater.name or whatever property is rendered is wrapped in <Text> in MemberCard */}

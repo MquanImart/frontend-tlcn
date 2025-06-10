@@ -82,16 +82,16 @@ const PostApproval: React.FC<PostProps> = ({ article, onAccept, onReject }) => {
       {/* Actions */}
       <View style={styles.actions}>
         <TouchableOpacity
-          style={[styles.button, styles.acceptButton, { backgroundColor: Color.mainColor2 }]}
+          style={[styles.button, styles.acceptButton, { backgroundColor: Color.mainColor1 }]}
           onPress={onAccept}
         >
-          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Duyệt</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Duyệt</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.rejectButton, { backgroundColor: Color.error }]}
           onPress={onReject}
         >
-          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Từ chối</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Từ chối</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -99,7 +99,7 @@ const Login = () => {
                   height: 50,
                   radius: 25,
                   backColor: Color.backGround,
-                  borderColor: Color.mainColor2,
+                  borderColor: Color.mainColor1,
                 }}
               />
 
@@ -116,7 +116,7 @@ const Login = () => {
                   height: 50,
                   backColor: Color.backGround,
                   radius: 25,
-                  borderColor: Color.mainColor2,
+                  borderColor: Color.mainColor1,
                 }}
               />
 
@@ -127,7 +127,7 @@ const Login = () => {
                   style={{
                     width: "85%",
                     height: 50,
-                    backColor: Color.mainColor2,
+                    backColor: Color.mainColor1,
                     textColor: Color.white_homologous,
                     fontSize: 18,
                     radius: 25,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     fontSize: 15,
-    color: Color.mainColor2,
+    color: Color.mainColor1,
     fontWeight: "bold",
     marginTop: 15,
   },

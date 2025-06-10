@@ -264,7 +264,7 @@ const IDVerification = () => {
                                     backColor: Color.white_homologous,
                                     textColor: Color.white_contrast,
                                     radius: 25,
-                                    borderColor: Color.mainColor2,
+                                    borderColor: Color.mainColor1,
                                 }}
                             />
                         </View>
@@ -281,7 +281,7 @@ const IDVerification = () => {
                                     backColor: Color.white_homologous,
                                     textColor: Color.white_contrast,
                                     radius: 25,
-                                    borderColor: Color.mainColor2,
+                                    borderColor: Color.mainColor1,
                                 }}
                             />
                         </View>
@@ -300,7 +300,7 @@ const IDVerification = () => {
                             style={{
                                 width: 70,
                                 height: 50,
-                                backColor: Color.mainColor2,
+                                backColor: Color.mainColor1,
                                 textColor: Color.textColor2,
                                 radius: 25,
                                 shadow: true,
@@ -313,7 +313,7 @@ const IDVerification = () => {
                     )}
 
                     {isLoading ? (
-                        <ActivityIndicator size="large" color={Color.mainColor2} />
+                        <ActivityIndicator size="large" color={Color.mainColor1} />
                     ) : (
                         <CButton
                             label="Xác nhận"
@@ -321,7 +321,7 @@ const IDVerification = () => {
                             style={{
                                 width: "85%",
                                 height: 50,
-                                backColor: Color.mainColor2,
+                                backColor: Color.mainColor1,
                                 textColor: Color.white_homologous,
                                 fontSize: 18,
                                 radius: 25,
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: Color.mainColor2,
+        borderColor: Color.mainColor1,
         marginBottom: 20,
     },
     imageButtonText: {
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
         color: Color.white_contrast,
     },
     loginLink: {
-        color: Color.mainColor2,
+        color: Color.mainColor1,
         fontWeight: "bold",
     },
 });

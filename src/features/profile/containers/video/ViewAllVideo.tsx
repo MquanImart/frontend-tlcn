@@ -33,7 +33,7 @@ const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
     }
   }, [dataVideo]);
 
-  if (dataVideo === null) return <ActivityIndicator color={Color.mainColor2} />; 
+  if (dataVideo === null) return <ActivityIndicator color={Color.mainColor1} />; 
 
   return (
     <View style={styles.container}>

@@ -70,12 +70,12 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
         />
 
         {loading ? (
-          <ActivityIndicator size="large" color={Color.mainColor2} style={styles.loading} />
+          <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
         ) : error ? (
           <View style={styles.errorContainer}>
             <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text> {/* Sử dụng màu lỗi động */}
             <TouchableOpacity onPress={() => fetchPendingMembers(1)}>
-              <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text> {/* Sử dụng màu động */}
+              <Text style={[styles.retryText, { color: Color.mainColor1 }]}>Thử lại</Text> {/* Sử dụng màu động */}
             </TouchableOpacity>
           </View>
         ) : (
@@ -103,7 +103,7 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
             ListFooterComponent={
               isLoadingMore ? (
                 <View style={styles.footer}>
-                  <ActivityIndicator size="large" color={Color.mainColor2} />
+                  <ActivityIndicator size="large" color={Color.mainColor1} />
                 </View>
               ) : null
             }
@@ -111,7 +111,7 @@ const GroupJoinRequests: React.FC<GroupJoinRequestsProps> = ({
               <RefreshControl
                 refreshing={loading}
                 onRefresh={() => fetchPendingMembers(1)}
-                colors={[Color.mainColor2]} // Màu cho refresh indicator
+                colors={[Color.mainColor1]} // Màu cho refresh indicator
               />
             }
           />
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    // color: Color.mainColor2, // Moved to inline style
+    // color: Color.mainColor1, // Moved to inline style
     marginTop: 10,
     fontWeight: "bold",
   },

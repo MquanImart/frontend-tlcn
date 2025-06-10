@@ -25,7 +25,7 @@ const RuleItem: React.FC<RuleItemProps> = ({ index, text, onDelete }) => {
 
       {onDelete && (
         <TouchableOpacity style={[styles.deleteButton, { backgroundColor: Color.error, shadowColor: Color.error }]} onPress={onDelete}>
-          <Icon name="remove" size={24} color={Color.textOnMain2} />
+          <Icon name="remove" size={24} color={Color.textOnMain1} />
         </TouchableOpacity>
       )}
     </View>

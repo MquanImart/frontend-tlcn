@@ -99,15 +99,15 @@ const PreferenceSelection = () => {
                 width: item.width,
                 height: 50,
                 backColor: selectedCategories.includes(item.label)
-                  ? Color.mainColor2
+                  ? Color.mainColor1
                   : "transparent",
                 textColor: selectedCategories.includes(item.label)
                   ? Color.white_homologous
-                  : Color.mainColor2,
+                  : Color.mainColor1,
                 fontSize: 18,
                 boderColor: selectedCategories.includes(item.label)
                   ? Color.white_homologous
-                  : Color.mainColor2,
+                  : Color.mainColor1,
                 borderWidth: 2,
                 fontWeight: "500",
                 radius: 50,
@@ -126,9 +126,9 @@ const PreferenceSelection = () => {
             width: "45%",
             height: 50,
             backColor: "transparent",
-            textColor: Color.mainColor2,
+            textColor: Color.mainColor1,
             fontSize: 18,
-            boderColor: Color.mainColor2,
+            boderColor: Color.mainColor1,
             borderWidth: 1,
             fontWeight: "bold",
             radius: 25,
@@ -140,7 +140,7 @@ const PreferenceSelection = () => {
           style={{
             width: "45%",
             height: 50,
-            backColor: Color.mainColor2,
+            backColor: Color.mainColor1,
             textColor: Color.white_homologous,
             fontSize: 18,
             fontWeight: "bold",
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     color: Color.white_contrast,
   },
   loginLink: {
-    color: Color.mainColor2,
+    color: Color.mainColor1,
     fontWeight: "bold",
   },
   loadingText: {

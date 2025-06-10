@@ -42,7 +42,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
               <Icon
                 name={isJoined ? "check-circle" : "group-add"}
                 size={20}
-                color={Color.textOnMain2}
+                color={Color.textOnMain1}
                 style={{ marginRight: 10 }}
               />
             }
@@ -50,8 +50,8 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
             style={{
               width: "48%",
               height: 45,
-              backColor: Color.mainColor2,
-              textColor: Color.textOnMain2,
+              backColor: Color.mainColor1,
+              textColor: Color.textOnMain1,
               fontSize: 16,
               fontWeight: "bold",
               radius: 8,
@@ -65,8 +65,8 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
             style={{
               width: "48%",
               height: 45,
-              backColor: Color.mainColor2,
-              textColor: Color.textOnMain2,
+              backColor: Color.mainColor1,
+              textColor: Color.textOnMain1,
               fontSize: 16,
               fontWeight: "bold",
               radius: 8,
