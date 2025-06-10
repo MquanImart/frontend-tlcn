@@ -72,10 +72,11 @@ const styles = StyleSheet.create({
         color: Color.white_white,
     },
     textName: {
+        width: '100%',
         color: Color.white_white,
         fontSize: 25,
         fontWeight: 'bold',
-        alignContent: 'center'
+        textAlign: 'center'
     },
     textCountry: {
         color: Color.white_white,
