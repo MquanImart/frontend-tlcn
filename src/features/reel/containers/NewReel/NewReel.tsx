@@ -17,7 +17,7 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader';
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo import đối tượng Color
 import * as ImagePicker from 'expo-image-picker';
 import { Video, ResizeMode } from 'expo-av';
 import restClient from '@/src/shared/services/RestClient';
@@ -149,11 +149,11 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
   const getScopeIcon = (scope: string) => {
     switch (scope) {
       case 'Công khai':
-        return <Ionicons name="earth" size={18} color={Color.textColor3} />;
+        return <Ionicons name="earth" size={18} color={Color.textTertiary} />;
       case 'Riêng tư':
-        return <Ionicons name="lock-closed" size={18} color={Color.textColor3} />;
+        return <Ionicons name="lock-closed" size={18} color={Color.textTertiary} />;
       default:
-        return <Ionicons name="earth" size={18} color={Color.textColor3} />;
+        return <Ionicons name="earth" size={18} color={Color.textTertiary} />;
     }
   };
 
@@ -162,31 +162,35 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.overlay}
+          style={[styles.overlay, { backgroundColor: Color.shadow }]}
         >
-          <View style={[styles.dialog, { backgroundColor: Color.backGround }]}>
+          <View style={[styles.dialog, { backgroundColor: Color.backgroundSecondary, shadowColor: Color.shadow }]}>
             <View style={{ marginTop: -60 }}>
               <CHeader
                 label="Tạo Thước Phim"
                 backPress={toggleModal}
                 showBackButton={true}
+                labelColor={Color.textPrimary}
+                // iconColor cần được xem xét lại nếu Color.iconColor không có trong interface
+                // Hiện tại, Color.mainColor2 hoặc Color.textPrimary có thể phù hợp hơn
+                iconColor={Color.textPrimary} 
               />
             </View>
 
             <TouchableOpacity
-              style={styles.scopeSelector}
+              style={[styles.scopeSelector, { borderColor: Color.border }]}
               onPress={togglePrivacyModal}
               disabled={isLoading || uploading}
             >
               {getScopeIcon(scope)}
-              <Text style={[styles.scopeText, { color: Color.textColor1 }]}>{scope}</Text>
-              <Ionicons name="chevron-down" size={18} color={Color.textColor3} />
+              <Text style={[styles.scopeText, { color: Color.textPrimary }]}>{scope}</Text>
+              <Ionicons name="chevron-down" size={18} color={Color.textTertiary} />
             </TouchableOpacity>
 
             <Modal visible={isPrivacyModalVisible} transparent animationType="fade">
-              <View style={styles.scopeOverlay}>
-                <View style={[styles.scopeModal, { backgroundColor: Color.backGround }]}>
-                  <Text style={[styles.scopeTitle, { color: Color.textColor1 }]}>
+              <View style={[styles.scopeOverlay, { backgroundColor: Color.shadow }]}>
+                <View style={[styles.scopeModal, { backgroundColor: Color.backgroundSecondary }]}>
+                  <Text style={[styles.scopeTitle, { color: Color.textPrimary }]}>
                     Chọn phạm vi hiển thị
                   </Text>
                   {['Công khai', 'Riêng tư'].map((option) => (
@@ -199,7 +203,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                       }}
                     >
                       {getScopeIcon(option)}
-                      <Text style={[styles.scopeOptionText, { color: Color.textColor1 }]}>
+                      <Text style={[styles.scopeOptionText, { color: Color.textPrimary }]}>
                         {option}
                       </Text>
                     </TouchableOpacity>
@@ -218,26 +222,26 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                   shouldPlay={false}
                 />
                 <TouchableOpacity
-                  style={styles.removeVideo}
+                  style={[styles.removeVideo, { backgroundColor: Color.shadow }]}
                   onPress={removeVideo}
                   disabled={isLoading || uploading}
                 >
-                  <Ionicons name="close" size={18} color={Color.textColor2} />
+                  <Ionicons name="close" size={18} color={Color.white_white} />
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity style={styles.uploadButton} onPress={pickVideo} disabled={isLoading || uploading}>
+              <TouchableOpacity style={[styles.uploadButton, { borderColor: Color.border, backgroundColor: Color.backgroundTertiary }]} onPress={pickVideo} disabled={isLoading || uploading}>
                 <Feather name="video" size={40} color={Color.mainColor2} />
-                <Text style={[styles.uploadText, { color: Color.textColor1 }]}>
+                <Text style={[styles.uploadText, { color: Color.textPrimary }]}>
                   Chọn video từ thiết bị
                 </Text>
               </TouchableOpacity>
             )}
 
             <TextInput
-              style={[styles.textInput, { color: Color.textColor1, borderColor: Color.borderColor1 }]}
+              style={[styles.textInput, { color: Color.textPrimary, borderColor: Color.border, backgroundColor: Color.background }]}
               placeholder="Mô tả thước phim của bạn..."
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary}
               value={content}
               onChangeText={setContent}
               multiline
@@ -245,11 +249,11 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               blurOnSubmit={true}
             />
 
-            <View style={styles.hashtagContainer}>
+            <View style={[styles.hashtagContainer, { borderColor: Color.border, backgroundColor: Color.background }]}>
               <TextInput
-                style={[styles.hashtagInput, { color: Color.textColor1 }]}
+                style={[styles.hashtagInput, { color: Color.textPrimary }]}
                 placeholder="#hashtag"
-                placeholderTextColor={Color.textColor3}
+                placeholderTextColor={Color.textTertiary}
                 value={hashtagInput}
                 onChangeText={setHashtagInput}
                 onSubmitEditing={handleAddHashtag}
@@ -264,13 +268,13 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
             {hashtags.length > 0 && (
               <View style={styles.hashtagList}>
                 {hashtags.map((tag, index) => (
-                  <View key={index} style={styles.hashtagItem}>
-                    <Text style={styles.hashtagText}>{tag}</Text>
+                  <View key={index} style={[styles.hashtagItem, { backgroundColor: Color.backgroundTertiary }]}>
+                    <Text style={[styles.hashtagText, { color: Color.textPrimary }]}>{tag}</Text>
                     <TouchableOpacity
                       onPress={() => handleRemoveHashtag(index)}
                       disabled={isLoading || uploading}
                     >
-                      <Ionicons name="close-circle" size={18} color={Color.textColor3} />
+                      <Ionicons name="close-circle" size={18} color={Color.textTertiary} />
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -284,8 +288,8 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               style={{
                 width: '100%',
                 height: 50,
-                backColor: uploading ? Color.borderColor1 : Color.mainColor2,
-                textColor: Color.textColor2,
+                backColor: uploading ? Color.backgroundTertiary : Color.mainColor2, // Changed from buttonDisabled
+                textColor: Color.white_white,
                 radius: 10,
                 fontSize: 16,
                 fontWeight: 'bold',
@@ -294,7 +298,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               {uploading && (
                 <ActivityIndicator
                   size="small"
-                  color={Color.textColor2}
+                  color={Color.white_white}
                   style={styles.loadingIndicator}
                 />
               )}
@@ -311,7 +315,7 @@ export default NewReel;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Color.shadow,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -319,7 +323,8 @@ const styles = StyleSheet.create({
     width: '90%',
     borderRadius: 15,
     padding: 20,
-    shadowColor: '#000',
+    backgroundColor: Color.backgroundSecondary,
+    shadowColor: Color.shadow,
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
@@ -330,32 +335,42 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border,
     marginBottom: 15,
   },
-  scopeText: { fontSize: 14, marginLeft: 8 },
+  scopeText: {
+    fontSize: 14,
+    marginLeft: 8,
+    color: Color.textPrimary
+  },
   scopeOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: Color.shadow,
   },
   scopeModal: {
     width: '80%',
     borderRadius: 10,
     padding: 20,
+    backgroundColor: Color.backgroundSecondary,
   },
   scopeTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: Color.textPrimary,
   },
   scopeOption: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
   },
-  scopeOptionText: { fontSize: 14, marginLeft: 10 },
+  scopeOptionText: {
+    fontSize: 14,
+    marginLeft: 10,
+    color: Color.textPrimary
+  },
   videoWrapper: {
     position: 'relative',
     marginBottom: 15,
@@ -369,7 +384,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 5,
     right: 5,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Color.shadow,
     borderRadius: 15,
     padding: 6,
   },
@@ -379,12 +394,14 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border,
+    backgroundColor: Color.backgroundTertiary, // Sử dụng màu nền nhạt hơn cho nút upload
     marginBottom: 15,
   },
   uploadText: {
     fontSize: 16,
     marginTop: 10,
+    color: Color.textPrimary,
   },
   textInput: {
     height: 100,
@@ -394,6 +411,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlignVertical: 'top',
     fontSize: 16,
+    color: Color.textPrimary,
+    borderColor: Color.border,
+    backgroundColor: Color.background,
   },
   hashtagContainer: {
     flexDirection: 'row',
@@ -403,10 +423,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginBottom: 10,
+    borderColor: Color.border,
+    backgroundColor: Color.background,
   },
   hashtagInput: {
     flex: 1,
     fontSize: 16,
+    color: Color.textPrimary,
   },
   hashtagList: {
     flexDirection: 'row',
@@ -416,7 +439,7 @@ const styles = StyleSheet.create({
   hashtagItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Color.borderColor1,
+    backgroundColor: Color.backgroundTertiary, // Sử dụng backgroundTertiary cho hashtag item
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -424,7 +447,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   hashtagText: {
-    color: Color.textColor1,
+    color: Color.textPrimary,
     fontSize: 14,
     marginRight: 5,
   },

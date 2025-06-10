@@ -2,7 +2,7 @@ import { Comment } from '@/src/features/reel/interface/reels';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import restClient from '@/src/shared/services/RestClient';
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đã import đối tượng Color
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
@@ -129,7 +129,7 @@ export const SingleReel: React.FC<ReelProps> = ({
 
       const currentUserData = await UsersClient.get(currentUserId);
       if (!currentUserData.success) {
-       robin:throw new Error('Không thể lấy dữ liệu người dùng hiện tại');
+        throw new Error('Không thể lấy dữ liệu người dùng hiện tại');
       }
 
       if (!isFollowing) {
@@ -222,8 +222,6 @@ export const SingleReel: React.FC<ReelProps> = ({
     }
   };
 
-
-
   const deleteReel = async (reelId: string) => {
     try {
       const response = await reelsClient.remove(reelId);
@@ -305,28 +303,28 @@ export const SingleReel: React.FC<ReelProps> = ({
         />
 
         {isError && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>Không thể tải video</Text>
+          <View style={[styles.errorContainer, {backgroundColor: Color.backgroundSecondary}]}>
+            <Text style={[styles.errorText, {color: Color.textPrimary}]}>Không thể tải video</Text>
           </View>
         )}
 
         {showControls && !isError && (
-          <View style={styles.controlsContainer}>
+          <View style={[styles.controlsContainer, {backgroundColor: Color.shadow}]}>
             <Slider
               style={styles.seekbar}
               value={position}
               maximumValue={duration}
               minimumValue={0}
               onSlidingComplete={onSeek}
-              minimumTrackTintColor="white"
-              maximumTrackTintColor="gray"
-              thumbTintColor="white"
+              minimumTrackTintColor={Color.white_white}
+              maximumTrackTintColor={Color.textSecondary}
+              thumbTintColor={Color.white_white}
             />
             <TouchableOpacity onPress={toggleMute} style={styles.muteButton}>
               <Ionicons
                 name={isMuted ? 'volume-mute' : 'volume-high'}
                 size={24}
-                color="white"
+                color={Color.white_white}
                 style={styles.iconShadow}
               />
             </TouchableOpacity>
@@ -334,8 +332,8 @@ export const SingleReel: React.FC<ReelProps> = ({
         )}
 
         {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+          <View style={[styles.errorContainer, {backgroundColor: Color.backgroundSecondary}]}>
+            <Text style={[styles.errorText, {color: Color.textPrimary}]}>{error}</Text>
           </View>
         )}
 
@@ -350,14 +348,15 @@ export const SingleReel: React.FC<ReelProps> = ({
                         ? reel.createdBy.avt[0].url
                         : 'https://storage.googleapis.com/kltn-hcmute/public/default/default_user.png',
                   }}
-                  style={styles.avatar}
+                  style={[styles.avatar, {borderColor: Color.white_white}]}
                 />
               </TouchableOpacity>
-              <Text style={styles.nameText}>{reel.createdBy.displayName}</Text>
+              <Text style={[styles.nameText, {color: Color.white_white, textShadowColor: Color.shadow}]}>{reel.createdBy.displayName}</Text>
               {currentUserId !== reel.createdBy._id && (
                 <TouchableOpacity
                   style={[
                     styles.followButton,
+                    {backgroundColor: Color.white_white},
                     isFollowing && styles.followingButton,
                   ]}
                   onPress={handleFollowRequest}
@@ -365,6 +364,7 @@ export const SingleReel: React.FC<ReelProps> = ({
                   <Text
                     style={[
                       styles.followText,
+                      {color: Color.black_black},
                       isFollowing && styles.followingText,
                     ]}
                   >
@@ -373,7 +373,7 @@ export const SingleReel: React.FC<ReelProps> = ({
                 </TouchableOpacity>
               )}
             </View>
-            <Text style={styles.descriptionText}>{reel.content}</Text>
+            <Text style={[styles.descriptionText, {color: Color.white_white, textShadowColor: Color.shadow}]}>{reel.content}</Text>
           </View>
 
           <View style={styles.iconGroup}>
@@ -381,10 +381,10 @@ export const SingleReel: React.FC<ReelProps> = ({
               <Ionicons
                 name="heart"
                 size={35}
-                color={isLiked ? 'red' : 'white'}
+                color={isLiked ? Color.error : Color.white_white}
                 style={styles.iconShadow}
               />
-              <Text style={styles.iconText}>
+              <Text style={[styles.iconText, {color: Color.white_white, textShadowColor: Color.shadow}]}>
                 {reel.emoticons?.length || 0}
               </Text>
             </TouchableOpacity>
@@ -396,10 +396,10 @@ export const SingleReel: React.FC<ReelProps> = ({
               <Ionicons
                 name="chatbubble-ellipses"
                 size={35}
-                color="white"
+                color={Color.white_white}
                 style={styles.iconShadow}
               />
-              <Text style={styles.iconText}>
+              <Text style={[styles.iconText, {color: Color.white_white, textShadowColor: Color.shadow}]}>
                 {calculateTotalComments(reel?.comments || []) || 0}
               </Text>
             </TouchableOpacity>
@@ -411,7 +411,7 @@ export const SingleReel: React.FC<ReelProps> = ({
               <Ionicons
                 name="ellipsis-horizontal"
                 size={35}
-                color="white"
+                color={Color.white_white}
                 style={styles.iconShadow}
               />
             </TouchableOpacity>
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
   container: {
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
-    backgroundColor: 'black',
+    backgroundColor: Color.black_black, 
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 3,
     width: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Color.shadow,
     borderRadius: 10,
     paddingVertical: 2,
     flexDirection: 'row',
@@ -483,11 +483,11 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: Color.white_white, 
     marginRight: 10,
   },
   followButton: {
-    backgroundColor: 'white',
+    backgroundColor: Color.white_white, 
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -498,10 +498,10 @@ const styles = StyleSheet.create({
   followText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'black',
+    color: Color.black_black, 
   },
   followingText: {
-    color: Color.white_homologous,
+    color: Color.white_white, 
   },
   iconGroup: {
     position: 'absolute',
@@ -514,36 +514,36 @@ const styles = StyleSheet.create({
     marginBottom: 35,
   },
   iconText: {
-    color: 'white',
+    color: Color.white_white, 
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 5,
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: Color.shadow, 
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   iconShadow: {
-    shadowColor: '#000',
+    shadowColor: Color.black_black, 
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.75,
     shadowRadius: 2,
   },
   nameText: {
-    color: 'white',
+    color: Color.white_white, 
     fontSize: 16,
     fontWeight: 'bold',
     marginRight: 14,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: Color.shadow, 
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   descriptionText: {
-    color: 'white',
+    color: Color.white_white, 
     fontSize: 16,
     marginTop: 5,
     width: '100%',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: Color.shadow, 
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
@@ -552,14 +552,14 @@ const styles = StyleSheet.create({
     top: '50%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: Color.backgroundSecondary, 
     padding: 20,
     borderRadius: 10,
   },
   errorText: {
-    color: 'white',
+    color: Color.textPrimary, 
     fontSize: 16,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: Color.shadow, 
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },

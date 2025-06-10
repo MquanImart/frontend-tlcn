@@ -24,24 +24,24 @@ const CHeader = ({
 }: CHeaderProps) => {
   useTheme()
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: Color.background}]}> {/* Áp dụng màu nền cho container */}
       {showBackButton && (
         <TouchableOpacity onPress={backPress} style={styles.buttonBack}>
           <Icon 
             name="arrow-back" 
             size={35} 
-            color={iconColor || Color.mainColor2} 
+            color={iconColor || Color.textPrimary}  // Thay đổi màu mặc định của icon
           />
         </TouchableOpacity>
       )}
-      <Text style={[styles.textLabel, { color: labelColor || Color.mainColor2 }]}>
+      <Text style={[styles.textLabel, { color: labelColor || Color.textPrimary }]}> {/* Thay đổi màu mặc định của label */}
         {label}
       </Text>
       <TouchableOpacity onPress={rightPress} style={styles.buttonRight}>
         <Icon 
           name={rightIcon} 
           size={35} 
-          color={iconColor || Color.mainColor2} 
+          color={iconColor || Color.textPrimary}  // Thay đổi màu mặc định của icon
         />
       </TouchableOpacity>
     </View>
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    // backgroundColor sẽ được định nghĩa inline trong component để sử dụng Color.background
   },
   buttonBack: {
     position: "absolute",
