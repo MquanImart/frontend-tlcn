@@ -30,18 +30,18 @@ const CHeader = ({
           <Icon 
             name="arrow-back" 
             size={35} 
-            color={iconColor || Color.mainColor2} 
+            color={iconColor || Color.mainColor1} 
           />
         </TouchableOpacity>
       )}
-      <Text style={[styles.textLabel, { color: labelColor || Color.mainColor2 }]}>
+      <Text style={[styles.textLabel, { color: labelColor || Color.mainColor1 }]}>
         {label}
       </Text>
       <TouchableOpacity onPress={rightPress} style={styles.buttonRight}>
         <Icon 
           name={rightIcon} 
           size={35} 
-          color={iconColor || Color.mainColor2} 
+          color={iconColor || Color.mainColor1} 
         />
       </TouchableOpacity>
     </View>

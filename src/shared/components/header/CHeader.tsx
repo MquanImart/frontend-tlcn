@@ -19,11 +19,11 @@ const CHeader = ({ label, backPress, labelColor, iconColor, showBackButton = tru
       {showBackButton && (
         <TouchableOpacity onPress={backPress} style={styles.buttonBack}>
           {/* Use default iconColor from theme if not provided */}
-          <Icon name="arrow-back" size={35} color={iconColor || Color.mainColor2} />
+          <Icon name="arrow-back" size={35} color={iconColor || Color.mainColor1} />
         </TouchableOpacity>
       )}
       {/* Use default labelColor from theme if not provided */}
-      <Text style={[styles.textLabel, { color: labelColor || Color.mainColor2 }]}>{label}</Text>
+      <Text style={[styles.textLabel, { color: labelColor || Color.mainColor1 }]}>{label}</Text>
     </View>
   );
 };

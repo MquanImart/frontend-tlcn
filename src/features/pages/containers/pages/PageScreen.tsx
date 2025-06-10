@@ -103,7 +103,7 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
   if (loading) {
     return (
       <View style={[styles.centered, { backgroundColor: Color.background }]}>
-        <ActivityIndicator size="large" color={Color.mainColor2} />
+        <ActivityIndicator size="large" color={Color.mainColor1} />
         <Text style={{ color: Color.textSecondary }}>Đang tải dữ liệu...</Text>
       </View>
     );

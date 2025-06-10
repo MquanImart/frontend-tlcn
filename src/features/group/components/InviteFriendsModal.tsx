@@ -112,7 +112,7 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
           <Text style={[styles.modalTitle, { color: Color.textPrimary }]}>Mời bạn bè vào nhóm</Text>
 
           {loading ? (
-            <ActivityIndicator size="large" color={Color.mainColor2} />
+            <ActivityIndicator size="large" color={Color.mainColor1} />
           ) : friendsList.length === 0 ? (
             <Text style={[styles.noFriendsText, { color: Color.textSecondary }]}>Không có bạn bè nào để mời.</Text>
           ) : (
@@ -140,7 +140,7 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
                     <Icon
                       name={isSelected ? "check-box" : "check-box-outline-blank"}
                       size={24}
-                      color={isSelected ? Color.mainColor2 : Color.textSecondary}
+                      color={isSelected ? Color.mainColor1 : Color.textSecondary}
                     />
                   </TouchableOpacity>
                 );
@@ -157,13 +157,13 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
             <TouchableOpacity
               style={[
                 styles.inviteButton,
-                { backgroundColor: Color.mainColor2 },
+                { backgroundColor: Color.mainColor1 },
                 selectedFriends.length === 0 && { backgroundColor: Color.backgroundTertiary },
               ]}
               onPress={handleInvite}
               disabled={selectedFriends.length === 0}
             >
-              <Text style={[styles.inviteButtonText, { color: Color.textOnMain2 }]}>
+              <Text style={[styles.inviteButtonText, { color: Color.textOnMain1 }]}>
                 Mời ({selectedFriends.length})
               </Text>
             </TouchableOpacity>

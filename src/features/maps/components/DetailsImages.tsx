@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   link: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: Color.mainColor2,
+    backgroundColor: Color.mainColor1,
     borderRadius: 8,
     marginVertical: 5,
     alignItems: "center",

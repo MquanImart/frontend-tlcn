@@ -89,7 +89,7 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
   if (!groupState || !userRole) {
     return (
       <View style={[styles.container, {backgroundColor: Color.background, justifyContent: 'center', alignItems: 'center'}]}>
-        <ActivityIndicator size="large" color={Color.mainColor2} />
+        <ActivityIndicator size="large" color={Color.mainColor1} />
         <Text style={{color: Color.textPrimary, marginTop: 10}}>Đang tải dữ liệu nhóm...</Text>
       </View>
     );
@@ -120,7 +120,7 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
         <EditGroupScreen group={groupState} onCancel={() => setIsEditingGroup(false)} onSave={handleSaveGroup} />
       ) : (
         <>
-          <View style={[styles.fixedTopBar, { backgroundColor: Color.mainColor2 }]}>
+          <View style={[styles.fixedTopBar, { backgroundColor: Color.mainColor1 }]}>
             <GroupTopBar
               groupId={groupId}
               groupName={groupState?.groupName || ""}
@@ -159,9 +159,9 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
                   selectedTab={selectedTab}
                   onSelectTab={setSelectedTab}
                   style={[styles.tabBarStyle, { backgroundColor: Color.backgroundSecondary }]} // Added dynamic background color
-                  activeTabStyle={{ backgroundColor: Color.mainColor2 }} // Inline dynamic color
+                  activeTabStyle={{ backgroundColor: Color.mainColor1 }} // Inline dynamic color
                   inactiveTabStyle={{ backgroundColor: 'transparent' }} // Inline static color
-                  activeTextStyle={{ color: Color.textOnMain2, fontWeight: 'bold' }} // Inline dynamic color
+                  activeTextStyle={{ color: Color.textOnMain1, fontWeight: 'bold' }} // Inline dynamic color
                   inactiveTextStyle={{ color: Color.textSecondary }} // Inline dynamic color
                 />
 
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    // backgroundColor: Color.mainColor2, // Moved to inline for flexibility
+    // backgroundColor: Color.mainColor1, // Moved to inline for flexibility
   },
   tabBarStyle: {
     marginHorizontal: 15,
@@ -229,13 +229,13 @@ const styles = StyleSheet.create({
     // backgroundColor: Color.backgroundSecondary, // Moved to inline for flexibility
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor2,
+    backgroundColor: Color.mainColor1,
   },
   inactiveTabStyle: {
     backgroundColor: "transparent",
   },
   activeTextStyle: {
-    color: Color.textOnMain2,
+    color: Color.textOnMain1,
     fontWeight: "bold",
   },
   inactiveTextStyle: {

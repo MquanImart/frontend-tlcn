@@ -39,8 +39,8 @@ const ToggleSwitch = ({ label, icon, onToggle, initialValue = false }: ToggleSwi
         <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
       </View>
       <Switch
-        trackColor={{ false: Color.border, true: Color.mainColor2 }}
-        thumbColor={isEnabled ? Color.textOnMain2 : Color.textOnMain2}
+        trackColor={{ false: Color.border, true: Color.mainColor1 }}
+        thumbColor={isEnabled ? Color.textOnMain1 : Color.textOnMain1}
         onValueChange={handleValueChange} // Dùng hàm xử lý mới
         value={isEnabled}
       />

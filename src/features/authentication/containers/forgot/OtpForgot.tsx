@@ -93,7 +93,7 @@ const OtpForgot = () => {
                         <CButton
                             label="Xác nhận"
                             onSubmit={handleVerifyOtp} // Gọi API khi nhấn "Xác nhận"
-                            style={{ width: "90%", height: 50, backColor: Color.mainColor2, textColor: "#fff", radius: 25 }}
+                            style={{ width: "90%", height: 50, backColor: Color.mainColor1, textColor: "#fff", radius: 25 }}
                         />
 
                         <TouchableOpacity>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderWidth: 1,
-        borderColor: Color.mainColor2,
+        borderColor: Color.mainColor1,
         backgroundColor: Color.white_homologous,
         borderRadius: 10,
         textAlign: "center",
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
         color: Color.white_contrast,
     },
     loginText: {
-        color: Color.mainColor2,
+        color: Color.mainColor1,
         fontWeight: "bold",
     },
 });

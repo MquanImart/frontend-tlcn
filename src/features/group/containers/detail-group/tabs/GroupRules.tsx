@@ -22,8 +22,8 @@ const GroupRules: React.FC<GroupRulesProps> = ({ groupId, currentUserId, role })
       <Text style={[styles.header, { color: Color.textPrimary }]}>Danh sách quy định nhóm</Text>
 
       {role === "Owner" && (
-        <TouchableOpacity style={[styles.addRuleButton, { backgroundColor: Color.mainColor2 }]} onPress={() => setIsModalVisible(true)}>
-          <Text style={[styles.addRuleButtonText, { color: Color.textOnMain2 }]}>THÊM QUY ĐỊNH</Text>
+        <TouchableOpacity style={[styles.addRuleButton, { backgroundColor: Color.mainColor1 }]} onPress={() => setIsModalVisible(true)}>
+          <Text style={[styles.addRuleButtonText, { color: Color.textOnMain1 }]}>THÊM QUY ĐỊNH</Text>
         </TouchableOpacity>
       )}
 

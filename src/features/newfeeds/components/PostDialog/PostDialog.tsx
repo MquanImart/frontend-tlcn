@@ -156,7 +156,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
                     onPress={() => handleRemoveImage(index)}
                     disabled={isLoading}
                   >
-                    <Ionicons name="close" size={18} color={Color.textOnMain2} />
+                    <Ionicons name="close" size={18} color={Color.textOnMain1} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -175,7 +175,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
               editable={!isLoading}
             />
             <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading}>
-              <Ionicons name="add-circle" size={26} color={Color.mainColor2} />
+              <Ionicons name="add-circle" size={26} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
 
@@ -193,7 +193,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
           <View style={styles.locationContainer}>
             {location.address ? (
               <View style={[styles.locationInfo, { borderColor: Color.border }]}>
-                <MaterialIcons name="location-on" size={20} color={Color.mainColor2} />
+                <MaterialIcons name="location-on" size={20} color={Color.mainColor1} />
                   <Text style={[styles.locationText, { color: Color.textPrimary }]} numberOfLines={1}>
                   {location.address?.placeName ||
                   `${location.address?.street}, ${location.address?.ward}, ${location.address?.district}, ${location.address?.province}`}
@@ -238,14 +238,14 @@ const PostDialog: React.FC<PostDialogProps> = ({
             style={{
               width: "100%",
               height: 50,
-              backColor: isLoading ? Color.backgroundTertiary : Color.mainColor2,
-              textColor: Color.textOnMain2,
+              backColor: isLoading ? Color.backgroundTertiary : Color.mainColor1,
+              textColor: Color.textOnMain1,
               radius: 10,
               fontSize: 16,
               fontWeight: "bold",
             }}
           >
-            {isLoading && <ActivityIndicator size="small" color={Color.textOnMain2} style={styles.loadingIndicator} />}
+            {isLoading && <ActivityIndicator size="small" color={Color.textOnMain1} style={styles.loadingIndicator} />}
           </CButton>
         </View>
       </View>

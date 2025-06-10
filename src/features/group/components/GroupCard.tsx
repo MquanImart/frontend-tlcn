@@ -33,17 +33,17 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, currentUserId, onJoinGroup
         <View style={[styles.buttonContainer, { gap: 10 }]}>
           {isGroupCreator ? (
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: Color.mainColor2 }]}
+              style={[styles.button, { backgroundColor: Color.mainColor1 }]}
               onPress={() => onViewGroup(group._id)}
             >
-              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
+              <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Xem nhóm</Text>
             </TouchableOpacity>
           ) : isMemberAccepted ? (
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: Color.mainColor2 }]}
+              style={[styles.button, { backgroundColor: Color.mainColor1 }]}
               onPress={() => onViewGroup(group._id)}
             >
-              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
+              <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Xem nhóm</Text>
             </TouchableOpacity>
           ) : isMemberPending ? (
             <>
@@ -55,34 +55,34 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, currentUserId, onJoinGroup
               </TouchableOpacity>
               {group.type === "public" && (
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: Color.mainColor2 }]}
+                  style={[styles.button, { backgroundColor: Color.mainColor1 }]}
                   onPress={() => onViewGroup(group._id)}
                 >
-                  <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
+                  <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Xem nhóm</Text>
                 </TouchableOpacity>
               )}
             </>
           ) : group.type === "public" ? (
             <>
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: Color.mainColor2 }]}
+                style={[styles.button, { backgroundColor: Color.mainColor1 }]}
                 onPress={() => onJoinGroup(group._id)}
               >
-                <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Tham gia nhóm</Text>
+                <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Tham gia nhóm</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, { backgroundColor: Color.mainColor2 }]}
+                style={[styles.button, { backgroundColor: Color.mainColor1 }]}
                 onPress={() => onViewGroup(group._id)}
               >
-                <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
+                <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Xem nhóm</Text>
               </TouchableOpacity>
             </>
           ) : (
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: Color.mainColor2 }]}
+              style={[styles.button, { backgroundColor: Color.mainColor1 }]}
               onPress={() => onJoinGroup(group._id)}
             >
-              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Tham gia nhóm</Text>
+              <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Tham gia nhóm</Text>
             </TouchableOpacity>
           )}
         </View>
