@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import CButton from "@/src/shared/components/button/CButton";
 import { useTheme } from '@/src/contexts/ThemeContext';
@@ -44,16 +44,6 @@ const PreferenceSelection = () => {
     fetchHobbies();
   }, []);
 
-  // Tạo buttonData từ categories
-  const buttonData = useMemo(
-    () =>
-      categories.map(category => ({
-        label: category,
-        width: `${Math.floor(Math.random() * (200 - 120 + 1) + 100)}`,
-      })),
-    [categories]
-  );
-
   const handleToggle = (label: string, isActive: boolean) => {
     setSelectedCategories(prev =>
       isActive ? [...prev, label] : prev.filter(item => item !== label)
@@ -88,31 +78,30 @@ const PreferenceSelection = () => {
         <Text style={styles.loadingText}>Đang tải danh sách sở thích...</Text>
       ) : (
         <View style={styles.buttonContainer}>
-          {buttonData.map((item, index) => (
-            <CButton
-              key={index}
-              label={item.label}
-              onSubmit={() =>
-                handleToggle(item.label, !selectedCategories.includes(item.label))
-              }
-              style={{
-                width: item.width,
-                height: 50,
-                backColor: selectedCategories.includes(item.label)
-                  ? Color.mainColor1
-                  : "transparent",
-                textColor: selectedCategories.includes(item.label)
-                  ? Color.white_homologous
-                  : Color.mainColor1,
-                fontSize: 18,
-                boderColor: selectedCategories.includes(item.label)
-                  ? Color.white_homologous
-                  : Color.mainColor1,
-                borderWidth: 2,
-                fontWeight: "500",
-                radius: 50,
-              }}
-            />
+          {categories.map((item, index) => (
+            <TouchableOpacity 
+              style={[styles.buttonItem,
+                selectedCategories.includes(item) ? {
+                  backgroundColor: Color.mainColor1
+                } : { 
+                  backgroundColor: Color.white
+                }
+              ]} 
+              key={index} 
+              onPress={() => handleToggle(item, !selectedCategories.includes(item))}
+            >
+              <Text 
+                style={[styles.textItem,
+                  selectedCategories.includes(item) ? {
+                    color: Color.white,
+                  } : {
+                    color: Color.mainColor1
+                  }
+                ]}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
           ))}
         </View>
       )}
@@ -216,4 +205,15 @@ const styles = StyleSheet.create({
     color: Color.white_contrast,
     marginTop: 50,
   },
+  buttonItem: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: Color.mainColor1
+  },
+  textItem: {
+    fontSize: 15,
+    fontWeight: '500'
+  }
 });
