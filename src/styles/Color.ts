@@ -50,8 +50,8 @@ export const lightColor: Color = {
     black: "#000",
     gray1: "#f0f0f0",
     gray2: "#e9e9e9",
-    gray3: "#3d3d3d",
-    gray4: "#9E9E9E",
+    gray3: "#9E9E9E",
+    gray4: "#3d3d3d",
     red_red: "#ff0000",
 
 
@@ -95,9 +95,9 @@ export const darkColor: Color = {
     mainColor2: "#4B164C",
     white: "#000",
     black: "#fff",
-    gray1: "#9E9E9E",
-    gray2: "#BDBDBD",
-    gray3: "#E0E0E0",
+    gray1: "#3d3d3d",
+    gray2: "#9E9E9E",
+    gray3: "#e9e9e9",
     gray4: "#F0F0F0",
     red_red: "#ff0000",
 

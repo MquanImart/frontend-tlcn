@@ -16,7 +16,7 @@ const ConfirmDeleteModal = ({ visible, onClose, onConfirm, collectionName }: Con
                 <View style={styles.modalContent}>
                     <Text style={styles.title}>Xác nhận xóa</Text>
                     <Text style={styles.message}>
-                        Bạn có chắc chắn muốn xóa bộ sưu tập "{collectionName}" không?
+                        {`Bạn có chắc chắn muốn xóa bộ sưu tập ${collectionName} không?`}
                     </Text>
 
                     <View style={styles.buttonContainer}>
