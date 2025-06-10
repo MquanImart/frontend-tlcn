@@ -2,8 +2,10 @@ import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+// import { useTheme } from '@/src/contexts/ThemeContext'; // Xóa dòng này
+// import { colors as Color } from '@/src/styles/DynamicColors'; // Xóa hoặc không sử dụng nữa
+import { lightColor } from "@/src/styles/Colors"; // Import lightColor
+
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
@@ -25,9 +27,9 @@ import {
 type RegisterNavigationProp = StackNavigationProp<AuthStackParamList, "IDVerification">;
 
 const Register = () => {
-    useTheme();
+    // useTheme(); // Xóa lời gọi này
     const [emailOrPhone, setEmailOrPhone] = useState<string>('');
-    const [password, setPassword] = useState<string>(""); 
+    const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
 
     const navigation = useNavigation<RegisterNavigationProp>();
@@ -43,7 +45,7 @@ const Register = () => {
             Alert.alert("Lỗi", "Email không hợp lệ");
             return;
         }
-        
+
         if (password.length < 6) {
             Alert.alert("Lỗi", "Mật khẩu phải có ít nhất 6 ký tự");
             return;
@@ -53,39 +55,48 @@ const Register = () => {
             Alert.alert("Lỗi", "Mật khẩu không khớp");
             return;
         }
-        const emailCheck = await restClient.apiClient
-        .service("apis/accounts/check-email")
-        .create({
-            email: emailOrPhone
-        });
-        if (emailCheck.exists) {
-            Alert.alert("Lỗi", "Email đã tồn tại");
-            return;
-         }
+        // Assuming restClient.apiClient.service returns a valid service object
+        // and create method exists on it.
+        try {
+            const emailCheck = await restClient.apiClient
+                .service("apis/accounts/check-email")
+                .create({
+                    email: emailOrPhone
+                });
+            if (emailCheck.exists) {
+                Alert.alert("Lỗi", "Email đã tồn tại");
+                return;
+            }
+        } catch (error: any) {
+             Alert.alert("Lỗi", error.message || "Không thể kiểm tra email. Vui lòng thử lại sau.");
+             console.error("Lỗi kiểm tra email:", error);
+             return; // Stop if email check fails
+        }
+
         navigation.navigate("IDVerification", { emailOrPhone, password });
     };
 
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"} 
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <ScrollView 
-                    contentContainerStyle={styles.scrollView} 
+                <ScrollView
+                    contentContainerStyle={styles.scrollView}
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.bannerContainer}>
                         <Image
-                            source={require("../../../../assets/images/logo.png")} 
+                            source={require("../../../../assets/images/logo.png")}
                             style={styles.bannerImage}
                         />
                     </View>
-                    
+
                     <Text style={styles.title}>Đăng ký VieWay</Text>
 
                     <View style={styles.inputContainer}>
-                        {/* Input Nhập Email hoặc Số điện thoại */}
+                        {/* Input Email */}
                         <CInput
                             placeholder="Nhập email "
                             value={emailOrPhone}
@@ -95,13 +106,13 @@ const Register = () => {
                             style={{
                                 width: "85%",
                                 height: 50,
-                                backColor: Color.backGround,
+                                backColor: lightColor.background, 
                                 radius: 25,
-                                borderColor: Color.mainColor2,
+                                borderColor: lightColor.mainColor2, 
                             }}
                         />
 
-                        {/* Input Nhập Mật khẩu */}
+                        {/* Input Mật khẩu */}
                         <CInput
                             ref={passwordInputRef} // Gán ref cho ô mật khẩu
                             placeholder="Mật khẩu"
@@ -113,15 +124,15 @@ const Register = () => {
                             style={{
                                 width: "79%",
                                 height: 50,
-                                backColor: Color.backGround,
+                                backColor: lightColor.background, 
                                 radius: 25,
-                                borderColor: Color.mainColor2,
+                                borderColor: lightColor.mainColor2,
                             }}
                         />
 
                         {/* Input Nhập lại Mật khẩu */}
                         <CInput
-                            ref={confirmPasswordInputRef} // Gán ref cho ô nhập lại mật khẩu
+                            ref={confirmPasswordInputRef} 
                             placeholder="Nhập lại mật khẩu"
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
@@ -130,9 +141,9 @@ const Register = () => {
                             style={{
                                 width: "79%",
                                 height: 50,
-                                backColor: Color.backGround,
+                                backColor: lightColor.background, 
                                 radius: 25,
-                                borderColor: Color.mainColor2,
+                                borderColor: lightColor.mainColor2, 
                             }}
                         />
                     </View>
@@ -141,21 +152,21 @@ const Register = () => {
                     <View style={styles.buttonContainer}>
                         <CButton
                             label="Xác nhận"
-                            onSubmit={validateAndNavigate} // Gọi hàm kiểm tra và chuyển hướng
+                            onSubmit={validateAndNavigate} 
                             style={{
                                 width: "85%",
                                 height: 50,
-                                backColor: Color.mainColor2,
-                                textColor: Color.white_homologous,
+                                backColor: lightColor.mainColor1, 
+                                textColor: lightColor.textOnMain1, 
                                 fontSize: 18,
                                 radius: 25,
                             }}
                         />
 
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                             <Text style={styles.loginText}>
                                 Bạn đã có tài khoản?{" "}
-                                <Text style={styles.loginLink} onPress={() => navigation.navigate("Login")}>
+                                <Text style={styles.loginLink}>
                                     Đăng nhập
                                 </Text>
                             </Text>
@@ -172,7 +183,7 @@ export default Register;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround,
+        backgroundColor: lightColor.background, 
     },
     scrollView: {
         flexGrow: 1,
@@ -188,9 +199,9 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 26,
         fontWeight: "bold",
-        color: Color.white_contrast,
+        color: lightColor.textPrimary, 
         marginBottom: 20,
-        textAlign: "center",  
+        textAlign: "center",
     },
     inputContainer: {
         alignItems: "center",
@@ -206,10 +217,10 @@ const styles = StyleSheet.create({
     loginText: {
         marginTop: 20,
         fontSize: 14,
-        color: Color.white_contrast,
+        color: lightColor.textSecondary,
     },
     loginLink: {
-        color: Color.mainColor2,
+        color: lightColor.mainColor2,
         fontWeight: "bold",
     },
 });

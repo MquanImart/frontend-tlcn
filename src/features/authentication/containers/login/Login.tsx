@@ -1,9 +1,11 @@
+// src/features/authentication/screens/Login.tsx (Your Login component)
 import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+// import { useTheme } from '@/src/contexts/ThemeContext'; // Removed as it's not needed for static light theme
+import { lightColor } from "@/src/styles/Colors"; // Import lightColor directly
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -27,12 +29,12 @@ const accountClient = restClient.apiClient.service("apis/accounts");
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-  useTheme();
+  // Removed useTheme() since we are explicitly using lightColor
   const [emailOrPhone, setEmailOrPhone] = useState<string>("phanquanhcmute@gmail.com");
   const [password, setPassword] = useState<string>("123456");
   const navigation = useNavigation<AuthNavigationProp>();
 
-  // Ref để focus vào ô mật khẩu sau khi nhập xong email/số điện thoại
+  // Ref to focus on the password input after entering email/phone
   const passwordInputRef = useRef<TextInput>(null);
 
   const handleLogin = async () => {
@@ -70,12 +72,12 @@ const Login = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.inner}>
-            {/* Tiêu đề */}
+            {/* Title */}
             <Text style={styles.title}>
               Khám phá và kết nối{`\n`}với vẻ đẹp Việt Nam
             </Text>
 
-            {/* Hình ảnh logo */}
+            {/* Logo Image */}
             <View style={styles.logoContainer}>
               <Image
                 source={require("../../../../assets/images/logo.png")}
@@ -83,10 +85,10 @@ const Login = () => {
               />
             </View>
 
-            {/* Tiêu đề đăng nhập */}
+            {/* Login Title */}
             <Text style={styles.loginTitle}>Đăng nhập VieWay</Text>
 
-            {/* Input Nhập Email hoặc Số điện thoại */}
+            {/* Email or Phone Input */}
             <View style={styles.inputContainer}>
               <CInput
                 placeholder="Nhập email hoặc số điện thoại"
@@ -98,12 +100,12 @@ const Login = () => {
                   width: "85%",
                   height: 50,
                   radius: 25,
-                  backColor: Color.backGround,
-                  borderColor: Color.mainColor2,
+                  backColor: lightColor.background,
+                  borderColor: lightColor.mainColor2,
                 }}
               />
 
-              {/* Input Nhập Mật khẩu */}
+              {/* Password Input */}
               <CInput
                 ref={passwordInputRef}
                 placeholder="Nhập mật khẩu"
@@ -114,9 +116,9 @@ const Login = () => {
                 style={{
                   width: "79%",
                   height: 50,
-                  backColor: Color.backGround,
+                  backColor: lightColor.background, 
                   radius: 25,
-                  borderColor: Color.mainColor2,
+                  borderColor: lightColor.mainColor2,
                 }}
               />
 
@@ -127,8 +129,8 @@ const Login = () => {
                   style={{
                     width: "85%",
                     height: 50,
-                    backColor: Color.mainColor2,
-                    textColor: Color.white_homologous,
+                    backColor: lightColor.mainColor1, 
+                    textColor: lightColor.textOnMain1, 
                     fontSize: 18,
                     radius: 25,
                   }}
@@ -139,7 +141,7 @@ const Login = () => {
                 <Text style={styles.registerLink}>Quên mật khẩu?</Text>
               </TouchableOpacity>
 
-              {/* Đăng ký */}
+              {/* Register Link */}
               <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                 <Text style={styles.registerText}>
                   Bạn chưa có tài khoản?{" "}
@@ -159,7 +161,7 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: lightColor.background, 
   },
   scrollView: {
     flexGrow: 1,
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "bold",
     textAlign: "center",
-    color: Color.white_contrast,
+    color: lightColor.textPrimary, 
     marginBottom: 5,
     marginTop: 10,
   },
@@ -190,9 +192,9 @@ const styles = StyleSheet.create({
   loginTitle: {
     fontSize: 26,
     fontWeight: "bold",
-    color: Color.white_contrast,
-    marginBottom: 10,
     textAlign: "center",
+    color: lightColor.textPrimary, 
+    marginBottom: 10,
   },
   inputContainer: {
     alignItems: "center",
@@ -208,12 +210,12 @@ const styles = StyleSheet.create({
   },
   registerText: {
     fontSize: 14,
-    color: Color.textColor4,
+    color: lightColor.textSecondary, // Using lightColor.textSecondary (was textColor4)
     marginTop: 10,
   },
   registerLink: {
     fontSize: 15,
-    color: Color.mainColor2,
+    color: lightColor.mainColor2, 
     fontWeight: "bold",
     marginTop: 15,
   },

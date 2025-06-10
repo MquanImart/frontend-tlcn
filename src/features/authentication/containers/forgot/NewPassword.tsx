@@ -6,14 +6,14 @@ import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet
 
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { lightColor } from '@/src/styles/Colors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+
 type NewPasswordRouteProp = RouteProp<AuthStackParamList, "NewPassword">;
 type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
+
 const NewPassword = () => {
-    useTheme();
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const passwordRef = useRef<TextInput | null>(null);
@@ -21,7 +21,7 @@ const NewPassword = () => {
     const navigation = useNavigation<LoginNavigationProp>();
     const route = useRoute<NewPasswordRouteProp>();
 
-    const email = route.params?.email; // Nhận email từ màn hình trước
+    const email = route.params?.email;
 
     const handleSubmit = async () => {
         if (!password || !confirmPassword) {
@@ -53,48 +53,74 @@ const NewPassword = () => {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-                    <View style={styles.innerContainer}>
+                    <View style={styles.innerContentWrapper}>
                         <View style={styles.bannerContainer}>
                             <Image source={require("../../../../assets/images/logo.png")} style={styles.bannerImage} resizeMode="contain" />
                         </View>
 
                         <Text style={styles.titleText}>Nhập mật khẩu mới</Text>
 
-                        <CInput
-                            placeholder="Mật khẩu"
-                            style={{ width: "85%", height: 50, backColor: "#fff", textColor: "#000", fontSize: 16, radius: 25, borderColor: "#DD88CF" }}
-                            isPasswordInput={true}
-                            onChangeText={(text) => setPassword(text)}
-                            returnKeyType="next"
-                            onSubmitEditing={() => confirmPasswordRef.current?.focus()}
-                            ref={passwordRef}
-                        />
-                        <View style={{ marginBottom: 5 }}></View>
-                        <CInput
-                            placeholder="Nhập lại mật khẩu"
-                            style={{ width: "85%", height: 50, backColor: "#fff", textColor: "#000", fontSize: 16, radius: 25, borderColor: "#DD88CF" }}
-                            isPasswordInput={true}
-                            onChangeText={(text) => setConfirmPassword(text)}
-                            returnKeyType="done"
-                            onSubmitEditing={Keyboard.dismiss}
-                            ref={confirmPasswordRef}
-                        />
-                        <View style={{ marginBottom: 55 }}></View>
+                        <View style={styles.inputWrapper}>
+                            <CInput
+                                placeholder="Mật khẩu"
+                                style={{
+                                    width: "100%",
+                                    height: 50,
+                                    backColor: lightColor.background,
+                                    textColor: lightColor.textPrimary,
+                                    fontSize: 18,
+                                    radius: 25,
+                                    borderColor: lightColor.mainColor2,
+                                }}
+                                isPasswordInput={true}
+                                onChangeText={(text) => setPassword(text)}
+                                returnKeyType="next"
+                                onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                                ref={passwordRef}
+                            />
+                            <View style={styles.inputSpacing}></View>
+                            <CInput
+                                placeholder="Nhập lại mật khẩu"
+                                style={{
+                                    width: "100%",
+                                    height: 50,
+                                    backColor: lightColor.background,
+                                    textColor: lightColor.textPrimary,
+                                    fontSize: 18,
+                                    radius: 25,
+                                    borderColor: lightColor.mainColor2,
+                                }}
+                                isPasswordInput={true}
+                                onChangeText={(text) => setConfirmPassword(text)}
+                                returnKeyType="done"
+                                onSubmitEditing={Keyboard.dismiss}
+                                ref={confirmPasswordRef}
+                            />
+                        </View>
 
                         <CButton
                             label="Xác nhận"
-                            onSubmit={handleSubmit} // 🔥 Gọi API khi bấm "Xác nhận"
-                            style={{ width: "94%", height: 50, backColor: "#4B164C", textColor: "#fff", radius: 25 }}
+                            onSubmit={handleSubmit}
+                            style={{
+                                width: "90%",
+                                height: 50,
+                                backColor: lightColor.mainColor1,
+                                textColor: lightColor.textOnMain1,
+                                radius: 25,
+                                shadow: true,
+                            }}
                         />
 
-                        <TouchableOpacity>
-                            <Text style={styles.footerText}>
-                                Bạn đã có tài khoản? <Text style={styles.loginText} onPress={() => navigation.navigate("Login")}>Đăng nhập</Text>
-                            </Text>
-                        </TouchableOpacity>
+                        <View style={styles.bottomLinkContainer}>
+                            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                                <Text style={styles.loginAccountText}>
+                                    Bạn đã có tài khoản? <Text style={styles.loginLink}>Đăng nhập</Text>
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </ScrollView>
             </TouchableWithoutFeedback>
@@ -104,39 +130,62 @@ const NewPassword = () => {
 export default NewPassword;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: lightColor.background,
+    },
     scrollContainer: {
         flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingVertical: 20,
     },
-    innerContainer: {
+    innerContentWrapper: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: "#fff",
-        padding: 20,
+        width: '100%',
+        maxWidth: 400,
+        paddingHorizontal: 20,
     },
     bannerContainer: {
-        marginBottom: 20,
-        marginTop: 40,
+        marginBottom: 30,
+        marginTop: 20,
         justifyContent: "center",
         alignItems: "center",
     },
     bannerImage: {
-        width: 350,
-        height: 350,
+        width: 250,
+        height: 250,
+        borderRadius: 15,
     },
     titleText: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: "bold",
-        color: "#000",
-        marginBottom: 20,
-    },
-    footerText: {
-        marginTop: 20,
-        fontSize: 14,
-        color: "#000",
+        color: lightColor.textPrimary,
+        marginBottom: 30,
         textAlign: "center",
     },
-    loginText: {
-        color: "#DD88CF",
+    inputWrapper: {
+        width: "90%",
+        marginBottom: 30,
+        alignItems: 'center',
+    },
+    inputSpacing: {
+        marginBottom: 15,
+    },
+    bottomLinkContainer: {
+        position: 'absolute',
+        bottom: 30,
+        width: '100%',
+        alignItems: 'center',
+    },
+    loginAccountText: {
+        fontSize: 14,
+        color: lightColor.textSecondary,
+        textAlign: "center",
+    },
+    loginLink: {
+        color: lightColor.mainColor2,
         fontWeight: "bold",
     },
 });
