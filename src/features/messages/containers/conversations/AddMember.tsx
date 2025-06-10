@@ -14,20 +14,20 @@ const AddMember = () => {
     useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "AddMember">>();
     const { conversationId, defaultChoose } = route.params || {};
-    const { 
+    const {
       dismissKeyboard, goBack,
       search, searchUser, inputRef, setIsSearch,
       isSearch, selected, filterUser,
       handleSelected, getUserWithoutChat,
       addMemberGroup
-    } = useNewGroupChat(defaultChoose); 
+    } = useNewGroupChat(defaultChoose);
 
     useFocusEffect(
         useCallback(() => {
           const load = async () => {
             await getUserWithoutChat();
           }
-          load(); 
+          load();
         }, [])
     );
 
@@ -36,10 +36,10 @@ const AddMember = () => {
     }
     return (
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
-        <View style={styles.container}>
-            <CHeaderIcon 
-                label={"Thêm thành viên"} 
-                IconLeft={"arrow-back-ios"} 
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
+            <CHeaderIcon
+                label={"Thêm thành viên"}
+                IconLeft={"arrow-back-ios"}
                 onPressLeft={goBack}
                 textRight="Thêm"
                 onPressRight={handleAddMember}
@@ -51,23 +51,23 @@ const AddMember = () => {
               setIsSearch={setIsSearch}
             />
             {!isSearch && selected.length > 0 && <View style={styles.boxMember}>
-                <Text style={styles.textNewGroup}>Đã chọn</Text>
-                <FlatList 
-                  data={selected} 
+                <Text style={[styles.textNewGroup, { color: Color.textPrimary }]}>Đã chọn</Text>
+                <FlatList
+                  data={selected}
                   keyExtractor={(item) => item._id.toString()}
                   renderItem={({ item }) => {
-                    const isDefault = defaultChoose?defaultChoose.some(
+                    const isDefault = defaultChoose ? defaultChoose.some(
                       (id) => id._id.toString() === item._id.toString()
-                    ):true;
-                
+                    ) : true;
+
                     return (
-                      <CardUser 
+                      <CardUser
                         _id={item._id}
-                        avt={item.avt.length > 0 ? item.avt[item.avt.length - 1] : null}  
-                        name={item.displayName} 
-                        onPress={() => handleSelected(item._id)} 
-                        icon={"highlight-off"} 
-                        radio={!isDefault}  // false nếu là defaultChoose
+                        avt={item.avt.length > 0 ? item.avt[item.avt.length - 1] : null}
+                        name={item.displayName}
+                        onPress={() => handleSelected(item._id)}
+                        icon={"highlight-off"}
+                        radio={!isDefault}
                       />
                     );
                   }}
@@ -75,20 +75,20 @@ const AddMember = () => {
 
             </View>}
             <View style={[styles.boxUser, {height: 590 - selected.length*70 - (selected.length>0?40:0)}]}>
-                <Text style={styles.textNewGroup}>Gợi ý</Text>
-                <FlatList 
-                    data={filterUser?filterUser.filter(
-                      (user) => defaultChoose?!defaultChoose.some(
+                <Text style={[styles.textNewGroup, { color: Color.textPrimary }]}>Gợi ý</Text>
+                <FlatList
+                    data={filterUser ? filterUser.filter(
+                      (user) => defaultChoose ? !defaultChoose.some(
                         (id) => id._id.toString() === user._id.toString()
-                      ):true
-                    ):[]} 
-                    renderItem={({item}) => 
-                    <CardUser 
+                      ) : true
+                    ) : []}
+                    renderItem={({item}) =>
+                    <CardUser
                         _id={item._id}
-                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}  
-                        name={item.displayName} 
+                        avt={item.avt.length > 0 ? item.avt[item.avt.length - 1] : null}
+                        name={item.displayName}
                         selected={selected.some((user) => user._id === item._id)}
-                        onPress={() => {handleSelected(item._id)}} 
+                        onPress={() => {handleSelected(item._id)}}
                         radio={true}
                     />
                 }/>
@@ -101,7 +101,6 @@ const AddMember = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround
     },
     boxNewGroup: {
         flexDirection: 'row',

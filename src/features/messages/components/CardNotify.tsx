@@ -12,39 +12,60 @@ interface CardNotifyProps {
 
 const CardNotify = ({text, onPress, ischoose} : CardNotifyProps) => {
     useTheme();
+
     return (
-        <TouchableOpacity style={styles.cardActions} onPress={onPress}>
-            <Text style={styles.textActions}>{text}</Text>
-            <Icon 
-                name={ischoose? "radio-button-on": "radio-button-off"} 
-                size={24} color={Color.white_contrast} 
-            />  
+        <TouchableOpacity
+            style={[
+                styles.cardActions,
+                { backgroundColor: ischoose ? Color.mainColor1 : Color.backgroundSecondary },
+            ]}
+            onPress={onPress}
+        >
+            <Text
+                style={[
+                    styles.textActions,
+                    { color: ischoose ? Color.textOnMain1 : Color.textPrimary }
+                ]}
+            >
+                {text}
+            </Text>
+            <Icon
+                name={ischoose ? "radio-button-on" : "radio-button-off"}
+                size={24}
+                color={ischoose ? Color.textOnMain1 : Color.textPrimary}
+            />
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     cardActions: {
         width: '90%',
         alignSelf: 'center',
-        padding: 10, 
-        marginVertical: 5,
+        padding: 15,
+        marginVertical: 8,
         borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: Color.backGround,
+        alignItems: 'center',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 3,
     },
     textActions: {
-        fontSize: 15
+        fontSize: 16,
+        fontWeight: '500',
+        flex: 1,
+        marginRight: 10,
     },
     boxIcon: {
-        width: 20
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
-})
+});
 
 export {CardNotify, CardNotifyProps};

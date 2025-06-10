@@ -36,16 +36,16 @@ const CardUser = ({_id, avt, name, selected, onPress, icon, radio} : CardUserPro
     }, [selected]);
 
     return (
-        <TouchableOpacity style={styles.container} onPress={handlePress}>
+        <TouchableOpacity style={[styles.container, { backgroundColor: Color.backgroundSecondary }]} onPress={handlePress}>
             <View style={styles.boxContent}>
                 <Image source={avt?{uri:avt.url} : require('@/src/assets/images/default/default_user.png')} style={styles.images}/>
-                <Text style={styles.text}>{name}</Text>
+                <Text style={[styles.text, { color: Color.textPrimary }]}>{name}</Text>
             </View>
             {radio && <TouchableOpacity style={styles.radio} onPress={handlePressIcon}>
-                <Icon 
-                    name={icon?icon: (isChoose? "radio-button-on": "radio-button-off")} 
-                    size={24} color={Color.white_contrast} 
-                />    
+                <Icon
+                    name={icon?icon: (isChoose? "radio-button-on": "radio-button-off")}
+                    size={24} color={Color.mainColor2}
+                />
             </TouchableOpacity>}
         </TouchableOpacity>
     )
@@ -57,7 +57,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10
+        padding: 10,
+        borderRadius: 8, 
+        marginVertical: 4 
     },
     boxContent: {
         flexDirection: 'row',

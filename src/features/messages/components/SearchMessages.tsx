@@ -3,7 +3,7 @@ import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, TextInput } from "react-native"
 
 interface SearchMessagesProps {
-    search: string; 
+    search: string;
     setSearch: (value: string) => void;
     setIsSearch: (value: boolean) => void;
     refInput: React.RefObject<TextInput | null>;
@@ -18,15 +18,16 @@ const SearchMessages = ({refInput, search, setSearch, setIsSearch} : SearchMessa
     const handleTextChange = (text: string) => {
       setSearch(text);
     };
+
     return (
         <View style={styles.container}>
-            <View style={styles.boxSearch}>
+            <View style={[styles.boxSearch, { backgroundColor: Color.backgroundTertiary }]}>
                 <TextInput
                     ref={refInput}
                     value={search}
-                    style={styles.inputSearch}
+                    style={[styles.inputSearch, { color: Color.textPrimary }]}
                     placeholder="Tìm kiếm người liên hệ"
-                    placeholderTextColor={Color.textColor3}
+                    placeholderTextColor={Color.textTertiary}
                     onFocus={focusTextInput}
                     onChangeText={handleTextChange}
                 />
@@ -45,13 +46,13 @@ const styles = StyleSheet.create({
     boxSearch: {
         width: '90%',
         height: 50,
-        backgroundColor: Color.backGround2,
         borderRadius: 32,
         justifyContent: 'center',
         paddingHorizontal: 20
     },
     inputSearch: {
-
+        flex: 1,
+        fontSize: 16,
     }
 })
 

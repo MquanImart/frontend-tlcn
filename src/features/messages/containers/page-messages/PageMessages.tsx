@@ -1,4 +1,4 @@
-import { View, StyleSheet, Animated, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Animated, ActivityIndicator, Text } from "react-native";
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
@@ -13,9 +13,9 @@ import { useFocusEffect } from "@react-navigation/native";
 import usePageMessages from "./usePageMessages";
 
 const PageMessages = () => {
-  useTheme();
-  const { inputRef, 
-    search, searchUser, 
+  useTheme(); // Ensures the Color object is updated based on the current theme
+  const { inputRef,
+    search, searchUser,
     isSearch, setIsSearch,
     conversations, getConversations,
     onPressHeaderLeft,
@@ -41,26 +41,41 @@ const PageMessages = () => {
   },[userId]);
 
   return (
-      <View style={{flex: 1, backgroundColor: Color.backGround}}>
+      <View style={{flex: 1, backgroundColor: Color.background}}>
           <View style={styles.container} >
-              <CHeaderIcon label={"Tin nhắn Trang"} 
-                  IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft} 
+              <CHeaderIcon label={"Tin nhắn Trang"}
+                  IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft}
               />
               <SearchMessages search={search} setSearch={searchUser} setIsSearch={setIsSearch} refInput={inputRef}/>
-              {!conversations? (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
-              ) : !isSearch? (
-                <FlatList style={styles.listMessages} onScroll={handleScroll} data={conversations} renderItem={({item}) => 
-                  <CardMessages 
-                    conversation={item}
-                  />}
-                /> 
-              ) : filterUser? (
-                <FlatList style={styles.listMessages} onScroll={handleScroll} data={filterUser} renderItem={({item}) => 
-                  <CardSearch cardData={item}/>}
-                /> 
+              {!conversations ? (
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                </View>
+              ) : !isSearch ? (
+                <FlatList
+                    style={styles.listMessages}
+                    onScroll={handleScroll}
+                    data={conversations}
+                    keyExtractor={(item) => item._id.toString()}
+                    renderItem={({item}) =>
+                        <CardMessages
+                            conversation={item}
+                        />
+                    }
+                />
+              ) : filterUser ? (
+                <FlatList
+                    style={styles.listMessages}
+                    onScroll={handleScroll}
+                    data={filterUser}
+                    renderItem={({item}) =>
+                        <CardSearch cardData={item}/>
+                    }
+                />
               ) : (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                </View>
               )}
           </View>
           <Animated.View style={[styles.tabbar,
@@ -72,8 +87,8 @@ const PageMessages = () => {
               <Tabbar/>
           </Animated.View>
       </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -86,6 +101,6 @@ const styles = StyleSheet.create({
         width: '95%', maxHeight: '80%',
         alignSelf: 'center'
     }
-})
+});
 
 export default PageMessages;

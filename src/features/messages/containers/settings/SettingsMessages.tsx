@@ -42,7 +42,7 @@ const SettingsMessages = () => {
         if (setting){
             const userAPI = restClient.apiClient.service(`apis/users`);
             const result = await userAPI.patch(userId, { setting: {
-                profileVisibility:setting.allowMessagesFromStrangers,
+                profileVisibility:setting.profileVisibility, // Corrected: this should be setting.profileVisibility, not allowMessagesFromStrangers
                 allowMessagesFromStrangers: !setting.allowMessagesFromStrangers
             }});
             if (result.success){
@@ -55,18 +55,24 @@ const SettingsMessages = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
             <CHeaderIcon label={"Cài đặt"} IconLeft={"menu"} onPressLeft={handleOpenDrawer}/>
             <View style={styles.boxContent}>
                 <View style={styles.settings}>
-                    <Text style={styles.textSetting}>Cho phép nhận tin nhắn từ người lạ</Text>
-                    {setting !== null ? <Switch
-                      trackColor={{ false: '#000', true: Color.mainColor2 }}
-                      thumbColor={Color.white_homologous}
-                      ios_backgroundColor={Color.backGround1}
-                      onValueChange={changeallowMessagesFromStrangers}
-                      value={setting.allowMessagesFromStrangers}
-                    /> : <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>}
+                    <Text style={[styles.textSetting, { color: Color.textPrimary }]}>Cho phép nhận tin nhắn từ người lạ</Text>
+                    {setting !== null ? (
+                        <Switch
+                          trackColor={{ false: Color.border, true: Color.mainColor2 }} 
+                          thumbColor={Color.textOnMain1} 
+                          ios_backgroundColor={Color.backgroundSecondary} 
+                          onValueChange={changeallowMessagesFromStrangers}
+                          value={setting.allowMessagesFromStrangers}
+                        />
+                    ) : (
+                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                            <ActivityIndicator size="small" color={Color.mainColor2} />
+                        </View>
+                    )}
                 </View>
             </View>
         </View>
@@ -76,7 +82,6 @@ const SettingsMessages = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround,
     },
     boxContent: {
         marginTop: 30,

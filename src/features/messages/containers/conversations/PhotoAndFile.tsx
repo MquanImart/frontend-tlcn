@@ -13,6 +13,7 @@ import { ActivityIndicator, Dimensions, FlatList, StyleSheet, TouchableOpacity, 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import usePhotoAndFile from "./usePhotoAndFile";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 const IMAGE_SIZE = Dimensions.get('window').width / 2 - 4;
@@ -31,14 +32,15 @@ const PhotoAndFile = () =>{
     const videoRef = useRef(null);
     const [visiable, setVisiable] = useState<boolean>(false);
     const [dataImg, setDataImg] = useState<MyPhoto | null>(null);
+    const insets = useSafeAreaInsets();
 
-    const { 
-        messageImages, messageVideos, 
+    const {
+        messageImages, messageVideos,
         getAllMessageImages, getAllMessageVideos,
         loadMoreMessagesImage, loadMoreMessagesVideo
     } = usePhotoAndFile(conversationId);
-    const [currTab, setCurrTab] = useState<string>(tabs.length > 0?tabs[0].label:''); 
-    
+    const [currTab, setCurrTab] = useState<string>(tabs.length > 0?tabs[0].label:'');
+
     useEffect(() => {
         getAllMessageImages();
         getAllMessageVideos();
@@ -59,7 +61,7 @@ const PhotoAndFile = () =>{
             <Image
               style={styles.img}
               source={ item.content.mediaUrl ? { uri: item.content.mediaUrl.url} : require('@/src/assets/images/default/default_images.png')}
-              resizeMode="cover" // Giữ nguyên tỉ lệ, không cắt ảnh
+              resizeMode="cover"
             />
         </TouchableOpacity>
     );
@@ -69,7 +71,7 @@ const PhotoAndFile = () =>{
             <Video
                 ref={videoRef}
                 style={styles.video}
-                source={{uri: item.content.mediaUrl?item.content.mediaUrl.url: ""}} 
+                source={{uri: item.content.mediaUrl?item.content.mediaUrl.url: ""}}
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}
                 isLooping
@@ -79,18 +81,18 @@ const PhotoAndFile = () =>{
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: Color.background, paddingTop: insets.top }]}>
+            <View style={[styles.header, { backgroundColor: Color.backgroundSecondary }]}>
                 <TouchableOpacity style={styles.iconBack} onPress={() => {navigation.goBack()}}>
-                    <Icon name={"arrow-back-ios"} size={24} color={Color.white_contrast}/>
+                    <Icon name={"arrow-back-ios"} size={24} color={Color.textPrimary}/>
                 </TouchableOpacity>
                 <View style={styles.tabs}>
                     <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab}/>
                 </View>
             </View>
-            {messageImages !== null ? (
+            {messageImages !== null && messageVideos !== null ? (
             <View>
-                {currTab === tabs[0].label && 
+                {currTab === tabs[0].label &&
                     <FlatList
                       style={styles.boxList}
                       data={messageImages}
@@ -99,19 +101,13 @@ const PhotoAndFile = () =>{
                       numColumns={2}
                       columnWrapperStyle={styles.row}
                       contentContainerStyle={styles.list}
-                      onEndReached={loadMoreMessagesImage} // Khi cuộn lên, tải thêm tin nhắn
-                      onEndReachedThreshold={0.2} // Khi cuộn gần 20% danh sách thì tải tiếp
-                      showsVerticalScrollIndicator={false} // Ẩn thanh cuộn dọc
-                      showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang (nếu có)
+                      onEndReached={loadMoreMessagesImage}
+                      onEndReachedThreshold={0.2}
+                      showsVerticalScrollIndicator={false}
+                      showsHorizontalScrollIndicator={false}
                     />
                 }
-                </View>
-            ) : (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
-            )}
-            {messageVideos !== null ? (
-            <View>
-                {currTab === tabs[1].label && 
+                {currTab === tabs[1].label &&
                     <FlatList
                       style={styles.boxList}
                       data={messageVideos}
@@ -120,17 +116,17 @@ const PhotoAndFile = () =>{
                       numColumns={2}
                       columnWrapperStyle={styles.row}
                       contentContainerStyle={styles.list}
-                      onEndReached={loadMoreMessagesVideo} // Khi cuộn lên, tải thêm tin nhắn
-                      onEndReachedThreshold={0.2} // Khi cuộn gần 20% danh sách thì tải tiếp
-                      showsVerticalScrollIndicator={false} // Ẩn thanh cuộn dọc
-                      showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang (nếu có)
+                      onEndReached={loadMoreMessagesVideo}
+                      onEndReachedThreshold={0.2}
+                      showsVerticalScrollIndicator={false}
+                      showsHorizontalScrollIndicator={false}
                     />
                 }
                 </View>
             ) : (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.background }}><ActivityIndicator size="large" color={Color.mainColor2}/></View>
             )}
-            <DetailsPhoto source={dataImg} 
+            <DetailsPhoto source={dataImg}
                 isModalVisible={visiable} closeModal={() => {setVisiable(false)}}/>
         </View>
     )
@@ -138,8 +134,7 @@ const PhotoAndFile = () =>{
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, paddingTop: 30,
-        backgroundColor: Color.backGround
+        flex: 1,
     },
     header: {
         width: '100%',

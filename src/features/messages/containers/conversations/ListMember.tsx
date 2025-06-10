@@ -11,6 +11,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMember">;
 
@@ -21,20 +22,20 @@ const ListMember = () => {
     const [userId, setUserId] = useState<string|null>(null);
     const [conversationdf, setConversationdf] = useState<Conversation>(conversation);
     const navigation = useNavigation<ChatNavigationProp>();
+    const insets = useSafeAreaInsets();
 
-        useEffect(() => {
+    useEffect(() => {
         getUserId();
     },[]);
 
     const handlePressUser = (userId: string) => {
-        // Bạn có thể điều hướng đến trang chi tiết user tại đây
         // navigation.navigate("UserDetail", { userId });
     };
 
     const getUserId = async () => {
         const id = await AsyncStorage.getItem('userId');
         setUserId(id);
-    }
+    };
 
     const handleKickUser = (kickId: string) => {
         Alert.alert(
@@ -49,7 +50,7 @@ const ListMember = () => {
             },
           ]
         );
-    }
+    };
 
     const updateUser = async (kickId: string) => {
         try {
@@ -59,7 +60,7 @@ const ListMember = () => {
                     userId: kickId,
                     active: false
                 }
-            })
+            });
             if (result.success){
                 setConversationdf({
                     ...conversationdf,
@@ -67,22 +68,23 @@ const ListMember = () => {
                         return {
                             ...setting,
                             active: setting.userId === kickId? false: setting.active
-                        }
+                        };
                     })
-                })
-                Alert.alert("Thông báo", `Xóa người dùng khỏi nhóm thành công`)
+                });
+                Alert.alert("Thông báo", `Xóa người dùng khỏi nhóm thành công`);
             }
-            else Alert.alert("Thông báo", `Không thể xóa người dùng khỏi nhóm`)
+            else Alert.alert("Thông báo", `Không thể xóa người dùng khỏi nhóm`);
         } catch (error) {
-          Alert.alert("Thông báo", `Không thể xóa người dùng khỏi nhóm`)
+          Alert.alert("Thông báo", `Không thể xóa người dùng khỏi nhóm`);
         }
-    }
+    };
+
     return (
-        <View style={styles.container}>
-            <View style={[styles.header]}>
-                <CHeaderIcon 
-                label={"Thành viên"} 
-                IconLeft={"arrow-back-ios"} 
+        <View style={[styles.container, { backgroundColor: Color.background, }]}>
+            <View style={[styles.header, { backgroundColor: Color.background }]}>
+                <CHeaderIcon
+                label={"Thành viên"}
+                IconLeft={"arrow-back-ios"}
                 onPressLeft={() => navigation.goBack()}
                 textRight="Thêm"
                 onPressRight={() => {
@@ -92,7 +94,7 @@ const ListMember = () => {
                     );
                     return setting?.active && participantId?._id.toString() !== userId?.toString();
                   });
-              
+
                   navigation.navigate("AddMember", {
                     conversationId: conversationdf._id,
                     defaultChoose: activeParticipants,
@@ -112,23 +114,25 @@ const ListMember = () => {
                 }
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={[styles.userItem, styles.shadow]} onPress={() => handlePressUser(item._id)}>
+                    <TouchableOpacity style={[styles.userItem, styles.shadow, { backgroundColor: Color.backgroundSecondary, shadowColor: Color.shadow }]} onPress={() => handlePressUser(item._id)}>
                         <View style={styles.mainContent}>
                             <Image source={item.avt.length > 0 ? {uri: item.avt[item.avt.length - 1].url} : require('@/src/assets/images/default/default_user.png')} style={styles.images}/>
                             <View style={styles.content}>
-                                <Text style={styles.name}>{item.displayName}</Text>
+                                <Text style={[styles.name, { color: Color.textPrimary }]}>{item.displayName}</Text>
                             </View>
                         </View>
                         {conversation.creatorId === userId && item._id !== userId && (
                           <TouchableOpacity onPress={() => handleKickUser(item._id)}>
-                            <Feather name="user-minus" size={20} color="red" />
+                            <Feather name="user-minus" size={20} color={Color.error} />
                           </TouchableOpacity>
                         )}
                     </TouchableOpacity>
                 )}
             />
             ):(
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.background }}>
+                    <ActivityIndicator size="large" color={Color.mainColor2}/>
+                </View>
             )}
         </View>
     );
@@ -137,33 +141,30 @@ const ListMember = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
     },
     header:{
-        backgroundColor: Color.backGround,
         marginBottom: 10
     },
     userItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: Color.backGround,
         borderRadius: 10,
         padding : 7,
         marginVertical: 2,
         marginHorizontal: 5
     },
-        shadow: {
-        shadowColor: "#000", // Màu bóng
+    shadow: {
         shadowOffset: {
-          width: 0, // Đổ bóng theo chiều ngang
-          height: 4, // Đổ bóng theo chiều dọc
+          width: 0,
+          height: 4,
         },
-        shadowOpacity: 0.3, // Độ mờ của bóng (0 - 1)
-        shadowRadius: 4.65, // Độ mờ viền của bóng
-        elevation: 8, // Dùng cho Android (giá trị càng cao bóng càng đậm)
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+
+        elevation: 8,
     },
-    userName: {
+    userName: { 
         fontSize: 16,
     },
     mainContent: {
@@ -183,12 +184,11 @@ const styles = StyleSheet.create({
         width: 50, height: 50,
         borderRadius: 50
     },
-    kickText: {
+    kickText: { 
       color: 'red',
       fontSize: 14,
       marginTop: 5
     }
-
 });
 
 export default ListMember;

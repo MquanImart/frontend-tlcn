@@ -12,15 +12,21 @@ import useMessages from "../containers/useMessage";
 export interface CardMessagesProps {
     conversation: Conversation;
     onPress: () => void;
-}   
+}
 
 const CardStrangeMessage = ({conversation, onPress}: CardMessagesProps) => {
     useTheme();
     const { cardData } = useCardMessage(conversation);
 
-    if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+    if (!cardData) {
+        return (
+            <View style={[styles.loadingContainer, { backgroundColor: Color.backgroundSecondary }]}>
+                <ActivityIndicator size="small" color={Color.mainColor2} />
+            </View>
+        );
+    }
     return (
-        <TouchableOpacity style={styles.container} onPress={onPress}>
+        <TouchableOpacity style={[styles.container, { backgroundColor: Color.backgroundSecondary }]} onPress={onPress}>
             <View style={styles.mainContent}>
                 <Image source={cardData.avt ? {uri: cardData.avt?.url} : (
                     cardData.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
@@ -29,11 +35,11 @@ const CardStrangeMessage = ({conversation, onPress}: CardMessagesProps) => {
                 )} style={styles.images}/>
                 <View style={styles.content}>
                     <View style={styles.title}>
-                        <Text style={[styles.name, cardData.isRead?{}:{fontWeight: 'bold'}]}>{cardData.name}</Text>
-                        <Text style={[styles.date, cardData.isRead?{}:{fontWeight: 'bold'}]}>{timeAgo(cardData.sendDate)}</Text>
+                        <Text style={[styles.name, { color: Color.textPrimary }, cardData.isRead?{}:{fontWeight: 'bold'}]}>{cardData.name}</Text>
+                        <Text style={[styles.date, { color: Color.textSecondary }, cardData.isRead?{}:{fontWeight: 'bold'}]}>{timeAgo(cardData.sendDate)}</Text>
                     </View>
                     <Text
-                      style={[styles.textContent, cardData.isRead?{}:{fontWeight: 'bold'}]}
+                      style={[styles.textContent, { color: Color.textSecondary }, cardData.isRead?{}:{fontWeight: 'bold'}]}
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -41,7 +47,7 @@ const CardStrangeMessage = ({conversation, onPress}: CardMessagesProps) => {
                     </Text>
                 </View>
             </View>
-            {!cardData.isRead && <View style={styles.dot}/>}
+            {!cardData.isRead && <View style={[styles.dot, { backgroundColor: Color.mainColor1 }]}/>}
         </TouchableOpacity>
     )
 }
@@ -60,7 +66,7 @@ const useCardMessage = (conversation: Conversation) => {
     const [userId, setUserId] = useState<string | null>(null);
     const [cardData, setCardData] = useState<DataCardProps | null> (null);
     const {
-        getSenderName, getShortNames, 
+        getSenderName, getShortNames,
         hasUserSeenLastMessage, getContent,
         getOtherParticipantById
     } = useMessages();
@@ -69,12 +75,12 @@ const useCardMessage = (conversation: Conversation) => {
         getUserId();
     }, []);
 
-    useEffect(() => {   
+    useEffect(() => {
         if (conversation && userId){
             setCardData(getDataCard(conversation));
         }
     }, [userId, conversation]);
-    
+
     const getUserId = async () => {
         const id = await AsyncStorage.getItem("userId");
         setUserId(id);
@@ -116,12 +122,12 @@ const useCardMessage = (conversation: Conversation) => {
             }
         }
 
-    }  
+    }
 
     return {
         cardData
     }
-    
+
 }
 
 const styles = StyleSheet.create({
@@ -131,42 +137,55 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-
+        borderRadius: 8,
+        marginVertical: 4,
+    },
+    loadingContainer: {
+        width: '100%',
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 70,
     },
     images: {
-        width: 50, height: 50,
-        borderRadius: 50
+        width: 50,
+        height: 50,
+        borderRadius: 25
     },
     mainContent: {
-        width: '90%',
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center'
     },
     content: {
-        width: '90%',
+        flex: 1,
         paddingHorizontal: 10,
         justifyContent: 'space-between'
     },
     title: {
-        height: 25,
+        minHeight: 25,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 5
     },
     name: {
-        fontSize: 17
+        fontSize: 17,
+        flexShrink: 1,
+        marginRight: 5,
     },
     date: {
-        fontSize: 10
+        fontSize: 10,
+        flexShrink: 0,
     },
     textContent: {
-
+        fontSize: 14,
     },
     dot: {
-        width: 5, height: 5,
-        borderRadius: 50,
-        backgroundColor: Color.white_contrast
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        marginLeft: 10,
     }
 })
 

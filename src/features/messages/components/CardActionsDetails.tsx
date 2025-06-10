@@ -19,11 +19,11 @@ const CardActionsDetails = ({label, buttons} : CardActionsDetailsProps) => {
     useTheme();
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>{label}</Text>
+            <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
             {buttons.map((item, index) =>
-                <TouchableOpacity key={index} style={styles.cardActions} onPress={item.onPress}>
-                    <Text style={styles.textActions}>{item.text}</Text>
-                    {item.showIcon?<Icon name={"arrow-forward-ios"} size={20} color={Color.white_contrast}/>:<View style={styles.boxIcon}/>}
+                <TouchableOpacity key={index} style={[styles.cardActions, { backgroundColor: Color.backgroundSecondary, shadowColor: Color.shadow }]} onPress={item.onPress}>
+                    <Text style={[styles.textActions, { color: Color.textPrimary }]}>{item.text}</Text>
+                    {item.showIcon?<Icon name={"arrow-forward-ios"} size={20} color={Color.textSecondary}/>:<View style={styles.boxIcon}/>}
                 </TouchableOpacity>
             )}
         </View>
@@ -41,13 +41,11 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     cardActions: {
-        padding: 15, 
+        padding: 15,
         marginVertical: 2, marginHorizontal: 20,
         borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: Color.backGround,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.2,
         shadowRadius: 5,

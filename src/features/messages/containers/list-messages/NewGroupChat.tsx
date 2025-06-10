@@ -15,14 +15,14 @@ const NewGroupChat = () => {
     useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "NewGroupChat">>();
     const { defaultChoose } = route.params || {};
-    const { 
+    const {
       dismissKeyboard, goBack,
       search, searchUser, inputRef,
       setName, setIsSearch, name,
       isSearch, selected, filterUser,
       handleSelected, getUserWithoutChat,
       createGroup
-    } = useNewGroupChat(defaultChoose); 
+    } = useNewGroupChat(defaultChoose);
 
     useFocusEffect(
         useCallback(() => {
@@ -35,10 +35,10 @@ const NewGroupChat = () => {
 
     return (
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
-        <View style={styles.container}>
-            <CHeaderIcon 
-                label={"Nhóm mới"} 
-                IconLeft={"arrow-back-ios"} 
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
+            <CHeaderIcon
+                label={"Nhóm mới"}
+                IconLeft={"arrow-back-ios"}
                 onPressLeft={goBack}
                 textRight="Tạo"
                 onPressRight={createGroup}
@@ -55,27 +55,33 @@ const NewGroupChat = () => {
               setIsSearch={setIsSearch}
             />
             {!isSearch && selected.length > 0 && <View style={styles.boxMember}>
-                <Text style={styles.textNewGroup}>Đã chọn</Text>
-                <FlatList data={selected} renderItem={({item}) => 
-                    <CardUser 
+                <Text style={[styles.textNewGroup, { color: Color.textPrimary }]}>Đã chọn</Text>
+                <FlatList
+                    data={selected}
+                    keyExtractor={(item) => item._id.toString()} // Added keyExtractor
+                    renderItem={({item}) =>
+                    <CardUser
                         _id={item._id}
-                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}  
-                        name={item.displayName} 
-                        onPress={() => {handleSelected(item._id)}} 
-                        icon={"highlight-off"} 
+                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}
+                        name={item.displayName}
+                        onPress={() => {handleSelected(item._id)}}
+                        icon={"highlight-off"}
                         radio={true}
                     />
                 }/>
             </View>}
             <View style={[styles.boxUser, {height: 590 - selected.length*70 - (selected.length>0?40:0)}]}>
-                <Text style={styles.textNewGroup}>Gợi ý</Text>
-                <FlatList data={filterUser} renderItem={({item}) => 
-                    <CardUser 
+                <Text style={[styles.textNewGroup, { color: Color.textPrimary }]}>Gợi ý</Text>
+                <FlatList
+                    data={filterUser}
+                    keyExtractor={(item) => item._id.toString()} // Added keyExtractor
+                    renderItem={({item}) =>
+                    <CardUser
                         _id={item._id}
-                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}  
-                        name={item.displayName} 
+                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}
+                        name={item.displayName}
                         selected={selected.some((user) => user._id === item._id)}
-                        onPress={() => {handleSelected(item._id)}} 
+                        onPress={() => {handleSelected(item._id)}}
                         radio={true}
                     />
                 }/>
@@ -88,7 +94,6 @@ const NewGroupChat = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround
     },
     boxNewGroup: {
         flexDirection: 'row',
