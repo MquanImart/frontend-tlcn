@@ -32,19 +32,19 @@ const DetailsImages = ({details} : DetailsImagesProps) => {
       <View style={styles.boxInfor}>
       {details.websiteUri && (
         <TouchableOpacity onPress={() => Linking.openURL(details.websiteUri?details.websiteUri:"")} style={styles.link}>
-          <Text style={styles.linkText}>🌍 Website</Text>
+          <Text style={[styles.linkText, { color: Color.textOnMain2 }]}>🌍 Website</Text>
         </TouchableOpacity>
       )}
 
       {details.googleMapsUri && (
         <TouchableOpacity onPress={() => Linking.openURL(details.googleMapsUri?details.googleMapsUri:"")} style={styles.link}>
-          <Text style={styles.linkText}>📍 Google Map</Text>
+          <Text style={[styles.linkText, { color: Color.textOnMain2 }]}>📍 Google Map</Text>
         </TouchableOpacity>
       )}
 
       {details.googleMapsLinks && (
         <TouchableOpacity onPress={() => Linking.openURL(details.googleMapsLinks.reviewsUri?details.googleMapsLinks.reviewsUri:"")} style={styles.link}>
-          <Text style={styles.linkText}>⭐ Đánh giá</Text>
+          <Text style={[styles.linkText, { color: Color.textOnMain2 }]}>⭐ Đánh giá</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   linkText: {
-    color: "#fff",
+    // color handled inline
     fontSize: 16,
     fontWeight: "bold",
   },

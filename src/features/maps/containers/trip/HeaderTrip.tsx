@@ -23,9 +23,9 @@ interface HeaderMapProps {
 const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
     useTheme();
     const {
-        currTab, listSearch, 
+        currTab, listSearch,
         search, tabsMap, isSearch,
-        handlePressTab, pressBackIcon, 
+        handlePressTab, pressBackIcon,
         setIsSearch, setSearch,
         setCurrTab, searchTrip
     } = useHeaderTrip(trips, startTab);
@@ -47,20 +47,20 @@ const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
                 const load = async () => {
                     setCurrTab(startTab);
                 }
-                load(); 
+                load();
             }
         }, [])
     );
-    
+
     return (
-        <View style={[styles.container, isSearch && styles.containerSearch]}>
+        <View style={[styles.container, isSearch && [styles.containerSearch, { backgroundColor: Color.background }]]}>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"chevron-left"} size={30} color={Color.white_contrast}/>} 
-                    onSubmit={pressBackIcon} 
+                <CIconButton icon={<Icon name={"chevron-left"} size={30} color={Color.textPrimary}/>}
+                    onSubmit={pressBackIcon}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backGround,
+                    backColor: Color.backgroundSecondary, // Changed from backGround
                     radius: 50,
                     shadow: !isSearch
                 }}/>
@@ -68,41 +68,43 @@ const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
                   style={[
                     styles.searchInput,
                     !isSearch && styles.shadow,
-                    isSearch && styles.inputSearchFocus,
+                    isSearch && [styles.inputSearchFocus, { backgroundColor: Color.backgroundTertiary }], // Changed from backGround2
                     {
-                        width: isSearch ? WIDTH_SCREEN - 40 : WIDTH_SCREEN - 80
+                        width: isSearch ? WIDTH_SCREEN - 40 : WIDTH_SCREEN - 80,
+                        backgroundColor: isSearch ? Color.backgroundTertiary : Color.backgroundSecondary, // Changed from backGround
+                        color: Color.textPrimary // Ensure input text color is dynamic
                     },
                   ]}
                   placeholder="Tìm kiếm"
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary} // Changed from textColor3
                   value={search}
                   onChangeText={(text) => {
                     searchTrip(text);
                   }}
-                  onFocus={focusInput} 
+                  onFocus={focusInput}
                 />
                 {search.length > 0 && (
                   <TouchableOpacity onPress={() => setSearch("")} style={styles.deleteTextSearch}>
-                    <Icon name="close" size={20} color="gray" />
+                    <Icon name="close" size={20} color={Color.textTertiary} /> {/* Changed from "gray" */}
                   </TouchableOpacity>
                 )}
             </View>
-                <View style={styles.line}/>
+                <View style={[styles.line, { borderColor: Color.border }]}/> {/* Changed from textColor3 */}
             {isSearch ? (
-                <FlatList style={styles.boxSearch} data={listSearch} renderItem={({item}) => 
+                <FlatList style={styles.boxSearch} data={listSearch} renderItem={({item}) =>
                     <CardTrip trip={item} deleteTrip={deleteTrip}/>
                 }/>
             ) : (
                 <View style={styles.searchBox}>
-                    {tabsMap.map((item, index) => 
-                        <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={currTab === item.label ? Color.white_homologous : Color.white_contrast}/>} 
+                    {tabsMap.map((item, index) =>
+                        <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={currTab === item.label ? Color.textOnMain2 : Color.textPrimary}/>} // Changed colors
                             label={" " + item.label}
-                            onSubmit={() => {handlePressTab(item.label)}} 
+                            onSubmit={() => {handlePressTab(item.label)}}
                             style={{
                                 width: 110,
                                 height: 35,
                                 backColor: currTab === item.label ? Color.mainColor2 : undefined,
-                                textColor: currTab === item.label ? Color.textColor2 : undefined,
+                                textColor: currTab === item.label ? Color.textOnMain2 : undefined, // Changed from textColor2
                                 fontSize: 13,
                                 radius: 50,
                                 flex_direction: 'row',
@@ -123,8 +125,7 @@ const styles = StyleSheet.create({
     },
     containerSearch: {
         height: HEIGHT_SCREEN,
-        backgroundColor: Color.backGround
-      },
+    },
     searchBox: {
         width: '100%',
         flexDirection: 'row',
@@ -134,45 +135,44 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     inputSearchFocus: {
-        backgroundColor: Color.backGround2
+        // backgroundColor handled inline
     },
     searchInput: {
         height: 50,
         paddingHorizontal: 10,
         fontSize: 16,
         borderRadius: 50,
-        backgroundColor: Color.backGround,
+        // backgroundColor handled inline
     },
     shadow: {
-        shadowColor: "#000", // Màu bóng
+        shadowColor: Color.shadow, // Changed from hardcoded #000
         shadowOffset: {
-          width: 0, // Đổ bóng theo chiều ngang
-          height: 4, // Đổ bóng theo chiều dọc
+          width: 0,
+          height: 4,
         },
-        shadowOpacity: 0.3, // Độ mờ của bóng (0 - 1)
-        shadowRadius: 4.65, // Độ mờ viền của bóng
-        elevation: 8, // Dùng cho Android (giá trị càng cao bóng càng đậm)
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
     },
     boxSearch: {
 
     },
-    cardSearch: { 
+    cardSearch: {
         paddingVertical: 10,
-        borderBottomWidth: 2, borderColor: Color.backGround2
+        borderBottomWidth: 2,
+        borderColor: Color.border 
     },
     textSearch: {
 
     },
-    deleteTextSearch: { 
-        position: "absolute", right: 20 
+    deleteTextSearch: {
+        position: "absolute", right: 20
     },
     line: {
         borderTopWidth: 1,
-        borderColor: Color.textColor3,
         width: '90%',
         alignSelf: 'center',
     }
   });
-  
 
 export default HeaderTrip;

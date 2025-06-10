@@ -34,7 +34,7 @@ const HeaderDirection = ({startLocation, endLocation, openSearch, changeTranspor
     useTheme();
     const navigation = useNavigation<MapNavigationProp>();
     const [currTab, setCurrTab] = useState<"DRIVE" | "WALK" | "MOTORCYCLE">(tabsMap[0].key);
-    
+
     const handlePressTab = (key: "DRIVE" | "WALK" | "MOTORCYCLE") => {
         setCurrTab(key);
         changeTransport(key);
@@ -43,47 +43,47 @@ const HeaderDirection = ({startLocation, endLocation, openSearch, changeTranspor
     return (
         <View style={styles.container}>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"chevron-left"} size={20} color={Color.white_contrast}/>} 
-                    onSubmit={() => {navigation.goBack()}} 
+                <CIconButton icon={<Icon name={"chevron-left"} size={20} color={Color.textPrimary}/>} // Changed from white_contrast
+                    onSubmit={() => {navigation.goBack()}}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backGround,
+                    backColor: Color.backgroundSecondary, // Changed from backGround
                     radius: 50,
                     shadow: true
                 }}/>
-                <TouchableOpacity style={styles.buttonSearch} onPress={() => openSearch('START')}>
-                    <Text style={(!startLocation || !startLocation.displayName) && styles.textSearch}>
+                <TouchableOpacity style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]} onPress={() => openSearch('START')}> {/* Changed colors */}
+                    <Text style={[(!startLocation || !startLocation.displayName) && styles.textSearch, {color: startLocation?.displayName ? Color.textPrimary : Color.textTertiary}]}> {/* Adjusted color */}
                         {(startLocation && startLocation.displayName) || "Điểm bắt đầu"}
                     </Text>
                 </TouchableOpacity>
             </View>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"swap-vert"} size={20} color={Color.white_contrast}/>} 
-                    onSubmit={() => {reverseRoute(currTab)}} 
+                <CIconButton icon={<Icon name={"swap-vert"} size={20} color={Color.textPrimary}/>} // Changed from white_contrast
+                    onSubmit={() => {reverseRoute(currTab)}}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backGround,
+                    backColor: Color.backgroundSecondary, // Changed from backGround
                     radius: 50,
                     shadow: true
                 }}/>
-                <TouchableOpacity style={styles.buttonSearch} onPress={() => openSearch('END')}>
-                    <Text style={(!endLocation || !endLocation.displayName) && styles.textSearch}>
+                <TouchableOpacity style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]} onPress={() => openSearch('END')}> {/* Changed colors */}
+                    <Text style={[(!endLocation || !endLocation.displayName) && styles.textSearch, {color: endLocation?.displayName ? Color.textPrimary : Color.textTertiary}]}> {/* Adjusted color */}
                         {(endLocation && endLocation.displayName) || "Điểm kết thúc"}
                     </Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.searchBox}>
-                {tabsMap.map((item, index) => 
+                {tabsMap.map((item, index) =>
                     <CButton key={index}
                         label={" " + item.label}
-                        onSubmit={() => {handlePressTab(item.key)}} 
+                        onSubmit={() => {handlePressTab(item.key)}}
                         style={{
                             width: 110,
                             height: 35,
-                            backColor: currTab === item.key ? Color.mainColor2 : undefined,
-                            textColor: currTab === item.key ? Color.textColor2 : undefined,
+                            backColor: currTab === item.key ? Color.mainColor2 : Color.backgroundTertiary, // Adjusted for unselected
+                            textColor: currTab === item.key ? Color.textOnMain2 : Color.textPrimary, // Adjusted for unselected
                             fontSize: 13,
                             radius: 50,
                             flex_direction: 'row'
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 5,
     },
-    shadow: {
-        shadowColor: "#000",
+    shadow: { 
+        shadowColor: Color.shadow, 
         shadowOffset: {
           width: 0,
           height: 1,
@@ -123,13 +123,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 16,
         borderRadius: 10,
-        backgroundColor: Color.backGround,
-        borderColor: Color.backGround1,
-        borderWidth: 1,
         justifyContent: 'center',
+        borderWidth: 1,
     },
     textSearch: {
-        color: Color.textColor3
     }
   });
 

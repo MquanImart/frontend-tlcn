@@ -100,10 +100,15 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
     ) : (
     <ScrollView contentContainerStyle={{ padding: 16, width: '100%', height: '90%', marginTop: 100 }}>
       {/* Ngày bắt đầu */}
-      <Text style={{ fontWeight: "bold", fontSize: 16 }}>Ngày bắt đầu</Text>
+      <Text style={[{ fontWeight: "bold", fontSize: 16, color: Color.textPrimary }]}>Ngày bắt đầu</Text>
       <View style={styles.item}>
-        <Text>Thêm giờ bắt đầu</Text>
-        <Switch value={useTime} onValueChange={setUseTime} />
+        <Text style={{ color: Color.textPrimary }}>Thêm giờ bắt đầu</Text>
+        <Switch
+            value={useTime}
+            onValueChange={setUseTime}
+            trackColor={{ false: Color.textSecondary, true: Color.mainColor2 }}
+            thumbColor={useTime ? Color.mainColor1 : Color.backgroundTertiary}
+        />
       </View>
       <Button
         title={
@@ -112,6 +117,7 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
             : startDateTime.toDateString()
         }
         onPress={() => setShowDatePicker(true)}
+        color={Color.mainColor2} // Sets button color
       />
       {showDatePicker && (
         <DateTimePicker
@@ -120,25 +126,36 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
           display="default"
           is24Hour={true}
           onChange={onDateChange}
+          accentColor={Color.mainColor2} // For iOS
         />
       )}
 
       <View style={{ marginTop: 16 }}>
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>Tùy chọn:</Text>
+        <Text style={[{ fontWeight: "bold", fontSize: 16, color: Color.textPrimary }]}>Tùy chọn:</Text>
 
         <View style={styles.item}>
-          <Text>Ưu tiên khoảng cách</Text>
-          <Switch value={useDistance} onValueChange={setUseDistance} />
+          <Text style={{ color: Color.textPrimary }}>Ưu tiên khoảng cách</Text>
+          <Switch
+            value={useDistance}
+            onValueChange={setUseDistance}
+            trackColor={{ false: Color.textSecondary, true: Color.mainColor2 }}
+            thumbColor={useDistance ? Color.mainColor1 : Color.backgroundTertiary}
+          />
         </View>
 
         <View style={styles.item}>
-          <Text>Ưu tiên thời gian</Text>
-          <Switch value={useDuration} onValueChange={setUseDuration} />
+          <Text style={{ color: Color.textPrimary }}>Ưu tiên thời gian</Text>
+          <Switch
+            value={useDuration}
+            onValueChange={setUseDuration}
+            trackColor={{ false: Color.textSecondary, true: Color.mainColor2 }}
+            thumbColor={useDuration ? Color.mainColor1 : Color.backgroundTertiary}
+          />
         </View>
       </View>
 
       {/* Visiting Time */}
-      <Text style={{ fontWeight: "bold", fontSize: 15, marginTop: 20 }}>
+      <Text style={[{ fontWeight: "bold", fontSize: 15, marginTop: 20, color: Color.textPrimary }]}>
         Thời gian tham quan từng địa điểm (giờ : phút)
       </Text>
 
@@ -156,21 +173,22 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
 
         return (
           <View key={key} style={styles.item}>
-            <Text style={{maxWidth: '70%'}}>{numVisitPlaces[parseInt(key) - 1]?.displayName || `Địa điểm ${key}`}</Text>
+            <Text style={[{maxWidth: '70%', color: Color.textPrimary}]}>{numVisitPlaces[parseInt(key) - 1]?.displayName || `Địa điểm ${key}`}</Text>
             <DateTimePicker
               mode="time"
               display="default"
               is24Hour={true}
               value={tempTime} // Sử dụng tempTime đã được chuyển đổi
               onChange={(event, selectedTime) => {onTimeChange(key, event, selectedTime)}}
+              accentColor={Color.mainColor2} // For iOS
             />
           </View>
         );
       })}
 
       <View style={styles.boxSubmit}>
-        <TouchableOpacity style={styles.send} onPress={handleSubmit}>
-            <Text style={styles.textSend}>Gửi dữ liệu</Text>
+        <TouchableOpacity style={[styles.send, { backgroundColor: Color.mainColor2 }]} onPress={handleSubmit}>
+            <Text style={[styles.textSend, { color: Color.textOnMain2 }]}>Gửi dữ liệu</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -180,9 +198,9 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
 };
 
 const styles = StyleSheet.create({
-    item: { 
-        flexDirection: "row", 
-        alignItems: "center", 
+    item: {
+        flexDirection: "row",
+        alignItems: "center",
         justifyContent: 'space-between',
         marginTop: 8,
     },
@@ -197,10 +215,10 @@ const styles = StyleSheet.create({
     textSend: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: Color.white_homologous
+        color: Color.textOnMain2 // Changed to textOnMain2
     },
-    boxSubmit: { 
-        position: 'absolute', 
+    boxSubmit: {
+        position: 'absolute',
         alignSelf: 'center',
         bottom: 50, width: 300,
     },

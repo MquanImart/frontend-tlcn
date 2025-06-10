@@ -19,16 +19,16 @@ const Directions = () => {
     const route = useRoute<RouteProp<MapStackParamList, "Directions">>();
     const { start, end } = route.params || {};
     const [isMapReady, setIsMapReady] = useState(false);
-    
-    const { 
+
+    const {
         mapRef, startLocation, endLocation,
-        coordinates, visiableSearch, 
+        coordinates, visiableSearch,
         openSearch, setVisiableSearch,
         selectedSearch, changeTransport,
         reverseRoute, routeDirections,
         navigationBegin
     } = useDirections(start, end);
-    
+
     const getInitialRegion = () => {
         if (!startLocation || !endLocation) {
           // Giá trị mặc định nếu chưa có tọa độ
@@ -39,15 +39,15 @@ const Directions = () => {
             longitudeDelta: 0.05,
           };
         }
-    
+
         // Tính trung điểm giữa startLocation và endLocation
         const latitude = (startLocation.latitude + endLocation.latitude) / 2;
         const longitude = (startLocation.longitude + endLocation.longitude) / 2;
-    
+
         // Tính khoảng cách để đặt delta (zoom level)
         const latDelta = Math.abs(startLocation.latitude - endLocation.latitude) * 1.5;
         const lonDelta = Math.abs(startLocation.longitude - endLocation.longitude) * 1.5;
-    
+
         return {
           latitude,
           longitude,
@@ -76,13 +76,13 @@ const Directions = () => {
       });
     }
   }, [isMapReady, startLocation, endLocation]);
-  
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
             <View style={styles.searchContainer}>
-                <HeaderDirection startLocation={startLocation} endLocation={endLocation} 
-                    openSearch={openSearch} changeTransport={changeTransport} 
+                <HeaderDirection startLocation={startLocation} endLocation={endLocation}
+                    openSearch={openSearch} changeTransport={changeTransport}
                     reverseRoute={reverseRoute}
                 />
             </View>
@@ -90,7 +90,7 @@ const Directions = () => {
             <MapView
               ref={mapRef}
               style={styles.map}
-              initialRegion={getInitialRegion()} 
+              initialRegion={getInitialRegion()}
               onMapReady={() => setIsMapReady(true)} // Xác nhận bản đồ đã sẵn sàng
             >
                 <Marker
@@ -107,43 +107,45 @@ const Directions = () => {
                     }}
                     title="Vị trí kết thúc"
                 />
-                <Polyline coordinates={coordinates} strokeWidth={4} strokeColor="#7DA9FF" />
+                <Polyline coordinates={coordinates} strokeWidth={4} strokeColor={Color.mainColor2} />
             </MapView>
             ):(
-              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
             )}
             {routeDirections &&
-            <View style={styles.actions}>
-                <Text style={styles.title}>{formatRouteInfo(routeDirections)}</Text>
+            <View style={[styles.actions, { backgroundColor: Color.backgroundSecondary }]}>
+                <Text style={[styles.title, { color: Color.textPrimary }]}>{formatRouteInfo(routeDirections)}</Text>
                 <View style={styles.boxActions}>
-                <CIconButton icon={<Icon name={"place"} size={20} color={Color.white_homologous}/>} 
+                <CIconButton icon={<Icon name={"place"} size={20} color={Color.textOnMain2}/>}
                     label=" Bắt đầu"
-                    onSubmit={() => {navigationBegin()}} 
+                    onSubmit={() => {navigationBegin()}}
                     style={{
                     width: 100,
                     height: 40,
                     backColor: Color.mainColor2,
-                    textColor: Color.textColor2,
+                    textColor: Color.textOnMain2,
                     radius: 50,
                     shadow: true
                 }}/>
                 <CButton
                     label={"Tạo chuyến đi"}
-                    onSubmit={() => {}} 
+                    onSubmit={() => {}}
                     style={{
                         width: 110,
                         height: 35,
                         fontSize: 13,
                         radius: 50,
                         flex_direction: 'row',
-                        shadow: true
+                        shadow: true,
+                        backColor: Color.backgroundTertiary, // Adjusted for consistency
+                        textColor: Color.textPrimary, // Adjusted for consistency
                     }}
                 />
                 </View>
             </View>}
-            {visiableSearch && <View style={styles.boxSearch}>
-                <SearchPlace 
-                onBack={() => {setVisiableSearch(false)}} 
+            {visiableSearch && <View style={[styles.boxSearch, { backgroundColor: Color.background }]}>
+                <SearchPlace
+                onBack={() => {setVisiableSearch(false)}}
                 selectedLocation={selectedSearch}/>
             </View>}
         </View>
@@ -153,7 +155,6 @@ const Directions = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Color.backGround
     },
     searchContainer: {
       position: "absolute",
@@ -164,14 +165,14 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     errorText: {
-      color: "red",
+      color: "red", // Keep as is if not in theme, otherwise apply Color.error
       fontSize: 16,
     },
     details: {
       width: '100%', height: 400,
       position: 'absolute',
       bottom: -400,
-      backgroundColor: Color.backGround,
+      // backgroundColor applied inline
       padding: 10,
       borderStartEndRadius: 20, borderStartStartRadius: 20
     },
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         padding: 20,
-        backgroundColor: Color.backGround,
+        // backgroundColor applied inline
         borderStartStartRadius: 20, borderStartEndRadius: 20
     },
     boxActions: {
@@ -197,7 +198,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         zIndex: 10,
-        backgroundColor: Color.backGround,
         width: '100%',
         height: '100%',
         paddingTop: 40

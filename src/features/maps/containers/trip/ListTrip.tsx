@@ -14,37 +14,37 @@ const ListTrip = () => {
     useTheme();
     const [visible, setVisible] = useState<boolean>(false);
     const { trips, getListTrip, createTrip, deleteTrip } = useListTrip();
-    
+
     useFocusEffect(
         useCallback(() => {
             const load = async () => {
                 await getListTrip();
             }
-            load(); 
+            load();
         }, [])
     );
 
-    if (!trips) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+    if (!trips) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
             <View style={styles.searchContainer}>
               <HeaderTrip startTab="Chuyến đi" trips={trips}/>
             </View>
             <View style={styles.list}>
-                <View style={styles.line}/>
-                <FlatList data={trips} renderItem={({item}) => 
+                <View style={[styles.line, { borderColor: Color.border }]}/>
+                <FlatList data={trips} renderItem={({item}) =>
                     <CardTrip trip={item} deleteTrip={deleteTrip}/>
                 }/>
             </View>
             <View style={styles.add}>
-                <CIconButton icon={<Icon name={"add"} size={20} color={Color.white_homologous}/>} 
+                <CIconButton icon={<Icon name={"add"} size={20} color={Color.textOnMain2}/>}
                     label="Tạo chuyến đi"
-                    onSubmit={() => {setVisible(true)}} 
+                    onSubmit={() => {setVisible(true)}}
                     style={{
                     width: 200,
                     height: 50,
                     backColor: Color.mainColor2,
-                    textColor: Color.textColor2,
+                    textColor: Color.textOnMain2,
                     radius: 50,
                     shadow: true
                 }}/>
@@ -57,7 +57,6 @@ const ListTrip = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround
     },
     searchContainer: {
         marginBottom: 20
@@ -73,7 +72,6 @@ const styles = StyleSheet.create({
     },
     line: {
         borderTopWidth: 1,
-        borderColor: Color.textColor3,
         width: '90%',
         alignSelf: 'center',
     }

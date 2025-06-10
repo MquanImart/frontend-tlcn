@@ -25,7 +25,7 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
     const fetchPlaces = async (input: string) => {
         setSearch(input);
         const url = "https://places.googleapis.com/v1/places:autocomplete";
-        
+
         const body = {
           input,
           languageCode: "vi",
@@ -36,11 +36,11 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
             },
           },
         };
-        
+
         const result = await callPostGoogleApi<{ suggestions: PlaceSuggestion[] }>(
             url, body
         );
-        
+
         if (result) {
           setListSearch(result.suggestions);
         } else {
@@ -49,7 +49,7 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
     };
     const getLatLngFromPlaceId = async (placeId: string) => {
         const baseUrl = `https://places.googleapis.com/v1/places/${placeId}`;
-        const result = await callGetGoogleApi<PlaceData>(baseUrl, 
+        const result = await callGetGoogleApi<PlaceData>(baseUrl,
             {},
             { "X-Goog-FieldMask": "*" });
         if (result) {
@@ -61,10 +61,10 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
             })
         }
     };
-    
+
     const getLocationOfUser = async () => {
         const { status } = await Location.getForegroundPermissionsAsync();
-      
+
         if (status === "denied") {
           Alert.alert(
             "Quyền vị trí bị từ chối",
@@ -76,7 +76,7 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
           );
           return;
         }
-    
+
         if (status !== "granted") {
           const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
           if (newStatus !== "granted") {
@@ -91,7 +91,7 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
             return;
           }
         }
-    
+
         const loc = await Location.getCurrentPositionAsync({});
         selectedLocation({
             longitude: loc.coords.longitude,
@@ -102,14 +102,14 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
     };
 
     return (
-        <View>
+        <View style={{backgroundColor: Color.background, flex: 1}}>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"chevron-left"} size={30} color={Color.white_contrast}/>} 
-                    onSubmit={onBack} 
+                <CIconButton icon={<Icon name={"chevron-left"} size={30} color={Color.textPrimary}/>}
+                    onSubmit={onBack}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backGround,
+                    backColor: Color.backgroundSecondary,
                     radius: 50,
                     shadow: true
                 }}/>
@@ -117,13 +117,14 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
                   style={[
                     styles.searchInput,
                     styles.shadow,
-                    styles.inputSearchFocus,
                     {
-                      width: WIDTH_SCREEN - 80
+                      width: WIDTH_SCREEN - 80,
+                      backgroundColor: Color.backgroundTertiary, // inputSearchFocus color
+                      color: Color.textPrimary // Text color for input
                     },
                   ]}
                   placeholder="Tìm kiếm"
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary}
                   value={search}
                   onChangeText={(text) => {
                     fetchPlaces(text);
@@ -131,20 +132,20 @@ const SearchPlace = ({onBack, selectedLocation} : SearchPlaceProps) => {
                 />
                 {search.length > 0 && (
                   <TouchableOpacity onPress={() => setSearch("")} style={styles.deleteTextSearch}>
-                    <Icon name="close" size={20} color="gray" />
+                    <Icon name="close" size={20} color={Color.textTertiary} />
                   </TouchableOpacity>
                 )}
             </View>
-            <TouchableOpacity style={styles.mylocation} key={`location-of-user`}
+            <TouchableOpacity style={[styles.mylocation, {borderColor: Color.border}]} key={`location-of-user`}
                     onPress={getLocationOfUser}
                 >
-                    <Text style={styles.textmylocation}>Vị trí của bạn</Text>
+                    <Text style={[styles.textmylocation, {color: Color.textPrimary}]}>Vị trí của bạn</Text>
                 </TouchableOpacity>
-            <FlatList style={styles.boxSearch} data={listSearch} renderItem={({item}) => 
-                <TouchableOpacity style={styles.cardSearch} key={item.placePrediction.placeId}
+            <FlatList style={styles.boxSearch} data={listSearch} renderItem={({item}) =>
+                <TouchableOpacity style={[styles.cardSearch, {borderColor: Color.border}]} key={item.placePrediction.placeId}
                     onPress={() => getLatLngFromPlaceId(item.placePrediction.placeId)}
                 >
-                    <Text style={styles.textSearch}>{item.placePrediction.text.text}</Text>
+                    <Text style={[styles.textSearch, {color: Color.textPrimary}]}>{item.placePrediction.text.text}</Text>
                 </TouchableOpacity>
             }/>
         </View>
@@ -160,7 +161,6 @@ const styles = StyleSheet.create({
       },
       containerSearch: {
           height: HEIGHT_SCREEN,
-          backgroundColor: Color.backGround
         },
       searchBox: {
           width: '100%',
@@ -171,45 +171,42 @@ const styles = StyleSheet.create({
           marginVertical: 5,
       },
       inputSearchFocus: {
-          backgroundColor: Color.backGround2
       },
       searchInput: {
           height: 50,
           paddingHorizontal: 10,
           fontSize: 16,
           borderRadius: 50,
-          backgroundColor: Color.backGround,
       },
       shadow: {
-          shadowColor: "#000", // Màu bóng
+          shadowColor: Color.shadow,
           shadowOffset: {
-            width: 0, // Đổ bóng theo chiều ngang
-            height: 4, // Đổ bóng theo chiều dọc
+            width: 0,
+            height: 4,
           },
-          shadowOpacity: 0.3, // Độ mờ của bóng (0 - 1)
-          shadowRadius: 4.65, // Độ mờ viền của bóng
-          elevation: 8, // Dùng cho Android (giá trị càng cao bóng càng đậm)
+          shadowOpacity: 0.3,
+          shadowRadius: 4.65,
+          elevation: 8,
       },
       boxSearch: {
           marginHorizontal: 30,
       },
-      cardSearch: { 
+      cardSearch: {
           paddingVertical: 10,
-          borderBottomWidth: 2, borderColor: Color.backGround2
+          borderBottomWidth: 2,
       },
       textSearch: {
-  
       },
-      deleteTextSearch: { 
-          position: "absolute", right: 20 
+      deleteTextSearch: {
+          position: "absolute", right: 20
       },
       mylocation: {
         marginTop: 10,
         paddingVertical: 10,
         marginHorizontal: 30,
-        borderBottomWidth: 2, borderColor: Color.backGround2
+        borderBottomWidth: 2,
       },
       textmylocation: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
       }
 })

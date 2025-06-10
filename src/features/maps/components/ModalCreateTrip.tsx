@@ -56,33 +56,47 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
         <Modal
           visible={visible}
           animationType="slide"
-          transparent={false} // Đảm bảo modal phủ toàn bộ màn hình
-          presentationStyle="fullScreen" // Chỉ có tác dụng trên iOS
+          transparent={false}
+          presentationStyle="fullScreen"
         >
-          <View style={styles.container}>
+          <View style={[styles.container, { backgroundColor: Color.background }]}>
             <View style={styles.formContainer}>
                 <View style={styles.contentContainer}>
-                    <Text style={styles.title}>Tạo chuyến đi</Text>
+                    <Text style={[styles.title, { color: Color.textPrimary }]}>Tạo chuyến đi</Text>
                     <View style={styles.boxItem}>
-                        <Text style={styles.label}>Tên chuyến đi</Text>
+                        <Text style={[styles.label, { color: Color.textPrimary }]}>Tên chuyến đi</Text>
                         <TextInput
-                            style={styles.textInput}
+                            style={[styles.textInput, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border, color: Color.textPrimary }]}
                             value={text}
                             onChangeText={setText}
+                            placeholder="Nhập tên chuyến đi"
+                            placeholderTextColor={Color.textTertiary}
                         />
                     </View>
                     <View style={styles.boxItem}>
-                        <Text style={styles.label}>Chọn điểm bắt đầu</Text>
-                        <TouchableOpacity style={styles.buttonSearch} onPress={() => setVisiableSearch('START')}>
-                            <Text style={(!startLocation || !startLocation.displayName) && styles.textSearch}>
+                        <Text style={[styles.label, { color: Color.textPrimary }]}>Chọn điểm bắt đầu</Text>
+                        <TouchableOpacity
+                            style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}
+                            onPress={() => setVisiableSearch('START')}
+                        >
+                            <Text style={[
+                                styles.textSearch,
+                                { color: (!startLocation || !startLocation.displayName) ? Color.textTertiary : Color.textPrimary }
+                            ]}>
                                 {(startLocation && startLocation.displayName) || "Điểm bắt đầu"}
                             </Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.boxItem}>
-                        <Text style={styles.label}>Chọn điểm kết thúc</Text>
-                        <TouchableOpacity style={styles.buttonSearch} onPress={() => setVisiableSearch('END')}>
-                            <Text style={(!endLocation || !endLocation.displayName) && styles.textSearch}>
+                        <Text style={[styles.label, { color: Color.textPrimary }]}>Chọn điểm kết thúc</Text>
+                        <TouchableOpacity
+                            style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}
+                            onPress={() => setVisiableSearch('END')}
+                        >
+                            <Text style={[
+                                styles.textSearch,
+                                { color: (!endLocation || !endLocation.displayName) ? Color.textTertiary : Color.textPrimary }
+                            ]}>
                                 {(endLocation && endLocation.displayName) || "Điểm kết thúc"}
                             </Text>
                         </TouchableOpacity>
@@ -94,7 +108,7 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
                             style={{
                                 width: "30%",
                                 height: 40,
-                                backColor: Color.white_homologous,
+                                backColor: Color.background,
                                 borderColor: Color.mainColor2,
                                 borderWidth: 1,
                                 textColor: Color.mainColor2,
@@ -110,7 +124,7 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
                                 width: "30%",
                                 height: 40,
                                 backColor: Color.mainColor2,
-                                textColor: Color.white_homologous,
+                                textColor: Color.textOnMain2,
                                 fontSize: 15,
                                 fontWeight: 'bold',
                                 radius: 25,
@@ -118,9 +132,9 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
                         />
                     </View>
                 </View>
-                {visiableSearch && <View style={styles.boxSearch}>
-                    <SearchPlace 
-                    onBack={() => {setVisiableSearch(null)}} 
+                {visiableSearch && <View style={[styles.boxSearch, { backgroundColor: Color.background }]}>
+                    <SearchPlace
+                    onBack={() => {setVisiableSearch(null)}}
                     selectedLocation={selectedSearch}/>
                 </View>}
             </View>
@@ -132,7 +146,6 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white",
         justifyContent: "flex-start",
         alignItems: "center",
         paddingTop: 40,
@@ -149,19 +162,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 16,
         borderRadius: 10,
-        backgroundColor: Color.backGround,
-        borderColor: Color.backGround1,
         borderWidth: 1,
         justifyContent: 'center',
     },
     textSearch: {
-        color: Color.textColor3
+        // color handled inline
     },
     boxSearch: {
         position: 'absolute',
         top: 0,
         zIndex: 10,
-        backgroundColor: Color.backGround,
         width: '100%',
         height: '100%',
     },
@@ -204,8 +214,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         fontSize: 16,
         borderRadius: 10,
-        backgroundColor: Color.backGround,
-        borderColor: Color.backGround1,
         borderWidth: 1,
     }
   });

@@ -22,7 +22,7 @@ interface HeaderMapProps {
 const HeaderMap = ({startTab, rightPress, getDetails, closeDetails}: HeaderMapProps) => {
     useTheme();
     const {
-        currTab, listSearch, 
+        currTab, listSearch,
         search, tabsMap, isSearch,
         fetchPlaces, handlePressTab,
         pressBackIcon, setIsSearch,
@@ -43,20 +43,24 @@ const HeaderMap = ({startTab, rightPress, getDetails, closeDetails}: HeaderMapPr
                 const load = async () => {
                     setCurrTab(startTab);
                 }
-                load(); 
+                load();
             }
         }, [])
     );
-    
+
     return (
-        <View style={[styles.container, isSearch && styles.containerSearch]}>
+        <View style={[
+            styles.container,
+            isSearch && styles.containerSearch,
+            isSearch && { backgroundColor: Color.background }
+        ]}>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"chevron-left"} size={30} color={Color.white_contrast}/>} 
-                    onSubmit={pressBackIcon} 
+                <CIconButton icon={<Icon name={"chevron-left"} size={30} color={Color.textPrimary}/>}
+                    onSubmit={pressBackIcon}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backGround,
+                    backColor: Color.backgroundSecondary,
                     radius: 50,
                     shadow: !isSearch
                 }}/>
@@ -73,52 +77,64 @@ const HeaderMap = ({startTab, rightPress, getDetails, closeDetails}: HeaderMapPr
                         : isSearch
                         ? WIDTH_SCREEN - 40
                         : WIDTH_SCREEN - 80,
+                      backgroundColor: isSearch ? Color.backgroundTertiary : Color.backgroundSecondary,
+                      color: Color.textPrimary
                     },
                   ]}
                   placeholder="Tìm kiếm"
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary}
                   value={search}
                   onChangeText={(text) => {
                     fetchPlaces(text);
                   }}
-                  onFocus={focusInput} // Khi focus, bật trạng thái tìm kiếm
+                  onFocus={focusInput}
                 />
                 {search.length > 0 && (
                   <TouchableOpacity onPress={() => setSearch("")} style={styles.deleteTextSearch}>
-                    <Icon name="close" size={20} color="gray" />
+                    <Icon name="close" size={20} color={Color.textSecondary} />
                   </TouchableOpacity>
                 )}
                 {rightPress && !isSearch &&
-                <CIconButton icon={<Icon name={"turned-in-not"} size={20} color={Color.white_contrast}/>} 
-                    onSubmit={() => {rightPress()}} 
+                <CIconButton icon={<Icon name={"turned-in-not"} size={20} color={Color.textPrimary}/>}
+                    onSubmit={() => {rightPress()}}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backGround,
+                    backColor: Color.backgroundSecondary,
                     radius: 50,
                     shadow: true
                 }}/>
                 }
             </View>
             {isSearch ? (
-                <FlatList style={styles.boxSearch} data={listSearch} renderItem={({item}) => 
-                    <TouchableOpacity style={styles.cardSearch} key={item.placePrediction.placeId}
-                        onPress={() => getLatLngFromPlaceId(item.placePrediction.placeId)}
-                    >
-                        <Text style={styles.textSearch}>{item.placePrediction.text.text}</Text>
-                    </TouchableOpacity>
-                }/>
+                <FlatList
+                    style={[styles.boxSearch, {
+                        borderTopColor: Color.border,
+                    }]}
+                    data={listSearch}
+                    renderItem={({item}) =>
+                        <TouchableOpacity
+                            style={[styles.cardSearch, {
+                                borderBottomColor: Color.border
+                            }]}
+                            key={item.placePrediction.placeId}
+                            onPress={() => getLatLngFromPlaceId(item.placePrediction.placeId)}
+                        >
+                            <Text style={[styles.textSearch, { color: Color.textPrimary }]}>{item.placePrediction.text.text}</Text>
+                        </TouchableOpacity>
+                    }
+                />
             ) : (
                 <View style={styles.searchBox}>
-                    {tabsMap.map((item, index) => 
-                        <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={currTab === item.label ? Color.white_homologous : Color.white_contrast}/>} 
+                    {tabsMap.map((item, index) =>
+                        <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={currTab === item.label ? Color.textOnMain2 : Color.textPrimary}/>}
                             label={" " + item.label}
-                            onSubmit={() => {handlePressTab(item.label)}} 
+                            onSubmit={() => {handlePressTab(item.label)}}
                             style={{
                                 width: 110,
                                 height: 35,
-                                backColor: currTab === item.label ? Color.mainColor2 : undefined,
-                                textColor: currTab === item.label ? Color.textColor2 : undefined,
+                                backColor: currTab === item.label ? Color.mainColor2 : Color.backgroundSecondary, // Changed to backgroundSecondary
+                                textColor: currTab === item.label ? Color.textOnMain2 : Color.textPrimary,
                                 fontSize: 13,
                                 radius: 50,
                                 flex_direction: 'row',
@@ -139,7 +155,6 @@ const styles = StyleSheet.create({
     },
     containerSearch: {
         height: HEIGHT_SCREEN,
-        backgroundColor: Color.backGround
       },
     searchBox: {
         width: '100%',
@@ -149,41 +164,36 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 5,
     },
-    inputSearchFocus: {
-        backgroundColor: Color.backGround2
-    },
+    inputSearchFocus: {},
     searchInput: {
         height: 50,
         paddingHorizontal: 10,
         fontSize: 16,
         borderRadius: 50,
-        backgroundColor: Color.backGround,
     },
     shadow: {
-        shadowColor: "#000", // Màu bóng
+        shadowColor: Color.shadow,
         shadowOffset: {
-          width: 0, // Đổ bóng theo chiều ngang
-          height: 4, // Đổ bóng theo chiều dọc
+          width: 0,
+          height: 4,
         },
-        shadowOpacity: 0.3, // Độ mờ của bóng (0 - 1)
-        shadowRadius: 4.65, // Độ mờ viền của bóng
-        elevation: 8, // Dùng cho Android (giá trị càng cao bóng càng đậm)
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
     },
     boxSearch: {
         marginHorizontal: 30,
-        borderTopWidth: 2, borderColor: Color.backGround2,
+        borderTopWidth: 2,
     },
-    cardSearch: { 
+    cardSearch: {
         paddingVertical: 10,
-        borderBottomWidth: 2, borderColor: Color.backGround2
+        borderBottomWidth: 2,
     },
-    textSearch: {
-
-    },
-    deleteTextSearch: { 
-        position: "absolute", right: 20 
+    textSearch: {},
+    deleteTextSearch: {
+        position: "absolute", right: 20
     }
   });
-  
+
 
 export default HeaderMap;

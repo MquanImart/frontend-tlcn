@@ -12,10 +12,10 @@ const RealDirections = () => {
     useTheme();
     const route = useRoute<RouteProp<MapStackParamList, "Realtime">>();
     const {locations} = route.params || {};
-    const { 
+    const {
         destinations, location,
         mapRef,
-        focusUserLocation, 
+        focusUserLocation,
         navigation,
         coordinates,
         handleSos
@@ -34,8 +34,8 @@ const RealDirections = () => {
               },
               pitch: 50,
               heading: 0,
-              altitude: 500, // Độ cao
-              zoom: 15, // Zoom phù hợp
+              altitude: 500,
+              zoom: 15,
             }}
             showsUserLocation={true}
             followsUserLocation={false}
@@ -52,34 +52,34 @@ const RealDirections = () => {
             )}
 
             {coordinates.length > 0 && (
-              <Polyline coordinates={coordinates} strokeWidth={4} strokeColor="#7DA9FF" />
+              <Polyline coordinates={coordinates} strokeWidth={4} strokeColor={Color.mainColor2} />
             )}
           </MapView>
           ) : (
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
           )}
           <View style={styles.boxAction}>
-              <CIconButton icon={<Icon name={"sos"} size={30} color={Color.white_contrast} />} 
+              <CIconButton icon={<Icon name={"sos"} size={30} color={Color.textPrimary} />}
                   onSubmit={() => {handleSos()}} style={{
                   width: 50,
                   height: 50,
-                  backColor: Color.white_homologous,
+                  backColor: Color.backgroundSecondary,
                   radius: 50,
               }}/>
-              <CIconButton icon={<Icon name={"adjust"} size={30} color={Color.white_contrast} />} 
+              <CIconButton icon={<Icon name={"adjust"} size={30} color={Color.textPrimary} />}
                   onSubmit={() => {focusUserLocation()}} style={{
                   width: 50,
                   height: 50,
-                  backColor: Color.white_homologous,
+                  backColor: Color.backgroundSecondary,
                   fontWeight: "bold",
                   radius: 50,
                   flex_direction: "row",
               }}/>
-              <CIconButton icon={<Icon name={"close"} size={30} color={Color.white_contrast} />} 
+              <CIconButton icon={<Icon name={"close"} size={30} color={Color.textPrimary} />}
                   onSubmit={() => {navigation.goBack()}} style={{
                   width: 50,
                   height: 50,
-                  backColor: Color.white_homologous,
+                  backColor: Color.backgroundSecondary,
                   radius: 50,
               }}/>
           </View>

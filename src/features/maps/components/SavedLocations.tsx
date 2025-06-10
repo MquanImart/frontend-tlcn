@@ -14,24 +14,26 @@ interface SavedLocationsProps {
 const SavedLocations = ({ location, deletePress, onPress } : SavedLocationsProps) => {
     useTheme();
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { borderColor: Color.border }]}>
             <TouchableOpacity style={styles.title}
                 onPress={onPress}
-            > 
-                <Text style={styles.namePlace} numberOfLines={2} ellipsizeMode="tail">
+            >
+                <Text style={[styles.namePlace, { color: Color.textPrimary }]} numberOfLines={2} ellipsizeMode="tail">
                   {location.displayName}
                 </Text>
-                <Text style={styles.address} numberOfLines={2} ellipsizeMode="tail">
+                <Text style={[styles.address, { color: Color.textSecondary }]} numberOfLines={2} ellipsizeMode="tail">
                   {location.address}
                 </Text>
             </TouchableOpacity>
-            <CIconButton icon={<Icon name={"clear"} size={10} color={Color.white_contrast}/>} 
-                onSubmit={() => {deletePress(location._id)}} 
+            <CIconButton icon={<Icon name={"clear"} size={10} color={Color.textPrimary}/>}
+                onSubmit={() => {deletePress(location._id)}}
                 style={{
                 width: 30,
                 height: 30,
                 radius: 50,
-                shadow: true
+                shadow: true,
+                backColor: 'transparent',
+                textColor: 'transparent'
             }}/>
         </View>
     )
@@ -45,7 +47,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderTopWidth: 1,
-        borderColor: Color.textColor3
     },
     title: {
         padding: 10,

@@ -75,7 +75,7 @@ const CardDetails = ({details, location, closeDetails, pressDirection}: CardDeta
       }
     }
   }
-  
+
   const checkSavedLocation = async () => {
     const userId = await AsyncStorage.getItem("userId");
     if (userId && details){
@@ -92,37 +92,41 @@ const CardDetails = ({details, location, closeDetails, pressDirection}: CardDeta
     }
   }
 
-  if (saved === null || !location) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+  if (saved === null || !location) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
   const openingInfo = details && details.regularOpeningHours ? getOpeningStatus(details.regularOpeningHours) : null;
   const status = openingInfo ? openingInfo.status : "Không có thông tin";
   const nextEvent = openingInfo ? openingInfo.nextEvent : "Không có thông tin";
 
   return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: Color.background }]}>
           <View style={styles.actions}>
-            <Text style={styles.name}>{details? details.displayName.text : `${location.latitude} , ${location.longitude}`}</Text>
-            <CIconButton icon={<Icon name={'clear'} size={20} color={Color.white_contrast}/>} 
-                  onSubmit={closeDetails} 
+            <Text style={[styles.name, { color: Color.textPrimary }]}>
+              {details? details.displayName.text : `${location.latitude} , ${location.longitude}`}
+            </Text>
+            <CIconButton icon={<Icon name={'clear'} size={20} color={Color.textPrimary}/>}
+                  onSubmit={closeDetails}
                   style={{
                       width: 50,
                       height: 50,
                       fontSize: 13,
                       radius: 50,
-                      flex_direction: 'row'
+                      flex_direction: 'row',
+                      backColor: 'transparent',
+                      textColor: 'transparent'
                   }}
               />
           </View>
           <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
             <View style={styles.actions}>
-            {tabsMap.map((item, index) => 
-                <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={index === 0 ? Color.white_homologous : Color.white_contrast}/>} 
+            {tabsMap.map((item, index) =>
+                <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={index === 0 ? Color.textOnMain2 : Color.textPrimary}/>}
                     label={" " + (index === 1 && saved? "Đã lưu": item.label)}
-                    onSubmit={() => {handlePressTab(item.label)}} 
+                    onSubmit={() => {handlePressTab(item.label)}}
                     style={{
                         width: 110,
                         height: 35,
-                        backColor: index === 0 ? Color.mainColor2 : undefined,
-                        textColor: index === 0 ? Color.textColor2 : undefined,
+                        backColor: index === 0 ? Color.mainColor2 : Color.backgroundSecondary, // Changed to backgroundSecondary
+                        textColor: index === 0 ? Color.textOnMain2 : Color.textPrimary,
                         fontSize: 13,
                         radius: 50,
                         flex_direction: 'row',
@@ -132,35 +136,40 @@ const CardDetails = ({details, location, closeDetails, pressDirection}: CardDeta
             )}
             </View>
             {details && <DetailsImages details={details}/>}
-            <View style={styles.line}/>
-            {status && nextEvent && 
+            <View style={[styles.line, { borderColor: Color.border }]}/>
+            {status && nextEvent &&
             <View style={styles.boxinfo}>
               <View style={styles.clock}>
-                <Icon name={'alarm'} size={25} color={Color.white_contrast}/>
-                <Text style={styles.textClock}>{status}</Text>
+                <Icon name={'alarm'} size={25} color={Color.textPrimary}/>
+                <Text style={[styles.textClock, { color: Color.success }]}>{status}</Text>
               </View>
-              <Text style={styles.textClock}>{nextEvent}</Text>
+              <Text style={[styles.textClock, { color: Color.textPrimary }]}>{nextEvent}</Text>
             </View>}
-            <View style={styles.line}/>
+            <View style={[styles.line, { borderColor: Color.border }]}/>
             <View style={styles.boxTable}>
-            <Text style={styles.tableTitle}>Thời khóa biểu trong tuần</Text>
-            <View style={styles.tableHeader}>
-              <Text style={styles.headerText}>Ngày</Text>
-              <Text style={styles.headerText}>Giờ hoạt động</Text>
+            <Text style={[styles.tableTitle, { color: Color.textPrimary }]}>Thời khóa biểu trong tuần</Text>
+            <View style={[styles.tableHeader, { backgroundColor: Color.backgroundTertiary }]}>
+              <Text style={[styles.headerText, { color: Color.textPrimary }]}>Ngày</Text>
+              <Text style={[styles.headerText, { color: Color.textPrimary }]}>Giờ hoạt động</Text>
             </View>
             <View style={styles.boxinfo}>
-              <Icon name={'place'} size={25} color={Color.white_contrast}/>
-              <Text style={styles.textStart}>{`${location.latitude} , ${location.longitude}`}</Text>
+              <Icon name={'place'} size={25} color={Color.textPrimary}/>
+              <Text style={[styles.textStart, { color: Color.textPrimary }]}>{`${location.latitude} , ${location.longitude}`}</Text>
             </View>
             {details && details.regularOpeningHours && details.regularOpeningHours.weekdayDescriptions.map((item, index) => {
               const today = isToday(index, currentDate);
               return (
-                <View key={`schedule-${index}`} style={[styles.tableRow, today && styles.todayRow]}>
-                  <Text style={[styles.dayText, today && styles.todayText]}>
-                    {item.split(":")[0]} {/* Lấy tên ngày */}
+                <View key={`schedule-${index}`} style={[
+                    styles.tableRow,
+                    { borderBottomColor: Color.border },
+                    today && styles.todayRow,
+                    today && { backgroundColor: Color.backgroundSelected }
+                ]}>
+                  <Text style={[styles.dayText, { color: Color.textPrimary }, today && styles.todayText]}>
+                    {item.split(":")[0]}
                   </Text>
-                  <Text style={[styles.timeText, today && styles.todayText]}>
-                    {item.split(": ")[1]?.trim() || "Closed"} {/* Lấy giờ */}
+                  <Text style={[styles.timeText, { color: Color.textPrimary }, today && styles.todayText]}>
+                    {item.split(": ")[1]?.trim() || "Closed"}
                   </Text>
                 </View>
               );
@@ -176,7 +185,6 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     name: {
-      color: Color.textColor1,
       fontSize: 20,
       fontWeight: 'bold',
       marginVertical: 20,
@@ -197,12 +205,11 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     textClock: {
-      color: 'green',
       fontSize: 15,
-      marginHorizontal: 5
+      marginHorizontal: 5,
     },
     textStart: {
-      
+      // color is handled inline
     },
     boxTable: {
       paddingVertical: 10,
@@ -210,7 +217,6 @@ const styles = StyleSheet.create({
     line: {
       width: '100%',
       borderTopWidth: 1.5,
-      borderColor: Color.backGround2
     },
     tableTitle: {
       fontSize: 20,
@@ -220,7 +226,6 @@ const styles = StyleSheet.create({
     tableHeader: {
       flexDirection: "row",
       paddingVertical: 8,
-      backgroundColor: "#e0e0e0",
       borderRadius: 4,
       marginBottom: 5,
     },
@@ -234,25 +239,20 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       paddingVertical: 12,
       borderBottomWidth: 1,
-      borderBottomColor: "#ddd",
     },
-    todayRow: {
-      backgroundColor: "#e6f3ff", // Màu nền cho ngày hiện tại
-    },
+    todayRow: {}, // Background color handled inline
     dayText: {
       flex: 1,
       fontSize: 16,
-      color: "#333",
     },
     timeText: {
       flex: 1,
       fontSize: 16,
-      color: "#333",
       textAlign: "center",
     },
     todayText: {
       fontWeight: "bold",
-      color: "#007AFF", // Màu chữ cho ngày hiện tại
+      color: Color.mainColor2,
     },
   });
 
