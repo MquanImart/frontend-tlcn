@@ -44,11 +44,10 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
                 />
                 <View style={styles.content}>
                     <View style={styles.title}>
-                      <Text style={[
-                          styles.name,
-                          { color: Color.textPrimary }, // Dynamic color for name
-                          (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }
-                      ]}>
+                      <Text 
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.name, { color: Color.textPrimary },(cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
                         {cardData.name}
                       </Text>
                       {setting?.notifications === false ? (
