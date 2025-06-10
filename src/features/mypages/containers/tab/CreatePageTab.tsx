@@ -1,5 +1,5 @@
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo import đúng
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { Image } from 'expo-image';
@@ -64,40 +64,50 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: Color.background }]}
       contentContainerStyle={styles.contentContainer}
       onScroll={handleScroll}
       scrollEventThrottle={16}
     >
-      <Text style={styles.title}>Tạo Page Mới</Text>
+      <Text style={[styles.title, { color: Color.textPrimary }]}>Tạo Page Mới</Text>
 
       {/* Page Name */}
       <TextInput
-        style={styles.input}
+        style={[styles.input, {
+          borderColor: Color.border, // Sử dụng border
+          color: Color.textPrimary,
+          backgroundColor: Color.backgroundTertiary, // inputBackground có thể được thay thế bằng backgroundTertiary
+        }]}
         placeholder="Tên Page *"
-        placeholderTextColor={Color.textColor3}
+        placeholderTextColor={Color.textTertiary} // Sử dụng textTertiary cho placeholder
         value={pageName}
         onChangeText={setPageName}
         editable={!isLoading}
       />
 
       {/* Avatar */}
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage} disabled={isLoading}>
+      <TouchableOpacity style={[styles.imagePicker, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]} onPress={pickImage} disabled={isLoading}>
         {avtUri ? (
           <Image source={{ uri: avtUri }} style={styles.avatar} />
         ) : (
-          <Text style={styles.imagePickerText}>Chọn ảnh đại diện</Text>
+          <Text style={[styles.imagePickerText, { color: Color.textTertiary }]}>Chọn ảnh đại diện</Text> // Sử dụng textTertiary
         )}
       </TouchableOpacity>
 
       {/* Address */}
-      <Text style={styles.sectionTitle}>Địa chỉ</Text>
+      <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>Địa chỉ</Text>
       <TouchableOpacity
-        style={styles.pickerButton}
+        style={[styles.pickerButton, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         onPress={() => setShowProvinceModal(true)}
         disabled={isLoading}
       >
-        <Text style={styles.pickerButtonText}>
+        <Text style={[styles.pickerButtonText, { color: Color.textPrimary }]}>
           {address.province
             ? provinces.find((p) => p.code === parseInt(address.province))?.name
             : "Chọn tỉnh/thành phố *"}
@@ -111,39 +121,42 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
         onRequestClose={() => setShowProvinceModal(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: Color.backgroundSecondary }]}>
             <Picker
               selectedValue={address.province}
               onValueChange={(itemValue) => handleProvinceChange(itemValue)}
-              style={styles.modalPicker}
+              style={[styles.modalPicker, { color: Color.textPrimary }]}
               enabled={!isLoading}
             >
-              <Picker.Item label="Chọn tỉnh/thành phố *" value="" color={Color.white_contrast}/>
+              <Picker.Item label="Chọn tỉnh/thành phố *" value="" color={Color.textSecondary}/>
               {provinces.map((province) => (
                 <Picker.Item
                   key={province.code}
                   label={province.name}
                   value={province.code.toString()}
-                  color={Color.white_contrast}
+                  color={Color.textPrimary}
                 />
               ))}
             </Picker>
             <TouchableOpacity
-              style={styles.closeButton}
+              style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
               onPress={() => setShowProvinceModal(false)}
             >
-              <Text style={styles.closeButtonText}>Đóng</Text>
+              <Text style={[styles.closeButtonText, { color: Color.textOnMain2 }]}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
       <TouchableOpacity
-        style={styles.pickerButton}
+        style={[styles.pickerButton, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         onPress={() => setShowDistrictModal(true)}
         disabled={districts.length === 0 || isLoading}
       >
-        <Text style={styles.pickerButtonText}>
+        <Text style={[styles.pickerButtonText, { color: Color.textPrimary }]}>
           {address.district
             ? districts.find((d) => d.code === parseInt(address.district))?.name
             : "Chọn quận/huyện *"}
@@ -157,39 +170,42 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
         onRequestClose={() => setShowDistrictModal(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: Color.backgroundSecondary }]}>
             <Picker
               selectedValue={address.district}
               onValueChange={(itemValue) => handleDistrictChange(itemValue)}
-              style={styles.modalPicker}
+              style={[styles.modalPicker, { color: Color.textPrimary }]}
               enabled={districts.length > 0 && !isLoading}
             >
-              <Picker.Item label="Chọn quận/huyện *" value="" color={Color.white_contrast}/>
+              <Picker.Item label="Chọn quận/huyện *" value="" color={Color.textSecondary}/>
               {districts.map((district) => (
                 <Picker.Item
                   key={district.code}
                   label={district.name}
                   value={district.code.toString()}
-                  color={Color.white_contrast}
+                  color={Color.textPrimary}
                 />
               ))}
             </Picker>
             <TouchableOpacity
-              style={styles.closeButton}
+              style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
               onPress={() => setShowDistrictModal(false)}
             >
-              <Text style={styles.closeButtonText}>Đóng</Text>
+              <Text style={[styles.closeButtonText, { color: Color.textOnMain2 }]}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
       <TouchableOpacity
-        style={styles.pickerButton}
+        style={[styles.pickerButton, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         onPress={() => setShowWardModal(true)}
         disabled={wards.length === 0 || isLoading}
       >
-        <Text style={styles.pickerButtonText}>
+        <Text style={[styles.pickerButtonText, { color: Color.textPrimary }]}>
           {address.ward
             ? wards.find((w) => w.code === parseInt(address.ward))?.name
             : "Chọn phường/xã *"}
@@ -203,64 +219,75 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
         onRequestClose={() => setShowWardModal(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: Color.backgroundSecondary }]}>
             <Picker
               selectedValue={address.ward}
               onValueChange={(itemValue) => handleWardChange(itemValue)}
-              style={styles.modalPicker}
+              style={[styles.modalPicker, { color: Color.textPrimary }]}
               enabled={wards.length > 0 && !isLoading}
             >
-              <Picker.Item label="Chọn phường/xã *" value="" color={Color.white_contrast}/>
+              <Picker.Item label="Chọn phường/xã *" value="" color={Color.textSecondary}/>
               {wards.map((ward) => (
                 <Picker.Item
                   key={ward.code}
                   label={ward.name}
                   value={ward.code.toString()}
-                  color={Color.white_contrast}
+                  color={Color.textPrimary}
                 />
               ))}
             </Picker>
             <TouchableOpacity
-              style={styles.closeButton}
+              style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
               onPress={() => setShowWardModal(false)}
             >
-              <Text style={styles.closeButtonText}>Đóng</Text>
+              <Text style={[styles.closeButtonText, { color: Color.textOnMain2 }]}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, {
+          borderColor: Color.border,
+          color: Color.textPrimary,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         placeholder="Đường/Phố (tùy chọn)"
-        placeholderTextColor={Color.textColor3}
+        placeholderTextColor={Color.textTertiary}
         value={address.street}
         onChangeText={(text) => setAddress({ ...address, street: text })}
         editable={!isLoading}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, {
+          borderColor: Color.border,
+          color: Color.textPrimary,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         placeholder="Tên địa điểm (tùy chọn)"
-        placeholderTextColor={Color.textColor3}
+        placeholderTextColor={Color.textTertiary}
         value={address.placeName}
         onChangeText={(text) => setAddress({ ...address, placeName: text })}
         editable={!isLoading}
       />
 
       {address.lat && address.long && (
-        <Text style={styles.coordinatesText}>
+        <Text style={[styles.coordinatesText, { color: Color.textSecondary }]}>
           Tọa độ: Lat {address.lat.toFixed(6)}, Long {address.long.toFixed(6)}
         </Text>
       )}
 
       {/* Operating Hours */}
-      <Text style={styles.sectionTitle}>Thời gian hoạt động</Text>
+      <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>Thời gian hoạt động</Text>
       <TouchableOpacity
-        style={styles.timePicker}
+        style={[styles.timePicker, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         onPress={() => setShowTimeOpenPicker(true)}
         disabled={isLoading}
       >
-        <Text style={styles.timeText}>{formatTime(timeOpen)}</Text>
+        <Text style={[styles.timeText, { color: Color.textPrimary }]}>{formatTime(timeOpen)}</Text>
       </TouchableOpacity>
       {showTimeOpenPicker && (
         <DateTimePicker
@@ -268,15 +295,18 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
           mode="time"
           display={Platform.OS === "ios" ? "spinner" : "clock"}
           onChange={onTimeOpenChange}
-          textColor="black"
+          textColor={Platform.OS === "ios" ? Color.textPrimary : undefined}
         />
       )}
       <TouchableOpacity
-        style={styles.timePicker}
+        style={[styles.timePicker, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
         onPress={() => setShowTimeClosePicker(true)}
         disabled={isLoading}
       >
-        <Text style={styles.timeText}>{formatTime(timeClose)}</Text>
+        <Text style={[styles.timeText, { color: Color.textPrimary }]}>{formatTime(timeClose)}</Text>
       </TouchableOpacity>
       {showTimeClosePicker && (
         <DateTimePicker
@@ -284,12 +314,12 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
           mode="time"
           display={Platform.OS === "ios" ? "spinner" : "clock"}
           onChange={onTimeCloseChange}
-          textColor="black"
+          textColor={Platform.OS === "ios" ? Color.textPrimary : undefined}
         />
       )}
 
       {/* Hobbies */}
-      <Text style={styles.sectionTitle}>Sở thích</Text>
+      <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>Sở thích</Text>
       <DropDownPicker
         open={hobbyOpen}
         setOpen={setHobbyOpen}
@@ -301,22 +331,33 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
         showTickIcon
         mode="BADGE"
         placeholder="Chọn sở thích"
-        style={styles.dropdown}
-        dropDownContainerStyle={styles.dropdownContainer}
-        listMode="SCROLLVIEW"
+        style={[styles.dropdown, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundTertiary,
+        }]}
+        dropDownContainerStyle={[styles.dropdownContainer, {
+          borderColor: Color.border,
+          backgroundColor: Color.backgroundSecondary,
+        }]}
+        textStyle={{ color: Color.textPrimary }}
+        placeholderStyle={{ color: Color.textTertiary }}
+        selectedItemLabelStyle={{ fontWeight: "bold", color: Color.mainColor2 }}
+        selectedItemContainerStyle={{ backgroundColor: Color.backgroundSelected }} // Sử dụng backgroundSelected
+        listItemLabelStyle={{ color: Color.textPrimary }}
         disabled={isLoading}
+        listMode="SCROLLVIEW"
       />
 
       {/* Create Button */}
       <TouchableOpacity
-        style={[styles.createButton, isLoading && styles.disabledButton]}
+        style={[styles.createButton, { backgroundColor: Color.mainColor2 }, isLoading && styles.disabledButton]}
         onPress={handleCreatePage}
         disabled={isLoading}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color={Color.textColor2} />
+          <ActivityIndicator size="small" color={Color.textOnMain2} />
         ) : (
-          <Text style={styles.buttonText}>Tạo Page</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Tạo Page</Text>
         )}
       </TouchableOpacity>
     </ScrollView>
@@ -326,7 +367,6 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
   },
   contentContainer: {
     padding: 20,
@@ -335,80 +375,64 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: Color.white_contrast,
     marginBottom: 20,
     textAlign: "center",
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.white_contrast,
     marginTop: 15,
     marginBottom: 10,
   },
   input: {
     height: 50,
-    borderColor: Color.borderColor1,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
-    color: Color.white_contrast,
-    backgroundColor: Color.inputBackGround,
   },
   pickerButton: {
     height: 50,
-    borderColor: Color.borderColor1,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
     justifyContent: "center",
-    backgroundColor: Color.inputBackGround,
   },
   pickerButtonText: {
-    color: Color.white_contrast,
     fontSize: 16,
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Vẫn giữ màu overlay cố định
   },
   modalContent: {
-    backgroundColor: Color.backGround,
     marginHorizontal: 20,
     padding: 20,
     borderRadius: 10,
     maxHeight: "50%",
   },
-  modalPicker: {
-    color: Color.white_contrast,
-  },
+  modalPicker: {},
   closeButton: {
     marginTop: 10,
-    backgroundColor: Color.mainColor2,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
   },
   closeButtonText: {
-    color: Color.textColor2,
     fontSize: 16,
     fontWeight: "bold",
   },
   imagePicker: {
-    height: 100,
-    borderColor: Color.borderColor1,
+    height: 250,
     borderWidth: 1,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 15,
-    backgroundColor: Color.inputBackGround,
   },
   imagePickerText: {
-    color: Color.textColor3,
     fontSize: 16,
   },
   avatar: {
@@ -418,50 +442,40 @@ const styles = StyleSheet.create({
   },
   timePicker: {
     height: 50,
-    borderColor: Color.borderColor1,
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
     justifyContent: "center",
-    backgroundColor: Color.inputBackGround,
   },
   timeText: {
-    color: Color.white_contrast,
     fontSize: 16,
   },
   coordinatesText: {
-    color: Color.white_contrast,
     fontSize: 14,
     marginBottom: 15,
   },
   createButton: {
-    backgroundColor: Color.mainColor2,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
   },
   disabledButton: {
-    backgroundColor: Color.borderColor1,
+    backgroundColor: Color.border, // Sử dụng màu border cho nút bị disabled
     opacity: 0.6,
   },
   buttonText: {
-    color: Color.textColor2,
     fontSize: 18,
     fontWeight: "bold",
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: Color.borderColor1,
     borderRadius: 10,
     marginBottom: 15,
-    backgroundColor: Color.inputBackGround,
   },
   dropdownContainer: {
     borderWidth: 1,
-    borderColor: Color.borderColor1,
-    backgroundColor: Color.backGround,
   },
 });
 
