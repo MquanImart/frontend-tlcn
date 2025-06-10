@@ -95,7 +95,7 @@ const MyProfile = () => {
     const followingCount = user?.following?.length || 0;   
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={{ flex: 1, backgroundColor: Color.background }}>
             <CHeader
                 label="My Profile"
                 backPress={() => navigation.goBack()}
@@ -106,37 +106,37 @@ const MyProfile = () => {
             />
             <View style={styles.profileInfo}>
                 {loading ? (
-                    <Text style={styles.bio}>Đang tải...</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 16, width: '70%', marginVertical: 10, color: Color.textSecondary }}>Đang tải...</Text>
                 ) : error ? (
-                    <Text style={styles.bio}>{error}</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 16, width: '70%', marginVertical: 10, color: Color.error }}>{error}</Text>
                 ) : (
                     <>
                         <Image source={{ uri: avt }} style={styles.profileImage} />
                         <TouchableOpacity>
-                            <Text style={styles.name}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 10, color: Color.textPrimary }}>
                                 {user?.displayName || "Không có tên"}
                             </Text>
                         </TouchableOpacity>
-                        <Text style={styles.bio}>{user?.aboutMe || " "}</Text>
+                        <Text style={{ textAlign: 'center', fontSize: 16, width: '70%', marginVertical: 10, color: Color.textSecondary }}>{user?.aboutMe || " "}</Text>
                     </>
                 )}
                 <View style={styles.stats}>
                     <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Người theo dõi</Text>
-                        <Text style={styles.statValue}>{followersCount}</Text>
+                        <Text style={{ fontSize: 14, color: Color.textSecondary }}>Người theo dõi</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: Color.textPrimary }}>{followersCount}</Text>
                     </View>
                     <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Bạn bè</Text>
-                        <Text style={styles.statValue}>{friendsCount}</Text>
+                        <Text style={{ fontSize: 14, color: Color.textSecondary }}>Bạn bè</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: Color.textPrimary }}>{friendsCount}</Text>
                     </View>
                     <View style={styles.statItem}>
-                        <Text style={styles.statLabel}>Đang theo dõi</Text>
-                        <Text style={styles.statValue}>{followingCount}</Text>
+                        <Text style={{ fontSize: 14, color: Color.textSecondary }}>Đang theo dõi</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: Color.textPrimary }}>{followingCount}</Text>
                     </View>
                 </View>
             </View>
 
-            <View style={{ flex: 1, backgroundColor: Color.backGround }}>
+            <View style={{ flex: 1, backgroundColor: Color.background }}>
                 <View style={{ width: '100%', height: "100%" }}>
                     <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
                     {currTab === tabs[0].label ? (
@@ -155,7 +155,7 @@ const MyProfile = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.white_homologous,
+        // Removed backgroundColor from here
     },
     profileInfo: {
         alignItems: 'center',
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     name: {
+        // Removed color from here
         fontSize: 20,
         fontWeight: 'bold',
         marginTop: 10,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         width: '70%',
         marginVertical: 10,
-        color: Color.textColor4,
+        // Removed color from here
     },
     stats: {
         flexDirection: 'row',
@@ -190,12 +191,11 @@ const styles = StyleSheet.create({
     },
     statLabel: {
         fontSize: 14,
-        color: Color.textColor4,
+        // Removed color from here
     },
     statValue: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: Color.white_contrast,
     },
 });
 

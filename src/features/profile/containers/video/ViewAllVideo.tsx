@@ -2,7 +2,7 @@ import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { useEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
 import useViewAllVideo from "./useViewAllVideo";
@@ -33,7 +33,7 @@ const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
     }
   }, [dataVideo]);
 
-  if (dataVideo === null) return <ActivityIndicator />;
+  if (dataVideo === null) return <ActivityIndicator color={Color.mainColor2} />; 
 
   return (
     <View style={styles.container}>
@@ -52,8 +52,8 @@ const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
                 style={styles.thumbnail}
               />
             ) : (
-              <View style={styles.placeholder}>
-                <ActivityIndicator />
+              <View style={[styles.placeholder, { backgroundColor: Color.backgroundTertiary }]}> 
+                <ActivityIndicator color={Color.textPrimary} />
               </View>
             )}
           </TouchableOpacity>
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textViewAll: {
-    color: Color.textColor3,
   },
   scrollViewContainer: {
     flexDirection: 'row',
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
   },
   video: {
     height: 200,
-    width: '33%', // Chia thành 3 cột
+    width: '33%', 
     marginBottom: 2,
   },
   thumbnail: {
@@ -100,7 +99,6 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ccc',
   },
 });
 
