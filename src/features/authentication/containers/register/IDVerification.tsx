@@ -77,7 +77,9 @@ const calculateAge = (dateOfBirth: string): number => {
 };
 
 const IDVerification = () => {
-    useTheme();
+
+        useTheme();
+
     const [displayName, setDisplayName] = useState<string>("");
     const [hashtag, setHashtag] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<{ uri: string, type: string } | null>(null);
