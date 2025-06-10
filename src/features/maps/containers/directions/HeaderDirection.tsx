@@ -4,7 +4,7 @@ import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, TextInput, Dimensions, TouchableOpacity, Text } from "react-native"
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useState } from "react";
-import CButton from "@/src/shared/components/button/CButton";
+import CButton from "@/src/shared/components/button/CButton"; // Assuming CButton is updated
 import { StackNavigationProp } from "@react-navigation/stack";
 import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
 import { useNavigation } from "@react-navigation/native";
@@ -43,33 +43,33 @@ const HeaderDirection = ({startLocation, endLocation, openSearch, changeTranspor
     return (
         <View style={styles.container}>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"chevron-left"} size={20} color={Color.textPrimary}/>} // Changed from white_contrast
+                <CIconButton icon={<Icon name={"chevron-left"} size={20} color={Color.textPrimary}/>}
                     onSubmit={() => {navigation.goBack()}}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backgroundSecondary, // Changed from backGround
+                    backColor: Color.backgroundSecondary,
                     radius: 50,
                     shadow: true
                 }}/>
-                <TouchableOpacity style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]} onPress={() => openSearch('START')}> {/* Changed colors */}
-                    <Text style={[(!startLocation || !startLocation.displayName) && styles.textSearch, {color: startLocation?.displayName ? Color.textPrimary : Color.textTertiary}]}> {/* Adjusted color */}
+                <TouchableOpacity style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]} onPress={() => openSearch('START')}>
+                    <Text style={[(!startLocation || !startLocation.displayName) && styles.textSearch, {color: startLocation?.displayName ? Color.textPrimary : Color.textTertiary}]}>
                         {(startLocation && startLocation.displayName) || "Điểm bắt đầu"}
                     </Text>
                 </TouchableOpacity>
             </View>
             <View  style={styles.searchBox}>
-                <CIconButton icon={<Icon name={"swap-vert"} size={20} color={Color.textPrimary}/>} // Changed from white_contrast
+                <CIconButton icon={<Icon name={"swap-vert"} size={20} color={Color.textPrimary}/>}
                     onSubmit={() => {reverseRoute(currTab)}}
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backgroundSecondary, // Changed from backGround
+                    backColor: Color.backgroundSecondary,
                     radius: 50,
                     shadow: true
                 }}/>
-                <TouchableOpacity style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]} onPress={() => openSearch('END')}> {/* Changed colors */}
-                    <Text style={[(!endLocation || !endLocation.displayName) && styles.textSearch, {color: endLocation?.displayName ? Color.textPrimary : Color.textTertiary}]}> {/* Adjusted color */}
+                <TouchableOpacity style={[styles.buttonSearch, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]} onPress={() => openSearch('END')}>
+                    <Text style={[(!endLocation || !endLocation.displayName) && styles.textSearch, {color: endLocation?.displayName ? Color.textPrimary : Color.textTertiary}]}>
                         {(endLocation && endLocation.displayName) || "Điểm kết thúc"}
                     </Text>
                 </TouchableOpacity>
@@ -82,8 +82,8 @@ const HeaderDirection = ({startLocation, endLocation, openSearch, changeTranspor
                         style={{
                             width: 110,
                             height: 35,
-                            backColor: currTab === item.key ? Color.mainColor2 : Color.backgroundTertiary, // Adjusted for unselected
-                            textColor: currTab === item.key ? Color.textOnMain2 : Color.textPrimary, // Adjusted for unselected
+                            backColor: currTab === item.key ? Color.mainColor2 : Color.backgroundTertiary,
+                            textColor: currTab === item.key ? Color.textOnMain2 : Color.textPrimary,
                             fontSize: 13,
                             radius: 50,
                             flex_direction: 'row'
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: 5,
     },
-    shadow: { 
-        shadowColor: Color.shadow, 
+    shadow: {
+        shadowColor: Color.shadow,
         shadowOffset: {
           width: 0,
           height: 1,

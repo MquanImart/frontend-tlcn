@@ -60,7 +60,7 @@ const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
                     style={{
                     width: 50,
                     height: 50,
-                    backColor: Color.backgroundSecondary, // Changed from backGround
+                    backColor: Color.backgroundSecondary,
                     radius: 50,
                     shadow: !isSearch
                 }}/>
@@ -68,15 +68,15 @@ const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
                   style={[
                     styles.searchInput,
                     !isSearch && styles.shadow,
-                    isSearch && [styles.inputSearchFocus, { backgroundColor: Color.backgroundTertiary }], // Changed from backGround2
+                    isSearch && [styles.inputSearchFocus, { backgroundColor: Color.backgroundTertiary }],
                     {
                         width: isSearch ? WIDTH_SCREEN - 40 : WIDTH_SCREEN - 80,
-                        backgroundColor: isSearch ? Color.backgroundTertiary : Color.backgroundSecondary, // Changed from backGround
-                        color: Color.textPrimary // Ensure input text color is dynamic
+                        backgroundColor: isSearch ? Color.backgroundTertiary : Color.backgroundSecondary,
+                        color: Color.textPrimary
                     },
                   ]}
                   placeholder="Tìm kiếm"
-                  placeholderTextColor={Color.textTertiary} // Changed from textColor3
+                  placeholderTextColor={Color.textTertiary}
                   value={search}
                   onChangeText={(text) => {
                     searchTrip(text);
@@ -85,11 +85,11 @@ const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
                 />
                 {search.length > 0 && (
                   <TouchableOpacity onPress={() => setSearch("")} style={styles.deleteTextSearch}>
-                    <Icon name="close" size={20} color={Color.textTertiary} /> {/* Changed from "gray" */}
+                    <Icon name="close" size={20} color={Color.textTertiary} />
                   </TouchableOpacity>
                 )}
             </View>
-                <View style={[styles.line, { borderColor: Color.border }]}/> {/* Changed from textColor3 */}
+                <View style={[styles.line, { borderColor: Color.border }]}/>
             {isSearch ? (
                 <FlatList style={styles.boxSearch} data={listSearch} renderItem={({item}) =>
                     <CardTrip trip={item} deleteTrip={deleteTrip}/>
@@ -97,14 +97,14 @@ const HeaderTrip = ({startTab, trips, closeDetails}: HeaderMapProps) => {
             ) : (
                 <View style={styles.searchBox}>
                     {tabsMap.map((item, index) =>
-                        <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={currTab === item.label ? Color.textOnMain2 : Color.textPrimary}/>} // Changed colors
+                        <CIconButton key={index} icon={<Icon name={item.icon} size={15} color={currTab === item.label ? Color.textOnMain2 : Color.textPrimary}/>}
                             label={" " + item.label}
                             onSubmit={() => {handlePressTab(item.label)}}
                             style={{
                                 width: 110,
                                 height: 35,
-                                backColor: currTab === item.label ? Color.mainColor2 : undefined,
-                                textColor: currTab === item.label ? Color.textOnMain2 : undefined, // Changed from textColor2
+                                backColor: currTab === item.label ? Color.mainColor2 : Color.backgroundSecondary, // Changed to backgroundSecondary for unselected tabs
+                                textColor: currTab === item.label ? Color.textOnMain2 : Color.textPrimary, // Changed to textPrimary for unselected tabs
                                 fontSize: 13,
                                 radius: 50,
                                 flex_direction: 'row',
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         // backgroundColor handled inline
     },
     shadow: {
-        shadowColor: Color.shadow, // Changed from hardcoded #000
+        shadowColor: Color.shadow,
         shadowOffset: {
           width: 0,
           height: 4,
@@ -155,15 +155,15 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     boxSearch: {
-
+        // You might want to add marginHorizontal here for consistency with other lists if it's not handled by CardTrip
     },
     cardSearch: {
         paddingVertical: 10,
         borderBottomWidth: 2,
-        borderColor: Color.border 
+        borderColor: Color.border
     },
     textSearch: {
-
+        // This style block is empty, but the text is rendered by CardTrip.
     },
     deleteTextSearch: {
         position: "absolute", right: 20
