@@ -2,7 +2,7 @@ import CHeader from "@/src/shared/components/header/CHeader";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
 import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo import đúng
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
@@ -27,7 +27,7 @@ interface EditPageProps {
 }
 
 const EditPage: React.FC<EditPageProps> = ({ route }) => {
-  useTheme()
+  useTheme();
   const page = route.params.page;
   const navigation = useNavigation<NavigationProp<PageStackParamList>>();
 
@@ -84,7 +84,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         label="Chỉnh sửa Page"
         backPress={() => navigation.goBack()}
         showBackButton={true}
-        labelColor={Color.white_contrast}
+        labelColor={Color.textPrimary} // Sử dụng textPrimary
         iconColor={Color.mainColor2}
       />
 
@@ -93,7 +93,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
       <TextInput
         style={styles.input}
         placeholder="Tên Page *"
-        placeholderTextColor={Color.textColor3}
+        placeholderTextColor={Color.textTertiary} // Sử dụng textTertiary
         value={pageName}
         onChangeText={setPageName}
         editable={!isLoading}
@@ -118,7 +118,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
       </TouchableOpacity>
       {avtUri && (
         <TouchableOpacity
-          style={styles.removeButton}
+          style={[styles.removeButton, {backgroundColor: Color.error}]} // Sử dụng Color.error cho màu đỏ
           onPress={handleRemoveAvatar}
           disabled={isLoading}
         >
@@ -260,7 +260,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
       <TextInput
         style={styles.input}
         placeholder="Đường/Phố (tuỳ chọn)"
-        placeholderTextColor={Color.textColor3}
+        placeholderTextColor={Color.textTertiary} // Sử dụng textTertiary
         value={address.street}
         onChangeText={handleStreetChange}
         editable={!isLoading}
@@ -268,7 +268,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
       <TextInput
         style={styles.input}
         placeholder="Tên địa điểm (tuỳ chọn)"
-        placeholderTextColor={Color.textColor3}
+        placeholderTextColor={Color.textTertiary} // Sử dụng textTertiary
         value={address.placeName || ""}
         onChangeText={(text) => setAddress({ ...address, placeName: text })}
         editable={!isLoading}
@@ -337,6 +337,11 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         dropDownContainerStyle={styles.dropdownContainer}
         listMode="SCROLLVIEW"
         disabled={isLoading}
+        // Thêm màu sắc cho DropDownPicker
+        textStyle={{ color: Color.textPrimary }}
+        labelStyle={{ color: Color.textPrimary }}
+        placeholderStyle={{ color: Color.textTertiary }}
+        selectedItemLabelStyle={{ color: Color.mainColor2 }}
       />
 
       {/* Nút cập nhật */}
@@ -346,7 +351,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         disabled={isLoading}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color={Color.textColor2} />
+          <ActivityIndicator size="small" color={Color.textOnMain2} /> 
         ) : (
           <Text style={styles.buttonText}>Cập nhật Page</Text>
         )}
@@ -358,7 +363,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background, 
   },
   contentContainer: {
     padding: 20,
@@ -367,32 +372,32 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.white_contrast,
+    color: Color.textPrimary, 
     marginTop: 15,
     marginBottom: 10,
   },
   input: {
     height: 50,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border, 
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
-    color: Color.white_contrast,
-    backgroundColor: Color.inputBackGround,
+    color: Color.textPrimary, 
+    backgroundColor: Color.backgroundTertiary,
   },
   pickerButton: {
     height: 50,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border, 
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
     justifyContent: "center",
-    backgroundColor: Color.inputBackGround,
+    backgroundColor: Color.backgroundTertiary,
   },
   pickerButtonText: {
-    color: Color.white_contrast,
+    color: Color.textPrimary, 
     fontSize: 16,
   },
   modalContainer: {
@@ -401,14 +406,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background, 
     marginHorizontal: 20,
     padding: 20,
     borderRadius: 10,
     maxHeight: "50%",
   },
   modalPicker: {
-    color: Color.white_contrast,
+    color: Color.textPrimary, 
   },
   closeButton: {
     marginTop: 10,
@@ -418,57 +423,57 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButtonText: {
-    color: Color.textColor2,
+    color: Color.textOnMain2, 
     fontSize: 16,
     fontWeight: "bold",
   },
   imagePicker: {
-    height: 200, // Increased height for larger preview
-    borderColor: Color.borderColor1,
+    height: 200,
+    borderColor: Color.border, 
     borderWidth: 1,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 15,
-    backgroundColor: Color.inputBackGround,
+    backgroundColor: Color.backgroundTertiary, // Thay thế inputBackGround bằng backgroundTertiary
   },
   imagePickerText: {
-    color: Color.textColor3,
+    color: Color.textTertiary, // Thay thế textColor3 bằng textTertiary
     fontSize: 16,
   },
   avatar: {
     width: "100%",
     height: "100%",
     borderRadius: 10,
-    resizeMode: "contain", // Ensure full image is displayed
+    resizeMode: "contain",
   },
   removeButton: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: Color.backGround || "#ff4d4d",
+    // backgroundColor được áp dụng inline
     alignItems: "center",
     marginBottom: 15,
   },
   removeButtonText: {
-    color: "#fff",
+    color: Color.white_white, // Đảm bảo màu trắng cố định cho nút xóa
     fontWeight: "600",
   },
   timePicker: {
     height: 50,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border, // Thay thế borderColor1 bằng border
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
     justifyContent: "center",
-    backgroundColor: Color.inputBackGround,
+    backgroundColor: Color.backgroundTertiary, // Thay thế inputBackGround bằng backgroundTertiary
   },
   timeText: {
-    color: Color.white_contrast,
+    color: Color.textPrimary, // Thay thế white_contrast bằng textPrimary
     fontSize: 16,
   },
   coordinatesText: {
-    color: Color.white_contrast,
+    color: Color.textPrimary, // Thay thế white_contrast bằng textPrimary
     fontSize: 14,
     marginBottom: 15,
   },
@@ -480,25 +485,25 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   disabledButton: {
-    backgroundColor: Color.borderColor1,
+    backgroundColor: Color.border, // Sử dụng Color.border hoặc một màu xám thích hợp
     opacity: 0.6,
   },
   buttonText: {
-    color: Color.textColor2,
+    color: Color.textOnMain2, // Sử dụng textOnMain2 cho màu chữ trên nút chính
     fontSize: 18,
     fontWeight: "bold",
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border, // Thay thế borderColor1 bằng border
     borderRadius: 10,
     marginBottom: 15,
-    backgroundColor: Color.inputBackGround,
+    backgroundColor: Color.backgroundTertiary, // Thay thế inputBackGround bằng backgroundTertiary
   },
   dropdownContainer: {
     borderWidth: 1,
-    borderColor: Color.borderColor1,
-    backgroundColor: Color.backGround,
+    borderColor: Color.border, // Thay thế borderColor1 bằng border
+    backgroundColor: Color.background, // Sửa lỗi chính tả: backGround -> background
   },
 });
 

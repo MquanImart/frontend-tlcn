@@ -8,12 +8,12 @@ import { Ticket } from "@/src/interface/interface_reference";
 interface AddTicketModalProps {
   visible: boolean;
   onClose: () => void;
-  onAddTicket: (ticket: Omit<Ticket, "_id">) => void; // Sửa kiểu thành Omit<Ticket, "_id">
-  pageId?: string; // Thêm pageId nếu cần
+  onAddTicket: (ticket: Omit<Ticket, "_id">) => void;
+  pageId?: string;
 }
 
 const AddTicketModal: React.FC<AddTicketModalProps> = ({ visible, onClose, onAddTicket, pageId }) => {
-  useTheme()
+  useTheme();
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -52,38 +52,39 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ visible, onClose, onAdd
 
           <Text style={styles.label}>TÊN VÉ</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, {color: Color.textPrimary}]}
             value={name}
             onChangeText={setName}
             placeholder="Nhập tên vé"
+            placeholderTextColor={Color.textTertiary}
           />
 
           <Text style={styles.label}>GIÁ VÉ</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, {color: Color.textPrimary}]}
             value={price}
             onChangeText={setPrice}
             placeholder="Nhập giá vé"
+            placeholderTextColor={Color.textTertiary}
             keyboardType="numeric"
           />
 
           <Text style={styles.label}>MÔ TẢ (không bắt buộc)</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, {color: Color.textPrimary}]}
             value={description}
             onChangeText={setDescription}
             placeholder="Nhập mô tả"
+            placeholderTextColor={Color.textTertiary}
             multiline
           />
 
-          {/* Nút Thêm */}
           <TouchableOpacity style={styles.addButton} onPress={handleAddTicket}>
             <Text style={styles.addButtonText}>THÊM</Text>
           </TouchableOpacity>
 
-          {/* Nút đóng */}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Icon name="close" size={24} color={Color.textColor1} />
+            <Icon name="close" size={24} color={Color.textPrimary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -102,11 +103,11 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: "85%",
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
     padding: 20,
     borderRadius: 15,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: Color.shadow,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
+    color: Color.textPrimary,
     marginBottom: 15,
   },
   label: {
@@ -122,17 +123,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignSelf: "flex-start",
     marginBottom: 5,
-    color: Color.textColor1,
+    color: Color.textPrimary,
   },
   input: {
     width: "100%",
     height: 40,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border,
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 10,
-    backgroundColor: Color.inputBackGround,
+    backgroundColor: Color.backgroundTertiary,
   },
   addButton: {
     width: "100%",
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   addButtonText: {
-    color: "white",
+    color: Color.textOnMain2,
     fontSize: 16,
     fontWeight: "bold",
   },

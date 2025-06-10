@@ -1,7 +1,7 @@
-// src/features/pages/containers/tabs/LocationInfo.tsx (Đã sửa)
+// src/features/pages/containers/tabs/LocationInfo.tsx
 import { Location as MapLocationType } from "@/src/features/maps/containers/directions/interfaceLocation";
 import { Page } from "@/src/interface/interface_reference";
-import { PageStackParamList } from "@/src/shared/routes/PageNavigation"; // Đảm bảo đúng PageStackParamList
+import { PageStackParamList } from "@/src/shared/routes/PageNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import { useNavigation } from "@react-navigation/native";
@@ -22,7 +22,7 @@ interface LocationInfoProps {
 }
 type LocationInfoNavigationProp = StackNavigationProp<PageStackParamList, "MapNavigation">;
 const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, onMessagePress }) => {
-  useTheme()
+  useTheme();
   const navigation = useNavigation<LocationInfoNavigationProp>();
   const time = page.timeOpen && page.timeClose ? `${page.timeOpen} - ${page.timeClose}` : "Không có thông tin";
   const { address, error, loading } = useLocationInfo(page.address || "");
@@ -75,7 +75,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
     if (address?.lat && address?.long) {
       try {
         navigation.navigate("MapNavigation", {
-          screen: "Directions", 
+          screen: "Directions",
           params: {
             start: userLocation
               ? {
@@ -88,10 +88,9 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
               latitude: address.lat,
               longitude: address.long,
               displayName: page.name || "Địa điểm",
-            } as MapLocationType, 
+            } as MapLocationType,
           },
         });
-        // -----------------------------------------------------------------------
       } catch (err) {
         console.error("Lỗi điều hướng:", err);
         Alert.alert("Lỗi", "Không thể điều hướng đến Directions. Vui lòng thử lại.");
@@ -102,21 +101,21 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {/* Nút nhắn tin */}
-      <TouchableOpacity style={styles.messageButton} onPress={onMessagePress}>
-        <Text style={styles.messageText}>Nhắn tin</Text>
+      <TouchableOpacity style={[styles.messageButton, { backgroundColor: Color.mainColor2 }]} onPress={onMessagePress}>
+        <Text style={[styles.messageText, { color: Color.textOnMain2 }]}>Nhắn tin</Text>
       </TouchableOpacity>
 
       {/* Tên địa điểm */}
-      <Text style={styles.placeName}>{page.name}</Text>
+      <Text style={[styles.placeName, { color: Color.textPrimary }]}>{page.name}</Text>
 
       {/* Thông tin địa chỉ */}
-      <View style={styles.infoWrapper}>
-        <View style={styles.iconContainer}>
+      <View style={[styles.infoWrapper, { backgroundColor: Color.backgroundSecondary }]}>
+        <View style={[styles.iconContainer, { backgroundColor: Color.background }]}>
           <Icon name="place" size={24} color={Color.mainColor2} />
         </View>
-        <Text style={styles.infoText}>
+        <Text style={[styles.infoText, { color: Color.textPrimary }]}>
           {address
             ? [address.street, address.ward, address.district, address.province].filter(Boolean).join(", ")
             : error || "Không có địa chỉ"}
@@ -124,22 +123,22 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
       </View>
 
       {/* Giờ hoạt động */}
-      <View style={styles.infoWrapper}>
-        <View style={styles.iconContainer}>
+      <View style={[styles.infoWrapper, { backgroundColor: Color.backgroundSecondary }]}>
+        <View style={[styles.iconContainer, { backgroundColor: Color.background }]}>
           <Icon name="schedule" size={24} color={Color.mainColor2} />
         </View>
         <View>
-          <Text style={styles.infoTitle}>Thời gian hoạt động</Text>
-          <Text style={styles.infoText}>{time}</Text>
+          <Text style={[styles.infoTitle, { color: Color.textPrimary }]}>Thời gian hoạt động</Text>
+          <Text style={[styles.infoText, { color: Color.textPrimary }]}>{time}</Text>
         </View>
       </View>
 
       {/* Vai trò người dùng */}
-      <View style={styles.infoWrapper}>
-        <View style={styles.iconContainer}>
+      <View style={[styles.infoWrapper, { backgroundColor: Color.backgroundSecondary }]}>
+        <View style={[styles.iconContainer, { backgroundColor: Color.background }]}>
           <Icon name="person" size={24} color={Color.mainColor2} />
         </View>
-        <Text style={styles.infoText}>
+        <Text style={[styles.infoText, { color: Color.textPrimary }]}>
           {role === "isOwner"
             ? "Chủ sở hữu"
             : role === "isAdmin"
@@ -151,7 +150,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
       </View>
 
       {/* Bản đồ */}
-      <View style={styles.mapContainer}>
+      <View style={[styles.mapContainer, { backgroundColor: Color.backgroundTertiary }]}>
         {Platform.OS === "web" ? (
           <Image
             source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Maps_icon_%282020%29.svg" }}
@@ -159,9 +158,9 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
             onError={(e) => console.warn("Lỗi tải hình ảnh:", e)}
           />
         ) : loading ? (
-          <View style={styles.loadingContainer}>
+          <View style={[styles.loadingContainer, { backgroundColor: Color.backgroundTertiary }]}>
             <ActivityIndicator size="large" color={Color.mainColor2} />
-            <Text style={styles.loadingText}>Đang tải bản đồ...</Text>
+            <Text style={[styles.loadingText, { color: Color.textSecondary }]}>Đang tải bản đồ...</Text>
           </View>
         ) : address?.lat && address?.long ? (
           <TouchableOpacity activeOpacity={0.8} onPress={handleMapPress} disabled={!address?.lat || !address?.long}>
@@ -175,7 +174,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
             </MapView>
           </TouchableOpacity>
         ) : (
-          <Text style={styles.errorText}>Không thể hiển thị bản đồ: {error || "Không có tọa độ"}</Text>
+          <Text style={[styles.errorText, { color: Color.error }]}>Không thể hiển thị bản đồ: {error || "Không có tọa độ"}</Text>
         )}
       </View>
     </View>
@@ -191,18 +190,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     marginTop: 10,
+    // backgroundColor applied inline
   },
   placeName: {
     fontSize: 20,
     fontWeight: "bold",
-    color: Color.textColor1,
+    // color applied inline
     marginBottom: 12,
   },
   infoWrapper: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 15,
-    backgroundColor: "#F5F5F5",
+    // backgroundColor applied inline
     borderRadius: 50,
     padding: 10,
   },
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFF",
+    // backgroundColor applied inline
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
@@ -222,11 +222,11 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: Color.textColor1,
+    // color applied inline
   },
   infoText: {
     fontSize: 14,
-    color: Color.textColor1,
+    // color applied inline
     flex: 1,
   },
   mapContainer: {
@@ -235,7 +235,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     overflow: "hidden",
     marginTop: 10,
-    backgroundColor: "#EAEAEA",
   },
   map: {
     width: "100%",
@@ -248,7 +247,6 @@ const styles = StyleSheet.create({
   },
   messageButton: {
     marginBottom: 10,
-    backgroundColor: Color.mainColor2,
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",
@@ -259,7 +257,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   messageText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -270,10 +267,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    color: Color.textColor1,
   },
   errorText: {
-    color: "red",
     textAlign: "center",
     padding: 10,
   },

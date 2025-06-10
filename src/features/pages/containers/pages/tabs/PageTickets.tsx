@@ -18,7 +18,7 @@ interface PageTicketsProps {
 }
 
 const PageTickets: React.FC<PageTicketsProps> = ({ page, role , updatePage}) => {
-  useTheme()
+  useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const {
     ticketList,
@@ -30,19 +30,19 @@ const PageTickets: React.FC<PageTicketsProps> = ({ page, role , updatePage}) => 
 
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <TicketList tickets={ticketList} onDeleteTicket={handleDeleteTicket} loading={loading} />
 
       {canManageTickets && (
         <CIconButton
           label="Tạo dịch vụ"
-          icon={<Icon name="add-circle-outline" size={24} color="white" />}
+          icon={<Icon name="add-circle-outline" size={24} color={Color.textOnMain2} />}
           onSubmit={() => setModalVisible(true)}
           style={{
             width: "90%",
             height: 50,
             backColor: Color.mainColor2,
-            textColor: "white",
+            textColor: Color.textOnMain2, 
             fontSize: 18,
             fontWeight: "bold",
             radius: 30,
@@ -65,7 +65,7 @@ export default PageTickets;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    // backgroundColor applied inline
     padding: 20,
     alignItems: "center",
   },

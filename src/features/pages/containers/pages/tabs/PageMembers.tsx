@@ -43,7 +43,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
   navigation,
   onLongPress,
 }) => {
-  useTheme()
+  useTheme();
   const handlePress = () => {
     console.log(`Navigating to profile for user: ${userId}`);
     if (userId === currentUserId) {
@@ -73,13 +73,13 @@ const MemberCard: React.FC<MemberCardProps> = ({
       onPress={handlePress}
       onLongPress={handleLongPressAction}
       delayLongPress={300}
-      style={styles.card}
+      style={[styles.card, { backgroundColor: Color.backgroundSecondary, shadowColor: Color.shadow }]}
       activeOpacity={0.8}
     >
       <Image source={{ uri: avatarUrl }} style={styles.avatar} />
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{name}</Text>
-        {description && <Text style={styles.description}>{description}</Text>}
+        <Text style={[styles.name, { color: Color.textPrimary }]}>{name}</Text>
+        {description && <Text style={[styles.description, { color: Color.textSecondary }]}>{description}</Text>}
       </View>
     </TouchableOpacity>
   );
@@ -91,7 +91,7 @@ const PageMembers: React.FC<PageMembersProps> = ({ page, currentUserId, role, up
 
   const renderSection = (title: string, data: UserWithAvatar[]) => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>{title}</Text>
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
@@ -117,7 +117,7 @@ const PageMembers: React.FC<PageMembersProps> = ({ page, currentUserId, role, up
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {owner && renderSection("Người tạo trang", [owner])}
       {renderSection("Quản trị viên", admins)}
       {renderSection("Người theo dõi", followers)}
@@ -130,7 +130,6 @@ export default PageMembers;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
     padding: 15,
     top: 20,
   },
@@ -140,17 +139,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Color.textColor1,
+    // color applied inline
     marginBottom: 8,
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
-    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 10,
@@ -168,10 +165,8 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "600",
-    color: Color.textColor1,
   },
   description: {
     fontSize: 14,
-    color: Color.textColor2,
   },
 });

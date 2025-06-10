@@ -25,8 +25,8 @@ interface PageScreenProps {
 }
 
 const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
-  useTheme()
-  const navigation = useNavigation<NavigationProp<ExploreStackParamList>>(); 
+  useTheme();
+  const navigation = useNavigation<NavigationProp<ExploreStackParamList>>();
   const pageId = route.params?.pageId;
 
   const {
@@ -81,9 +81,9 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
     isLocationLoading,
     setPageID,
     setGroupID,
-    MapPickerDialog, 
+    MapPickerDialog,
     isMapPickerVisible,
-    setMapPickerVisible, 
+    setMapPickerVisible,
   } = usePostDialog(currentUserId || "");
 
   useEffect(() => {
@@ -94,25 +94,25 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
 
   if (!pageId) {
     return (
-      <View style={styles.centered}>
-        <Text style={{ color: "red" }}>Lỗi: Không tìm thấy pageId</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={{ color: Color.error }}>Lỗi: Không tìm thấy pageId</Text>
       </View>
     );
   }
-  
+
   if (loading) {
     return (
-      <View style={styles.centered}>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
         <ActivityIndicator size="large" color={Color.mainColor2} />
-        <Text>Đang tải dữ liệu...</Text>
+        <Text style={{ color: Color.textSecondary }}>Đang tải dữ liệu...</Text>
       </View>
     );
   }
 
   if (error || !page) {
     return (
-      <View style={styles.centered}>
-        <Text style={{ color: "red" }}>Lỗi: {error || "Không tìm thấy trang"}</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={{ color: Color.error }}>Lỗi: {error || "Không tìm thấy trang"}</Text>
       </View>
     );
   }
@@ -156,12 +156,12 @@ const PageScreen: React.FC<PageScreenProps> = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <FlatList
         data={[{ key: "content" }]}
         renderItem={() => (
           <>
-            <View style={styles.headerContainer}>
+            <View style={[styles.headerContainer, { backgroundColor: Color.background }]}>
               <PageHeader
                 page={page}
                 currentUserId={currentUserId || ""}
@@ -235,7 +235,6 @@ export default PageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
   },
   headerContainer: {
     position: "absolute",
@@ -244,7 +243,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: Color.backGround,
   },
   tabBarContainer: {
     marginTop: 380,

@@ -12,8 +12,8 @@ import usePageHome from "./usePageHome";
 
 
 interface PageHomeProps {
-  page: Page; 
-  currentUserId: string; 
+  page: Page;
+  currentUserId: string;
   role: string;
 }
 
@@ -36,9 +36,9 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
     editArticle,
   } = useNewFeed(articles, setArticles);
 
-  
+
   return (
-    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <FlatList
         data={articles|| []}
         keyExtractor={(item) => item._id}
@@ -51,7 +51,7 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
             deleteArticle={deleteArticle}
             editArticle={editArticle}
           />
-          
+
         )}
       />
       <Modal
@@ -62,13 +62,13 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
-          <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
+          <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+            <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textPrimary} />
             </TouchableOpacity>
           </View>
 
@@ -85,18 +85,18 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
             )}
           />
 
-          <View style={styles.commentInputContainer}>
+          <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
             <TextInput
               style={[
                 styles.commentInput,
                 {
-                  borderColor: Color.borderColor1,
-                  color: Color.textColor1,
-                  backgroundColor: Color.backGround,
+                  borderColor: Color.border,
+                  color: Color.textPrimary,
+                  backgroundColor: Color.backgroundTertiary, // Sử dụng backgroundTertiary cho input
                 },
               ]}
               placeholder="Thêm bình luận..."
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary}
               value={newReply}
               onChangeText={setNewReply}
             />
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     top: 50,
+    // backgroundColor applied inline
   },
   modal: {
     justifyContent: "flex-end",
@@ -126,6 +127,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 15,
+    // backgroundColor applied inline
   },
   commentHeader: {
     flexDirection: "row",
@@ -133,17 +135,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
+    // borderBottomColor applied inline
   },
   commentTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    // color applied inline
   },
   commentInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
+    // borderTopColor applied inline
     paddingVertical: 10,
   },
   commentInput: {
@@ -155,4 +158,3 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
-
