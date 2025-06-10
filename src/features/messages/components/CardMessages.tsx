@@ -33,7 +33,10 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
                 )} style={styles.images}/>
                 <View style={styles.content}>
                     <View style={styles.title}>
-                      <Text style={[styles.name, (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
+                      <Text 
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.name, (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
                         {cardData.name}
                       </Text>
                       {setting?.notifications === false ? (
@@ -186,6 +189,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     name: {
+        width: '80%',
         fontSize: 17
     },
     date: {
