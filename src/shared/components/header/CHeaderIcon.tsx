@@ -26,7 +26,7 @@ const CHeaderIcon = ({label, IconLeft, onPressLeft, IconRight, onPressRight, tex
             <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressLeft}>
                 <Icon name={IconLeft} size={24} color={Color.textPrimary} />
             </TouchableOpacity>
-            <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
+            <Text style={[styles.label, { color: Color.mainColor2 }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
                 {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
                 {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}

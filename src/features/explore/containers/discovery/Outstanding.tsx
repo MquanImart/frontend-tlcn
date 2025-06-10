@@ -62,7 +62,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                 shadowRadius: 4.65,
                 elevation: 8,
             }]}>
-                <Text style={[styles.label, { color: Color.white_white }]}>Đề xuất cho bạn</Text>
+                <Text style={[styles.label, { color: Color.mainColor2 }]}>Đề xuất cho bạn</Text>
                 {renderPageList(suggestedPageCB)}
             </View>
             <View style={[styles.listContent, { backgroundColor: Color.backgroundSecondary }, {
@@ -75,7 +75,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                 shadowRadius: 4.65,
                 elevation: 8,
             }]}>
-                <Text style={[styles.label, { color: Color.white_white }]}>Có thể bạn thích</Text>
+                <Text style={[styles.label, { color: Color.mainColor2 }]}>Có thể bạn thích</Text>
                 {renderPageList(suggestedPageCF)}
             </View>
             <View style={[styles.listContent, { backgroundColor: Color.backgroundSecondary }, {
