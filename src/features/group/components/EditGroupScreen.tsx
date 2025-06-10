@@ -235,9 +235,9 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
               onChangeText={setRuleInput}
             />
             <TouchableOpacity style={[styles.addButton, {
-              backgroundColor: Color.mainColor1,
+              backgroundColor: Color.mainColor2,
             }]} onPress={handleAddRule}>
-              <Text style={[styles.addButtonText, { color: Color.textOnMain1 }]}>Thêm</Text>
+              <Text style={[styles.addButtonText, { color: Color.textOnMain2 }]}>Thêm</Text>
             </TouchableOpacity>
           </View>
 
@@ -245,11 +245,11 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
             <View style={styles.rulesContainer}>
               {rules.map((rule, index) => (
                 <View key={index} style={[styles.ruleItem, {
-                  backgroundColor: Color.mainColor1,
+                  backgroundColor: Color.mainColor2,
                 }]}>
-                  <Text style={[styles.ruleText, { color: Color.textOnMain1 }]}>{rule}</Text>
+                  <Text style={[styles.ruleText, { color: Color.textOnMain2 }]}>{rule}</Text>
                   <TouchableOpacity onPress={() => handleDeleteRule(index)}>
-                    <Ionicons name="close-circle" size={20} color={Color.textOnMain1} />
+                    <Ionicons name="close-circle" size={20} color={Color.textOnMain2} />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -320,15 +320,15 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       component: (
         <TouchableOpacity
           style={[styles.button, styles.saveButton, {
-            backgroundColor: Color.mainColor1,
+            backgroundColor: Color.mainColor2,
           }]}
           onPress={handleSaveGroup}
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color={Color.textOnMain1} />
+            <ActivityIndicator size="small" color={Color.textOnMain2} />
           ) : (
-            <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Lưu thay đổi</Text>
+            <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Lưu thay đổi</Text>
           )}
         </TouchableOpacity>
       ),

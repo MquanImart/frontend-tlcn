@@ -108,7 +108,7 @@ const ScreenSetting = () => {
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
         <Text style={{ color: Color.textPrimary, marginTop: 10 }}>Đang tải...</Text>
       </View>
     );

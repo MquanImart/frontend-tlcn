@@ -10,19 +10,28 @@ export interface ButtonFriendsProps {
 
 export const ButtonActions = ({actions, label} : ButtonFriendsProps) => {
     useTheme()
-    const width = label.length > 1? "48%" : "96%";
-    
+    const width = label.length > 1 ? "48%" : "96%";
+
     return (
         <View style={styles.container}>
-            {actions.map((item, index) => <CButton key={index} label={label[index]} onSubmit={item} 
-                style={{
-                width: width,
-                height: 35,
-                backColor: Color.mainColor1,
-                textColor: Color.textColor2,
-                fontSize: 13
-            }}/>
-            )}
+            {actions.map((item, index) => (
+                <CButton
+                    key={index}
+                    label={label[index]}
+                    onSubmit={item}
+                    style={{
+                        width: width,
+                        height: 35,
+                        backColor: Color.mainColor2,
+                        textColor: Color.textOnMain2, 
+                        fontSize: 13,
+                        // Thêm các thuộc tính mặc định khác của CButton nếu cần thiết, ví dụ:
+                        fontWeight: "bold", // Ví dụ
+                        radius: 8, // Ví dụ
+                        flex_direction: "row", // Ví dụ
+                    }}
+                />
+            ))}
         </View>
     )
 }

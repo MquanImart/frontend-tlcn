@@ -2,7 +2,7 @@ import { Reels } from '@/src/features/reel/interface/reels';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đã import đối tượng Color
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -101,8 +101,8 @@ export default function ReelsList() {
       if (result?.success && result.data.length > 0) {
         const newReels = result.data;
         setReels(pageNum === 0 ? newReels : [...reels, ...newReels]);
-        setHasMore(newReels.length === 4 && reels.length + newReels.length < result.total);
-        setPage(pageNum);
+        // Giả định tổng số lượng reel là 100 để test phân trang, bạn nên lấy total từ API
+        setHasMore(newReels.length === 4); // Giả định mỗi lần load 4 reels
       } else {
         console.warn('Không có dữ liệu reels hoặc lỗi từ API');
         if (pageNum === 0) setReels([]);
@@ -188,7 +188,7 @@ export default function ReelsList() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'black' }}>
+    <View style={{ flex: 1, backgroundColor: Color.black_black }}>
       {reels.length === 0 && !isLoading ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Không có reels để hiển thị</Text>
@@ -224,7 +224,7 @@ export default function ReelsList() {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.loadingMoreContainer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : !hasMore && reels.length > 0 ? (
               <View style={styles.loadingMoreContainer}>
@@ -238,11 +238,11 @@ export default function ReelsList() {
       <View style={styles.headerContainer}>
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={35} color={Color.backGround1} style={styles.headerIcon} />
+            <Ionicons name="arrow-back" size={35} color={Color.white_white} style={styles.headerIcon} />
           </TouchableOpacity>
-              <Text style={[styles.headerLabel, { color: Color.mainColor1 }]}>Reels</Text>
+          <Text style={styles.headerLabel}>Reels</Text>
           <TouchableOpacity onPress={toggleNewReelModal}>
-            <Ionicons name="add" size={35} color={Color.backGround1} style={styles.headerIcon} />
+            <Ionicons name="add" size={35} color={Color.white_white} style={styles.headerIcon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -260,13 +260,13 @@ export default function ReelsList() {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
               <View style={styles.commentHeader}>
-                <Text style={styles.commentTitle}>
+                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
                   {calculateTotalComments(currentReel?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textColor1}  />
+                  <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
 
@@ -294,22 +294,22 @@ export default function ReelsList() {
                 </View>
               )}
 
-              <View style={styles.commentInputContainer}>
+              <View style={[styles.commentInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor1}  />
+                  <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
-                  style={styles.commentInput}
+                  style={[styles.commentInput, { color: Color.textPrimary }]}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment} disabled={isCommentLoading}>
                   {isCommentLoading ? (
-                    <ActivityIndicator size="small" color={Color.mainColor1} />
+                    <ActivityIndicator size="small" color={Color.mainColor2} />
                   ) : (
-                    <Ionicons name="send" size={20} color={Color.mainColor1}  />
+                    <Ionicons name="send" size={20} color={Color.mainColor2} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -346,15 +346,15 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 50 : 30, // Adjust for status bar
   },
   headerLabel: {
-    color: 'white',
+    color: Color.white_white, // Thay 'white' bằng Color.white_white
     fontSize: 25,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)', 
+    textShadowColor: Color.shadow, // Thay 'rgba(0, 0, 0, 0.75)' bằng Color.shadow
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   headerIcon: {
-    shadowColor: '#000', 
+    shadowColor: Color.black_black, // Thay '#000' bằng Color.black_black
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.75,
     shadowRadius: 2,
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
+    borderBottomColor: Color.border, // Thay Color.borderColor1 bằng Color.border
   },
   emptyContainer: {
     flex: 1,
@@ -383,9 +383,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    color: 'white',
+    color: Color.white_white, // Thay 'white' bằng Color.white_white
     fontSize: 16,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)', // Black shadow for text
+    textShadowColor: Color.shadow, // Thay 'rgba(0, 0, 0, 0.75)' bằng Color.shadow
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
@@ -393,23 +393,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textShadowRadius: 2,
+    color: Color.textPrimary, // Thêm màu chữ cho commentTitle
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
+    borderTopColor: Color.border, // Thay Color.borderColor1 bằng Color.border
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.backgroundSecondary, // Thay Color.backGround bằng Color.backgroundSecondary
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border, // Thay Color.borderColor1 bằng Color.border
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: Color.textColor1,
+    color: Color.textPrimary, // Thay Color.textColor1 bằng Color.textPrimary
     paddingHorizontal: 10,
   },
   commentList: {

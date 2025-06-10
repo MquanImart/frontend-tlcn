@@ -23,8 +23,8 @@ export interface Color {
 }
 
 export const lightColor: Color = {
-    mainColor1: "#4B164C",
-    mainColor2: "#DD88CF",
+    mainColor2: "#4B164C",
+    mainColor1: "#DD88CF",
 
     background: "#FFFFFF", // Nền trắng tinh khiết
     backgroundSecondary: "#F0F0F0", // Nền phụ nhạt (ví dụ: cho các khối, thẻ)
@@ -34,8 +34,8 @@ export const lightColor: Color = {
     textPrimary: "#212121", // Chữ chính màu đen gần như thuần túy để tương phản cao
     textSecondary: "#616161", // Chữ phụ, mô tả (ví dụ: chú thích)
     textTertiary: "#9E9E9E", // Chữ ít quan trọng hơn, placeholder
-    textOnMain1: "#FFFFFF", // Chữ trên mainColor1 (màu trắng)
-    textOnMain2: "#4B164C", // Chữ trên mainColor1 (màu tím đậm của mainColor1)
+    textOnMain1: "#FFFFFF", // Chữ trên mainColor2 (màu trắng)
+    textOnMain2: "#4B164C", // Chữ trên mainColor2 (màu tím đậm của mainColor2)
     // Màu viền
     border: "#BDBDBD", // Viền chung
     // Màu trạng thái (ví dụ: success, error, warning)
@@ -48,8 +48,8 @@ export const lightColor: Color = {
 };
 
 export const darkColor: Color = {
-    mainColor1: "#DD88CF",
-    mainColor2: "#4B164C",
+    mainColor2: "#DD88CF",
+    mainColor1: "#4B164C",
     background: "#121212", // Nền rất đậm (gần như đen)
     backgroundSecondary: "#1E1E1E", // Nền phụ đậm hơn một chút
     backgroundTertiary: "#2C2C2C", // Nền đậm hơn nữa (ví dụ: cho input, hover)
@@ -58,8 +58,8 @@ export const darkColor: Color = {
     textPrimary: "#E0E0E0", // Chữ chính màu trắng nhạt để tương phản tốt
     textSecondary: "#A0A0A0", // Chữ phụ, mô tả
     textTertiary: "#757575", // Chữ ít quan trọng hơn, placeholder
-    textOnMain1: "#121212", // Chữ trên mainColor1 (màu nền đậm)
-    textOnMain2: "#E0E0E0", // Chữ trên mainColor1 (màu trắng nhạt của textPrimary)
+    textOnMain1: "#121212", // Chữ trên mainColor2 (màu nền đậm)
+    textOnMain2: "#E0E0E0", // Chữ trên mainColor2 (màu trắng nhạt của textPrimary)
     // Màu viền
     border: "#424242", // Viền chung
     // Màu trạng thái (ví dụ: success, error, warning)

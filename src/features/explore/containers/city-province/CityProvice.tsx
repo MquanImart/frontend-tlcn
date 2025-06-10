@@ -1,7 +1,9 @@
+// src/features/explore/containers/city-province/CityProvince.tsx
+
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop"; // Đảm bảo import TabbarTop
+import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
@@ -28,7 +30,13 @@ import HeaderProvince from "../../components/HeaderProvice";
 import useCityProvince from "./useCityProvide";
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
-const HEIGHT_HEADER = WINDOW_HEIGHT - 300;
+const HEADER_HEIGHT_RATIO = 0.4; // 40% of window height for header
+const HEIGHT_HEADER = WINDOW_HEIGHT * HEADER_HEIGHT_RATIO;
+const PADDING_ANIMATED_RATIO = 0.05; // 25% of window height for padding animated
+const PADDING_ANIMATED_HEIGHT = WINDOW_HEIGHT * PADDING_ANIMATED_RATIO;
+
+
+const BOTTOM_TAB_BAR_HEIGHT = 60;
 
 const CityProvince = () => {
   useTheme();
@@ -86,7 +94,7 @@ const CityProvince = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <HeaderProvince />
       {province ? (
         <View style={{ flex: 1 }}>
@@ -102,19 +110,21 @@ const CityProvince = () => {
                 <Text style={styles.textName}>{province.name}</Text>
                 <Text style={styles.textCountry}>Viet Nam</Text>
               </View>
-              {/* Đảm bảo Tabs và TabbarTop sử dụng cùng một màu nền */}
               <View style={[styles.tabs, { backgroundColor: Color.backgroundSecondary }]}>
                 <TabbarTop tabs={tabs} startTab={currTab} setTab={handleChangeTab} />
               </View>
             </LinearGradient>
           </Animated.View>
-          <View style={styles.paddingAnimated} />
-          <View style={[styles.contentListContainer]}>
+          <View style={{ height: PADDING_ANIMATED_HEIGHT }} />
+          <View style={[styles.contentListContainer, { backgroundColor: Color.background }]}>
             <Animated.FlatList
               style={{
                 flex: 1,
-                paddingTop: 300,
                 display: currTab === tabs[0].label ? "flex" : "none",
+              }}
+              contentContainerStyle={{
+                paddingTop: HEIGHT_HEADER - PADDING_ANIMATED_HEIGHT / 2,
+                paddingBottom: BOTTOM_TAB_BAR_HEIGHT + 20,
               }}
               data={articles}
               keyExtractor={(item) => item._id}
@@ -136,13 +146,13 @@ const CityProvince = () => {
               ListFooterComponent={
                 isLoadingArticles ? (
                   <View style={styles.footer}>
-                    <ActivityIndicator size="large" color={Color.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
                   </View>
                 ) : null
               }
               ListEmptyComponent={
                 <View style={styles.centered}>
-                  <Text style={styles.emptyText}>
+                  <Text style={[styles.emptyText, { color: Color.textSecondary }]}>
                     {isLoadingArticles ? "Đang tải..." : error || "Không có bài viết nào"}
                   </Text>
                 </View>
@@ -155,10 +165,16 @@ const CityProvince = () => {
               }}
               onScroll={onScrollAnimated}
               scrollEventThrottle={16}
-              contentContainerStyle={styles.scrollViewContent}
+              contentContainerStyle={[
+                styles.scrollViewContent,
+                {
+                  backgroundColor: Color.background,
+                  paddingTop: HEIGHT_HEADER - PADDING_ANIMATED_HEIGHT / 2,
+                  paddingBottom: BOTTOM_TAB_BAR_HEIGHT + 20,
+                },
+              ]}
             >
-              <View style={{ height: 300 }} />
-              <View style={{ height: WINDOW_HEIGHT - 300 }}>
+              <View style={{ flex: 1 }}>
                 {currTab === tabs[1].label ? (
                   hotPages ? (
                     <View style={styles.listPage}>
@@ -175,7 +191,7 @@ const CityProvince = () => {
                     </View>
                   ) : (
                     <View style={styles.centered}>
-                      <ActivityIndicator size="large" color={Color.mainColor1} />
+                      <ActivityIndicator size="large" color={Color.mainColor2} />
                     </View>
                   )
                 ) : pages ? (
@@ -193,7 +209,7 @@ const CityProvince = () => {
                   </View>
                 ) : (
                   <View style={styles.centered}>
-                    <ActivityIndicator size="large" color={Color.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
                   </View>
                 )}
               </View>
@@ -201,9 +217,9 @@ const CityProvince = () => {
           </View>
 
           <Modal isVisible={isModalVisible} onBackdropPress={closeComments} style={styles.modal}>
-            <View style={styles.commentContainer}>
-              <View style={styles.commentHeader}>
-                <Text style={styles.commentTitle}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
+              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
                   {calculateTotalComments(currentArticle?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
@@ -222,16 +238,23 @@ const CityProvince = () => {
                   />
                 )}
               />
-              <View style={styles.commentInputContainer}>
+              <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
                 <TextInput
-                  style={styles.commentInput}
+                  style={[
+                    styles.commentInput,
+                    {
+                      borderColor: Color.border,
+                      backgroundColor: Color.backgroundTertiary,
+                      color: Color.textPrimary,
+                    },
+                  ]}
                   placeholder="Viết bình luận..."
                   placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={24} color={Color.mainColor1} />
+                  <Ionicons name="send" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -239,7 +262,7 @@ const CityProvince = () => {
         </View>
       ) : (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
         </View>
       )}
     </View>
@@ -249,7 +272,6 @@ const CityProvince = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.background,
   },
   images: {
     width: "100%",
@@ -280,8 +302,6 @@ const styles = StyleSheet.create({
   },
   tabs: {
     padding: 10,
-    // Màu nền đã được chuyển vào inline style để đồng bộ với TabbarTop
-    // backgroundColor: Color.backgroundSecondary, // Đã di chuyển xuống inline
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
@@ -293,7 +313,6 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    backgroundColor: Color.background,
   },
   listPage: {
     flexDirection: "row",
@@ -308,7 +327,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textSecondary,
     fontStyle: "italic",
   },
   modal: {
@@ -320,7 +338,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 15,
-    backgroundColor: Color.backgroundSecondary,
   },
   commentHeader: {
     flexDirection: "row",
@@ -328,18 +345,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.border,
   },
   commentTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textPrimary,
   },
   commentInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: Color.border,
     paddingVertical: 10,
   },
   commentInput: {
@@ -349,9 +363,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     marginRight: 10,
-    borderColor: Color.border,
-    backgroundColor: Color.backgroundTertiary,
-    color: Color.textPrimary,
   },
   footer: {
     padding: 10,
@@ -359,10 +370,9 @@ const styles = StyleSheet.create({
   },
   contentListContainer: {
     flex: 1,
-    backgroundColor: Color.background,
   },
   paddingAnimated: {
-    height: 220,
+    height: PADDING_ANIMATED_HEIGHT,
   },
 });
 

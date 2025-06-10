@@ -2,8 +2,7 @@ import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { lightColor } from '@/src/styles/Colors';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
@@ -25,11 +24,10 @@ import {
 type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const InputForgot = () => {
-    useTheme();
     const [phoneOrMail, setPhoneOrMail] = useState("");
-    const [loading, setLoading] = useState(false); // Add loading state
+    const [loading, setLoading] = useState(false);
     const navigation = useNavigation<LoginNavigationProp>();
-    
+
     const isValidEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -40,20 +38,20 @@ const InputForgot = () => {
             Alert.alert("Lỗi", "Vui lòng nhập email của bạn để tiếp tục.");
             return;
         }
-    
-        let formattedInput = phoneOrMail.trim(); // Remove whitespace
-    
+
+        let formattedInput = phoneOrMail.trim();
+
         if (!isValidEmail(formattedInput)) {
             Alert.alert("Lỗi", "Vui lòng nhập địa chỉ email hợp lệ.");
             return;
         }
-    
-        setLoading(true); // Set loading to true when request starts
+
+        setLoading(true);
         try {
             const result = await restClient.apiClient
                 .service("apis/accounts/sendOtp")
                 .create({ input: formattedInput });
-    
+
             if (result.success) {
                 Alert.alert(
                     "Thành công",
@@ -71,22 +69,21 @@ const InputForgot = () => {
                 Alert.alert("Lỗi", "Đã xảy ra lỗi không xác định khi gửi OTP.");
             }
         } finally {
-            setLoading(false); // Reset loading state when request completes
+            setLoading(false);
         }
     };
-    
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{ flex: 1 }}
         >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <ScrollView 
+                <ScrollView
                     contentContainerStyle={styles.scrollContainer}
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.container}>
-                        {/* Circular image banner */}
                         <View style={styles.bannerContainer}>
                             <Image
                                 source={require("../../../../assets/images/logo.png")}
@@ -95,38 +92,35 @@ const InputForgot = () => {
                             />
                         </View>
 
-                        {/* Instruction text */}
                         <Text style={styles.instructionText}>
                             Nhập email của bạn
                         </Text>
 
-                        {/* Input field */}
                         <View style={styles.inputContainer}>
                             <CInput
                                 placeholder="Email"
                                 style={{
                                     width: "90%",
                                     height: 50,
-                                    backColor: Color.white_contrast,
-                                    textColor: Color.white_contrast,
+                                    backColor: lightColor.background,
+                                    textColor: lightColor.textPrimary,
                                     fontSize: 18,
                                     radius: 25,
-                                    borderColor: Color.mainColor1,
+                                    borderColor: lightColor.mainColor2,
                                 }}
                                 onChangeText={(text) => setPhoneOrMail(text)}
                             />
                         </View>
 
-                        {/* Button with loading state */}
                         <CButton
                             label={loading ? "Đang gửi..." : "Gửi mã"}
                             onSubmit={handleSendOtp}
-                            disabled={loading} // Disable button while loading
+                            disabled={loading}
                             style={{
                                 width: "90%",
                                 height: 50,
-                                backColor: loading ? Color.mainColor1 : Color.mainColor1, // Change background color when loading
-                                textColor: Color.white_homologous,
+                                backColor: lightColor.mainColor2,
+                                textColor: lightColor.textOnMain1,
                                 fontSize: 18,
                                 radius: 25,
                             }}
@@ -134,15 +128,14 @@ const InputForgot = () => {
                             {loading && (
                                 <ActivityIndicator
                                     size="small"
-                                    color={Color.white_homologous}
+                                    color={lightColor.textOnMain1}
                                     style={styles.loadingIndicator}
                                 />
                             )}
                         </CButton>
 
-                        {/* Footer link */}
                         <View style={styles.footer}>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                                 <Text style={styles.loginText}>
                                     Bạn đã có tài khoản?{" "}
                                     <Text
@@ -171,7 +164,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: Color.white_homologous,
+        backgroundColor: lightColor.background,
         paddingHorizontal: 20,
         paddingTop: 40,
     },
@@ -186,8 +179,7 @@ const styles = StyleSheet.create({
     },
     instructionText: {
         fontSize: 20,
-        color: Color.white_contrast,
-        fontWeight: "bold",
+        color: lightColor.textPrimary,
         marginBottom: 20,
         textAlign: "center",
     },
@@ -200,14 +192,14 @@ const styles = StyleSheet.create({
         marginTop: 120,
     },
     loginText: {
-        color: Color.white_contrast,
+        color: lightColor.textSecondary,
         fontWeight: "bold",
     },
     loginLink: {
-        color: Color.mainColor1,
+        color: lightColor.mainColor2,
         fontWeight: "bold",
     },
     loadingIndicator: {
-        marginRight: 10,
+        marginLeft: 10,
     },
 });

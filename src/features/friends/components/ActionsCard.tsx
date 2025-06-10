@@ -24,8 +24,8 @@ export const ButtonActions = ({actions, label, _id} : ButtonFriendsProps) => {
                     style={{
                         width: width,
                         height: 35,
-                        backColor: Color.mainColor1,
-                        textColor: Color.textOnMain1,
+                        backColor: Color.mainColor2,
+                        textColor: Color.textOnMain2,
                         fontSize: 13,
                         fontWeight: 'bold',
                         radius: 8, 

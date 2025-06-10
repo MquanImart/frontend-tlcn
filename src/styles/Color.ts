@@ -23,8 +23,8 @@ export interface Color {
     borderColorwb: string;
     inputBackGround: string;
 
-    mainColor1: string;
     mainColor2: string;
+    mainColor1: string;
     background: string;
     backgroundSecondary: string;
     backgroundTertiary:string;
@@ -44,8 +44,8 @@ export interface Color {
 }
 
 export const lightColor: Color = {
-    mainColor1: "#4B164C",
-    mainColor2: "#DD88CF",
+    mainColor2: "#4B164C",
+    mainColor1: "#DD88CF",
     white: "#fff",
     black: "#000",
     gray1: "#f0f0f0",
@@ -77,8 +77,8 @@ export const lightColor: Color = {
     textPrimary: "#212121", // Chữ chính màu đen gần như thuần túy để tương phản cao
     textSecondary: "#616161", // Chữ phụ, mô tả (ví dụ: chú thích)
     textTertiary: "#9E9E9E", // Chữ ít quan trọng hơn, placeholder
-    textOnMain1: "#FFFFFF", // Chữ trên mainColor1 (màu trắng)
-    textOnMain2: "#fff", // Chữ trên mainColor1 (màu tím đậm của mainColor1)
+    textOnMain1: "#FFFFFF", // Chữ trên mainColor2 (màu trắng)
+    textOnMain2: "#fff", // Chữ trên mainColor2 (màu tím đậm của mainColor2)
     // Màu viền
     border: "#BDBDBD", // Viền chung
     // Màu trạng thái (ví dụ: success, error, warning)
@@ -91,8 +91,8 @@ export const lightColor: Color = {
 };
 
 export const darkColor: Color = {
-    mainColor1: "#DD88CF",
-    mainColor2: "#4B164C",
+    mainColor2: "#DD88CF",
+    mainColor1: "#4B164C",
     white: "#000",
     black: "#fff",
     gray1: "#3d3d3d",
@@ -125,8 +125,8 @@ export const darkColor: Color = {
     textPrimary: "#E0E0E0", // Chữ chính màu trắng nhạt để tương phản tốt
     textSecondary: "#A0A0A0", // Chữ phụ, mô tả
     textTertiary: "#757575", // Chữ ít quan trọng hơn, placeholder
-    textOnMain1: "#121212", // Chữ trên mainColor1 (màu nền đậm)
-    textOnMain2: "#E0E0E0", // Chữ trên mainColor1 (màu trắng nhạt của textPrimary)
+    textOnMain1: "#121212", // Chữ trên mainColor2 (màu nền đậm)
+    textOnMain2: "#E0E0E0", // Chữ trên mainColor2 (màu trắng nhạt của textPrimary)
     // Màu viền
     border: "#424242", // Viền chung
     // Màu trạng thái (ví dụ: success, error, warning)

@@ -22,15 +22,15 @@ const ListSaveLocation = ({clickItem, open, setOpen} : ListSaveLocationProps) =>
     },[open]);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
             <TouchableOpacity style={styles.iconDown}
                 onPress={() => {setOpen(false)}}
             >
-                <Icon name="expand-more" size={30} color="black" />
+                <Icon name="expand-more" size={30} color={Color.textPrimary} />
             </TouchableOpacity>
-            <Text style={styles.title}>Danh sách đã lưu</Text>
+            <Text style={[styles.title, { color: Color.textPrimary }]}>Danh sách đã lưu</Text>
             <FlatList style={styles.list} data={savedLocations} renderItem={
-                ({item}) => 
+                ({item}) =>
                 <SavedLocations location={item} deletePress={deleteLocation} onPress={() => {clickItem({
                     longitude: item.longitude,
                     latitude: item.latitude
@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 600,
-        backgroundColor: Color.backGround
     },
     iconDown: {
         width: '100%', height: 30,
@@ -54,7 +53,8 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: '700',
-        marginVertical: 20 
+        marginVertical: 20,
+        textAlign: 'center' 
     },
     list: {
         maxHeight: 500

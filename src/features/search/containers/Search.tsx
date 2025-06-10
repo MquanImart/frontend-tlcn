@@ -3,7 +3,7 @@ import FriendCard from "@/src/features/friends/components/FriendCard";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo import đúng
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -40,7 +40,7 @@ const Search: React.FC = () => {
     displayedHistory,
     showAllHistory,
     handleSearchTextChange,
-    handleSearch, // Hàm này giờ trả về giá trị
+    handleSearch,
     handleClearSearch,
     handleRemoveHistoryItem,
     HandleButton,
@@ -58,17 +58,15 @@ const Search: React.FC = () => {
       return;
     }
 
-    // Chờ handleSearch hoàn thành và lấy giá trị mới nhất
     const { searchQuery: latestSearchQuery, isHashSearch: latestIsHashSearch } = await handleSearch();
 
     console.log("handleSearchSubmit: latestSearchQuery =", latestSearchQuery, "latestIsHashSearch =", latestIsHashSearch);
 
-    if (latestSearchQuery.length > 0) { // Đảm bảo có query để tìm kiếm
+    if (latestSearchQuery.length > 0) {
       if (latestIsHashSearch) {
         console.log("Navigating to SearchPost with textSearch (hashtags) =", latestSearchQuery);
         navigation.navigate("SearchPost", { textSearch: latestSearchQuery });
       } else {
-        // Đối với tìm kiếm người dùng/nhóm, chúng ta cần searchText ban đầu
         console.log("Navigating to SearchUserAndGroup with textSearch (full text) =", searchText);
         navigation.navigate("SearchUserAndGroup", { textSearch: searchText, userId });
       }
@@ -79,21 +77,19 @@ const Search: React.FC = () => {
 
   const handleHistoryItemPress = async (item: string) => {
     console.log("handleHistoryItemPress: item =", item);
-    setSearchText(item); // Cập nhật ô input với mục lịch sử
+    setSearchText(item);
 
     if (!userId) {
       console.error("User ID is not available, cannot navigate from history.");
       return;
     }
 
-    // Xác định loại tìm kiếm từ mục lịch sử
     const keywordsFromHistory = item
       .split(" ")
       .filter((word) => word.startsWith("#") && word.length > 1);
 
     const isHash = keywordsFromHistory.length > 0;
 
-    // Điều hướng dựa trên loại tìm kiếm của mục lịch sử
     if (isHash) {
       console.log("Navigating from history to SearchPost with hashtags:", keywordsFromHistory);
       navigation.navigate("SearchPost", { textSearch: keywordsFromHistory });
@@ -101,53 +97,49 @@ const Search: React.FC = () => {
       console.log("Navigating from history to SearchUserAndGroup with text:", item);
       navigation.navigate("SearchUserAndGroup", { textSearch: item, userId });
     }
-
-    // Bạn có thể cân nhắc gọi addHistorySearch ở đây nếu bạn muốn đảm bảo
-    // mục lịch sử này được đưa lên đầu danh sách tìm kiếm gần đây.
-    // await addHistorySearch(userId, item); // Nếu bạn muốn cập nhật vị trí trong lịch sử
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <View style={{ marginBottom: 40 }} />
-      <View style={styles.containerSearch}>
+      <View style={[styles.containerSearch, { backgroundColor: Color.background }]}>
         <CIconButton
-          icon={<Ionicons name="arrow-back" size={24} color="#000" />}
+          icon={<Ionicons name="arrow-back" size={24} color={Color.textPrimary} />} 
           onSubmit={() => navigation.goBack()}
           style={{
             width: 40,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.background, 
+            textColor: Color.textPrimary, 
             fontSize: 16,
             fontWeight: "normal",
             radius: 0,
             flex_direction: "row",
           }}
         />
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, { backgroundColor: Color.backgroundTertiary }]}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: Color.textPrimary }]} 
             placeholder="Nhập nội dung tìm kiếm"
-            placeholderTextColor="#000"
+            placeholderTextColor={Color.textTertiary} 
             value={searchText}
             onChangeText={handleSearchTextChange}
             onSubmitEditing={handleSearchSubmit}
           />
           {searchText.length > 0 && (
             <TouchableOpacity style={styles.clearButton} onPress={handleClearSearch}>
-              <Ionicons name="close" size={20} color="#000" />
+              <Ionicons name="close" size={20} color={Color.textSecondary} /> 
             </TouchableOpacity>
           )}
         </View>
         <CIconButton
-          icon={<Ionicons name="search" size={24} color="#000" />}
+          icon={<Ionicons name="search" size={24} color={Color.textPrimary} />} 
           onSubmit={handleSearchSubmit}
           style={{
             width: 50,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.background, 
+            textColor: Color.textPrimary, 
             fontSize: 16,
             fontWeight: "normal",
             radius: 20,
@@ -162,23 +154,23 @@ const Search: React.FC = () => {
             <TouchableOpacity
               key={index}
               style={styles.historyItem}
-              onPress={() => handleHistoryItemPress(item)} // Gọi hàm mới ở đây
+              onPress={() => handleHistoryItemPress(item)}
             >
-              <Text style={styles.historyText}>{item}</Text>
+              <Text style={[styles.historyText, { color: Color.textPrimary }]}>{item}</Text>
               <TouchableOpacity onPress={() => handleRemoveHistoryItem(item)}>
-                <Ionicons name="close" size={18} color="#000" />
+                <Ionicons name="close" size={18} color={Color.textSecondary} />
               </TouchableOpacity>
             </TouchableOpacity>
           ))}
           <TouchableOpacity
-            style={styles.viewAllButton}
+            style={[styles.viewAllButton, { backgroundColor: Color.backgroundTertiary }]} 
             onPress={() => setShowAllHistory(!showAllHistory)}
           >
-            <Text style={styles.viewAllText}>
+            <Text style={[styles.viewAllText, { color: Color.mainColor2 }]}>
               {showAllHistory ? "Thu gọn lịch sử" : "Xem tất cả lịch sử tìm kiếm"}
             </Text>
           </TouchableOpacity>
-          <Text style={styles.suggestedText}>Có thể bạn biết</Text>
+          <Text style={[styles.suggestedText, { color: Color.textPrimary }]}>Có thể bạn biết</Text>
           <ScrollView style={styles.listCard}>
             {allFriends &&
               allFriends.map((item) => (
@@ -216,12 +208,12 @@ const Search: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.white_homologous,
+    backgroundColor: Color.background, 
   },
   containerSearch: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.white_homologous,
+    backgroundColor: Color.background, 
     borderRadius: 25,
     marginBottom: 10,
     paddingHorizontal: 5,
@@ -230,7 +222,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary, 
     borderRadius: 25,
     position: "relative",
   },
@@ -241,7 +233,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 20,
     paddingRight: 40,
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary, 
+    color: Color.textPrimary, 
   },
   clearButton: {
     position: "absolute",
@@ -260,16 +253,17 @@ const styles = StyleSheet.create({
   },
   historyText: {
     fontSize: 16,
+    color: Color.textPrimary, 
   },
   viewAllButton: {
     marginTop: 10,
     alignItems: "center",
     padding: 10,
     borderRadius: 5,
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary, 
   },
   viewAllText: {
-    color: Color.mainColor1,
+    color: Color.mainColor2, 
   },
   suggestedText: {
     fontSize: 18,
@@ -277,7 +271,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
     marginLeft: 10,
-    color: Color.white_contrast,
+    color: Color.textPrimary, 
   },
   listCard: {
     paddingVertical: 10,

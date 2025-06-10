@@ -12,15 +12,15 @@ import CardStrangeMessage from "../../components/CardStrangeMessage";
 
 const StrangeMessages = () => {
     useTheme();
-    const { 
-      search, searchUser, 
+    const {
+      search, searchUser,
       isSearch, setIsSearch,
       conversations, inputRef,
       onPressHeaderLeft, filterUser,
       getConversations, chatnavigation,
       getUserId, userId
     } = useStrangeMessage();
-    
+
     useFocusEffect(
         useCallback(() => {
           const load = async () => {
@@ -29,7 +29,7 @@ const StrangeMessages = () => {
             load();
         }, [])
     );
-    
+
     useEffect(()=> {
       if (userId){
         getConversations();
@@ -37,29 +37,44 @@ const StrangeMessages = () => {
     },[userId]);
 
     return (
-        <View style={styles.container}>
-            <CHeaderIcon label={"Tin nhắn từ người lạ"} 
-            IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft} 
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
+            <CHeaderIcon label={"Tin nhắn từ người lạ"}
+            IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft}
             />
             <View style={styles.padding}/>
-            <SearchMessages search={search} setSearch={searchUser} 
+            <SearchMessages search={search} setSearch={searchUser}
                 setIsSearch={setIsSearch} refInput={inputRef}
             />
-            <Text style={styles.textNote}>Đoạn chat dành cho những người dùng chưa phải bạn bè của bạn. Hãy kết bạn hoặc cùng tham gia vào một nhóm để nhìn thấy đoạn chat trên tin nhắn.</Text>
-            {!conversations? (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
-              ) : !isSearch? (
-                <FlatList style={styles.listMessages} data={conversations} renderItem={({item}) => 
-                  <CardStrangeMessage 
-                    conversation={item} onPress={() => chatnavigation.navigate("BoxChat", {conversationId: item._id})}                  
-                  />}
-                /> 
-              ) : filterUser? (
-                <FlatList style={styles.listMessages} data={filterUser} renderItem={({item}) => 
-                  <CardSearch cardData={item}/>}
-                /> 
+            <Text style={[styles.textNote, { color: Color.textSecondary }]}>
+                Đoạn chat dành cho những người dùng chưa phải bạn bè của bạn. Hãy kết bạn hoặc cùng tham gia vào một nhóm để nhìn thấy đoạn chat trên tin nhắn.
+            </Text>
+            {!conversations ? (
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                </View>
+              ) : !isSearch ? (
+                <FlatList
+                    style={styles.listMessages}
+                    data={conversations}
+                    keyExtractor={(item) => item._id.toString()}
+                    renderItem={({item}) =>
+                        <CardStrangeMessage
+                            conversation={item} onPress={() => chatnavigation.navigate("BoxChat", {conversationId: item._id})}
+                        />
+                    }
+                />
+              ) : filterUser ? (
+                <FlatList
+                    style={styles.listMessages}
+                    data={filterUser}
+                    renderItem={({item}) =>
+                        <CardSearch cardData={item}/>
+                    }
+                />
               ) : (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                </View>
               )}
         </View>
     )
@@ -68,7 +83,6 @@ const StrangeMessages = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround,
     },
     padding: {
         paddingVertical: 5
@@ -80,7 +94,6 @@ const styles = StyleSheet.create({
     },
     textNote: {
         fontSize: 13,
-        color: '#333',
         textAlign: 'justify',
         lineHeight: 20,
         paddingHorizontal: 20

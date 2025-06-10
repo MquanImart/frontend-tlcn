@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     container: {
         borderRadius: 20,
         borderWidth: 5,
-        borderColor: Color.mainColor1,
+        borderColor: Color.mainColor2,
         overflow: 'hidden',
     },
     filterImages: {
@@ -72,11 +72,10 @@ const styles = StyleSheet.create({
         color: Color.white_white,
     },
     textName: {
-        width: '100%',
         color: Color.white_white,
         fontSize: 25,
         fontWeight: 'bold',
-        textAlign: 'center'
+        alignContent: 'center'
     },
     textCountry: {
         color: Color.white_white,

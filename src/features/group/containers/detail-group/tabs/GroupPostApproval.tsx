@@ -36,12 +36,12 @@ const GroupPostApproval: React.FC<GroupPostApprovalProps> = ({ groupId, role }) 
     <View style={[styles.container, { backgroundColor: Color.background }]}>
       <Text style={[styles.header, { color: Color.textPrimary }]}>Danh sách bài viết cần duyệt</Text>
       {loading ? (
-        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
+        <ActivityIndicator size="large" color={Color.mainColor2} style={styles.loading} />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text>
           <TouchableOpacity onPress={() => fetchPendingArticles(1)}>
-            <Text style={[styles.retryText, { color: Color.mainColor1 }]}>Thử lại</Text>
+            <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -63,7 +63,7 @@ const GroupPostApproval: React.FC<GroupPostApprovalProps> = ({ groupId, role }) 
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : null
           }
@@ -71,7 +71,7 @@ const GroupPostApproval: React.FC<GroupPostApprovalProps> = ({ groupId, role }) 
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchPendingArticles(1)}
-              colors={[Color.mainColor1]}
+              colors={[Color.mainColor2]}
             />
           }
         />
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    // color: Color.mainColor1, // Moved to inline style
+    // color: Color.mainColor2, // Moved to inline style
     marginTop: 10,
     fontWeight: "bold",
   },

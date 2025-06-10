@@ -41,7 +41,7 @@ const TabBarCustom: React.FC<TabBarProps> = ({
           style={[
             styles.tab,
             selectedTab === tab.label
-              ? [styles.activeTab, { backgroundColor: Color.mainColor1 }, activeTabStyle] // Active tab background
+              ? [styles.activeTab, { backgroundColor: Color.mainColor2 }, activeTabStyle] // Active tab background
               : [styles.inactiveTab, inactiveTabStyle], // Inactive tab background (transparent)
           ]}
           onPress={() => onSelectTab(tab.label)}
@@ -49,12 +49,12 @@ const TabBarCustom: React.FC<TabBarProps> = ({
           <Icon
             name={tab.icon}
             size={24}
-            // Icon color: textOnMain1 for active, textSecondary for inactive
-            color={selectedTab === tab.label ? Color.textOnMain1 : Color.textSecondary}
+            // Icon color: textOnMain2 for active, textSecondary for inactive
+            color={selectedTab === tab.label ? Color.textOnMain2 : Color.textSecondary}
           />
           {selectedTab === tab.label && (
-            // Text color for active tab: textOnMain1
-            <Text style={[styles.activeText, { color: Color.textOnMain1 }, activeTextStyle]}>{tab.label}</Text>
+            // Text color for active tab: textOnMain2
+            <Text style={[styles.activeText, { color: Color.textOnMain2 }, activeTextStyle]}>{tab.label}</Text>
           )}
         </TouchableOpacity>
       ))}

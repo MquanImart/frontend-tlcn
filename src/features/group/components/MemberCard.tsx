@@ -73,7 +73,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
         styles.card,
         {
           backgroundColor: Color.backgroundSecondary, // Changed to backgroundSecondary for card background
-          shadowColor: Color.mainColor1,
+          shadowColor: Color.mainColor2,
         },
       ]}
       activeOpacity={0.8}

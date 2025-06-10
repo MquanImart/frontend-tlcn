@@ -98,8 +98,8 @@ const MyProfile = () => {
                 label="My Profile"
                 backPress={() => navigation.goBack()}
                 rightPress={() => navigation.navigate("EditProfile")}
-                labelColor={Color.mainColor1}
-                iconColor={Color.mainColor1}
+                labelColor={Color.mainColor2}
+                iconColor={Color.mainColor2}
                 rightIcon="settings"
             />
             <View style={styles.profileInfo}>

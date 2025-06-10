@@ -15,7 +15,7 @@ const CustomMap = () => {
   const route = useRoute<RouteProp<MapStackParamList, "CustomMap">>();
   const {lat, long} = route.params || {};
 
-  const { 
+  const {
     mapRef,
     currSaved, selectedMarker,
     location, details,
@@ -24,7 +24,7 @@ const CustomMap = () => {
     handleMapPress, closeDetails,
     getDetails, navigationDirection,
     clickSavedLocation,
-    
+
   } = useMap(lat, long);
 
   return (
@@ -60,15 +60,17 @@ const CustomMap = () => {
       </MapView>
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
+            backgroundColor: Color.background, 
           },]}>
-        <CardDetails 
+        <CardDetails
           details={details} closeDetails={closeDetails}
-          pressDirection={navigationDirection} location={selectedMarker}        
+          pressDirection={navigationDirection} location={selectedMarker}
         />
       </Animated.View>
 
       <Animated.View style={[styles.saveds, {
             transform: [{ translateY: translateY_S }],
+            backgroundColor: Color.background, 
           },]}>
         <ListSaveLocation clickItem={clickSavedLocation} open={currSaved} setOpen={moveSaved}/>
       </Animated.View>
@@ -88,14 +90,13 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     errorText: {
-      color: "red",
+      color: Color.error,
       fontSize: 16,
     },
     details: {
       width: '100%', height: 400,
       position: 'absolute',
       bottom: -400,
-      backgroundColor: Color.backGround,
       padding: 10,
       borderStartEndRadius: 20, borderStartStartRadius: 20,
       zIndex: 5,
@@ -104,11 +105,10 @@ const styles = StyleSheet.create({
       width: '100%', height: 600,
       position: 'absolute',
       bottom: -600,
-      backgroundColor: Color.backGround,
       padding: 10,
       borderStartEndRadius: 20, borderStartStartRadius: 20,
       zIndex: 6,
     }
   });
-  
+
 export default CustomMap;

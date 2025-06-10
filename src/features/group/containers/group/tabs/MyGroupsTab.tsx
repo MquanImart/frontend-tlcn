@@ -47,7 +47,7 @@ const MyGroupTab = ({ userId, handleScroll }: MyGroupsTabProps) => {
       <View style={[styles.centered, { backgroundColor: Color.background }]}>
         <Text style={[styles.emptyText, { color: Color.error }]}>{error}</Text>
         <TouchableOpacity onPress={() => fetchMyGroups(1)}>
-          <Text style={[styles.retryText, { color: Color.mainColor1 }]}>Thử lại</Text>
+          <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
         </TouchableOpacity>
       </View>
     );
@@ -74,7 +74,7 @@ const MyGroupTab = ({ userId, handleScroll }: MyGroupsTabProps) => {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : null
           }
@@ -82,7 +82,7 @@ const MyGroupTab = ({ userId, handleScroll }: MyGroupsTabProps) => {
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchMyGroups(1)}
-              colors={[Color.mainColor1]}
+              colors={[Color.mainColor2]}
             />
           }
         />

@@ -13,7 +13,7 @@ import FormSuggested from "./FormSuggested";
 import { Trip } from "@/src/interface/interface_detail";
 
 export interface LocationProps{
-  latitude: number; 
+  latitude: number;
   longitude: number;
 }
 
@@ -36,7 +36,7 @@ const TripScreen = () => {
     changeListTrip(trip);
     setShowForm(false);
   }
-  
+
   const moveDetails = (up: boolean) => {
     Animated.timing(translateY, {
       toValue: up?-350: 0,
@@ -59,11 +59,11 @@ const TripScreen = () => {
       setLocation(loc);
     })();
   }, []);
-  
+
   if (errorMsg || !trip) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>{errorMsg}</Text>
+        <Text style={[styles.errorText, { color: Color.error }]}>{errorMsg}</Text>
       </View>
     );
   }
@@ -92,7 +92,7 @@ const TripScreen = () => {
           }}
           title={`Điểm bắt đầu`}
         />
-        {trip.listAddress.map((item, index) => 
+        {trip.listAddress.map((item, index) =>
         <Marker
           key={`destination-${index}`}
           coordinate={{
@@ -112,17 +112,18 @@ const TripScreen = () => {
       </MapView>
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
+            backgroundColor: Color.background,
           }]}>
         <DetailsTrip trip={trip} setTrip={setTrip} closeDetails={() => {moveDetails(!isDetails)}} currState={isDetails}
-          suggestedForm={setShowForm}  
+          suggestedForm={setShowForm}
         />
       </Animated.View>
       {showForm && (
-        <View style={styles.overlay}>
-          <View style={styles.boxTitle}>
-            <Text style={styles.titleForm}>Gợi ý lộ trình</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowForm(false)}>
-              <Text style={styles.closeText}>✕</Text>
+        <View style={[styles.overlay, { backgroundColor: Color.background }]}>
+          <View style={[styles.boxTitle, { backgroundColor: Color.background + 'B3' }]}>
+            <Text style={[styles.titleForm, { color: Color.textPrimary }]}>Gợi ý lộ trình</Text>
+            <TouchableOpacity style={[styles.closeButton, { backgroundColor: Color.backgroundSecondary }]} onPress={() => setShowForm(false)}>
+              <Text style={[styles.closeText, { color: Color.textPrimary }]}>✕</Text>
             </TouchableOpacity>
           </View>
           <FormSuggested tripId={tripId} numVisitPlaces={trip.listAddress} handleSubmitChange={handleChangeListTrip}/>
@@ -144,14 +145,12 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     errorText: {
-      color: "red",
       fontSize: 16,
     },
     details: {
       width: '100%', height: 550,
       position: 'absolute',
       bottom: -380,
-      backgroundColor: Color.backGround,
       paddingVertical: 10,
       borderStartEndRadius: 20, borderStartStartRadius: 20,
       zIndex: 5,
@@ -163,7 +162,6 @@ const styles = StyleSheet.create({
       position: 'absolute',
       top: 40,
       zIndex: 10,
-      backgroundColor: 'rgba(255,255,255,0.5)',
       padding: 10,
     },
     titleForm: {
@@ -176,7 +174,6 @@ const styles = StyleSheet.create({
       left: 0,
       width: Dimensions.get("window").width,
       height: Dimensions.get("window").height,
-      backgroundColor: "white", // hoặc rgba(0,0,0,0.5) nếu muốn làm mờ nền
       zIndex: 9,
     },
     closeButton: {
@@ -184,7 +181,6 @@ const styles = StyleSheet.create({
       top: 5,
       right: 16,
       zIndex: 10,
-      backgroundColor: "#eee",
       borderRadius: 20,
       padding: 6,
     },
@@ -193,5 +189,5 @@ const styles = StyleSheet.create({
       fontWeight: "bold",
     },
   });
-  
+
 export default TripScreen;

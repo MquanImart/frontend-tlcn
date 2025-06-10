@@ -32,7 +32,7 @@ const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
               style={[
                 styles.text,
                 isCurrentTab ? styles.currenttext : null,
-                { color: isCurrentTab ? Color.mainColor1 : Color.textPrimary } // Đặt màu chữ cho tab không chọn là Color.textPrimary
+                { color: isCurrentTab ? Color.mainColor2 : Color.textPrimary } // Đặt màu chữ cho tab không chọn là Color.textPrimary
               ]}
             >
               {label}
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     currenttab: {
-      borderBottomColor: Color.mainColor1,
+      borderBottomColor: Color.mainColor2,
       borderBottomWidth: 2,
     },
     text: {

@@ -1,6 +1,6 @@
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đã import đối tượng Color
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
@@ -99,7 +99,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       onPress={() => openImageModal(item.url || DEFAULT_AVATAR)}
     >
       {imageLoading[item._id] && (
-        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor1} />
+        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor2} />
       )}
       <Image
         source={{ uri: item.url || DEFAULT_AVATAR }}
@@ -121,16 +121,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { marginLeft: getMarginLeft(level) }]}
+      style={[styles.container, { marginLeft: getMarginLeft(level), backgroundColor: Color.background }]} // Thay đổi màu nền container
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={styles.commentRow}>
-        <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+        <Image source={{ uri: avatarUrl }} style={[styles.avatar, {backgroundColor: Color.backgroundSecondary}]} /> {/* Thay đổi màu nền avatar */}
         <View style={styles.content}>
-          <Text style={[styles.username, { color: Color.textColor1 }]}>
+          <Text style={[styles.username, { color: Color.textPrimary }]}> {/* Thay đổi màu chữ username */}
             {comment._iduser?.displayName || "Unknown"}
           </Text>
-          <Text style={[styles.text, { color: Color.textColor1 }]}>{comment.content}</Text>
+          <Text style={[styles.text, { color: Color.textPrimary }]}>{comment.content}</Text> {/* Thay đổi màu chữ text */}
 
           {mediaList.length > 0 && (
             <FlatList
@@ -148,18 +148,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
               <Ionicons
                 name={isLiked ? "heart" : "heart-outline"}
                 size={14}
-                color={isLiked ? "red" : Color.textColor3}
+                color={isLiked ? Color.error : Color.textSecondary} // Thay đổi màu trái tim
               />
-              <Text style={[styles.count, { color: isLiked ? "red" : Color.textColor3 }]}>
+              <Text style={[styles.count, { color: isLiked ? Color.error : Color.textSecondary }]}> {/* Thay đổi màu số lượng like */}
                 {comment.emoticons?.length || 0}
               </Text>
             </TouchableOpacity>
-            <Text style={[styles.separator, { color: Color.textColor3 }]}>·</Text>
+            <Text style={[styles.separator, { color: Color.textTertiary }]}>·</Text> {/* Thay đổi màu separator */}
             <TouchableOpacity onPress={toggleReplyInput}>
-              <Text style={[styles.actionText, { color: Color.mainColor1 }]}>Phản hồi</Text>
+              <Text style={[styles.actionText, { color: Color.mainColor2 }]}>Phản hồi</Text>
             </TouchableOpacity>
-            <Text style={[styles.separator, { color: Color.textColor3 }]}>·</Text>
-            <Text style={[styles.time, { color: Color.textColor3 }]}>{timeAgo(comment.createdAt)}</Text>
+            <Text style={[styles.separator, { color: Color.textTertiary }]}>·</Text> {/* Thay đổi màu separator */}
+            <Text style={[styles.time, { color: Color.textTertiary }]}>{timeAgo(comment.createdAt)}</Text> {/* Thay đổi màu thời gian */}
           </View>
         </View>
       </View>
@@ -175,20 +175,20 @@ const CommentItem: React.FC<CommentItemProps> = ({
               style={styles.previewContainer}
             />
           )}
-          <View style={styles.replyInputContainer}>
+          <View style={[styles.replyInputContainer, {backgroundColor: Color.backgroundSecondary, borderColor: Color.border}]}> {/* Thay đổi màu nền và viền reply input */}
             <TouchableOpacity onPress={pickMedia}>
-              <Ionicons name="image" size={24} color={Color.mainColor1} />
+              <Ionicons name="image" size={24} color={Color.mainColor2} />
             </TouchableOpacity>
             <TextInput
-              style={[styles.replyInput, { color: Color.textColor1 }]}
+              style={[styles.replyInput, { color: Color.textPrimary }]} // Thay đổi màu chữ reply input
               placeholder="Viết phản hồi..."
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary} // Thay đổi màu placeholder
               value={replyContent}
               onChangeText={handleReplyChange}
               multiline
             />
             <TouchableOpacity onPress={handleSubmitReply}>
-              <Ionicons name="send" size={20} color={Color.mainColor1} />
+              <Ionicons name="send" size={20} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>
@@ -196,7 +196,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
       {replies.length > 0 && (
         <TouchableOpacity onPress={toggleReplies}>
-          <Text style={[styles.toggleReplies, { color: Color.mainColor1 }]}>
+          <Text style={[styles.toggleReplies, { color: Color.mainColor2 }]}>
             {areRepliesVisible ? "Ẩn bớt" : `Xem tất cả ${replies.length} phản hồi`}
           </Text>
         </TouchableOpacity>
@@ -220,7 +220,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
         animationType="fade"
         onRequestClose={closeImageModal}
       >
-        <TouchableOpacity style={styles.modalOverlay} onPress={closeImageModal}>
+        <TouchableOpacity style={[styles.modalOverlay, {backgroundColor: Color.shadow}]} onPress={closeImageModal}> {/* Thay đổi màu nền modal overlay */}
           <Image
             source={{ uri: selectedImage || DEFAULT_AVATAR }}
             style={styles.enlargedImage}
@@ -233,39 +233,39 @@ const CommentItem: React.FC<CommentItemProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 12, backgroundColor: Color.backGround },
+  container: { padding: 12, backgroundColor: Color.background }, // Thay đổi màu nền
   commentRow: { flexDirection: "row", alignItems: "flex-start" },
-  avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: Color.backGround },
+  avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: Color.backgroundSecondary }, // Thay đổi màu nền avatar
   content: { flex: 1 ,},
-  username: { fontWeight: "bold", fontSize: 15 },
-  text: { fontSize: 14, marginTop: 4, lineHeight: 20 },
+  username: { fontWeight: "bold", fontSize: 15, color: Color.textPrimary }, // Thay đổi màu chữ username
+  text: { fontSize: 14, marginTop: 4, lineHeight: 20, color: Color.textPrimary }, // Thay đổi màu chữ text
   actions: { flexDirection: "row", alignItems: "center", marginTop: 6 },
   actionButton: { flexDirection: "row", alignItems: "center" },
-  count: { marginLeft: 6, fontSize: 12 },
-  separator: { fontSize: 12, marginHorizontal: 6 },
-  actionText: { fontSize: 12, fontWeight: "600" },
-  time: { fontSize: 12 },
+  count: { marginLeft: 6, fontSize: 12, color: Color.textSecondary }, // Thay đổi màu số lượng like
+  separator: { fontSize: 12, marginHorizontal: 6, color: Color.textTertiary }, // Thay đổi màu separator
+  actionText: { fontSize: 12, fontWeight: "600", color: Color.mainColor2 }, // Thay đổi màu chữ action text
+  time: { fontSize: 12, color: Color.textTertiary }, // Thay đổi màu thời gian
   replySection: { marginLeft: 40 },
   previewContainer: { maxHeight: 100, marginVertical: 10 },
   replyInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.backgroundSecondary, // Thay đổi màu nền
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border, // Thay đổi màu viền
   },
-  replyInput: { flex: 1, fontSize: 14, paddingHorizontal: 10, maxHeight: 100 },
-  toggleReplies: { fontSize: 14, marginVertical: 6, marginLeft: 50, fontWeight: "600" },
+  replyInput: { flex: 1, fontSize: 14, paddingHorizontal: 10, maxHeight: 100, color: Color.textPrimary }, // Thay đổi màu chữ reply input
+  toggleReplies: { fontSize: 14, marginVertical: 6, marginLeft: 50, fontWeight: "600", color: Color.mainColor2 }, // Thay đổi màu chữ toggle replies
   mediaGrid: { marginTop: 8 },
   mediaItem: { width: "48%", margin: "1%", aspectRatio: 1, position: "relative" },
-  mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: Color.backGround },
+  mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: Color.backgroundSecondary }, // Thay đổi màu nền media image
   loading: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center" },
   mediaPreview: { width: 80, height: 80, marginRight: 10, borderRadius: 5 },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: Color.shadow, // Thay đổi màu nền overlay
     justifyContent: "center",
     alignItems: "center",
   },

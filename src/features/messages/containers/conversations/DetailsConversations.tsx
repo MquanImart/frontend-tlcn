@@ -9,13 +9,16 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { CardActionsDetails } from "../../components/CardActionsDetails";
 import RenameGroupModal from "../../components/RenameGroupModal";
 import useDetails from "./useDetails";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const DetailsConversations = () => {
     useTheme();
     const route = useRoute<RouteProp<ChatStackParamList, "Details">>();
     const { defaultConversation, isFriend } = route.params || {};
-    const { 
+
+    const insets = useSafeAreaInsets();
+
+    const {
         onPressHeaderLeft,
         listActionMessage, listActionUser,
         getDataAction, display,
@@ -30,17 +33,18 @@ const DetailsConversations = () => {
             const load = async () => {
                 await getDataAction();
             }
-            load(); 
+            load();
         }, [conversation])
     );
-      
-    if (!listActionUser || !listActionMessage || !display) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+
+    if (!listActionUser || !listActionMessage || !display) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.background, paddingTop: insets.top }}><ActivityIndicator size="large" color={Color.mainColor2}/></View>
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.background, paddingTop: insets.top }]}>
             <CHeaderIcon label={""} IconLeft={"arrow-back-ios"} onPressLeft={onPressHeaderLeft}/>
             <View style={styles.column_center}>
                 <TouchableOpacity onPress={() => {handleOpenImagePicker()}}>
-                    <Image style={styles.avt} 
+                    <Image style={[styles.avt, { borderColor: Color.border, borderWidth: 2 }]}
                         source={display.avt ? {uri: display.avt.url} : (
                         display.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
                         display.type === 'private'? require('@/src/assets/images/default/default_user.png'):
@@ -48,21 +52,20 @@ const DetailsConversations = () => {
                         )}
                     />
                 </TouchableOpacity>
-                <Text style={styles.textName}>{display.name}</Text>
+                <Text style={[styles.textName, { color: Color.textPrimary }]}>{display.name}</Text>
                 <CardActionsDetails label={"Hành động"} buttons={listActionUser}/>
                 <CardActionsDetails label={"Cài đặt trò chuyện"} buttons={listActionMessage}/>
             </View>
-            <RenameGroupModal visible={openEditName} currentName={newName} 
-                onRename={changeNameGroup} 
+            <RenameGroupModal visible={openEditName} currentName={newName}
+                onRename={changeNameGroup}
                 onCancel={() => {setOpenEditName(false)}}/>
-        </View> 
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround
     },
     column_center: {
         alignItems: 'center',

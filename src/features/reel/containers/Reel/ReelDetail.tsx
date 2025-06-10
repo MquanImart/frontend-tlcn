@@ -112,22 +112,22 @@ export default function ReelDetail() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
+        <ActivityIndicator size="large" color={Color.mainColor2} />
       </View>
     );
   }
 
   if (!reel) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Không tìm thấy reel</Text>
+      <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.textPrimary }]}>Không tìm thấy reel</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'black' }}>
+    <View style={{ flex: 1, backgroundColor: Color.black_black }}>
       <SingleReel
         reel={reel}
         onCommentPress={() => openComments(reel)}
@@ -140,8 +140,8 @@ export default function ReelDetail() {
         <CHeader
           label="Reel"
           backPress={() => navigation.goBack()}
-          labelColor={Color.backGround1}
-          iconColor={Color.backGround1}
+          labelColor={Color.white_white}
+          iconColor={Color.white_white}
         />
       </View>
 
@@ -158,13 +158,13 @@ export default function ReelDetail() {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
-              <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
+              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
                   {calculateTotalComments(currentReel?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textColor1} />
+                  <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
 
@@ -192,22 +192,22 @@ export default function ReelDetail() {
                 </View>
               )}
 
-              <View style={styles.commentInputContainer}>
+              <View style={[styles.commentInputContainer, {backgroundColor: Color.backgroundSecondary, borderColor: Color.border, borderTopColor: Color.border}]}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
-                  style={styles.commentInput}
+                  style={[styles.commentInput, { color: Color.textPrimary }]}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment} disabled={isLoading}>
                   {isLoading ? (
-                    <ActivityIndicator size="small" color={Color.mainColor1} />
+                    <ActivityIndicator size="small" color={Color.mainColor2} />
                   ) : (
-                    <Ionicons name="send" size={20} color={Color.mainColor1} />
+                    <Ionicons name="send" size={20} color={Color.mainColor2} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -224,16 +224,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: Color.background,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: Color.background,
   },
   emptyText: {
-    color: 'white',
+    color: Color.textPrimary,
     fontSize: 16,
   },
   headerContainer: {
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: 'transparent',
+    // Removed backgroundColor here as CHeader now handles its own background.
   },
   modal: {
     justifyContent: 'flex-end',
@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 15,
+    backgroundColor: Color.backgroundSecondary,
   },
   commentHeader: {
     flexDirection: 'row',
@@ -260,28 +261,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
+    borderBottomColor: Color.border,
   },
   commentTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: Color.textPrimary,
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
+    borderTopColor: Color.border,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.backgroundSecondary,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: Color.textColor1,
+    color: Color.textPrimary,
     paddingHorizontal: 10,
   },
   commentList: {

@@ -1,8 +1,7 @@
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { lightColor } from '@/src/styles/Colors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
@@ -14,13 +13,12 @@ type OtpForgotRouteProp = RouteProp<AuthStackParamList, "OtpForgot">;
 type LoginNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const OtpForgot = () => {
-    useTheme();
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const otpRefs = useRef<Array<TextInput | null>>([]);
     const navigation = useNavigation<LoginNavigationProp>();
     const route = useRoute<OtpForgotRouteProp>();
 
-    const email = route.params?.email.trim(); // Nhận email từ màn hình trước
+    const email = route.params?.email.trim();
 
     const handleOtpChange = (value: string, index: number) => {
         if (value.length > 1) return;
@@ -40,7 +38,7 @@ const OtpForgot = () => {
     };
 
     const handleVerifyOtp = async () => {
-        const enteredOtp = otp.join("").trim(); // Chuyển mảng thành chuỗi "123456"
+        const enteredOtp = otp.join("").trim();
         if (enteredOtp.length < 6) {
             Alert.alert("Lỗi", "Vui lòng nhập đầy đủ mã OTP.");
             return;
@@ -53,7 +51,7 @@ const OtpForgot = () => {
 
             if (result.success) {
                 Alert.alert("Thành công", "Xác minh OTP thành công!");
-                navigation.navigate("NewPassword", { email }); // Chuyển sang màn hình đặt mật khẩu mới
+                navigation.navigate("NewPassword", { email });
             } else {
                 Alert.alert("Lỗi", result.message || "Mã OTP không hợp lệ.");
             }
@@ -64,41 +62,60 @@ const OtpForgot = () => {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.keyboardAvoidingContainer}
+        >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-                    <View style={styles.container}>
+                <ScrollView
+                    contentContainerStyle={styles.scrollContainer}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View style={styles.innerContent}>
                         <View style={styles.bannerContainer}>
                             <Image source={require("../../../../assets/images/logo.png")} style={styles.bannerImage} resizeMode="contain" />
                         </View>
 
                         <Text style={styles.instructionText}>Nhập mã xác nhận</Text>
-                        <Text style={styles.emailText}>Mã OTP đã gửi đến: {email}</Text>
+                        <Text style={styles.emailText}>Mã OTP đã gửi đến: **{email}**</Text>
 
                         <View style={styles.otpContainer}>
-                            {otp.map((_, index) => (
+                            {otp.map((digit, index) => (
                                 <TextInput
                                     key={index}
                                     ref={el => { otpRefs.current[index] = el; }}
-                                    style={styles.otpInput}
+                                    style={[
+                                        styles.otpInput,
+                                        digit ? { borderColor: lightColor.mainColor2, borderWidth: 2 } : {},
+                                        otpRefs.current[index]?.isFocused() ? { borderColor: lightColor.mainColor2, borderWidth: 2, backgroundColor: lightColor.backgroundSecondary } : {},
+                                    ]}
                                     keyboardType="number-pad"
                                     maxLength={1}
-                                    value={otp[index]}
+                                    value={digit}
                                     onChangeText={(value) => handleOtpChange(value, index)}
                                     onKeyPress={(e) => handleKeyPress(e, index)}
+                                    caretHidden={true}
                                 />
                             ))}
                         </View>
 
                         <CButton
                             label="Xác nhận"
-                            onSubmit={handleVerifyOtp} // Gọi API khi nhấn "Xác nhận"
-                            style={{ width: "90%", height: 50, backColor: Color.mainColor1, textColor: "#fff", radius: 25 }}
+                            onSubmit={handleVerifyOtp}
+                            style={{
+                                width: "90%",
+                                height: 50,
+                                backColor: lightColor.mainColor2,
+                                textColor: lightColor.textOnMain1,
+                                radius: 25,
+                                shadow: true,
+                            }}
                         />
 
-                        <TouchableOpacity>
-                            <Text style={styles.footerText}>
-                                Bạn đã có tài khoản? <Text style={styles.loginText} onPress={() => navigation.navigate("Login")}>Đăng nhập</Text>
+                        <View style={styles.spacer} />
+                        <TouchableOpacity style={styles.loginLinkWrapper} onPress={() => navigation.navigate("Login")}>
+                            <Text style={styles.loginAccountText}>
+                                Bạn đã có tài khoản? <Text style={styles.loginLink}>Đăng nhập</Text>
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -111,63 +128,80 @@ const OtpForgot = () => {
 export default OtpForgot;
 
 const styles = StyleSheet.create({
+    keyboardAvoidingContainer: {
+        flex: 1,
+        backgroundColor: lightColor.background,
+    },
     scrollContainer: {
         flexGrow: 1,
-        justifyContent: "center",
-    },
-    container: {
-        flex: 1,
+        justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: Color.white_homologous,
-        padding: 20,
+        paddingVertical: 20,
+    },
+    innerContent: {
+        flexGrow: 1,
+        alignItems: "center",
+        width: '100%',
+        paddingHorizontal: 20,
+        justifyContent: 'center',
     },
     bannerContainer: {
         marginBottom: 30,
-        marginTop: 40,
+        marginTop: 20,
         justifyContent: "center",
         alignItems: "center",
+        width: '100%',
     },
     bannerImage: {
-        width: 350,
-        height: 350,
+        width: 250,
+        height: 250,
+        borderRadius: 15,
     },
     instructionText: {
-        fontSize: 22,
-        color: Color.white_contrast,
+        fontSize: 24,
+        color: lightColor.textPrimary,
         fontWeight: "bold",
-        marginBottom: 20,
+        marginBottom: 10,
         textAlign: "center",
     },
     emailText: {
         fontSize: 16,
-        color: Color.white_contrast,
-        marginBottom: 10,
-    },
-    footerText: {
-        marginTop: 170,
-        fontSize: 14,
-        color: Color.white_contrast,
+        color: lightColor.textSecondary,
+        marginBottom: 30,
         textAlign: "center",
     },
     otpContainer: {
         flexDirection: "row",
-        justifyContent: "space-between",
-        width: "80%",
-        marginBottom: 20,
+        justifyContent: "space-around",
+        width: "90%",
+        marginBottom: 30,
     },
     otpInput: {
-        width: 40,
-        height: 40,
+        width: 45,
+        height: 45,
         borderWidth: 1,
-        borderColor: Color.mainColor1,
-        backgroundColor: Color.white_homologous,
+        borderColor: lightColor.border,
+        backgroundColor: lightColor.background,
         borderRadius: 10,
         textAlign: "center",
-        fontSize: 18,
-        color: Color.white_contrast,
+        fontSize: 20,
+        color: lightColor.textPrimary,
     },
-    loginText: {
-        color: Color.mainColor1,
+    spacer: {
+        flex: 1,
+        // No minHeight needed here, flex: 1 alone should work with space-between
+    },
+    loginLinkWrapper: {
+        marginBottom: 20,
+        marginTop: 20,
+    },
+    loginAccountText: {
+        fontSize: 14,
+        color: lightColor.textSecondary,
+        textAlign: "center",
+    },
+    loginLink: {
+        color: lightColor.mainColor2,
         fontWeight: "bold",
     },
 });

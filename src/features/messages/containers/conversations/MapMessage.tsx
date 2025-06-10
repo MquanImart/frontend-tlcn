@@ -25,13 +25,12 @@ const MapMessage= ({addressString} : MapMessageProps) => {
 
     const parseLatLong = (addressString: string) : {lat: number, long: number} => {
         try {
-          // Sử dụng regex để lấy lat và long
           const match = addressString.match(/lat:([-]?[\d.]+)\s+long:([-]?[\d.]+)/);
           if (!match) throw new Error("Invalid address format");
-      
+
           const lat = parseFloat(match[1]);
           const long = parseFloat(match[2]);
-          
+
           console.log(lat, long);
           return { lat, long };
         } catch (error) {
@@ -40,28 +39,28 @@ const MapMessage= ({addressString} : MapMessageProps) => {
     };
 
     return (
-        <View style={styles.mapContainer}>
+        <View style={[styles.mapContainer, { backgroundColor: Color.backgroundTertiary }]}>
           {Platform.OS === "web" ? (
             <Image
-              source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Google_Maps_icon_%282020%29.svg" }}
+              source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Maps_icon_%282020%29.svg" }}
               style={styles.mapImage}
             />
           ) : loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={Color.mainColor1} />
-              <Text style={styles.loadingText}>Đang tải bản đồ...</Text>
+              <ActivityIndicator size="large" color={Color.mainColor2} />
+              <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải bản đồ...</Text>
             </View>
           ) : mapRegion ? (
             <MapView
               style={styles.map}
-              region={mapRegion} // Dùng region để cập nhật động
+              region={mapRegion}
               scrollEnabled={false}
               zoomEnabled={true}
             >
               <Marker coordinate={{ latitude: mapRegion.latitude, longitude:mapRegion.longitude }} />
             </MapView>
           ) : (
-            <Text style={styles.errorText}>Không thể hiển thị bản đồ: {"Không có tọa độ"}</Text>
+            <Text style={[styles.errorText, { color: Color.error }]}>Không thể hiển thị bản đồ: {"Không có tọa độ"}</Text>
           )}
         </View>
     )
@@ -74,7 +73,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     overflow: "hidden",
     marginTop: 10,
-    backgroundColor: "#EAEAEA",
   },
   map: {
     width: "100%",
@@ -87,7 +85,7 @@ const styles = StyleSheet.create({
   },
   messageButton: {
     marginBottom: 10,
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",
@@ -109,10 +107,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    color: Color.textColor1,
   },
   errorText: {
-    color: "red",
     textAlign: "center",
     padding: 10,
   },

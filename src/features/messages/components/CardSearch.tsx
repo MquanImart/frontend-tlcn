@@ -15,11 +15,17 @@ export interface CardMessagesProps {
 
 const CardSearch = ({cardData}: CardMessagesProps) => {
     useTheme();
+
     const navigation = useNavigation<ChatNavigationProp>();
 
-    if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+    if (!cardData) return (
+      <View style={[styles.loadingContainer, { backgroundColor: Color.backgroundSecondary }]}>
+        <ActivityIndicator size="small" color={Color.mainColor2}/>
+      </View>
+    );
+
     return (
-        <TouchableOpacity style={styles.container} onPress={() => {navigation.navigate("BoxChat", {conversationId: cardData.conversationId})}}>
+        <TouchableOpacity style={[styles.container, { backgroundColor: Color.backgroundSecondary }]} onPress={() => {navigation.navigate("BoxChat", {conversationId: cardData.conversationId})}}>
             <View style={styles.mainContent}>
                 <Image source={cardData.avt ? {uri: cardData.avt?.url} : (
                     cardData.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
@@ -27,12 +33,12 @@ const CardSearch = ({cardData}: CardMessagesProps) => {
                     require('@/src/assets/images/default/default_page.jpg')
                 )} style={styles.images}/>
                 <View style={styles.content}>
-                    <Text style={styles.name}>{cardData.name}</Text>
+                    <Text style={[styles.name, { color: Color.textPrimary }]}>{cardData.name}</Text>
                 </View>
             </View>
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -41,25 +47,34 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-
+        borderRadius: 8,
+        marginVertical: 4,
+    },
+    loadingContainer: {
+        width: '100%',
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 70,
     },
     images: {
-        width: 50, height: 50,
-        borderRadius: 50
+        width: 50,
+        height: 50,
+        borderRadius: 25
     },
     mainContent: {
-        width: '90%',
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center'
     },
     content: {
-        width: '90%',
+        flex: 1,
         paddingHorizontal: 10,
         justifyContent: 'space-between'
     },
     name: {
         fontSize: 17
     }
-})
+});
 
 export default CardSearch;

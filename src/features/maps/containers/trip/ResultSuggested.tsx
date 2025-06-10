@@ -14,23 +14,22 @@ import { CLocation, Trip } from "@/src/interface/interface_detail";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface LocationProps{
-  latitude: number; 
+  latitude: number;
   longitude: number;
-}
-
-
-interface ResultSuggestedProps{
-    input: SuggestedDetails;
-    handleSubmitChange: (trip: Trip) => void;
 }
 
 interface RouteDetail {
   route: number[];
   score: number;
   bestStartHour: number;
-  distandce: number; // Có vẻ như đây là một lỗi chính tả, nên là "distance"
+  distance: number;
   duration: number;
   description: string;
+}
+
+interface ResultSuggestedProps{
+    input: SuggestedDetails;
+    handleSubmitChange: (trip: Trip) => void;
 }
 
 const ResultSuggested = ({ input, handleSubmitChange } : ResultSuggestedProps) => {
@@ -73,17 +72,17 @@ const ResultSuggested = ({ input, handleSubmitChange } : ResultSuggestedProps) =
     const result = await routeAPI.create(input);
     setSuggested(result.data);
   }
-  
+
   if (errorMsg || !trip) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>{errorMsg}</Text>
+        <Text style={[styles.errorText, { color: Color.error }]}>{errorMsg}</Text>
       </View>
     );
   }
 
   if (!suggested || suggested.length <= 0)
-    return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+    return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
 
   return (
     <View style={styles.container}>
@@ -106,7 +105,7 @@ const ResultSuggested = ({ input, handleSubmitChange } : ResultSuggestedProps) =
           }}
           title={`Điểm bắt đầu`}
         />
-        {trip.listAddress.map((item, index) => 
+        {trip.listAddress.map((item, index) =>
         <Marker
           key={`destination-${index}`}
           coordinate={{
@@ -126,21 +125,24 @@ const ResultSuggested = ({ input, handleSubmitChange } : ResultSuggestedProps) =
       </MapView>
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
+            backgroundColor: Color.background,
           }]}>
         <View style={styles.boxSuggest}>
-          <Text style={styles.name}>Danh sách đề xuất</Text>
-          <CIconButton icon={<Icon name={isDetails?"keyboard-arrow-down":"keyboard-arrow-up"} size={20} color={Color.white_contrast}/>} 
-              onSubmit={() => {moveDetails(!isDetails)}} 
+          <Text style={[styles.name, { color: Color.textPrimary }]}>Danh sách đề xuất</Text>
+          <CIconButton icon={<Icon name={isDetails?"keyboard-arrow-down":"keyboard-arrow-up"} size={20} color={Color.textPrimary}/>}
+              onSubmit={() => {moveDetails(!isDetails)}}
               style={{
                   width: 50,
                   height: 50,
                   fontSize: 13,
                   radius: 50,
-                  flex_direction: 'row'
+                  flex_direction: 'row',
+                  backColor: 'transparent',
+                  textColor: 'transparent'
               }}
           />
         </View>
-        <FlatList style={styles.list} data={suggested} renderItem={({item}) => 
+        <FlatList style={styles.list} data={suggested} renderItem={({item}) =>
             <CardResult trip={trip} route={item.route} description={item.description} bestStartHour={item.bestStartHour}
               handleSubmitChange={handleSubmitChange}
             />
@@ -161,31 +163,8 @@ const CardResult = ({
     if (index === route.length - 1) return trip.endAddress;
     return trip.listAddress[route[index] - 1];
   };
-  
-  const handleUseThisTrip = async () => {
-  try {
-    // Tạo listAddress mới theo route
-    const newListAddress = route
-      .slice(1, route.length - 1) // bỏ phần tử đầu (0) và cuối (5) vì đó là start và end
-      .map(index => trip.listAddress[index - 1]); // vì listAddress bắt đầu từ 0
 
-    const updatedTrip: Trip = {
-      ...trip,
-      listAddress: newListAddress
-    };
-
-    const result = await updateTrip(trip._id, updatedTrip);
-    if (result){
-      handleSubmitChange(updatedTrip);
-    } else {
-      alert('Không thể sử dụng tuyến đường này. Vui lòng thử lại sau!')
-    }
-  } catch (err) {
-    alert('Có lỗi xảy ra khi thay đổi tuyến đường. Vui lòng thử lại sau!')
-  }
-};
-
-  const updateTrip = async (id: string, data: Trip) => {  
+  const updateTrip = async (id: string, data: Trip) => {
     const userId = await AsyncStorage.getItem("userId");
     if (userId){
       const mapAPI = restClient.apiClient.service(`apis/trips`);
@@ -200,28 +179,52 @@ const CardResult = ({
       }
       return false;
     }
+    return false;
   }
+
+  const handleUseThisTrip = async () => {
+    try {
+      const newListAddress = route
+        .slice(1, route.length - 1)
+        .map(index => trip.listAddress[index - 1]);
+
+      const updatedTrip: Trip = {
+        ...trip,
+        listAddress: newListAddress
+      };
+
+      const result = await updateTrip(trip._id, updatedTrip);
+      if (result){
+        handleSubmitChange(updatedTrip);
+      } else {
+        alert('Không thể sử dụng tuyến đường này. Vui lòng thử lại sau!')
+      }
+    } catch (err) {
+      alert('Có lỗi xảy ra khi thay đổi tuyến đường. Vui lòng thử lại sau!')
+    }
+  };
+
   const orderedLocations = route.map((_, i) => getLocationFromRoute(i));
 
   return (
-    <View style={styles.card}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+    <View style={[styles.card, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
+      <Text style={[{ fontSize: 18, fontWeight: 'bold', color: Color.textPrimary }]}>
         {trip.name}
       </Text>
-      <Text style={styles.textLabel}>Thời gian xuất phát: {bestStartHour}:00</Text>
-      <Text style={styles.textLabel}>Lộ trình di chuyển</Text>
+      <Text style={[styles.textLabel, { color: Color.textPrimary }]}>Thời gian xuất phát: {bestStartHour}:00</Text>
+      <Text style={[styles.textLabel, { color: Color.textPrimary }]}>Lộ trình di chuyển</Text>
       {orderedLocations.map((loc, index) => (
         <View key={index} style={{ marginBottom: 4 }}>
-          <Text style={styles.textLocation}>
+          <Text style={[styles.textLocation, { color: Color.textPrimary }]}>
             {index + 1}. {loc.displayName}
           </Text>
         </View>
       ))}
-      <Text style={styles.textLabel}>Mô tả</Text>
-      <Text style={{ fontStyle: 'italic'}}>{description}</Text>
+      <Text style={[styles.textLabel, { color: Color.textPrimary }]}>Mô tả</Text>
+      <Text style={[{ fontStyle: 'italic', color: Color.textPrimary }]}>{description}</Text>
       <View style={{width: '100%'}}>
-        <TouchableOpacity style={styles.button} onPress={handleUseThisTrip}>
-          <Text style={styles.textButton}>Sử dụng lịch trình này</Text>
+        <TouchableOpacity style={[styles.button, { backgroundColor: Color.mainColor2 }]} onPress={handleUseThisTrip}>
+          <Text style={[styles.textButton, { color: Color.textOnMain2 }]}>Sử dụng lịch trình này</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -239,14 +242,12 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     errorText: {
-      color: "red",
       fontSize: 16,
     },
     details: {
       width: '100%', height: 550,
       position: 'absolute',
       bottom: -380,
-      backgroundColor: Color.backGround,
       paddingVertical: 10,
       borderStartEndRadius: 20, borderStartStartRadius: 20,
       zIndex: 5,
@@ -283,7 +284,6 @@ const styles = StyleSheet.create({
       fontWeight: "bold",
     },
     name: {
-      color: Color.textColor1,
       fontSize: 20,
       fontWeight: 'bold',
       marginVertical: 20,
@@ -303,22 +303,20 @@ const styles = StyleSheet.create({
       fontWeight: '600',
       marginTop: 10,
     },
-    card: { 
-      padding: 5, 
-      borderWidth: 1, 
-      borderRadius: 8, 
+    card: {
+      padding: 5,
+      borderWidth: 1,
+      borderRadius: 8,
       margin: 5,
       marginBottom: 50
     },
     textButton: {
       textAlign: 'center',
-      color: Color.white_homologous,
       fontWeight: '300'
     },
     button:{
       width: '60%',
       alignSelf: 'center',
-      backgroundColor: Color.mainColor1,
       padding: 10,
       borderRadius: 5
     },
@@ -326,5 +324,5 @@ const styles = StyleSheet.create({
       height: '87%',
     }
   });
-  
+
 export default ResultSuggested;

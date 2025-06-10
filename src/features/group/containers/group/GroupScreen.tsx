@@ -87,9 +87,9 @@ const GroupScreen = () => {
         selectedTab={selectedTab}
         onSelectTab={(tab) => setSelectedTab(tab)}
         style={[styles.tabBarStyle, { backgroundColor: Color.backgroundSecondary }]}
-        activeTabStyle={{ backgroundColor: Color.mainColor1 }}
+        activeTabStyle={{ backgroundColor: Color.mainColor2 }}
         inactiveTabStyle={{ backgroundColor: "transparent" }}
-        activeTextStyle={{ color: Color.textOnMain1, fontWeight: "bold" }}
+        activeTextStyle={{ color: Color.textOnMain2, fontWeight: "bold" }}
         inactiveTextStyle={{ color: Color.textSecondary }}
       />
       <View style={styles.content}>{renderContent()}</View>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   activeTabStyle: {
-    // backgroundColor: Color.mainColor1, // Đã chuyển sang inline style
+    // backgroundColor: Color.mainColor2, // Đã chuyển sang inline style
   },
   inactiveTabStyle: {
     backgroundColor: "transparent",

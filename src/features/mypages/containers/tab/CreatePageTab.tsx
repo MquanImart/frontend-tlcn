@@ -139,10 +139,10 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
               ))}
             </Picker>
             <TouchableOpacity
-              style={[styles.closeButton, { backgroundColor: Color.mainColor1 }]}
+              style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
               onPress={() => setShowProvinceModal(false)}
             >
-              <Text style={[styles.closeButtonText, { color: Color.textOnMain1 }]}>Đóng</Text>
+              <Text style={[styles.closeButtonText, { color: Color.textOnMain2 }]}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -188,10 +188,10 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
               ))}
             </Picker>
             <TouchableOpacity
-              style={[styles.closeButton, { backgroundColor: Color.mainColor1 }]}
+              style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
               onPress={() => setShowDistrictModal(false)}
             >
-              <Text style={[styles.closeButtonText, { color: Color.textOnMain1 }]}>Đóng</Text>
+              <Text style={[styles.closeButtonText, { color: Color.textOnMain2 }]}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -237,10 +237,10 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
               ))}
             </Picker>
             <TouchableOpacity
-              style={[styles.closeButton, { backgroundColor: Color.mainColor1 }]}
+              style={[styles.closeButton, { backgroundColor: Color.mainColor2 }]}
               onPress={() => setShowWardModal(false)}
             >
-              <Text style={[styles.closeButtonText, { color: Color.textOnMain1 }]}>Đóng</Text>
+              <Text style={[styles.closeButtonText, { color: Color.textOnMain2 }]}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -341,7 +341,7 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
         }]}
         textStyle={{ color: Color.textPrimary }}
         placeholderStyle={{ color: Color.textTertiary }}
-        selectedItemLabelStyle={{ fontWeight: "bold", color: Color.mainColor1 }}
+        selectedItemLabelStyle={{ fontWeight: "bold", color: Color.mainColor2 }}
         selectedItemContainerStyle={{ backgroundColor: Color.backgroundSelected }} // Sử dụng backgroundSelected
         listItemLabelStyle={{ color: Color.textPrimary }}
         disabled={isLoading}
@@ -350,14 +350,14 @@ const CreatePageTab = ({ userId, handleScroll }: CreatePageTabProps) => {
 
       {/* Create Button */}
       <TouchableOpacity
-        style={[styles.createButton, { backgroundColor: Color.mainColor1 }, isLoading && styles.disabledButton]}
+        style={[styles.createButton, { backgroundColor: Color.mainColor2 }, isLoading && styles.disabledButton]}
         onPress={handleCreatePage}
         disabled={isLoading}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color={Color.textOnMain1} />
+          <ActivityIndicator size="small" color={Color.textOnMain2} />
         ) : (
-          <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Tạo Page</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Tạo Page</Text>
         )}
       </TouchableOpacity>
     </ScrollView>

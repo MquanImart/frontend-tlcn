@@ -167,7 +167,7 @@ const Post: React.FC<PostProps> = ({
         />
         {photos.length > 1 && (
           <View style={[styles.imageIndex, { backgroundColor: Color.backgroundTertiary + '80' }]}>
-            <Text style={{ color: Color.textOnMain1, fontWeight: "bold" }}>
+            <Text style={{ color: Color.textOnMain2, fontWeight: "bold" }}>
               {currentIndex + 1}/{photos.length}
             </Text>
           </View>
@@ -225,7 +225,7 @@ const Post: React.FC<PostProps> = ({
                   </Text>
                   <TouchableOpacity onPress={handleGroupPress}>
                     <Text
-                      style={[styles.groupName, { color: Color.mainColor1 }]}
+                      style={[styles.groupName, { color: Color.mainColor2 }]}
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -308,7 +308,7 @@ const Post: React.FC<PostProps> = ({
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
             size={28}
-            color={isAdmin ? Color.textTertiary : isSaved ? Color.mainColor1 : Color.textPrimary}
+            color={isAdmin ? Color.textTertiary : isSaved ? Color.mainColor2 : Color.textPrimary}
           />
         </TouchableOpacity>
       </View>
@@ -328,7 +328,7 @@ const Post: React.FC<PostProps> = ({
                 onPress={() => handleHashtagPress(tag)}
               >
                 <Text
-                  style={[styles.hashtag, { color: Color.mainColor1 }]}
+                  style={[styles.hashtag, { color: Color.mainColor2 }]}
                 >
                   {tag}
                 </Text>

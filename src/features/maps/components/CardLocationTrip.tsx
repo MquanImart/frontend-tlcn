@@ -15,45 +15,56 @@ interface CardLocationTripProps {
 const CardLocationTrip = ( { location, isChange = false, onClick, deletePress, changePosition } : CardLocationTripProps) => {
     useTheme();
     return(
-        <TouchableOpacity style={[styles.cardCotent, styles.shadow]}
+        <TouchableOpacity
+            style={[
+                styles.cardCotent,
+                styles.shadow,
+                { backgroundColor: Color.background } 
+            ]}
             onPress={() => {onClick(location._id)}}
         >
-            <Text 
-              style={styles.textContent} 
-              numberOfLines={1} 
+            <Text
+              style={[styles.textContent, { color: Color.textPrimary }]}
+              numberOfLines={1}
               ellipsizeMode="tail"
             >
               {location.displayName}
             </Text>
             { isChange && <View style={styles.boxAction}>
-                <CIconButton icon={<Icon name={"arrow-upward"} size={20} color={Color.white_contrast}/>} 
-                    onSubmit={() => {changePosition && changePosition(true)}} 
+                <CIconButton icon={<Icon name={"arrow-upward"} size={20} color={Color.textPrimary}/>} 
+                    onSubmit={() => {changePosition && changePosition(true)}}
                     style={{
                         width: 40,
                         height: 40,
                         fontSize: 13,
                         radius: 50,
-                        flex_direction: 'row'
+                        flex_direction: 'row',
+                        backColor: 'transparent', 
+                        textColor: 'transparent' 
                     }}
                 />
-                <CIconButton icon={<Icon name={"arrow-downward"} size={20} color={Color.white_contrast}/>} 
-                    onSubmit={() => {changePosition && changePosition(false)}} 
+                <CIconButton icon={<Icon name={"arrow-downward"} size={20} color={Color.textPrimary}/>} 
+                    onSubmit={() => {changePosition && changePosition(false)}}
                     style={{
                         width: 40,
                         height: 40,
                         fontSize: 13,
                         radius: 50,
-                        flex_direction: 'row'
+                        flex_direction: 'row',
+                        backColor: 'transparent',
+                        textColor: 'transparent'
                     }}
                 />
-                <CIconButton icon={<Icon name={"clear"} size={20} color={Color.white_contrast}/>} 
-                    onSubmit={() => {deletePress && deletePress()}} 
+                <CIconButton icon={<Icon name={"clear"} size={20} color={Color.textPrimary}/>} 
+                    onSubmit={() => {deletePress && deletePress()}}
                     style={{
                         width: 40,
                         height: 40,
                         fontSize: 13,
                         radius: 50,
-                        flex_direction: 'row'
+                        flex_direction: 'row',
+                        backColor: 'transparent',
+                        textColor: 'transparent'
                     }}
                 />
             </View>}
@@ -69,22 +80,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 10,
-        backgroundColor: Color.white_homologous,
         borderRadius: 10,
         marginVertical: 2
     },
     shadow: {
-        shadowColor: "#000", // Màu bóng
+        shadowColor: "#000",
         shadowOffset: {
-          width: 0, // Đổ bóng theo chiều ngang
-          height: 4, // Đổ bóng theo chiều dọc
+          width: 0,
+          height: 4,
         },
-        shadowOpacity: 0.3, // Độ mờ của bóng (0 - 1)
-        shadowRadius: 4.65, // Độ mờ viền của bóng
-        elevation: 8, // Dùng cho Android (giá trị càng cao bóng càng đậm)
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
     },
     textContent: {
-        width: '65%'
+        width: '65%',
     },
     boxAction: {
         width: 110,

@@ -25,16 +25,16 @@ const NewChat = () => {
             const load = async () => {
                 await getUserWithoutChat();
             }
-            load(); 
+            load();
         }, [])
     );
-    
+
     return (
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
-        <View style={styles.container}>
-            <CHeaderIcon 
-                label={"Tin nhắn mới"} 
-                IconLeft={"arrow-back-ios"} 
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
+            <CHeaderIcon
+                label={"Tin nhắn mới"}
+                IconLeft={"arrow-back-ios"}
                 onPressLeft={goBack}
             />
             <SearchMessages
@@ -44,15 +44,19 @@ const NewChat = () => {
               setIsSearch={setIsSearch}
             />
             <TouchableOpacity style={styles.boxNewGroup} onPress={navigateNewGroupChat}>
-                <Text style={styles.textNewGroup}>Tạo nhóm mới</Text>
-                <Icon name={"arrow-forward-ios"} size={24} color={Color.white_contrast} />
+                <Text style={[styles.textNewGroup, { color: Color.textPrimary }]}>Tạo nhóm mới</Text>
+                <Icon name={"arrow-forward-ios"} size={24} color={Color.textPrimary} />
             </TouchableOpacity>
             <View style={styles.boxUser}>
-                <Text style={styles.textNewGroup}>Gợi ý</Text>
-                <FlatList data={filterUser} renderItem={({item}) => 
-                    <CardUser avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null} 
-                      name={item.displayName} onPress={() => {createNewChat(item)}} 
-                      _id={item._id} radio={false}
+                <Text style={[styles.textNewGroup, { color: Color.textPrimary }]}>Gợi ý</Text>
+                <FlatList
+                    data={filterUser}
+                    keyExtractor={(item) => item._id.toString()}
+                    renderItem={({item}) =>
+                    <CardUser
+                        avt={item.avt.length > 0? item.avt[item.avt.length - 1] : null}
+                        name={item.displayName} onPress={() => {createNewChat(item)}}
+                        _id={item._id} radio={false}
                     />
                 }/>
             </View>
@@ -64,7 +68,6 @@ const NewChat = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.backGround
     },
     boxNewGroup: {
         flexDirection: 'row',
@@ -72,7 +75,7 @@ const styles = StyleSheet.create({
         padding: 20
     },
     textNewGroup: {
-        fontSize: 18 
+        fontSize: 18
     },
     boxUser: {
         paddingHorizontal: 20,

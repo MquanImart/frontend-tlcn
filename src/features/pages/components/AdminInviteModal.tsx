@@ -41,8 +41,8 @@ const AdminInviteModal: React.FC<AdminInviteModalProps> = ({ visible, invites, o
                       style={{
                         width: "45%",
                         height: 40,
-                        backColor: Color.mainColor1,
-                        textColor: Color.textOnMain1, // Màu chữ trên mainColor1
+                        backColor: Color.mainColor2,
+                        textColor: Color.textOnMain2, // Màu chữ trên mainColor2
                         fontSize: 14,
                         fontWeight: "bold",
                         radius: 8,

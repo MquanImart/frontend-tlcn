@@ -169,12 +169,12 @@ const EditProfile = () => {
   return (
     <View style={{ flex: 1, backgroundColor: Color.background }}>
       <CHeader label="Chỉnh sửa hồ sơ" backPress={() => navigation.goBack()} 
-        labelColor={Color.mainColor1}
+        labelColor={Color.mainColor2}
         iconColor={Color.textPrimary} 
       />
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
         </View>
       ) : error ? (
         <Text style={{ color: Color.error, textAlign: "center", margin: 20 }}>{error}</Text>
@@ -185,7 +185,7 @@ const EditProfile = () => {
               : require('@/src/assets/images/default/default_user.png')} style={styles.avatar} 
             />
             <View style={[styles.cameraIcon, { backgroundColor: Color.white_white }]}>
-              <MaterialIcons name="photo-camera" size={32} color={Color.mainColor1} />
+              <MaterialIcons name="photo-camera" size={32} color={Color.mainColor2} />
             </View>
           </TouchableOpacity>
           <TextInput
@@ -206,7 +206,7 @@ const EditProfile = () => {
           />
           {hasChanges && (
             <TouchableOpacity 
-              style={[styles.saveButton, { backgroundColor: Color.mainColor1 }]} 
+              style={[styles.saveButton, { backgroundColor: Color.mainColor2 }]} 
               onPress={handleSaveChanges} 
               disabled={loading}
             >

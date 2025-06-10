@@ -40,7 +40,6 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
     async (newPage = 1, append = false) => {
       if (newPage > totalPages && totalPages !== 0) return;
 
-      // Reset state nếu textSearch rỗng
       if (textSearch.trim() === "") {
         setAllGroups([]);
         setTotalPages(1);
@@ -54,7 +53,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
       setIsLoadingMore(append);
 
       try {
-        console.log("Fetching groups with textSearch:", textSearch); // Log để debug
+        console.log("Fetching groups with textSearch:", textSearch);
         const skip = (newPage - 1) * limit;
         const queryParams = new URLSearchParams({
           groupName: textSearch.trim(),
@@ -100,14 +99,14 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
   }, [textSearch, fetchGroups]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {isLoading && page === 1 ? (
-        <Text style={styles.loadingText}>Đang tải...</Text>
+        <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải...</Text>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {allGroups.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
+              <Text style={[styles.emptyText, { color: Color.textSecondary }]}>
                 {textSearch
                   ? `Không tìm thấy nhóm nào cho "${textSearch}"`
                   : "Vui lòng nhập từ khóa để tìm kiếm hoặc không có nhóm nào"}
@@ -130,7 +129,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
                   />
                 </View>
               ))}
-              {isLoadingMore && <Text style={styles.loadingText}>Đang tải thêm...</Text>}
+              {isLoadingMore && <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải thêm...</Text>}
               {page < totalPages && (
                 <View style={styles.buttonContainer}>
                   <CButton
@@ -140,8 +139,8 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
                     style={{
                       width: "100%",
                       height: 40,
-                      backColor: isLoadingMore ? Color.textColor3 : Color.mainColor1,
-                      textColor: Color.white_homologous,
+                      backColor: isLoadingMore ? Color.backgroundTertiary : Color.mainColor2,
+                      textColor: Color.textOnMain1,
                       fontSize: 14,
                       fontWeight: "bold",
                       radius: 20,
@@ -161,7 +160,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
     fontSize: 16,
-    color: Color.textColor1,
+    color: Color.textPrimary,
   },
   emptyContainer: {
     flex: 1,
@@ -186,7 +185,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
+    color: Color.textSecondary,
     fontStyle: "italic",
     textAlign: "center",
   },

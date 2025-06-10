@@ -51,7 +51,7 @@ const MyPagesScreen = () => {
     if (isLoading) {
       return (
         <View style={[styles.loading, { backgroundColor: Color.background }]}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
           <Text style={{ color: Color.textSecondary, marginTop: 10 }}>Đang tải...</Text>
         </View>
       );
@@ -85,9 +85,9 @@ const MyPagesScreen = () => {
         selectedTab={selectedTab}
         onSelectTab={(tab) => setSelectedTab(tab)}
         style={[styles.tabBarStyle, { backgroundColor: Color.backgroundSecondary }]}
-        activeTabStyle={[styles.activeTabStyle, { backgroundColor: Color.mainColor1 }]}
+        activeTabStyle={[styles.activeTabStyle, { backgroundColor: Color.mainColor2 }]}
         inactiveTabStyle={[styles.inactiveTabStyle, { backgroundColor: 'transparent' }]}
-        activeTextStyle={[styles.activeTextStyle, { color: Color.textOnMain1 }]}
+        activeTextStyle={[styles.activeTextStyle, { color: Color.textOnMain2 }]}
         inactiveTextStyle={[styles.inactiveTextStyle, { color: Color.textSecondary }]}
       />
       <View style={styles.content}>{renderContent()}</View>

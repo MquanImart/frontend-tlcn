@@ -28,18 +28,18 @@ const MemberRequestItem: React.FC<MemberRequestItemProps> = ({
     ]}>
       {/* Avatar & Thông tin */}
       <View style={styles.header}>
-        <Image source={{ uri: avatar }} style={[styles.avatar, { borderColor: Color.mainColor1 }]} />
+        <Image source={{ uri: avatar }} style={[styles.avatar, { borderColor: Color.mainColor2 }]} />
         <View style={styles.infoContainer}>
           <View style={styles.row}>
             <Text style={[styles.name, { color: Color.textPrimary }]}>{name}</Text>
-            <TouchableOpacity style={[styles.button, styles.rejectButton, { backgroundColor: Color.mainColor1 }]} onPress={onReject}>
-              <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Từ chối</Text>
+            <TouchableOpacity style={[styles.button, styles.rejectButton, { backgroundColor: Color.mainColor2 }]} onPress={onReject}>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Từ chối</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
             <Text style={[styles.date, { color: Color.textSecondary }]}>Ngày gửi: {requestDate}</Text>
-            <TouchableOpacity style={[styles.button, styles.acceptButton, { backgroundColor: Color.mainColor1 }]} onPress={onAccept}>
-              <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Duyệt</Text>
+            <TouchableOpacity style={[styles.button, styles.acceptButton, { backgroundColor: Color.mainColor2 }]} onPress={onAccept}>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Duyệt</Text>
             </TouchableOpacity>
           </View>
         </View>

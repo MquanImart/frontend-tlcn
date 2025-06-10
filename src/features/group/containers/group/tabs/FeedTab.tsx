@@ -82,7 +82,7 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.footer}>
-              <ActivityIndicator size="large" color={Color.mainColor1} />
+              <ActivityIndicator size="large" color={Color.mainColor2} />
             </View>
           ) : null
         }
@@ -134,7 +134,7 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={24} color={Color.mainColor1} />
+              <Ionicons name="send" size={24} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>

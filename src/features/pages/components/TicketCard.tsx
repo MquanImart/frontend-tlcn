@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   leftBorder: {
     width: 8,
     height: "100%",
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
   },

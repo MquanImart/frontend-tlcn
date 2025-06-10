@@ -1,4 +1,4 @@
-import { View, StyleSheet, Animated, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Animated, ActivityIndicator, Text } from "react-native"; // Import Text component
 import Tabbar from "@/src/shared/components/tabbar/Tabbar";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
@@ -15,8 +15,8 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const Messages = () => {
   useTheme();
-  const { inputRef, 
-    search, searchUser, 
+  const { inputRef,
+    search, searchUser,
     isSearch, setIsSearch,
     conversations, getConversations,
     onPressHeaderLeft, navigateNewChat,
@@ -42,27 +42,32 @@ const Messages = () => {
   },[userId]);
 
   return (
-      <View style={{flex: 1, backgroundColor: Color.backGround}}>
+      <View style={{flex: 1, backgroundColor: Color.background}}>
           <View style={styles.container} >
-              <CHeaderIcon label={"Tin nhắn"} 
-                  IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft} 
-                  IconRight={"add"} onPressRight={navigateNewChat} 
+              <CHeaderIcon label={"Tin nhắn"}
+                  IconLeft={isSearch?"arrow-back-ios":"menu"}  onPressLeft={onPressHeaderLeft}
+                  IconRight={"add"} onPressRight={navigateNewChat}
               />
               <SearchMessages search={search} setSearch={searchUser} setIsSearch={setIsSearch} refInput={inputRef}/>
               {!conversations? (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                </View>
               ) : !isSearch? (
-                <FlatList style={styles.listMessages} onScroll={handleScroll} data={conversations} renderItem={({item}) => 
-                  <CardMessages 
+                <FlatList style={styles.listMessages} onScroll={handleScroll} data={conversations} renderItem={({item}) =>
+                  <CardMessages
                     conversation={item}
                   />}
-                /> 
+                  keyExtractor={(item) => item._id.toString()}
+                />
               ) : filterUser? (
-                <FlatList style={styles.listMessages} onScroll={handleScroll} data={filterUser} renderItem={({item}) => 
+                <FlatList style={styles.listMessages} onScroll={handleScroll} data={filterUser} renderItem={({item}) =>
                   <CardSearch cardData={item}/>}
-                /> 
+                />
               ) : (
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                </View>
               )}
           </View>
           <Animated.View style={[styles.tabbar,

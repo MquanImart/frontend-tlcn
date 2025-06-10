@@ -13,7 +13,7 @@ const BubbleButton: React.FC<BubbleButtonProps> = ({ onPress }) => {
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: Color.mainColor1 }]}
+      style={[styles.button, { backgroundColor: Color.mainColor2 }]}
       activeOpacity={0.8}
       onPress={onPress}
     >

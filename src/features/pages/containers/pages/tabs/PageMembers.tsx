@@ -113,7 +113,7 @@ const PageMembers: React.FC<PageMembersProps> = ({ page, currentUserId, role, up
   );
 
   if (loading) {
-    return <ActivityIndicator size="large" color={Color.mainColor1} />;
+    return <ActivityIndicator size="large" color={Color.mainColor2} />;
   }
 
   return (

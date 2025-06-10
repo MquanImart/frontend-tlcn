@@ -235,8 +235,8 @@ const Menu = () => {
           style={{
             width: 290,
             height: 50,
-            backColor: Color.mainColor1, // Using mainColor1 for primary action
-            textColor: Color.textOnMain1,
+            backColor: Color.mainColor2, // Using mainColor2 for primary action
+            textColor: Color.textOnMain2,
             radius: 15,
             fontSize: 18,
           }}

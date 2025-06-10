@@ -62,11 +62,11 @@ const ReportModal: React.FC<ReportModalProps> = ({
                 {
                   backgroundColor:
                     selectedReason === reason
-                      ? Color.mainColor1
+                      ? Color.mainColor2
                       : Color.background,
                   borderColor:
                     selectedReason === reason
-                      ? Color.mainColor1
+                      ? Color.mainColor2
                       : Color.border,
                 },
               ]}
@@ -78,7 +78,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                   {
                     color:
                       selectedReason === reason
-                        ? Color.textOnMain1
+                        ? Color.textOnMain2
                         : Color.textPrimary,
                   },
                 ]}
@@ -95,8 +95,8 @@ const ReportModal: React.FC<ReportModalProps> = ({
             style={{
               width: "100%",
               height: 50,
-              backColor: Color.mainColor1,
-              textColor: Color.textOnMain1,
+              backColor: Color.mainColor2,
+              textColor: Color.textOnMain2,
               fontSize: 16,
               fontWeight: "bold",
               radius: 8,

@@ -86,15 +86,15 @@ const GroupTopBar: React.FC<GroupTopBarProps> = ({
   };
 
   return (
-    <View style={[styles.topBar, { paddingTop: insets.top, backgroundColor: Color.mainColor1 }]}>
+    <View style={[styles.topBar, { paddingTop: insets.top, backgroundColor: Color.mainColor2 }]}>
       <View style={styles.groupInfo}>
         <Image source={{ uri: groupAvatar || "" }} style={styles.avatar} />
-        <Text style={[styles.groupName, { color: Color.textOnMain1 }]}>{groupName}</Text>
+        <Text style={[styles.groupName, { color: Color.textOnMain2 }]}>{groupName}</Text>
       </View>
       {role !== "Guest" && (
         <View style={styles.actionButtons}>
           <CIconButton
-            icon={<Icon name="more-vert" size={24} color={Color.textOnMain1} />}
+            icon={<Icon name="more-vert" size={24} color={Color.textOnMain2} />}
             onSubmit={handleMoreOptions}
             style={{
               width: 60,

@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import MapMessage from "./MapMessage";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "expo-router"; // Assuming expo-router is correctly set up for useNavigation
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
@@ -23,27 +23,26 @@ type ChatNavigation = StackNavigationProp<ChatStackParamList>;
 
 const parseLatLong = (addressString: string) : {lat: number, long: number} => {
     try {
-      // Sử dụng regex để lấy lat và long
       const match = addressString.match(/lat:([-]?[\d.]+)\s+long:([-]?[\d.]+)/);
       if (!match) throw new Error("Invalid address format");
-  
+
       const lat = parseFloat(match[1]);
       const long = parseFloat(match[2]);
-  
+
       return { lat, long };
     } catch (error) {
       return {lat: 0, long: 0}
     }
 };
-    
+
 const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
     useTheme();
-    const videoRef = useRef(null);  
+    const videoRef = useRef<Video>(null);
     const [visiable, setVisiable] = useState<boolean>(false);
     const navigation = useNavigation<ChatNavigation>();
 
-    const gotoMap = (message: string) => {
-        const location = parseLatLong(message);
+    const gotoMap = (messageContent: string) => {
+        const location = parseLatLong(messageContent);
         navigation.navigate('Map', {
             screen: 'CustomMap',
             params: {
@@ -55,13 +54,16 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
 
     return (
         <View style={styles.container}>
-            {showAvatar?<Image style={styles.images} source={user.avt.length > 0 ? {uri: user.avt[user.avt.length - 1].url}: require('@/src/assets/images/default/default_user.png')}/> 
-            : <View style={styles.images}/>}
+            {showAvatar ? (
+                <Image style={styles.images} source={user.avt.length > 0 ? {uri: user.avt[user.avt.length - 1].url}: require('@/src/assets/images/default/default_user.png')}/>
+            ) : (
+                <View style={styles.emptyAvatarPlaceholder}/>
+            )}
             <View style={styles.boxContent}>
-                {showAvatar && <Text style={styles.nameUser}>{user.displayName}</Text>}
-                <View style={message.content.contentType === "text" ? styles.boxMessage : styles.boxMessage_Photo}>
+                {showAvatar && <Text style={[styles.nameUser, { color: Color.textPrimary }]}>{user.displayName}</Text>}
+                <View style={message.content.contentType === "text" ? [styles.boxMessage, { backgroundColor: Color.backgroundSecondary }] : styles.boxMessage_Photo}>
                 {message.content.contentType === "text" ? (
-                    <Text style={styles.message}>{message.content.message}</Text>
+                    <Text style={[styles.message, { color: Color.textPrimary }]}>{message.content.message}</Text>
                 ) : message.content.contentType === "img" ? (
                     <TouchableOpacity style={styles.boxImg}
                         onPress={() => {setVisiable(true)}}
@@ -69,14 +71,14 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
                         <Image
                           style={styles.img}
                           source={ message.content.mediaUrl ? { uri: message.content.mediaUrl.url} : require('@/src/assets/images/default/default_images.png')}
-                          resizeMode="cover" // Giữ nguyên tỉ lệ, không cắt ảnh
+                          resizeMode="cover"
                         />
                     </TouchableOpacity>
                 ) : message.content.contentType === "video" ? (
                     <Video
                         ref={videoRef}
                         style={styles.video}
-                        source={{uri: message.content.mediaUrl?message.content.mediaUrl.url: ""}} 
+                        source={{uri: message.content.mediaUrl?message.content.mediaUrl.url: ""}}
                         useNativeControls
                         resizeMode={ResizeMode.CONTAIN}
                         isLooping
@@ -86,8 +88,8 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
                     <TouchableOpacity onPress={() => {gotoMap(message.content.message?message.content.message:"lat:0 long:0")}}>
                         <MapMessage addressString={message.content.message?message.content.message:"lat:0 long:0"}/>
                         <View style={{marginTop: 5}}/>
-                        <View style={styles.boxMessage}>
-                            <Text style={styles.message}>Tôi đang gặp nạn! Giúp tôi!</Text>
+                        <View style={[styles.boxMessage, { backgroundColor: Color.backgroundSecondary }]}>
+                            <Text style={[styles.message, { color: Color.textPrimary }]}>Tôi đang gặp nạn! Giúp tôi!</Text>
                         </View>
                     </TouchableOpacity>
                 ) : (
@@ -95,19 +97,20 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
                 )}
                 </View>
             </View>
-            <DetailsPhoto source={message.content.mediaUrl?message.content.mediaUrl:null} 
+            <DetailsPhoto source={message.content.mediaUrl?message.content.mediaUrl:null}
                 isModalVisible={visiable} closeModal={() => {setVisiable(false)}}/>
         </View>
     )
 }
 
 const MessageSend = ({user, message, showAvatar}: MessageProps) => {
-    const videoRef = useRef(null);
+    useTheme();
+    const videoRef = useRef<Video>(null);
     const [visiable, setVisiable] = useState<boolean>(false);
     const navigation = useNavigation<ChatNavigation>();
 
-    const gotoMap = (message: string) => {
-        const location = parseLatLong(message);
+    const gotoMap = (messageContent: string) => {
+        const location = parseLatLong(messageContent);
         navigation.navigate('Map', {
             screen: 'CustomMap',
             params: {
@@ -117,12 +120,12 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
         })
     }
     return (
-        <View style={styles.container_send}>  
+        <View style={styles.container_send}>
             <View style={styles.boxContent_send}>
-                {showAvatar && <Text style={styles.nameUser}>{user.displayName}</Text>}
-                <View style={message.content.contentType === "text" ? styles.boxMessage_send : styles.boxMessage_Photo}>
+                {showAvatar && <Text style={[styles.nameUser_send, { color: Color.textPrimary }]}>{user.displayName}</Text>}
+                <View style={message.content.contentType === "text" ? [styles.boxMessage_send, { backgroundColor: Color.mainColor2 }] : styles.boxMessage_Photo_send}>
                 {message.content.contentType === "text" ? (
-                    <Text style={styles.message_send}>{message.content.message}</Text>
+                    <Text style={[styles.message_send, { color: Color.textOnMain2 }]}>{message.content.message}</Text>
                 ) : message.content.contentType === "img" ? (
                     <TouchableOpacity style={styles.boxImg}
                         onPress={() => {setVisiable(true)}}
@@ -130,14 +133,14 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
                         <Image
                           style={styles.img}
                           source={ message.content.mediaUrl ? { uri: message.content.mediaUrl.url} : require('@/src/assets/images/default/default_images.png')}
-                          resizeMode="cover" // Giữ nguyên tỉ lệ, không cắt ảnh
+                          resizeMode="cover"
                         />
                     </TouchableOpacity>
                 ) : message.content.contentType === "video" ? (
                     <Video
                         ref={videoRef}
                         style={styles.video}
-                        source={{uri: message.content.mediaUrl?message.content.mediaUrl.url: ""}} 
+                        source={{uri: message.content.mediaUrl?message.content.mediaUrl.url: ""}}
                         useNativeControls
                         resizeMode={ResizeMode.CONTAIN}
                         isLooping
@@ -147,8 +150,8 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
                     <TouchableOpacity onPress={() => {gotoMap(message.content.message?message.content.message:"lat:0 long:0")}}>
                         <MapMessage addressString={message.content.message?message.content.message:"lat:0 long:0"}/>
                         <View style={{marginTop: 5}}/>
-                        <View style={styles.boxMessage_send}>
-                            <Text style={styles.message_send}>Tôi đang gặp nạn! Giúp tôi!</Text>
+                        <View style={[styles.boxMessage_send, { backgroundColor: Color.mainColor2 }]}>
+                            <Text style={[styles.message_send, { color: Color.textOnMain2 }]}>Tôi đang gặp nạn! Giúp tôi!</Text>
                         </View>
                     </TouchableOpacity>
                 ) : (
@@ -156,9 +159,12 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
                 )}
                 </View>
             </View>
-            {showAvatar?<Image style={styles.images} source={user.avt.length > 0 ? {uri: user.avt[user.avt.length - 1].url}: require('@/src/assets/images/default/default_user.png')}/> 
-            : <View style={styles.images}/>}
-            <DetailsPhoto source={message.content.mediaUrl?message.content.mediaUrl:null} 
+            {showAvatar ? (
+                <Image style={styles.images} source={user.avt.length > 0 ? {uri: user.avt[user.avt.length - 1].url}: require('@/src/assets/images/default/default_user.png')}/>
+            ) : (
+                <View style={styles.emptyAvatarPlaceholder}/>
+            )}
+            <DetailsPhoto source={message.content.mediaUrl?message.content.mediaUrl:null}
                 isModalVisible={visiable} closeModal={() => {setVisiable(false)}}/>
         </View>
     )
@@ -169,71 +175,98 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        marginVertical: 1,
+        marginVertical: 2,
+        paddingHorizontal: 5,
     },
     container_send: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        marginVertical: 1,
+        marginVertical: 2,
+        paddingHorizontal: 5,
     },
     images: {
         width: 30, height: 30,
-        borderRadius: 50,
-        marginHorizontal: 5
+        borderRadius: 15,
+        marginHorizontal: 5,
+        alignSelf: 'flex-end',
+    },
+    emptyAvatarPlaceholder: {
+        width: 30,
+        height: 30,
+        marginHorizontal: 5,
     },
     boxContent: {
-        width: WINDOW_WIDTH - 120
+        flexShrink: 1,
+        alignItems: 'flex-start',
     },
     boxContent_send: {
-        width: WINDOW_WIDTH - 120,
+        flexShrink: 1,
         alignItems: 'flex-end',
-        
     },
     boxMessage: {
-        backgroundColor: Color.white_homologous,
-        maxWidth: '100%',
-        borderBottomEndRadius: 10, borderBottomStartRadius: 10,
+        maxWidth: WINDOW_WIDTH * 0.75,
+        borderBottomEndRadius: 10,
+        borderBottomStartRadius: 10,
         borderTopEndRadius: 10,
-        padding: 10
+        padding: 10,
+        alignSelf: 'flex-start',
     },
     boxMessage_send: {
-        backgroundColor: Color.white_contrast,
-        maxWidth: '100%',
-        borderBottomEndRadius: 10, borderBottomStartRadius: 10,
+        maxWidth: WINDOW_WIDTH * 0.75,
+        borderBottomEndRadius: 10,
+        borderBottomStartRadius: 10,
         borderTopStartRadius: 10,
-        padding: 10
+        padding: 10,
+        alignSelf: 'flex-end',
     },
     boxMessage_Photo: {
-        width: '100%',
+        width: WINDOW_WIDTH * 0.75,
         height: 'auto',
+        borderRadius: 10,
+        overflow: 'hidden',
+        alignSelf: 'flex-start',
+    },
+    boxMessage_Photo_send: {
+        width: WINDOW_WIDTH * 0.75,
+        height: 'auto',
+        borderRadius: 10,
+        overflow: 'hidden',
+        alignSelf: 'flex-end',
     },
     nameUser: {
         fontWeight: '500',
         fontSize: 12,
-        paddingVertical: 5
+        marginBottom: 3,
+        marginLeft: 10,
+    },
+    nameUser_send: {
+        fontWeight: '500',
+        fontSize: 12,
+        marginBottom: 3,
+        marginRight: 10,
+        alignSelf: 'flex-end',
     },
     message: {
         fontWeight: '400',
-        maxWidth: 300
     },
     message_send: {
         fontWeight: '400',
-        maxWidth: 300,
-        color: Color.textColor2
     },
     video: {
         width: '100%',
         height: 200,
+        borderRadius: 10,
     },
     boxImg: {
-        width: WINDOW_WIDTH - 120,
+        width: '100%',
         height: 200,
-        borderRadius: 5
+        borderRadius: 10,
+        overflow: 'hidden',
     },
     img: {
         width: "100%", height: '100%',
-        borderRadius: 5
+        borderRadius: 10,
     }
 })
 

@@ -38,26 +38,11 @@ const useConversations = (
     
     useEffect(() => {
         getUserId();
-        if (!conversation && friend){
-            getConversationWithFriend();
-        }
     }, []);
 
     useEffect(() => {
         if (userId){
-            getConversationWithFriend();
-        }
-    }, [userId]);
-
-     useEffect(() => {
-        if (conversation){
-            getMessages();
-        }
-    }, [conversation]);
-
-    useEffect(() => {
-        if (userId){
-            socket.emit("joinChat", conversationId || conversation?._id);
+            socket.emit("joinChat", conversationId);
 
             socket.on("newMessage", (newMessage) => {
                 if (newMessage.sender !== userId){
@@ -66,11 +51,11 @@ const useConversations = (
             });
         
             return () => {
-                socket.emit("leaveChat", conversationId || conversation?._id);
+                socket.emit("leaveChat", conversationId);
                 socket.off("newMessage");
             };
         }
-    }, [conversationId, userId, conversation]);
+    }, [conversationId, userId]);
 
     const getUserId = async () => {
         const userId = await AsyncStorage.getItem("userId");
@@ -102,22 +87,6 @@ const useConversations = (
             if (result.success){
                 setConversation(result.data);
             }
-        } else if (conversation){
-            const conversationAPI = restClient.apiClient.service(`apis/conversations`);
-            const result = await conversationAPI.get(conversation._id);
-            if (result.success){
-                setConversation(result.data);
-            }
-        }
-    }
-
-    const getConversationWithFriend = async () => {
-        if (!conversationId && friend && userId){
-            const conversationAPI = restClient.apiClient.service(`apis/conversations/with-friend/${userId}`);
-            const result = await conversationAPI.find({friendId: friend._id})
-            if (result.success){
-                setConversation(result.data);
-            }
         }
     }
 
@@ -129,15 +98,7 @@ const useConversations = (
                 setMessages(result.data);
                 const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversationId}/seen-all`);
                 await conversationAPI.patch("", { userId: userId});
-            } 
-        } else if (conversation && userId){
-            const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversation._id}`);
-            const result = await conversationAPI.find({limit: PAGE_SIZE, skip: 0});
-            if (result.success){
-                setMessages(result.data);
-                const conversationAPI = restClient.apiClient.service(`apis/messages/of-conversation/${conversation._id}/seen-all`);
-                await conversationAPI.patch("", { userId: userId});
-            } 
+            }
         }
     }
 

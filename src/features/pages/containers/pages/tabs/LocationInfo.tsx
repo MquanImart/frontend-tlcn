@@ -103,8 +103,8 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
   return (
     <View style={[styles.container, { backgroundColor: Color.background }]}>
       {/* Nút nhắn tin */}
-      <TouchableOpacity style={[styles.messageButton, { backgroundColor: Color.mainColor1 }]} onPress={onMessagePress}>
-        <Text style={[styles.messageText, { color: Color.textOnMain1 }]}>Nhắn tin</Text>
+      <TouchableOpacity style={[styles.messageButton, { backgroundColor: Color.mainColor2 }]} onPress={onMessagePress}>
+        <Text style={[styles.messageText, { color: Color.textOnMain2 }]}>Nhắn tin</Text>
       </TouchableOpacity>
 
       {/* Tên địa điểm */}
@@ -113,7 +113,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
       {/* Thông tin địa chỉ */}
       <View style={[styles.infoWrapper, { backgroundColor: Color.backgroundSecondary }]}>
         <View style={[styles.iconContainer, { backgroundColor: Color.background }]}>
-          <Icon name="place" size={24} color={Color.mainColor1} />
+          <Icon name="place" size={24} color={Color.mainColor2} />
         </View>
         <Text style={[styles.infoText, { color: Color.textPrimary }]}>
           {address
@@ -125,7 +125,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
       {/* Giờ hoạt động */}
       <View style={[styles.infoWrapper, { backgroundColor: Color.backgroundSecondary }]}>
         <View style={[styles.iconContainer, { backgroundColor: Color.background }]}>
-          <Icon name="schedule" size={24} color={Color.mainColor1} />
+          <Icon name="schedule" size={24} color={Color.mainColor2} />
         </View>
         <View>
           <Text style={[styles.infoTitle, { color: Color.textPrimary }]}>Thời gian hoạt động</Text>
@@ -136,7 +136,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
       {/* Vai trò người dùng */}
       <View style={[styles.infoWrapper, { backgroundColor: Color.backgroundSecondary }]}>
         <View style={[styles.iconContainer, { backgroundColor: Color.background }]}>
-          <Icon name="person" size={24} color={Color.mainColor1} />
+          <Icon name="person" size={24} color={Color.mainColor2} />
         </View>
         <Text style={[styles.infoText, { color: Color.textPrimary }]}>
           {role === "isOwner"
@@ -159,7 +159,7 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
           />
         ) : loading ? (
           <View style={[styles.loadingContainer, { backgroundColor: Color.backgroundTertiary }]}>
-            <ActivityIndicator size="large" color={Color.mainColor1} />
+            <ActivityIndicator size="large" color={Color.mainColor2} />
             <Text style={[styles.loadingText, { color: Color.textSecondary }]}>Đang tải bản đồ...</Text>
           </View>
         ) : address?.lat && address?.long ? (

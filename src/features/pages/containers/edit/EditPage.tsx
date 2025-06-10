@@ -85,7 +85,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         backPress={() => navigation.goBack()}
         showBackButton={true}
         labelColor={Color.textPrimary} // Sử dụng textPrimary
-        iconColor={Color.mainColor1}
+        iconColor={Color.mainColor2}
       />
 
       {/* Tên Page */}
@@ -341,7 +341,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         textStyle={{ color: Color.textPrimary }}
         labelStyle={{ color: Color.textPrimary }}
         placeholderStyle={{ color: Color.textTertiary }}
-        selectedItemLabelStyle={{ color: Color.mainColor1 }}
+        selectedItemLabelStyle={{ color: Color.mainColor2 }}
       />
 
       {/* Nút cập nhật */}
@@ -351,7 +351,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         disabled={isLoading}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color={Color.textOnMain1} /> 
+          <ActivityIndicator size="small" color={Color.textOnMain2} /> 
         ) : (
           <Text style={styles.buttonText}>Cập nhật Page</Text>
         )}
@@ -417,13 +417,13 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 10,
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
   },
   closeButtonText: {
-    color: Color.textOnMain1, 
+    color: Color.textOnMain2, 
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   updateButton: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: Color.textOnMain1, // Sử dụng textOnMain1 cho màu chữ trên nút chính
+    color: Color.textOnMain2, // Sử dụng textOnMain2 cho màu chữ trên nút chính
     fontSize: 18,
     fontWeight: "bold",
   },

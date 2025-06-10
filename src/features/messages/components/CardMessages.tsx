@@ -20,35 +20,55 @@ export interface CardMessagesProps {
 }
 
 const CardMessages = ({conversation}: CardMessagesProps) => {
-    useTheme();
-    const { cardData, setting } = useCardMessage(conversation); 
-    if (!cardData) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+    useTheme(); // Ensure this hook is called to get dynamic colors
+    const { cardData, setting } = useCardMessage(conversation);
+
+    if (!cardData) {
+        return (
+            <View style={[styles.loadingContainer, {backgroundColor: Color.backgroundSecondary}]}>
+                <ActivityIndicator size="small" color={Color.mainColor2} />
+            </View>
+        );
+    }
+
     return (
-        <TouchableOpacity style={styles.container} onPress={cardData.onPress}>
+        <TouchableOpacity style={[styles.container, {backgroundColor: Color.backgroundSecondary}]} onPress={cardData.onPress}>
             <View style={styles.mainContent}>
-                <Image source={cardData.avt ? {uri: cardData.avt?.url} : (
-                    cardData.type === 'group'? require('@/src/assets/images/default/default_group_message.png'):
-                    cardData.type === 'private'? require('@/src/assets/images/default/default_user.png'):
-                    require('@/src/assets/images/default/default_page.jpg')
-                )} style={styles.images}/>
+                <Image
+                    source={cardData.avt ? {uri: cardData.avt?.url} : (
+                        cardData.type === 'group' ? require('@/src/assets/images/default/default_group_message.png') :
+                        cardData.type === 'private' ? require('@/src/assets/images/default/default_user.png') :
+                        require('@/src/assets/images/default/default_page.jpg')
+                    )}
+                    style={styles.images}
+                />
                 <View style={styles.content}>
                     <View style={styles.title}>
-                      <Text 
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={[styles.name, (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
+                      <Text style={[
+                          styles.name,
+                          { color: Color.textPrimary }, // Dynamic color for name
+                          (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }
+                      ]}>
                         {cardData.name}
                       </Text>
                       {setting?.notifications === false ? (
-                        <MaterialIcons name="notifications-off" size={16} color="gray" />
+                        <MaterialIcons name="notifications-off" size={16} color={Color.textSecondary} /> 
                       ) : (
-                        <Text style={[styles.date, cardData.isRead ? {} : { fontWeight: 'bold' }]}>
+                        <Text style={[
+                            styles.date,
+                            { color: Color.textSecondary }, // Dynamic color for date
+                            cardData.isRead ? {} : { fontWeight: 'bold' }
+                        ]}>
                           {timeAgo(cardData.sendDate)}
                         </Text>
                       )}
                     </View>
                     <Text
-                      style={[styles.textContent, (cardData.isRead || setting?.notifications === false)?{}:{fontWeight: 'bold'}]}
+                      style={[
+                          styles.textContent,
+                          { color: Color.textSecondary }, // Dynamic color for text content
+                          (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }
+                      ]}
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -56,10 +76,12 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
                     </Text>
                 </View>
             </View>
-            {!cardData.isRead && <View style={styles.dot}/>}
+            {!cardData.isRead && setting?.notifications !== false && ( // Only show dot if not read AND notifications are NOT off
+                <View style={[styles.dot, { backgroundColor: Color.mainColor2 }]} /> // Dynamic color for dot
+            )}
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 export interface DataCardProps {
     name: string;
@@ -76,10 +98,10 @@ const useCardMessage = (conversation: Conversation) => {
     const [userId, setUserId] = useState<string | null>(null);
     const [cardData, setCardData] = useState<DataCardProps | null> (null);
     const [setting, setSetting] = useState<ConversationSettings|null>(null);
-    
+
     const navigation = useNavigation<ChatNavigationProp>();
     const {
-        getSenderName, getShortNames, 
+        getSenderName, getShortNames,
         hasUserSeenLastMessage, getContent,
         getOtherParticipantById
     } = useMessages();
@@ -88,7 +110,7 @@ const useCardMessage = (conversation: Conversation) => {
         getUserId();
     }, []);
 
-    useEffect(() => {   
+    useEffect(() => {
         if (conversation && userId){
             getSetting();
             setCardData(getDataCard(conversation));
@@ -99,7 +121,7 @@ const useCardMessage = (conversation: Conversation) => {
         const id = await AsyncStorage.getItem("userId");
         setUserId(id);
     }
-    
+
     const getDataCard = (conversation: Conversation) : DataCardProps | null => {
         if (!userId) return null;
         if (conversation.type === "group") {
@@ -116,7 +138,6 @@ const useCardMessage = (conversation: Conversation) => {
         } else if (conversation.type === "private") {
 
             const userData = getOtherParticipantById(conversation, userId);
-            console.log(userData);
             return {
                 name: userData?userData.displayName:"Người dùng không xác định",
                 avt: userData && userData.avt.length > 0 ? userData.avt[userData.avt.length - 1] : null,
@@ -127,12 +148,12 @@ const useCardMessage = (conversation: Conversation) => {
                 message: getContent(conversation),
                 onPress: () => {navigation.navigate("BoxChat", {conversationId: conversation._id})}
             }
-        } else {
+        } else { // type === "page"
             const userData = getOtherParticipantById(conversation, userId);
             return {
                 name: conversation.participants.some((user) => user._id === userId) ? (conversation.pageId?conversation.pageId.name : "Page không xác định") : (userData?userData.displayName:"Người dùng không xác định"),
                 avt: conversation.pageId && conversation.pageId.avt? conversation.pageId.avt : null,
-                isRead: true,
+                isRead: true, // Assuming page messages are always considered read for simplicity or different handling
                 type: 'page',
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
@@ -140,23 +161,23 @@ const useCardMessage = (conversation: Conversation) => {
                 onPress: () => {navigation.navigate("BoxChat", {conversationId: conversation._id})}
             }
         }
-
-    }
+    };
 
     const getSetting = () => {
-        if (!userId) return null;
-        const st = conversation.settings.filter((setting) => setting.userId === userId);
-        if (st.length > 0){
-            setSetting(st[0]);
+        if (!userId) return; // return early if userId is null
+        const userSettings = conversation.settings.filter((s) => s.userId === userId);
+        if (userSettings.length > 0){
+            setSetting(userSettings[0]);
+        } else {
+            setSetting(null); // Ensure setting is null if no specific setting is found
         }
-    }
+    };
 
     return {
         cardData,
         setting
-    }
-    
-}
+    };
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -165,44 +186,56 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-
+        borderRadius: 8, // Added a slight border radius for card-like appearance
+        marginVertical: 4, // Added vertical margin to separate cards
+    },
+    loadingContainer: {
+        width: '100%',
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 70, // Ensure it has enough height to not collapse
     },
     images: {
-        width: 50, height: 50,
-        borderRadius: 50
+        width: 50,
+        height: 50,
+        borderRadius: 25, // Half of width/height for perfect circle
     },
     mainContent: {
-        width: '90%',
+        flex: 1, // Allow mainContent to take up available space
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     content: {
-        width: '90%',
+        flex: 1, // Allow content to take up available space
         paddingHorizontal: 10,
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     title: {
-        height: 25,
+        minHeight: 25, // Changed from fixed height to minHeight for flexibility
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 5
+        marginBottom: 5,
     },
     name: {
-        width: '80%',
-        fontSize: 17
+        fontSize: 17,
+        flexShrink: 1, // Allow text to shrink
+        marginRight: 5, // Small margin to separate from date/icon
     },
     date: {
-        fontSize: 10
+        fontSize: 10,
+        flexShrink: 0, // Prevent date from shrinking
     },
     textContent: {
-
+        fontSize: 14, // Slightly smaller font for message content
     },
     dot: {
-        width: 5, height: 5,
-        borderRadius: 50,
-        backgroundColor: Color.white_contrast
-    }
-})
+        width: 8, // Slightly larger dot for visibility
+        height: 8,
+        borderRadius: 4, // Half of width/height for perfect circle
+        marginLeft: 10, // Margin to separate from text content
+    },
+});
 
 export default CardMessages;

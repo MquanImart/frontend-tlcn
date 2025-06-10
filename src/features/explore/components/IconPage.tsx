@@ -35,11 +35,11 @@ const IconPage = ({avt, name, _id}: IconPageProps) => {
         <TouchableOpacity style={styles.container}
             onPress={() => handleNavigateToPage(_id)}
         >
-            <View style={[styles.boxImages, { borderColor: Color.mainColor1 }]}>
+            <View style={[styles.boxImages, { borderColor: Color.mainColor2 }]}>
                 <Image style={styles.images} source={{uri: avt.url}}/>
             </View>
             <Text
-                style={[styles.textName, { color: Color.mainColor1 }]}
+                style={[styles.textName, { color: Color.mainColor2 }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
             >

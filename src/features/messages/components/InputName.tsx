@@ -3,25 +3,34 @@ import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, StyleSheet, TextInput } from "react-native"
 
 interface NameMessagesProps {
-    name: string; 
+    name: string;
     setName: (value: string) => void;
     refInput: React.RefObject<TextInput | null>;
 }
 
 const InputName = ({refInput, name, setName} : NameMessagesProps) => {
-    useTheme();
+    useTheme(); // This hook ensures the Color object is updated based on the current theme
     const handleTextChange = (text: string) => {
-      setName(text);
+        setName(text);
     };
     return (
         <View style={styles.container}>
-            <View style={styles.boxName}>
+            <View style={[
+                styles.boxName,
+                {
+                    backgroundColor: Color.backgroundTertiary, // Dynamic background for the input box
+                    borderColor: Color.border // Dynamic border color
+                }
+            ]}>
                 <TextInput
                     ref={refInput}
                     value={name}
-                    style={styles.inputName}
+                    style={[
+                        styles.inputName,
+                        { color: Color.textPrimary } // Dynamic text color for the input
+                    ]}
                     placeholder="Tên nhóm"
-                    placeholderTextColor={Color.textColor3}
+                    placeholderTextColor={Color.textTertiary} // Using textTertiary for placeholder
                     onChangeText={handleTextChange}
                 />
             </View>
@@ -39,14 +48,14 @@ const styles = StyleSheet.create({
     boxName: {
         width: '90%',
         height: 50,
-        backgroundColor: Color.white_homologous,
         borderRadius: 32,
         justifyContent: 'center',
         paddingHorizontal: 20,
         borderWidth: 0.5
     },
     inputName: {
-
+        flex: 1, // Allows the TextInput to take up available space
+        fontSize: 16, // Added a default font size
     }
 })
 
