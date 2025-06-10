@@ -1,4 +1,3 @@
-// src/features/search/containers/SearchUserAndGroup/SearchUserAndGroup.tsx
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import TabbarTop, { TabProps } from "@/src/shared/components/tabbar-top/TabbarTop";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
@@ -21,9 +20,10 @@ interface SearchUserAndGroupProps {
 }
 
 const SearchUserAndGroup: React.FC<SearchUserAndGroupProps> = ({ route, navigation }) => {
-  useTheme()
+  useTheme();
   const { textSearch: initialTextSearch, userId } = route.params;
   const [searchText, setSearchText] = useState<string>(initialTextSearch || "");
+  const [committedSearchText, setCommittedSearchText] = useState<string>(initialTextSearch || "");
   const tabs: TabProps[] = [
     { label: "Người dùng" },
     { label: "Nhóm" },
@@ -33,13 +33,15 @@ const SearchUserAndGroup: React.FC<SearchUserAndGroupProps> = ({ route, navigati
 
   const handleSearchSubmit = () => {
     if (searchText.trim() === "") {
+      setCommittedSearchText("");
       return;
     }
-    // Không cần điều hướng, chỉ cần cập nhật state để component con render lại
+    setCommittedSearchText(searchText.trim());
   };
 
   const handleClearSearch = () => {
     setSearchText("");
+    setCommittedSearchText("");
   };
 
   return (
@@ -94,9 +96,9 @@ const SearchUserAndGroup: React.FC<SearchUserAndGroupProps> = ({ route, navigati
         <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
       </View>
       {currTab === tabs[0].label ? (
-        <SearchUser textSearch={searchText} userId={userId} navigation={navigation} />
+        <SearchUser textSearch={committedSearchText} userId={userId} navigation={navigation} />
       ) : (
-        <SearchGroup textSearch={searchText} userId={userId} navigation={navigation} />
+        <SearchGroup textSearch={committedSearchText} userId={userId} navigation={navigation} />
       )}
     </SafeAreaView>
   );
