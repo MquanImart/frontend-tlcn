@@ -9,6 +9,8 @@ import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useTheme } from '@/src/contexts/ThemeContext'; // Import useTheme
+import { colors as Color } from '@/src/styles/DynamicColors'; // Import Color
 
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "EditProfile">;
 
@@ -17,6 +19,7 @@ const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 const EditProfile = () => {
+  useTheme(); // Sử dụng hook useTheme để Color được cập nhật động
   const navigation = useNavigation<ProfileNavigationProp>();
   const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -86,7 +89,7 @@ const EditProfile = () => {
     });
 
     if (!result.canceled) {
-      setNewAvatarUri(result.assets[0].uri); // Lưu tạm URI của ảnh mới
+      setNewAvatarUri(result.assets[0].uri); 
     }
   };
 
@@ -114,7 +117,7 @@ const EditProfile = () => {
           avatarId = uploadResponse.data._id;
           setAvatar(uploadResponse.data.url);
           setNewAvatarUri(null);
-          setInitialAvatar(uploadResponse.data.url); // Cập nhật trạng thái ban đầu sau khi lưu
+          setInitialAvatar(uploadResponse.data.url); 
         } else {
           throw new Error("Không thể upload ảnh");
         }
@@ -130,7 +133,6 @@ const EditProfile = () => {
 
       const response = await UsersClient.patch(userId, updateData);
       if (response.success) {
-        // Cập nhật trạng thái ban đầu sau khi lưu thành công
         setInitialDisplayName(displayName);
         setInitialBio(bio);
         setHasChanges(false);
@@ -166,41 +168,48 @@ const EditProfile = () => {
   }, [userId]);
 
   return (
-    <View style={styles.container}>
-      <CHeader label="Chỉnh sửa hồ sơ" backPress={() => navigation.goBack()} />
+    <View style={{ flex: 1, backgroundColor: Color.background }}>
+      <CHeader label="Chỉnh sửa hồ sơ" backPress={() => navigation.goBack()} 
+        labelColor={Color.mainColor2}
+        iconColor={Color.textPrimary} 
+      />
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4B164C" />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={Color.mainColor1} />
         </View>
       ) : error ? (
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={{ color: Color.error, textAlign: "center", margin: 20 }}>{error}</Text>
       ) : (
         <View style={styles.content}>
           <TouchableOpacity style={styles.avatarContainer} onPress={handleImageSelection}>
-            <Image source={{ uri: newAvatarUri || avatar }} style={styles.avatar} />
-            <View style={styles.cameraIcon}>
-              <MaterialIcons name="photo-camera" size={32} color="#4B164C" />
+            <Image source={{ uri: newAvatarUri || avatar }} style={[styles.avatar, { borderColor: Color.mainColor1 }]} />
+            <View style={[styles.cameraIcon, { backgroundColor: Color.white_white }]}>
+              <MaterialIcons name="photo-camera" size={32} color={Color.mainColor1} />
             </View>
           </TouchableOpacity>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: Color.border, color: Color.textPrimary, backgroundColor: Color.backgroundTertiary }]}
             value={displayName}
             onChangeText={setDisplayName}
             placeholder="Tên của bạn"
-            placeholderTextColor="#999"
+            placeholderTextColor={Color.textTertiary}
           />
           <TextInput
-            style={[styles.input, styles.bioInput]}
+            style={[styles.input, styles.bioInput, { borderColor: Color.border, color: Color.textPrimary, backgroundColor: Color.backgroundTertiary }]}
             value={bio}
             onChangeText={setBio}
             placeholder="Giới thiệu về bạn"
-            placeholderTextColor="#999"
+            placeholderTextColor={Color.textTertiary}
             multiline
             numberOfLines={4}
           />
           {hasChanges && (
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges} disabled={loading}>
-              <Text style={styles.saveButtonText}>
+            <TouchableOpacity 
+              style={[styles.saveButton, { backgroundColor: Color.mainColor1 }]} 
+              onPress={handleSaveChanges} 
+              disabled={loading}
+            >
+              <Text style={[styles.saveButtonText, { color: Color.textOnMain1 }]}>
                 {loading ? "Đang lưu..." : "Lưu thay đổi"}
               </Text>
             </TouchableOpacity>
@@ -212,17 +221,62 @@ const EditProfile = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  content: { padding: 20, alignItems: "center" },
-  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  errorText: { color: "red", textAlign: "center", margin: 20 },
-  avatarContainer: { position: "relative", marginBottom: 20 },
-  avatar: { width: 150, height: 150, borderRadius: 75, borderWidth: 2, borderColor: "#4B164C" },
-  cameraIcon: { position: "absolute", bottom: 0, right: 0, backgroundColor: "white", borderRadius: 16, padding: 2 },
-  input: { width: "100%", borderWidth: 1, borderColor: "#ddd", borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16 },
-  bioInput: { height: 120, textAlignVertical: "top" },
-  saveButton: { backgroundColor: "#4B164C", paddingVertical: 15, paddingHorizontal: 30, borderRadius: 8, width: "100%", alignItems: "center" },
-  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  container: { 
+    flex: 1, 
+  },
+  content: { 
+    padding: 20, 
+    alignItems: "center" 
+  },
+  loadingContainer: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center" 
+  },
+  errorText: { 
+    textAlign: "center", 
+    margin: 20 
+  },
+  avatarContainer: { 
+    position: "relative", 
+    marginBottom: 20 
+  },
+  avatar: { 
+    width: 150, 
+    height: 150, 
+    borderRadius: 75, 
+    borderWidth: 2, 
+  },
+  cameraIcon: { 
+    position: "absolute", 
+    bottom: 0, 
+    right: 0, 
+    borderRadius: 16, 
+    padding: 2 
+  },
+  input: { 
+    width: "100%", 
+    borderWidth: 1, 
+    borderRadius: 8, 
+    padding: 12, 
+    marginBottom: 15, 
+    fontSize: 16,
+  },
+  bioInput: { 
+    height: 120, 
+    textAlignVertical: "top" 
+  },
+  saveButton: { 
+    paddingVertical: 15, 
+    paddingHorizontal: 30, 
+    borderRadius: 8, 
+    width: "100%", 
+    alignItems: "center" 
+  },
+  saveButtonText: { 
+    fontSize: 16, 
+    fontWeight: "bold" 
+  },
 });
 
 export default EditProfile;

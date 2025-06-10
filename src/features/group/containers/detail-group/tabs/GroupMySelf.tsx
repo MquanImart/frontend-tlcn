@@ -71,20 +71,20 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.infoText}>Thông tin</Text>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
+      <Text style={[styles.infoText, { color: Color.textPrimary }]}>Thông tin</Text>
 
       {/* Hiển thị thông tin người dùng */}
       {adminInvite ? (
         <UserInfo
-          groupName={adminInvite.groupName || ""}
-          role={role}
-          joinDate={Date.now()}
-          inviterAvatar={adminInvite.inviterAvatar || ""}
+          groupName={adminInvite.groupName || ""} // Ensure UserInfo wraps this in <Text>
+          role={role} // Ensure UserInfo wraps this in <Text> if displayed directly
+          joinDate={Date.now()} // Ensure UserInfo handles dates correctly for display
+          inviterAvatar={adminInvite.inviterAvatar || ""} // Ensure UserInfo handles this for display (e.g., as part of Image source)
           onPress={() => adminInvite.hasInvite && setModalVisible(true)}
         />
       ) : (
-        <Text style={styles.noInviteText}>Không có lời mời làm quản trị viên</Text>
+        <Text style={[styles.noInviteText, { color: Color.textSecondary }]}>Không có lời mời làm quản trị viên</Text>
       )}
 
       {/* Hiển thị modal lời mời làm quản trị viên nếu có */}
@@ -94,33 +94,33 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
           onClose={() => setModalVisible(false)}
           onAccept={handleAcceptInviteWithRoleUpdate}
           onReject={handleRejectInviteWithRoleUpdate}
-          groupName={adminInvite.groupName}
-          inviterName={adminInvite.inviterName}
-          inviteDate={new Date(adminInvite.inviteDate).toLocaleDateString("vi-VN")}
-          inviterAvatar={adminInvite.inviterAvatar}
+          groupName={adminInvite.groupName} // Ensure InviteAdminModal wraps this in <Text>
+          inviterName={adminInvite.inviterName} // Ensure InviteAdminModal wraps this in <Text>
+          inviteDate={new Date(adminInvite.inviteDate).toLocaleDateString("vi-VN")} // Ensure InviteAdminModal wraps this in <Text>
+          inviterAvatar={adminInvite.inviterAvatar} // Ensure InviteAdminModal handles this for display
         />
       )}
 
-      <Text style={styles.infoText}>Bài viết trong nhóm</Text>
+      <Text style={[styles.infoText, { color: Color.textPrimary }]}>Bài viết trong nhóm</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
+        <ActivityIndicator size="large" color={Color.mainColor2} style={styles.loading} />
       ) : error ? (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text>
           <TouchableOpacity onPress={() => fetchUserArticles(1)}>
-            <Text style={styles.retryText}>Thử lại</Text>
+            <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
           </TouchableOpacity>
         </View>
       ) : articles.length === 0 ? (
-        <Text style={styles.emptyText}>Chưa có bài viết nào</Text>
+        <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Chưa có bài viết nào</Text>
       ) : (
         <FlatList
           data={articles}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <Post
-              article={item}
+              article={item} // Ensure Post component wraps all its text content in <Text>
               userId={currentUserId}
               onCommentPress={() => openComments(item)}
               onLike={() => likeArticle(item._id, item.createdBy._id)}
@@ -132,7 +132,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchUserArticles(1)}
-              colors={[Color.mainColor1]}
+              colors={[Color.mainColor2]}
             />
           }
           onEndReached={loadMoreArticles}
@@ -140,7 +140,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : null
           }
@@ -158,13 +158,13 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
-          <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
+          <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+            <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
 
@@ -174,7 +174,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
             renderItem={({ item }) => (
               <CommentItem
                 userId={currentUserId}
-                comment={item}
+                comment={item} // Ensure CommentItem wraps all its text content in <Text>
                 onLike={likeComment}
                 onReply={replyToComment}
               />
@@ -183,23 +183,23 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
             contentContainerStyle={styles.commentList}
           />
 
-          <View style={styles.commentInputContainer}>
+          <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
             <TextInput
               style={[
                 styles.commentInput,
                 {
-                  borderColor: Color.borderColor1,
-                  color: Color.textColor1,
-                  backgroundColor: Color.backGround,
+                  borderColor: Color.border,
+                  color: Color.textPrimary,
+                  backgroundColor: Color.background,
                 },
               ]}
               placeholder="Viết bình luận..."
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary}
               value={newReply}
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={20} color={Color.mainColor1} />
+              <Ionicons name="send" size={20} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>
@@ -214,17 +214,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: Color.backGround,
   },
   infoText: {
     fontSize: 18,
-    color: Color.textColor1,
     marginBottom: 10,
     fontWeight: "bold",
   },
   noInviteText: {
     fontSize: 16,
-    color: Color.textColor3,
     textAlign: "center",
     marginVertical: 10,
   },
@@ -244,7 +241,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -254,7 +250,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
     paddingVertical: 10,
   },
   commentInput: {
@@ -279,18 +274,15 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: "red",
     textAlign: "center",
   },
   retryText: {
     fontSize: 16,
-    color: Color.mainColor1,
     marginTop: 10,
     fontWeight: "bold",
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
     textAlign: "center",
     marginTop: 20,
   },

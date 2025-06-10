@@ -1,7 +1,7 @@
 import { NotificationParamList } from "@/src/shared/routes/NotificationNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
-import AsyncStorage from "@react-native-async-storage/async-storage"; // For fetching currentUserId
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
@@ -9,6 +9,7 @@ import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Notification } from "../interface/INotification";
+
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: () => void;
@@ -16,6 +17,7 @@ interface NotificationItemProps {
   onDelete: () => void;
   handleOptions: (onMarkAsRead: () => void, onMarkAsUnread: () => void, onDelete: () => void) => void;
 }
+
 const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   onMarkAsRead,
@@ -27,7 +29,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   const navigation = useNavigation<NativeStackNavigationProp<NotificationParamList>>();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  // Fetch currentUserId from AsyncStorage
   const fetchCurrentUserId = useCallback(async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
@@ -44,12 +45,10 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   }, [fetchCurrentUserId]);
 
   const handlePress = async () => {
-    // Mark notification as read if unread
     if (notification.status === "unread") {
       onMarkAsRead();
     }
 
-    // Navigate based on relatedEntityType
     switch (notification.relatedEntityType) {
       case "Article":
         if (notification.articleId) {
@@ -103,11 +102,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         }
         break;
 
-      case "Reel": 
+      case "Reel":
         if (notification.reelId) {
           navigation.navigate("ReelNavigation", {
-            screen: "ReelDetail", 
-            params: { reelId: notification.reelId }, 
+            screen: "ReelDetail",
+            params: { reelId: notification.reelId },
           });
         } else {
           Alert.alert("Lỗi", "Không tìm thấy Reel liên quan.");
@@ -130,7 +129,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     <View style={styles.notificationItemContainer}>
       <TouchableOpacity
         activeOpacity={0.8}
-        style={styles.notificationItem}
+        style={[
+          styles.notificationItem,
+          // Background của thông báo chưa đọc giờ sẽ dùng Color.background (màu nền mặc định)
+          { backgroundColor: Color.background },
+        ]}
         onPress={handlePress}
         onLongPress={handleLongPress}
         delayLongPress={300}
@@ -145,19 +148,20 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           style={styles.avatar}
         />
         <View style={styles.notificationContent}>
-          <Text style={[styles.notificationMessage, { color: Color.textColor1 }]}>
-            <Text style={[styles.boldText, { color: Color.textColor1 }]}>
+          <Text style={[styles.notificationMessage, { color: Color.textPrimary }]}>
+            <Text style={[styles.boldText, { color: Color.textPrimary }]}>
               {notification?.senderId?.displayName || "Người dùng ẩn danh"}
             </Text>{" "}
             {notification?.message || "Không có nội dung"}
           </Text>
-          <Text style={styles.notificationTime}>
+          <Text style={[styles.notificationTime, { color: Color.textSecondary }]}>
             {notification?.createdAt
               ? new Date(notification.createdAt).toLocaleString()
               : "Không rõ thời gian"}
           </Text>
         </View>
         {notification?.status === "unread" && (
+          // Dấu chấm tròn vẫn sẽ có màu mainColor2 để dễ nhận biết
           <View style={[styles.unreadDot, { backgroundColor: Color.mainColor2 }]} />
         )}
       </TouchableOpacity>
@@ -177,8 +181,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: Color.borderColor1,
-    backgroundColor: Color.backGround, // Fixed from backGround
+    borderBottomColor: Color.border,
   },
   avatar: {
     width: 50,
@@ -198,7 +201,6 @@ const styles = StyleSheet.create({
   notificationTime: {
     fontSize: 12,
     marginTop: 4,
-    color: Color.borderColor1,
   },
   unreadDot: {
     width: 10,

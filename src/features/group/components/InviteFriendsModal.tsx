@@ -16,7 +16,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
-const notificationsClient = restClient.apiClient.service("apis/notifications"); // Thêm API thông báo
+const notificationsClient = restClient.apiClient.service("apis/notifications");
 
 interface User {
   _id: string;
@@ -45,7 +45,7 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
   const [selectedFriends, setSelectedFriends] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   useTheme();
-  // 🛠 Fetch danh sách bạn bè có thể mời
+
   useEffect(() => {
     if (visible) {
       fetchInvitableFriends();
@@ -69,7 +69,6 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
     }
   };
 
-  // 🔄 Toggle chọn bạn bè để mời
   const toggleSelectFriend = (user: User) => {
     setSelectedFriends((prevSelected) =>
       prevSelected.some((u) => u._id === user._id)
@@ -93,7 +92,6 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
     }
   };
 
-  // 🎉 Gửi lời mời và thông báo
   const handleInvite = async () => {
     if (selectedFriends.length > 0) {
       selectedFriends.forEach(async (friend) => {
@@ -109,14 +107,14 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Mời bạn bè vào nhóm</Text>
+      <View style={[styles.modalContainer, { backgroundColor: Color.backgroundSecondary + 'cc' }]}>
+        <View style={[styles.modalContent, { backgroundColor: Color.background }]}>
+          <Text style={[styles.modalTitle, { color: Color.textPrimary }]}>Mời bạn bè vào nhóm</Text>
 
           {loading ? (
-            <ActivityIndicator size="large" color={Color.mainColor1} />
+            <ActivityIndicator size="large" color={Color.mainColor2} />
           ) : friendsList.length === 0 ? (
-            <Text style={styles.noFriendsText}>Không có bạn bè nào để mời.</Text>
+            <Text style={[styles.noFriendsText, { color: Color.textSecondary }]}>Không có bạn bè nào để mời.</Text>
           ) : (
             <FlatList
               data={friendsList}
@@ -126,21 +124,23 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
                 return (
                   <TouchableOpacity
                     style={[
-                      styles.inviteItem
+                      styles.inviteItem,
+                      { borderBottomColor: Color.border },
+                      isSelected && { backgroundColor: Color.backgroundSelected },
                     ]}
                     onPress={() => toggleSelectFriend(item)}
                   >
                     {/* Avatar & Tên */}
                     <View style={styles.userInfo}>
                       <Image source={{ uri: item.avt || "https://via.placeholder.com/100" }} style={styles.avatar} />
-                      <Text style={styles.inviteText}>{item.displayName}</Text>
+                      <Text style={[styles.inviteText, { color: Color.textPrimary }]}>{item.displayName}</Text>
                     </View>
 
                     {/* Check Icon */}
                     <Icon
                       name={isSelected ? "check-box" : "check-box-outline-blank"}
                       size={24}
-                      color={isSelected ? Color.mainColor1 : Color.textColor3}
+                      color={isSelected ? Color.mainColor2 : Color.textSecondary}
                     />
                   </TouchableOpacity>
                 );
@@ -150,19 +150,20 @@ const InviteFriendsModal: React.FC<InviteFriendsModalProps> = ({
 
           {/* Nút Mời và Đóng */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeText}>Hủy</Text>
+            <TouchableOpacity style={[styles.closeButton, { backgroundColor: Color.backgroundTertiary }]} onPress={onClose}>
+              <Text style={[styles.closeText, { color: Color.textPrimary }]}>Hủy</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.inviteButton,
-                selectedFriends.length === 0 && styles.disabledButton,
+                { backgroundColor: Color.mainColor2 },
+                selectedFriends.length === 0 && { backgroundColor: Color.backgroundTertiary },
               ]}
               onPress={handleInvite}
               disabled={selectedFriends.length === 0}
             >
-              <Text style={styles.inviteButtonText}>
+              <Text style={[styles.inviteButtonText, { color: Color.textOnMain2 }]}>
                 Mời ({selectedFriends.length})
               </Text>
             </TouchableOpacity>
@@ -180,12 +181,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
     width: 320,
     padding: 20,
-    backgroundColor: Color.backGround,
     borderRadius: 10,
     alignItems: "center",
   },
@@ -193,24 +192,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: Color.textColor1,
   },
   noFriendsText: {
     fontSize: 16,
-    color: Color.textColor3,
     marginVertical: 10,
   },
   inviteItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Color.borderColor1,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   selectedItem: {
-    backgroundColor: Color.mainColor2 + "30",
+    // This style is now applied inline in renderItem, so it's not strictly needed here
   },
   userInfo: {
     flexDirection: "row",
@@ -218,7 +214,6 @@ const styles = StyleSheet.create({
   },
   inviteText: {
     fontSize: 16,
-    color: Color.textColor1,
     marginLeft: 10,
   },
   avatar: {
@@ -235,30 +230,26 @@ const styles = StyleSheet.create({
   closeButton: {
     flex: 1,
     padding: 10,
-    backgroundColor: Color.borderColorwb,
     borderRadius: 5,
     alignItems: "center",
     marginRight: 5,
   },
   closeText: {
-    color: Color.white_homologous,
     fontSize: 16,
     fontWeight: "bold",
   },
   inviteButton: {
     flex: 1,
     padding: 10,
-    backgroundColor: Color.mainColor1,
     borderRadius: 5,
     alignItems: "center",
     marginLeft: 5,
   },
   inviteButtonText: {
-    color: Color.textColor2,
     fontSize: 16,
     fontWeight: "bold",
   },
   disabledButton: {
-    backgroundColor: Color.borderColor1,
+    // This style is now applied inline in renderItem, so it's not strictly needed here
   },
 });

@@ -152,7 +152,7 @@ const DetailsTrip = ({closeDetails, currState, trip, setTrip, suggestedForm}: De
                         width: 100,
                         height: 40,
                         fontSize: 13,
-                        backColor: Color.mainColor1,
+                        backColor: Color.mainColor2,
                         textColor: Color.textColor2,
                         radius: 50,
                         flex_direction: 'row'
@@ -165,7 +165,7 @@ const DetailsTrip = ({closeDetails, currState, trip, setTrip, suggestedForm}: De
                         width: 150,
                         height: 40,
                         fontSize: 13,
-                        backColor: Color.mainColor1,
+                        backColor: Color.mainColor2,
                         textColor: Color.textColor2,
                         radius: 50,
                         flex_direction: 'row'
@@ -177,7 +177,7 @@ const DetailsTrip = ({closeDetails, currState, trip, setTrip, suggestedForm}: De
                 <TouchableOpacity style={styles.add}
                     onPress={() => {openSearch()}}
                 >
-                    <Icon name={'add'} size={15} color={Color.mainColor1}/>
+                    <Icon name={'add'} size={15} color={Color.mainColor2}/>
                     <Text style={styles.textAdd}>Thêm điểm đến</Text>
                 </TouchableOpacity>
             </View>
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
 
     },
     textAdd: {
-        color: Color.mainColor1
+        color: Color.mainColor2
     },
     list: {
         width: '100%',

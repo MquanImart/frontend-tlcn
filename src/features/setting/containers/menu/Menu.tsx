@@ -3,7 +3,7 @@ import CIconButton from "@/src/shared/components/button/CIconButton";
 import CHeader from "@/src/shared/components/header/CHeader";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
-import restClient from "@/src/shared/services/RestClient"; // Import restClient
+import restClient from "@/src/shared/services/RestClient";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,12 +26,12 @@ interface CategoryItem {
 }
 
 const Menu = () => {
-  useTheme()
+  useTheme(); // Ensure theme context is used
   const navigation = useNavigation<SettingNavigationProp>();
   const navigationMenu = useNavigation<MenuNavigationProp>();
   const [userID, setUserID] = useState<string | null>(null);
 
-  // Hàm lấy userID từ AsyncStorage
+  // Function to get userID from AsyncStorage
   const getUserID = async () => {
     try {
       const storedUserID = await AsyncStorage.getItem("userId");
@@ -43,10 +43,10 @@ const Menu = () => {
       }
     } catch (error) {
       console.error("Lỗi khi lấy userID từ AsyncStorage:", error);
-    } 
+    }
   };
 
-  // Hàm xử lý đăng xuất
+  // Function to handle logout
   const handleLogout = async () => {
     try {
       if (!userID) {
@@ -54,7 +54,7 @@ const Menu = () => {
         return;
       }
 
-      // Xóa toàn bộ dữ liệu trong AsyncStorage
+      // Clear all data from AsyncStorage
       await AsyncStorage.multiRemove([
         "token",
         "userId",
@@ -66,11 +66,11 @@ const Menu = () => {
         "hobbies",
       ]);
 
-      // Đặt lại trạng thái client
+      // Reset client state and RestClient token
       setUserID(null);
-      restClient.apiClient.token = ""; // Đặt lại token trong RestClient
+      restClient.apiClient.token = "";
 
-      // Chuyển hướng về màn hình Login
+      // Navigate to Login screen
       navigationMenu.navigate("Login");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
@@ -78,7 +78,7 @@ const Menu = () => {
     }
   };
 
-  // Xác nhận đăng xuất
+  // Confirm logout
   const confirmLogout = () => {
     Alert.alert(
       "Xác nhận",
@@ -97,15 +97,17 @@ const Menu = () => {
 
   const { user, avt, groups, loading, error, categories, navigate, navigateToGroup } = useMenu(userID || "");
 
+  // Render loading state if userID is not yet loaded
   if (!userID) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Color.white_contrast} />
-        <Text>Đang tải thông tin người dùng...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
+        <ActivityIndicator size="large" color={Color.textPrimary} />
+        <Text style={{ color: Color.textPrimary, marginTop: 10 }}>Đang tải thông tin người dùng...</Text>
       </View>
     );
   }
 
+  // Adjust categories for even columns if needed
   const adjustedCategories: CategoryItem[] = [...categories];
   if (adjustedCategories.length % 2 !== 0) {
     adjustedCategories.push({
@@ -117,11 +119,13 @@ const Menu = () => {
 
   const renderCategoryItem = ({ item }: { item: CategoryItem }) => {
     if (item.id === "placeholder") {
-      return <View style={[styles.categoryItem, { backgroundColor: "transparent", shadowOpacity: 0, elevation: 0 }]} />;
+      return (
+        <View style={[styles.categoryItem, { backgroundColor: "transparent", shadowOpacity: 0, elevation: 0 }]} />
+      );
     }
 
     return (
-      <View style={styles.categoryItem}>
+      <View style={[styles.categoryItem, { backgroundColor: Color.backgroundSecondary, shadowColor: Color.textSecondary }]}>
         <CIconButton
           icon={<Image source={item.image} style={styles.iconcategory} />}
           onSubmit={() => navigate(item.label)}
@@ -129,46 +133,49 @@ const Menu = () => {
             flex_direction: "column",
             width: "100%",
             height: 90,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.backgroundSecondary,
+            textColor: Color.textPrimary,
             radius: 15,
           }}
         />
-        <Text style={styles.textcategoryItem}>{item.label}</Text>
+        <Text style={[styles.textcategoryItem, { color: Color.textPrimary }]}>{item.label}</Text>
       </View>
     );
   };
 
+  // Render loading state based on useMenu hook
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Color.white_contrast} />
+      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
+        <ActivityIndicator size="large" color={Color.textPrimary} />
       </View>
     );
   }
 
+  // Render error state
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={[styles.errorContainer, { backgroundColor: Color.background }]}>
+        <Text style={[styles.errorText, { color: Color.error }]}>{error}</Text>
       </View>
     );
   }
 
+  // Render loading if user or avatar data is missing after initial load
   if (!user || !avt) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
+      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
+        <ActivityIndicator size="large" color={Color.textPrimary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <CHeader label="Danh mục" backPress={() => navigation.goBack()} />
 
-      {/* Thông tin người dùng */}
-      <View style={styles.infavatar}>
+      {/* User Information Section */}
+      <View style={[styles.infavatar, { shadowColor: Color.textSecondary }]}>
         <CIconButton
           label={user.displayName}
           icon={<Image source={{ uri: avt }} style={styles.avatar} />}
@@ -176,8 +183,8 @@ const Menu = () => {
           style={{
             width: "90%",
             height: 60,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.backgroundSecondary,
+            textColor: Color.textPrimary,
             radius: 15,
             flex_direction: "row",
             fontSize: 20,
@@ -186,9 +193,9 @@ const Menu = () => {
         />
       </View>
 
-      {/* Lối tắt - Nhóm của người dùng */}
+      {/* Shortcuts - User's Groups Section */}
       <View style={styles.shortcutsContainer}>
-        <Text style={styles.sectionTitle}>Lối tắt</Text>
+        <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>Lối tắt</Text>
         <FlatList
           data={groups}
           renderItem={({ item }) => (
@@ -202,15 +209,19 @@ const Menu = () => {
                   fontSize: 10,
                   width: "100%",
                   height: 100,
+                  backColor: Color.backgroundSecondary, // Use backgroundSecondary for shortcut buttons
+                  textColor: Color.textPrimary,
                 }}
               />
             </View>
           )}
           horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item._id}
         />
       </View>
 
-      {/* Các danh mục chính */}
+      {/* Main Categories Section */}
       <FlatList
         data={adjustedCategories}
         renderItem={renderCategoryItem}
@@ -219,16 +230,16 @@ const Menu = () => {
         contentContainerStyle={styles.mainCategories}
       />
 
-      {/* Đăng xuất */}
-      <View style={styles.logoutButton}>
+      {/* Logout Section */}
+      <View style={[styles.logoutButton, { shadowColor: Color.textSecondary }]}>
         <CButton
           label="Đăng xuất"
-          onSubmit={confirmLogout} // Gọi hàm xác nhận
+          onSubmit={confirmLogout}
           style={{
             width: 290,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.mainColor2, // Using mainColor2 for primary action
+            textColor: Color.textOnMain2,
             radius: 15,
             fontSize: 18,
           }}
@@ -241,7 +252,6 @@ const Menu = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.white_homologous,
   },
   avatar: {
     width: 50,
@@ -250,7 +260,6 @@ const styles = StyleSheet.create({
     marginRight: 45,
   },
   infavatar: {
-    shadowColor: Color.white_contrast,
     borderRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -262,21 +271,24 @@ const styles = StyleSheet.create({
   shortcutsContainer: {
     width: "90%",
     marginBottom: 5,
+    alignSelf: 'center',
   },
   sectionTitle: {
     fontSize: 20,
     marginTop: 10,
     marginBottom: 1,
     marginLeft: 15,
+    fontWeight: 'bold',
   },
   shortcut: {
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 1,
+    marginHorizontal: 5,
+    width: 80,
+    height: 100,
   },
   logoutButton: {
     marginBottom: 10,
-    shadowColor: Color.white_contrast,
     borderRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -298,35 +310,42 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   mainCategories: {
-    flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "center",
+    alignItems: 'flex-start',
     width: "100%",
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     marginBottom: 3,
   },
   textcategoryItem: {
-    color: Color.white_contrast,
     fontSize: 16,
+    marginTop: 5,
   },
   categoryItem: {
-    width: "48%",
+    width: "47%",
     height: 170,
-    backgroundColor: Color.white_homologous,
     borderRadius: 15,
-    marginHorizontal: 5,
+    marginHorizontal: '1.5%',
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: Color.white_contrast,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
     marginBottom: 10,
   },
-  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  errorContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  errorText: { fontSize: 16, color: "red" },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+  },
 });
 
 export default Menu;

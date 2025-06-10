@@ -99,15 +99,15 @@ const PreferenceSelection = () => {
                 width: item.width,
                 height: 50,
                 backColor: selectedCategories.includes(item.label)
-                  ? Color.mainColor1
+                  ? Color.mainColor2
                   : "transparent",
                 textColor: selectedCategories.includes(item.label)
                   ? Color.white_homologous
-                  : Color.mainColor1,
+                  : Color.mainColor2,
                 fontSize: 18,
                 boderColor: selectedCategories.includes(item.label)
                   ? Color.white_homologous
-                  : Color.mainColor1,
+                  : Color.mainColor2,
                 borderWidth: 2,
                 fontWeight: "500",
                 radius: 50,
@@ -126,7 +126,7 @@ const PreferenceSelection = () => {
             width: "45%",
             height: 50,
             backColor: "transparent",
-            textColor: Color.mainColor1,
+            textColor: Color.mainColor2,
             fontSize: 18,
             boderColor: Color.mainColor2,
             borderWidth: 1,
@@ -140,7 +140,7 @@ const PreferenceSelection = () => {
           style={{
             width: "45%",
             height: 50,
-            backColor: Color.mainColor1,
+            backColor: Color.mainColor2,
             textColor: Color.white_homologous,
             fontSize: 18,
             fontWeight: "bold",

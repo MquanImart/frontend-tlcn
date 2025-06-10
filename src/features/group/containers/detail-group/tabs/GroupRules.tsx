@@ -1,4 +1,3 @@
-// GroupRules.tsx
 import React, { useState } from "react";
 import { View, StyleSheet, Text, FlatList, TouchableOpacity } from "react-native";
 import RuleItem from "@/src/features/group/components/RuleItem";
@@ -10,21 +9,21 @@ import { useGroupRules } from "./useGroupRules"; // Import the custom hook
 interface GroupRulesProps {
   groupId: string;
   currentUserId: string;
-  role: "Guest" | "Member" | "Admin" | "Owner"; 
+  role: "Guest" | "Member" | "Admin" | "Owner";
 }
 
 const GroupRules: React.FC<GroupRulesProps> = ({ groupId, currentUserId, role }) => {
   useTheme();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { rules, addRule, deleteRule } = useGroupRules(groupId); 
+  const { rules, addRule, deleteRule } = useGroupRules(groupId);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Danh sách quy định nhóm</Text>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
+      <Text style={[styles.header, { color: Color.textPrimary }]}>Danh sách quy định nhóm</Text>
 
       {role === "Owner" && (
-        <TouchableOpacity style={styles.addRuleButton} onPress={() => setIsModalVisible(true)}>
-          <Text style={styles.addRuleButtonText}>THÊM QUY ĐỊNH</Text>
+        <TouchableOpacity style={[styles.addRuleButton, { backgroundColor: Color.mainColor2 }]} onPress={() => setIsModalVisible(true)}>
+          <Text style={[styles.addRuleButtonText, { color: Color.textOnMain2 }]}>THÊM QUY ĐỊNH</Text>
         </TouchableOpacity>
       )}
 
@@ -43,7 +42,7 @@ const GroupRules: React.FC<GroupRulesProps> = ({ groupId, currentUserId, role })
       <AddRuleModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        onAddRule={addRule} 
+        onAddRule={addRule}
       />
     </View>
   );
@@ -55,25 +54,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: Color.backGround,
   },
   header: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
     marginBottom: 15,
   },
   addRuleButton: {
     width: "100%",
     height: 45,
-    backgroundColor: Color.mainColor1,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
   },
   addRuleButtonText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },

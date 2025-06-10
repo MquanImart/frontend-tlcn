@@ -6,6 +6,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useTheme } from '@/src/contexts/ThemeContext'; // Import useTheme
+import { colors as Color } from '@/src/styles/DynamicColors'; // Import colors
 
 type WeatherNavigationProp = StackNavigationProp<WeatherStackParamList, "WeatherDetail">;
 
@@ -65,6 +67,7 @@ const geocodeAddress = async (addressString: string) => {
 };
 
 const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
+  useTheme(); // Kích hoạt theme context để có thể sử dụng `Color`
   const [query, setQuery] = useState("");
   const [allLocations, setAllLocations] = useState<Location[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
@@ -138,9 +141,7 @@ const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
     } else {
       setFilteredLocations([]);
     }
- 
-
-}, [query, allLocations]);
+  }, [query, allLocations]);
 
   const handleLocationSelect = async (location: Location) => {
     try {
@@ -168,12 +169,12 @@ const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <Icon name="search" size={25} color="#A0A0A0" style={styles.icon} />
+      <View style={[styles.container, { backgroundColor: Color.backgroundSecondary }]}>
+        <Icon name="search" size={25} color={Color.textTertiary} style={styles.icon} />
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: Color.textPrimary }]}
           placeholder={placeholder}
-          placeholderTextColor="#A0A0A0"
+          placeholderTextColor={Color.textTertiary}
           value={query}
           onChangeText={setQuery}
         />
@@ -183,13 +184,13 @@ const SearchBar: React.FC<{ placeholder: string }> = ({ placeholder }) => {
         <FlatList
           data={filteredLocations}
           keyExtractor={(item) => `${item.type}-${item.code}`}
-          style={styles.suggestionList}
+          style={[styles.suggestionList, { backgroundColor: Color.background }]}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.suggestionItem}
+              style={[styles.suggestionItem, { borderBottomColor: Color.border }]}
               onPress={() => handleLocationSelect(item)}
             >
-              <Text style={styles.suggestionText}>{item.fullName}</Text>
+              <Text style={[styles.suggestionText, { color: Color.textPrimary }]}>{item.fullName}</Text>
             </TouchableOpacity>
           )}
         />
@@ -206,7 +207,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F0F0F0",
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -217,16 +217,14 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
   },
   suggestionList: {
-    backgroundColor: "white",
     maxHeight: 200,
     borderRadius: 8,
     position: "absolute",
     top: 50,
     width: "100%",
-    shadowColor: "#000",
+    shadowColor: "#000", // Giữ màu đen cho shadow để đảm bảo độ tương phản
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -235,11 +233,9 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
   suggestionText: {
     fontSize: 16,
-    color: "#333",
   },
 });
 

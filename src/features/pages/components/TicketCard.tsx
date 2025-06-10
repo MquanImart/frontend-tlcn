@@ -7,22 +7,29 @@ import { Ticket } from "@/src/interface/interface_reference";
 
 interface TicketCardProps {
   ticket: Ticket;
-  onDeleteTicket: (ticketId: string) => void; 
+  onDeleteTicket: (ticketId: string) => void;
 }
 
 const TicketCard: React.FC<TicketCardProps> = ({ ticket, onDeleteTicket }) => {
-  useTheme()
+  useTheme();
   return (
     <View style={styles.cardContainer}>
       <View style={styles.leftBorder} />
 
-      <TouchableOpacity 
-        style={styles.card} 
-        onPress={() => onDeleteTicket(ticket._id)} 
+      <TouchableOpacity
+        style={[
+          styles.card,
+          {
+            backgroundColor: Color.backgroundSecondary, 
+            borderColor: Color.border, 
+            shadowColor: Color.shadow,
+          },
+        ]}
+        onPress={() => onDeleteTicket(ticket._id)}
       >
-        <Text style={styles.title}>{ticket.name}</Text>
-        <Text style={styles.price}>Giá: {ticket.price.toLocaleString()} đồng</Text>
-        {ticket.description && <Text style={styles.description}>Mô tả: {ticket.description}</Text>}
+        <Text style={[styles.title, { color: Color.textPrimary }]}>{ticket.name}</Text>
+        <Text style={[styles.price, { color: Color.textPrimary }]}>Giá: {ticket.price.toLocaleString()} đồng</Text>
+        {ticket.description && <Text style={[styles.description, { color: Color.textPrimary }]}>Mô tả: {ticket.description}</Text>}
       </TouchableOpacity>
     </View>
   );
@@ -39,19 +46,16 @@ const styles = StyleSheet.create({
   leftBorder: {
     width: 8,
     height: "100%",
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
   },
   card: {
     flex: 1,
-    backgroundColor: Color.white_homologous,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -61,16 +65,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Color.textColor1,
   },
   price: {
     fontSize: 14,
-    color: Color.textColor1,
     marginTop: 4,
   },
   description: {
     fontSize: 13,
-    color: Color.textColor1,
     marginTop: 2,
   },
 });

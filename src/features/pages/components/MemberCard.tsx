@@ -13,17 +13,20 @@ interface MemberCardProps {
 }
 
 const MemberCard: React.FC<MemberCardProps> = ({ name, avatar, description }) => {
-  useTheme()
-  const avatarSource = avatar && avatar.trim() !== "" 
-    ? { uri: avatar } 
-    : { uri: DEFAULT_AVATAR }; 
+  useTheme();
+  const avatarSource = avatar && avatar.trim() !== ""
+    ? { uri: avatar }
+    : { uri: DEFAULT_AVATAR };
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, {
+      backgroundColor: Color.backgroundSecondary,
+      shadowColor: Color.shadow,
+    }]}>
       <Image source={avatarSource} style={styles.avatar} />
       <View style={styles.info}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.description}>{description || "Không có mô tả"}</Text>
+        <Text style={[styles.name, { color: Color.textPrimary }]}>{name}</Text>
+        <Text style={[styles.description, { color: Color.textSecondary }]}>{description || "Không có mô tả"}</Text>
       </View>
     </View>
   );
@@ -35,11 +38,9 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
-    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 5 },
     shadowRadius: 10,
@@ -57,11 +58,9 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Color.textColor1,
   },
   description: {
     fontSize: 14,
-    color: Color.textColor3,
     marginTop: 5,
   },
 });

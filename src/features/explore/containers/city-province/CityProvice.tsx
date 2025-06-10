@@ -1,7 +1,7 @@
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
-import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop";
+import TabbarTop from "@/src/shared/components/tabbar-top/TabbarTop"; // Đảm bảo import TabbarTop
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
@@ -102,7 +102,8 @@ const CityProvince = () => {
                 <Text style={styles.textName}>{province.name}</Text>
                 <Text style={styles.textCountry}>Viet Nam</Text>
               </View>
-              <View style={styles.tabs}>
+              {/* Đảm bảo Tabs và TabbarTop sử dụng cùng một màu nền */}
+              <View style={[styles.tabs, { backgroundColor: Color.backgroundSecondary }]}>
                 <TabbarTop tabs={tabs} startTab={currTab} setTab={handleChangeTab} />
               </View>
             </LinearGradient>
@@ -135,7 +136,7 @@ const CityProvince = () => {
               ListFooterComponent={
                 isLoadingArticles ? (
                   <View style={styles.footer}>
-                    <ActivityIndicator size="large" color={Color.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
                   </View>
                 ) : null
               }
@@ -174,7 +175,7 @@ const CityProvince = () => {
                     </View>
                   ) : (
                     <View style={styles.centered}>
-                      <ActivityIndicator size="large" color={Color.mainColor1} />
+                      <ActivityIndicator size="large" color={Color.mainColor2} />
                     </View>
                   )
                 ) : pages ? (
@@ -192,7 +193,7 @@ const CityProvince = () => {
                   </View>
                 ) : (
                   <View style={styles.centered}>
-                    <ActivityIndicator size="large" color={Color.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
                   </View>
                 )}
               </View>
@@ -206,7 +207,7 @@ const CityProvince = () => {
                   {calculateTotalComments(currentArticle?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color="black" />
+                  <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
               <FlatList
@@ -225,11 +226,12 @@ const CityProvince = () => {
                 <TextInput
                   style={styles.commentInput}
                   placeholder="Viết bình luận..."
+                  placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={24} color={Color.mainColor1} />
+                  <Ionicons name="send" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -237,7 +239,7 @@ const CityProvince = () => {
         </View>
       ) : (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
         </View>
       )}
     </View>
@@ -247,7 +249,7 @@ const CityProvince = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
   },
   images: {
     width: "100%",
@@ -278,7 +280,8 @@ const styles = StyleSheet.create({
   },
   tabs: {
     padding: 10,
-    backgroundColor: Color.white_homologous,
+    // Màu nền đã được chuyển vào inline style để đồng bộ với TabbarTop
+    // backgroundColor: Color.backgroundSecondary, // Đã di chuyển xuống inline
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
   },
   listPage: {
     flexDirection: "row",
@@ -305,7 +308,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
+    color: Color.textSecondary,
     fontStyle: "italic",
   },
   modal: {
@@ -317,7 +320,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 15,
-    backgroundColor: Color.white_homologous,
+    backgroundColor: Color.backgroundSecondary,
   },
   commentHeader: {
     flexDirection: "row",
@@ -325,17 +328,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
+    borderBottomColor: Color.border,
   },
   commentTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    color: Color.textPrimary,
   },
   commentInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
+    borderTopColor: Color.border,
     paddingVertical: 10,
   },
   commentInput: {
@@ -345,6 +349,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     marginRight: 10,
+    borderColor: Color.border,
+    backgroundColor: Color.backgroundTertiary,
+    color: Color.textPrimary,
   },
   footer: {
     padding: 10,
@@ -352,7 +359,7 @@ const styles = StyleSheet.create({
   },
   contentListContainer: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
   },
   paddingAnimated: {
     height: 220,

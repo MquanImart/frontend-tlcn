@@ -1,6 +1,4 @@
 import { NewFeedParamList } from '@/src/shared/routes/NewFeedNavigation';
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -30,11 +28,9 @@ const MEDIA_SIZE = width * 0.22; // Kích thước media item nhỏ hơn để h
 const MAX_MEDIA_ITEMS = 4; // Giới hạn số lượng media hiển thị
 
 const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
-  useTheme();
   const hasReports = article.reports && article.reports.length > 0;
   const navigation = useNavigation<NewFeedNavigationProp>();
 
-  // Lọc ảnh và video từ listPhoto, giới hạn tối đa MAX_MEDIA_ITEMS
   const mediaItems = article.listPhoto
     ?.slice(0, MAX_MEDIA_ITEMS)
     .map((photo) => ({
@@ -43,11 +39,9 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
       isVideo: photo.type === 'video',
     })) || [];
 
-  // Trạng thái phát/tạm dừng video
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const videoRefs = useRef<(Video | null)[]>([]);
 
-  // Trạng thái cho menu long press
   const [menuVisible, setMenuVisible] = useState(false);
   const menuAnimation = useRef(new Animated.Value(0)).current;
 
@@ -74,7 +68,6 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
     closeMenu();
   };
 
-  // Animation cho menu
   const openMenu = () => {
     setMenuVisible(true);
     Animated.spring(menuAnimation, {
@@ -114,8 +107,8 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
         style={[
           styles.card,
           {
-            backgroundColor: hasReports ? '#FFF1F1' : Color.backGround,
-            borderLeftColor: hasReports ? '#FF3B30' : Color.borderColor1,
+            backgroundColor: hasReports ? '#FFF1F1' : '#FFFFFF',
+            borderLeftColor: hasReports ? '#FF3B30' : '#E0E0E0',
           },
         ]}
         activeOpacity={0.7}
@@ -124,58 +117,54 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
           {mediaItems.length > 0 && (
             <View style={styles.mediaContainer}>
               {mediaItems.map((item, index) => (
-                <View key={index} style={styles.mediaItem}>
-                  {item.isVideo ? (
-                    <TouchableOpacity
-                      onPress={() => toggleVideoPlayback(item.url, index)}
-                      activeOpacity={0.8}
-                    >
-                      <Video
-                        ref={(ref) => {
-                          videoRefs.current[index] = ref;
-                        }}
-                        source={{ uri: item.url }}
-                        style={styles.mediaImage}
-                        resizeMode={ResizeMode.COVER}
-                        shouldPlay={false}
-                        useNativeControls={false}
-                        isLooping
-                      />
-                      {playingVideo !== item.url && (
-                        <View style={styles.playOverlay}>
-                          <Ionicons name="play-circle" size={32} color="#FFF" />
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  ) : (
-                    <Image
-                      source={{ uri: item.url || 'https://via.placeholder.com/100' }}
-                      style={styles.mediaImage}
-                      resizeMode="cover"
+                // Compact JSX to remove potential whitespace as text nodes
+                <View key={index} style={styles.mediaItem}>{item.isVideo ? (
+                  <TouchableOpacity
+                    onPress={() => toggleVideoPlayback(item.url, index)}
+                    activeOpacity={0.8}
+                  >
+                    <Video
+                      ref={(ref) => { videoRefs.current[index] = ref; }}
+                      source={{ uri: item.url }}
+                      style={[styles.mediaImage, { borderColor: '#E0E0E0' }]}
+                      resizeMode={ResizeMode.COVER}
+                      shouldPlay={false}
+                      useNativeControls={false}
+                      isLooping
                     />
-                  )}
-                  {mediaItems.length > MAX_MEDIA_ITEMS && index === MAX_MEDIA_ITEMS - 1 && (
-                    <View style={styles.moreMediaOverlay}>
-                      <Text style={styles.moreMediaText}>
-                        +{article.listPhoto!.length - MAX_MEDIA_ITEMS}
-                      </Text>
-                    </View>
-                  )}
-                </View>
+                    {playingVideo !== item.url && (
+                      <View style={styles.playOverlay}>
+                        <Ionicons name="play-circle" size={32} color="#FFF" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ) : (
+                  <Image
+                    source={{ uri: item.url || 'https://via.placeholder.com/100' }}
+                    style={[styles.mediaImage, { borderColor: '#E0E0E0' }]}
+                    resizeMode="cover"
+                  />
+                )}{mediaItems.length > MAX_MEDIA_ITEMS && index === MAX_MEDIA_ITEMS - 1 && (
+                  <View style={styles.moreMediaOverlay}>
+                    <Text style={[styles.moreMediaText, { color: '#FFF' }]}>
+                      +{article.listPhoto!.length - MAX_MEDIA_ITEMS}
+                    </Text>
+                  </View>
+                )}</View>
               ))}
             </View>
           )}
           <View style={styles.cardContent}>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: Color.textColor3 }]}>ID:</Text>
-              <Text style={[styles.value, { color: Color.textColor1 }]}>
+              <Text style={[styles.label, { color: '#9E9E9E' }]}>ID:</Text>
+              <Text style={[styles.value, { color: '#212121' }]}>
                 {article._id.slice(-6)}
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: Color.textColor3 }]}>Nội dung:</Text>
+              <Text style={[styles.label, { color: '#9E9E9E' }]}>Nội dung:</Text>
               <Text
-                style={[styles.value, { color: Color.textColor1 }]}
+                style={[styles.value, { color: '#212121' }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
@@ -183,7 +172,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: Color.textColor3 }]}>Báo cáo:</Text>
+              <Text style={[styles.label, { color: '#9E9E9E' }]}>Báo cáo:</Text>
               <View style={styles.reportContainer}>
                 {hasReports ? (
                   <>
@@ -193,7 +182,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
                     </Text>
                   </>
                 ) : (
-                  <Text style={[styles.value, { color: Color.textColor1 }]}>Không</Text>
+                  <Text style={[styles.value, { color: '#212121' }]}>Không</Text>
                 )}
               </View>
             </View>
@@ -201,7 +190,6 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
         </View>
       </TouchableOpacity>
 
-      {/* Menu khi long press */}
       <Modal
         transparent
         visible={menuVisible}
@@ -209,10 +197,20 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
         onRequestClose={closeMenu}
       >
         <TouchableWithoutFeedback onPress={closeMenu}>
+          {/* Compact JSX here */}
           <View style={styles.modalOverlay}>
-            <Animated.View style={[styles.menuContainer, menuStyle]}>
+            <Animated.View
+              style={[
+                styles.menuContainer,
+                menuStyle,
+                {
+                  backgroundColor: '#FFFFFF',
+                  shadowColor: '#B0B0B0',
+                },
+              ]}
+            >
               <TouchableOpacity style={styles.menuItem} onPress={handleViewDetail}>
-                <Text style={[styles.menuText, { color: Color.textColor1 }]}>
+                <Text style={[styles.menuText, { color: '#212121' }]}>
                   Xem bài viết chi tiết
                 </Text>
               </TouchableOpacity>
@@ -258,7 +256,6 @@ const styles = StyleSheet.create({
     height: MEDIA_SIZE,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
   },
   playOverlay: {
     position: 'absolute',
@@ -283,7 +280,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   moreMediaText: {
-    color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -300,14 +296,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: Color.textColor3,
     lineHeight: 20,
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: Color.textColor1,
     lineHeight: 20,
   },
   reportContainer: {
@@ -324,11 +318,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   menuContainer: {
-    backgroundColor: Color.backGround,
     borderRadius: 12,
     padding: 8,
     width: 240,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

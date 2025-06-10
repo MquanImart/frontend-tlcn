@@ -19,7 +19,7 @@ interface UserWithAvatar extends User {
 }
 
 const PageInvitations: React.FC<PageInvitationsProps> = ({ page, currentUserId, role, updatePage }) => {
-  useTheme()
+  useTheme();
   const { pendingAdmins, loading, handleRemoveAdmin } = usePageInvitations(page, updatePage);
 
   const handleLongPress = (userId: string) => {
@@ -36,7 +36,7 @@ const PageInvitations: React.FC<PageInvitationsProps> = ({ page, currentUserId, 
 
   const renderSection = (title: string, data: UserWithAvatar[]) => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>{title}</Text>
       <FlatList
         data={data}
         keyExtractor={(item) => item._id}
@@ -50,11 +50,11 @@ const PageInvitations: React.FC<PageInvitationsProps> = ({ page, currentUserId, 
   );
 
   if (loading) {
-    return <ActivityIndicator size="large" color={Color.mainColor1} />;
+    return <ActivityIndicator size="large" color={Color.mainColor2} />;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {renderSection("Lời mời quản trị viên đang chờ", pendingAdmins)}
     </View>
   );
@@ -65,7 +65,6 @@ export default PageInvitations;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
     padding: 15,
     top: 20,
   },
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Color.textColor1,
     marginBottom: 8,
   },
 });

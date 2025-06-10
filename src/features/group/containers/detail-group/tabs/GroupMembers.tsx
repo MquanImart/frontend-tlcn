@@ -14,6 +14,7 @@ interface GroupMembersProps {
   role: "Guest" | "Member" | "Admin" | "Owner";
 }
 
+// Assuming the structure of Member from useGroupMembers or API
 interface Member {
   id: string;
   name: string;
@@ -28,7 +29,8 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
 
   const renderSection = (title: string, data: Member[]) => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      {/* Ensure title is always wrapped in Text */}
+      <Text style={[styles.sectionTitle, { color: Color.textPrimary }]}>{title}</Text>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -36,6 +38,7 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
           <MemberCard
             name={item.name}
             avatar={item.avatar}
+            // Ensure this description prop is handled correctly *inside* MemberCard with a <Text> component
             description={item.description || "Thành viên nhóm"}
             memberUserId={item.id}
             currentUserId={currentUserId}
@@ -50,17 +53,19 @@ const GroupMembers: React.FC<GroupMembersProps> = ({ currentUserId, groupId, rol
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {loading ? (
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
       ) : groupData ? (
         <>
+          {/* Ensure groupData.idCreater.name or whatever property is rendered is wrapped in <Text> in MemberCard */}
           {renderSection("Người tạo nhóm", [groupData.idCreater])}
           {renderSection("Quản trị viên", groupData.Administrators || [])}
           {renderSection("Thành viên khác", groupData.members || [])}
         </>
       ) : (
-        <Text style={styles.errorText}>Không thể tải danh sách thành viên</Text>
+        // Ensure this error message is always wrapped in Text
+        <Text style={[styles.errorText, { color: Color.error }]}>Không thể tải danh sách thành viên</Text>
       )}
     </View>
   );
@@ -71,7 +76,6 @@ export default GroupMembers;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround, // Fixed from backGround
     padding: 15,
   },
   section: {
@@ -80,13 +84,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
     marginBottom: 10,
   },
   errorText: {
     textAlign: "center",
     fontSize: 16,
-    color: "red",
     marginTop: 20,
   },
 });

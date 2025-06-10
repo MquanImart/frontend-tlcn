@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   followingButton: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
   },
   followText: {
     fontSize: 14,

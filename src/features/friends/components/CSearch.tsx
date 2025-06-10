@@ -9,18 +9,18 @@ interface CSearchProps {
     text: string;
 }
 const CSearch = ({ text, handleChange, handleSearch } : CSearchProps) => {
-    useTheme();
+    useTheme(); 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.backgroundSecondary }]}>
             <TextInput
                 placeholder="Nhập từ khóa tìm kiếm"
                 value={text}
-                placeholderTextColor={Color.textColor3}
-                style={styles.textInput}
+                placeholderTextColor={Color.textTertiary}
+                style={[styles.textInput, { color: Color.textPrimary }]}
                 onChangeText={handleChange}
             />
             <TouchableOpacity onPress={handleSearch}>
-                <Text style={styles.textButton}>Tìm</Text>
+                <Text style={[styles.textButton, { color: Color.textPrimary }]}>Tìm</Text>
             </TouchableOpacity>
         </View>
     )
@@ -28,10 +28,10 @@ const CSearch = ({ text, handleChange, handleSearch } : CSearchProps) => {
 
 const styles = StyleSheet.create({
     container: {
+        top: 10,
         width: '90%',
         alignSelf: 'center',
         borderRadius: 32,
-        backgroundColor: Color.backGround2,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     },
     textButton: {
         fontWeight: 'bold',
-        color: Color.textColor1,
         paddingHorizontal: 10
     }
 })

@@ -23,20 +23,17 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
   const isJoined = role === "Member" || role === "Admin" || role === "Owner";
 
   return (
-    <View style={styles.container}>
-      {/* Ảnh bìa nhóm */}
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <Image source={{ uri: group.avt?.url || "" }} style={styles.coverImage} />
 
-      {/* Thông tin nhóm */}
       <View style={styles.infoContainer}>
-        <Text style={styles.memberCount}>
+        <Text style={[styles.memberCount, { color: Color.textSecondary }]}>
           {`${group.type === "public" ? "Nhóm công khai" : "Nhóm riêng tư"} • ${
             group.members?.filter((member) => member.state === "accepted").length || 0
           } thành viên`}
         </Text>
       </View>
 
-      {/* Hiển thị button nếu không phải Guest */}
       {role !== "Guest" && (
         <View style={styles.buttonRow}>
           <CIconButton
@@ -45,7 +42,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
               <Icon
                 name={isJoined ? "check-circle" : "group-add"}
                 size={20}
-                color={Color.textColor2}
+                color={Color.textOnMain2}
                 style={{ marginRight: 10 }}
               />
             }
@@ -53,8 +50,8 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
             style={{
               width: "48%",
               height: 45,
-              backColor: Color.mainColor1,
-              textColor: Color.textColor2,
+              backColor: Color.mainColor2,
+              textColor: Color.textOnMain2,
               fontSize: 16,
               fontWeight: "bold",
               radius: 8,
@@ -68,8 +65,8 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
             style={{
               width: "48%",
               height: 45,
-              backColor: Color.mainColor1,
-              textColor: Color.textColor2,
+              backColor: Color.mainColor2,
+              textColor: Color.textOnMain2,
               fontSize: 16,
               fontWeight: "bold",
               radius: 8,
@@ -84,9 +81,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
 export default GroupHeader;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Color.backGround,
-  },
+  container: {},
   coverImage: {
     width: "100%",
     height: 300,
@@ -96,7 +91,6 @@ const styles = StyleSheet.create({
   },
   memberCount: {
     fontSize: 14,
-    color: Color.textColor3,
     marginVertical: 5,
   },
   buttonRow: {

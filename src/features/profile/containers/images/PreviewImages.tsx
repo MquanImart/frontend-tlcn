@@ -2,7 +2,7 @@ import { MyPhoto } from "@/src/interface/interface_flex";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"; 
 
 interface PreviewImagesProps {
     handleSelected: (_id: string) => void;
@@ -19,13 +19,13 @@ const PreviewImages = ({ handleSelected, src }: PreviewImagesProps) => {
             </View>
             <View style={styles.boxImages}>
                 {src.reduce((rows: MyPhoto[][], item, index) => {
-                    if (index % 3 === 0) rows.push([]); // Chia mỗi hàng có 3 ảnh
+                    if (index % 3 === 0) rows.push([]); 
                     rows[rows.length - 1].push(item);
                     return rows;
                 }, []).map((row, rowIndex) => (
                     <View style={styles.row} key={rowIndex}>
                         {row.map((item) => (
-                            <TouchableOpacity key={item._id} style={styles.item} onPress={() => handleSelected(item._id)}>
+                            <TouchableOpacity key={item._id} style={[styles.item, { backgroundColor: Color.background }]} onPress={() => handleSelected(item._id)}>
                                 <Image source={{ uri: item.url }} style={styles.image} />
                             </TouchableOpacity>
                         ))}
@@ -39,7 +39,7 @@ const PreviewImages = ({ handleSelected, src }: PreviewImagesProps) => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        height: 'auto', // Chiều cao tự động theo số lượng ảnh
+        height: 'auto',
     },
     boxTitle: {
         flexDirection: 'row',
@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     textViewAll: {
-        color: Color.textColor3,
         fontSize: 14,
     },
     boxImages: {
@@ -62,13 +61,12 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 2, // Khoảng cách giữa các hàng
+        marginBottom: 2, 
     },
     item: {
-        width: '33%', // Mỗi ảnh chiếm 1/3 hàng
-        height: 200, // Điều chỉnh chiều cao ảnh
+        width: '33%', 
+        height: 200,
         gap: 1,
-        backgroundColor: '#fff',
         overflow: 'hidden',
     },
     image: {

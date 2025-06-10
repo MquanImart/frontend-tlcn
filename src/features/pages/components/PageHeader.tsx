@@ -68,7 +68,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color={Color.white_homologous} />
+          <Icon name="arrow-back" size={24} color={Color.white_white} />
         </TouchableOpacity>
 
         <View style={styles.weatherContainer}>
@@ -76,7 +76,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           <TouchableOpacity onPress={() => {
             navigation.navigate("WeatherDetail", { lat: address?.lat ?? 0, lon: address?.long ?? 0 });
           }}>
-            <MaterialCommunityIcons name="cloud" size={34} color={Color.white_homologous} style={styles.cloudIcon} />
+            <MaterialCommunityIcons name="cloud" size={34} color={Color.white_white} style={styles.cloudIcon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -88,7 +88,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </View>
 
         <TouchableOpacity style={styles.moreButton} onPress={handleMorePress}>
-            <MaterialCommunityIcons name="dots-vertical" size={30} color={Color.white_homologous} />
+            <MaterialCommunityIcons name="dots-vertical" size={30} color={Color.white_white} />
             {pendingInvites.length > 0 && <View style={styles.notificationBadge} />}
         </TouchableOpacity>
       </View>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: Color.backGround,
     zIndex: 1,
-    shadowColor: Color.white_contrast,
+    shadowColor: Color.white_white,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: SCREEN_WIDTH * 0.02,
     borderRadius: 20,
-    shadowColor: Color.white_contrast,
+    shadowColor: Color.white_white,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -216,20 +216,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SCREEN_WIDTH * 0.04,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
+    borderColor: Color.border,
     zIndex: 5,
-    shadowColor: Color.white_contrast,
+    shadowColor: Color.white_white,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-  },
-  distanceText: {
-    color: Color.white_homologous,
-    fontSize: 16,
-    fontWeight: "bold",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   infoAndMoreContainer: {
     position: "absolute",
@@ -245,14 +237,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     padding: SCREEN_WIDTH * 0.025,
     borderRadius: 12,
-    shadowColor: Color.white_contrast,
+    shadowColor: Color.white_white,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
     flexShrink: 1,
   },
   title: {
-    color: Color.white_homologous,
+    color: Color.white_white,
     fontSize: 26,
     fontWeight: "bold",
     textShadowColor: "rgba(0, 0, 0, 0.75)",
@@ -261,7 +253,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   subtitle: {
-    color: Color.white_homologous,
+    color: Color.white_white,
     fontSize: 15,
     textShadowColor: "rgba(0, 0, 0, 0.75)",
     textShadowOffset: { width: 1, height: 1 },
@@ -277,14 +269,14 @@ const styles = StyleSheet.create({
     paddingVertical: SCREEN_HEIGHT * 0.0075,
     paddingHorizontal: SCREEN_WIDTH * 0.025,
     borderRadius: 20,
-    shadowColor: Color.white_contrast,
+    shadowColor: Color.white_white,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     zIndex: 5,
   },
   followText: {
-    color: Color.white_homologous,
+    color: Color.white_white,
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: SCREEN_WIDTH * 0.0125,
@@ -293,7 +285,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: SCREEN_WIDTH * 0.02,
     borderRadius: 20,
-    shadowColor: Color.white_contrast,
+    shadowColor: Color.white_white,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -310,6 +302,6 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: Color.white_homologous,
+    borderColor: Color.white_white,
   },
 });

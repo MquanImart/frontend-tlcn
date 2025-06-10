@@ -125,7 +125,7 @@ const InputForgot = () => {
                             style={{
                                 width: "90%",
                                 height: 50,
-                                backColor: loading ? Color.mainColor1 : Color.mainColor1, // Change background color when loading
+                                backColor: loading ? Color.mainColor2 : Color.mainColor2, // Change background color when loading
                                 textColor: Color.white_homologous,
                                 fontSize: 18,
                                 radius: 25,

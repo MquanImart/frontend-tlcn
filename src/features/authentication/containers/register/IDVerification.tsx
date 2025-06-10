@@ -77,7 +77,9 @@ const calculateAge = (dateOfBirth: string): number => {
 };
 
 const IDVerification = () => {
+
         useTheme();
+
     const [displayName, setDisplayName] = useState<string>("");
     const [hashtag, setHashtag] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<{ uri: string, type: string } | null>(null);
@@ -300,7 +302,7 @@ const IDVerification = () => {
                             style={{
                                 width: 70,
                                 height: 50,
-                                backColor: Color.mainColor1,
+                                backColor: Color.mainColor2,
                                 textColor: Color.textColor2,
                                 radius: 25,
                                 shadow: true,
@@ -313,7 +315,7 @@ const IDVerification = () => {
                     )}
 
                     {isLoading ? (
-                        <ActivityIndicator size="large" color={Color.mainColor1} />
+                        <ActivityIndicator size="large" color={Color.mainColor2} />
                     ) : (
                         <CButton
                             label="Xác nhận"
@@ -321,7 +323,7 @@ const IDVerification = () => {
                             style={{
                                 width: "85%",
                                 height: 50,
-                                backColor: Color.mainColor1,
+                                backColor: Color.mainColor2,
                                 textColor: Color.white_homologous,
                                 fontSize: 18,
                                 radius: 25,
@@ -395,7 +397,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: Color.mainColor1,
+        borderColor: Color.mainColor2,
         marginBottom: 20,
     },
     imageButtonText: {

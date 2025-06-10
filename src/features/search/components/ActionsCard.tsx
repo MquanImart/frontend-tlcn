@@ -18,7 +18,7 @@ export const ButtonActions = ({actions, label} : ButtonFriendsProps) => {
                 style={{
                 width: width,
                 height: 35,
-                backColor: Color.mainColor1,
+                backColor: Color.mainColor2,
                 textColor: Color.textColor2,
                 fontSize: 13
             }}/>

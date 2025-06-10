@@ -57,7 +57,7 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
   return (
     <View style={[styles.container, { backgroundColor: Color.backGround }]}>
       {loading ? (
-        <ActivityIndicator size="large" color={Color.mainColor1} style={styles.loading} />
+        <ActivityIndicator size="large" color={Color.mainColor2} style={styles.loading} />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -87,7 +87,7 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : null
           }
@@ -142,7 +142,7 @@ const GroupHome: React.FC<GroupHomeProps> = ({ groupId, currentUserId, role }) =
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={24} color={Color.mainColor1} />
+              <Ionicons name="send" size={24} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    color: Color.mainColor1,
+    color: Color.mainColor2,
     marginTop: 10,
     fontWeight: "bold",
   },

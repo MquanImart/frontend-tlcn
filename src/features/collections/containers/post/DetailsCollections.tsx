@@ -57,7 +57,7 @@ const DetailsCollections = () => {
                     style={{
                     width: "40%",
                     height: 35,
-                    backColor: Color.mainColor1,
+                    backColor: Color.mainColor2,
                     textColor: Color.textColor2,
                 }}/>
                 <View style={styles.padding}/>
@@ -65,7 +65,7 @@ const DetailsCollections = () => {
                     style={{
                     width: "40%",
                     height: 35,
-                    backColor: Color.mainColor1,
+                    backColor: Color.mainColor2,
                     textColor: Color.textColor2,
                 }}/>
             </View>}

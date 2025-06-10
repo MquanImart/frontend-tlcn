@@ -95,9 +95,9 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
                                 width: "30%",
                                 height: 40,
                                 backColor: Color.white_homologous,
-                                borderColor: Color.mainColor1,
+                                borderColor: Color.mainColor2,
                                 borderWidth: 1,
-                                textColor: Color.mainColor1,
+                                textColor: Color.mainColor2,
                                 fontSize: 15,
                                 radius: 25,
                             }}
@@ -109,7 +109,7 @@ const ModalCreateTrip = ( { visible, setVisible, submitModal } : ModalCreateTrip
                             style={{
                                 width: "30%",
                                 height: 40,
-                                backColor: Color.mainColor1,
+                                backColor: Color.mainColor2,
                                 textColor: Color.white_homologous,
                                 fontSize: 15,
                                 fontWeight: 'bold',
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         top: 20,
         right: 20,
         padding: 10,
-        backgroundColor: Color.mainColor1,
+        backgroundColor: Color.mainColor2,
         borderRadius: 20,
     },
     contentContainer: {

@@ -43,7 +43,7 @@ export default function ProfilePost({ userId }: ProfilePostProps) {
   } = useProfilePost(userId); // Truyền userId vào hook
 
   return (
-    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
@@ -69,13 +69,13 @@ export default function ProfilePost({ userId }: ProfilePostProps) {
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
-          <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
+          <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+            <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textPrimary} />
             </TouchableOpacity>
           </View>
 
@@ -94,16 +94,20 @@ export default function ProfilePost({ userId }: ProfilePostProps) {
             ))}
           </ScrollView>
 
-          <View style={styles.commentInputContainer}>
+          <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
             <TextInput
-              style={styles.commentInput}
+              style={[styles.commentInput, { 
+                borderColor: Color.border, 
+                backgroundColor: Color.backgroundTertiary, 
+                color: Color.textPrimary 
+              }]}
               placeholder="Viết bình luận..."
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary}
               value={newReply}
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={20} color={Color.mainColor1} />
+              <Ionicons name="send" size={20} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>
@@ -132,7 +136,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -142,7 +145,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
     paddingVertical: 10,
   },
   commentInput: {

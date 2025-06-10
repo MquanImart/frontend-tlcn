@@ -262,7 +262,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
@@ -272,7 +272,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={20} color={Color.mainColor1} />
+                  <Ionicons name="send" size={20} color={Color.mainColor2} />
                 </TouchableOpacity>
               </View>
             </View>
