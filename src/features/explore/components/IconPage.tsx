@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     textName: {
-        color: Color.mainColor1,
+        color: Color.mainColor2,
         maxWidth: 60,
         fontSize: 10,
         fontWeight: '600',

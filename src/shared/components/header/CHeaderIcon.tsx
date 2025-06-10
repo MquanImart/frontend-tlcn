@@ -28,8 +28,8 @@ const CHeaderIcon = ({label, IconLeft, onPressLeft, IconRight, onPressRight, tex
             </TouchableOpacity>
             <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
-                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor1} />}
-                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor1 }]}>{textRight}</Text>}
+                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
+                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}
             </TouchableOpacity> : <View style={styles.placeHolder}/>}
         </View>
     )
@@ -138,10 +138,10 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
             </TouchableOpacity>
             <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
-                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor1} />}
-                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor1 }]}>{textRight}</Text>}
+                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
+                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}
                 {numMessages !== 0 && <View style={[styles.messages, { backgroundColor: Color.error }]}>
-                    <Text style={[styles.textMessages, { color: Color.textOnMain1 }]}>{numMessages}</Text>
+                    <Text style={[styles.textMessages, { color: Color.textOnMain2 }]}>{numMessages}</Text>
                 </View>}
             </TouchableOpacity> : <View style={styles.placeHolder}/>}
         </View>

@@ -34,8 +34,8 @@ const Tabbar = ({startTab}: TabbarProps) => {
                 icon={<Icon
                     name={item.icon}
                     size={30}
-                    // Icon color: mainColor1 when active, textSecondary when inactive
-                    color={startTab === item.keyTab ? Color.mainColor1 : Color.textSecondary}
+                    // Icon color: mainColor2 when active, textSecondary when inactive
+                    color={startTab === item.keyTab ? Color.mainColor2 : Color.textSecondary}
                 />}
                 onSubmit={() => {handleChangeTab(item.keyTab)}}
                 style={{
@@ -43,8 +43,8 @@ const Tabbar = ({startTab}: TabbarProps) => {
                     height: 60,
                     // Background color of the button: backgroundSelected when active, transparent otherwise
                     backColor: startTab === item.keyTab ? Color.backgroundSelected : 'transparent',
-                    // Text color: mainColor1 when active, textSecondary when inactive
-                    textColor: startTab === item.keyTab ? Color.mainColor1 : Color.textSecondary,
+                    // Text color: mainColor2 when active, textSecondary when inactive
+                    textColor: startTab === item.keyTab ? Color.mainColor2 : Color.textSecondary,
                     fontSize: 7,
                     fontWeight: "600",
                     flex_direction: 'column',

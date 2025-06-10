@@ -139,7 +139,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Ionicons
                   name={showOldPassword ? "eye-off" : "eye"}
                   size={24}
-                  color={Color.mainColor1}
+                  color={Color.mainColor2}
                 />
               </TouchableOpacity>
             </View>
@@ -161,7 +161,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Ionicons
                   name={showNewPassword ? "eye-off" : "eye"}
                   size={24}
-                  color={Color.mainColor1}
+                  color={Color.mainColor2}
                 />
               </TouchableOpacity>
             </View>
@@ -183,7 +183,7 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Ionicons
                   name={showConfirmPassword ? "eye-off" : "eye"}
                   size={24}
-                  color={Color.mainColor1}
+                  color={Color.mainColor2}
                 />
               </TouchableOpacity>
             </View>
@@ -201,12 +201,12 @@ const ChangePasswordDialog = ({ visible, onClose, onSave, loading }: ChangePassw
                 <Text style={[styles.modalButtonText, { color: Color.textPrimary }]}>Hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: Color.mainColor1 }]}
+                style={[styles.modalButton, { backgroundColor: Color.mainColor2 }]}
                 onPress={handleSave}
                 disabled={loading}
               >
                 {/* Changed to wrap the label in a Text component */}
-                <Text style={[styles.modalButtonText, { color: Color.textOnMain1 }]}>
+                <Text style={[styles.modalButtonText, { color: Color.textOnMain2 }]}>
                   {loading ? "Đang lưu..." : "Lưu"}
                 </Text>
               </TouchableOpacity>

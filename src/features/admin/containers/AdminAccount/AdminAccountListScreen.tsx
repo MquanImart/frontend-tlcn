@@ -159,7 +159,7 @@ const AdminAccountListScreen: React.FC = () => {
       <SafeAreaView style={styles.loadingContainer}>
         <CHeader label="Danh sách tài khoản" showBackButton={false} />
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
         </View>
       </SafeAreaView>
     );
@@ -212,7 +212,7 @@ const AdminAccountListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: Color.mainColor1,
+                  backColor: Color.mainColor2,
                   textColor: Color.white_homologous,
                   radius: 8,
                 }}
@@ -227,7 +227,7 @@ const AdminAccountListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: Color.mainColor1,
+                  backColor: Color.mainColor2,
                   textColor: Color.white_homologous,
                   radius: 8,
                 }}
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 10,

@@ -11,7 +11,7 @@ const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
         <Text
           style={[
             styles.messageText,
-            message.isUser ? { color: Color.textOnMain1 } : { color: Color.textPrimary },
+            message.isUser ? { color: Color.textOnMain2 } : { color: Color.textPrimary },
           ]}
         >
           {message.text}
@@ -31,7 +31,7 @@ const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
             key={lastIndex}
             style={[
               styles.messageText,
-              message.isUser ? { color: Color.textOnMain1 } : { color: Color.textPrimary },
+              message.isUser ? { color: Color.textOnMain2 } : { color: Color.textPrimary },
             ]}
           >
             {message.text.slice(lastIndex, range.start)}
@@ -44,7 +44,7 @@ const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
           style={[
             styles.messageText,
             { fontWeight: 'bold' },
-            message.isUser ? { color: Color.textOnMain1 } : { color: Color.textPrimary },
+            message.isUser ? { color: Color.textOnMain2 } : { color: Color.textPrimary },
           ]}
         >
           {message.text.slice(range.start, range.end)}
@@ -59,7 +59,7 @@ const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
           key={lastIndex}
           style={[
             styles.messageText,
-            message.isUser ? { color: Color.textOnMain1 } : { color: Color.textPrimary },
+            message.isUser ? { color: Color.textOnMain2 } : { color: Color.textPrimary },
           ]}
         >
           {message.text.slice(lastIndex)}
@@ -75,7 +75,7 @@ const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
       style={[
         styles.container,
         message.isUser ? styles.userMessage : styles.botMessage,
-        { backgroundColor: message.isUser ? Color.mainColor1 : Color.backgroundSecondary }, // Dynamic background
+        { backgroundColor: message.isUser ? Color.mainColor2 : Color.backgroundSecondary }, // Dynamic background
       ]}
     >
       {formatMessage()}

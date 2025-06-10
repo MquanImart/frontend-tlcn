@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
   },
   inactiveTabStyle: {
     backgroundColor: "transparent",

@@ -74,8 +74,8 @@ export const lightColor: Color = {
     textPrimary: "#212121", // Chữ chính màu đen gần như thuần túy để tương phản cao
     textSecondary: "#616161", // Chữ phụ, mô tả (ví dụ: chú thích)
     textTertiary: "#9E9E9E", // Chữ ít quan trọng hơn, placeholder
-    textOnMain1: "#FFFFFF", // Chữ trên mainColor1 (màu trắng)
-    textOnMain2: "#4B164C", // Chữ trên mainColor2 (màu tím đậm của mainColor1)
+    textOnMain1: "#FFFFFF", // Chữ trên mainColor2 (màu trắng)
+    textOnMain2: "#fff", // Chữ trên mainColor2 (màu tím đậm của mainColor2)
     // Màu viền
     border: "#BDBDBD", // Viền chung
     // Màu trạng thái (ví dụ: success, error, warning)
@@ -120,7 +120,7 @@ export const darkColor: Color = {
     textPrimary: "#E0E0E0", // Chữ chính màu trắng nhạt để tương phản tốt
     textSecondary: "#A0A0A0", // Chữ phụ, mô tả
     textTertiary: "#757575", // Chữ ít quan trọng hơn, placeholder
-    textOnMain1: "#121212", // Chữ trên mainColor1 (màu nền đậm)
+    textOnMain1: "#121212", // Chữ trên mainColor2 (màu nền đậm)
     textOnMain2: "#E0E0E0", // Chữ trên mainColor2 (màu trắng nhạt của textPrimary)
     // Màu viền
     border: "#424242", // Viền chung

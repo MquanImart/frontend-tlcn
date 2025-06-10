@@ -82,7 +82,7 @@ const HeaderDirection = ({startLocation, endLocation, openSearch, changeTranspor
                         style={{
                             width: 110,
                             height: 35,
-                            backColor: currTab === item.key ? Color.mainColor1 : undefined,
+                            backColor: currTab === item.key ? Color.mainColor2 : undefined,
                             textColor: currTab === item.key ? Color.textColor2 : undefined,
                             fontSize: 13,
                             radius: 50,

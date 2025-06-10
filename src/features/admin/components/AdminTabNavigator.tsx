@@ -22,7 +22,7 @@ const AdminTabNavigator: React.FC = () => {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: Color.mainColor1,
+        tabBarActiveTintColor: Color.mainColor2,
         tabBarInactiveTintColor: Color.textColor3,
         tabBarStyle: {
           backgroundColor: Color.backGround,

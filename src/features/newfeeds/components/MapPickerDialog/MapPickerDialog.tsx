@@ -51,7 +51,7 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
               }
             }}
           >
-            {/* White contrast for back button, assuming textOnMain1 is white on dark mainColor1 or dark on light mainColor1 */}
+            {/* White contrast for back button, assuming textOnMain2 is white on dark mainColor2 or dark on light mainColor2 */}
             <Icon name="chevron-left" size={30} color={Color.textPrimary} /> 
           </TouchableOpacity>
           <TextInput
@@ -111,7 +111,7 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
               longitude: location.coords.longitude,
             }}
             title="Vị trí của tôi"
-            pinColor={Color.mainColor1}
+            pinColor={Color.mainColor2}
           />
         )}
         {selectedMarker && (
@@ -127,10 +127,10 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
 
       {selectedMarker && (
         <TouchableOpacity
-          style={[styles.confirmButton, { backgroundColor: Color.mainColor1 }]}
+          style={[styles.confirmButton, { backgroundColor: Color.mainColor2 }]}
           onPress={confirmLocation}
         >
-          <Text style={[styles.buttonText, { color: Color.textOnMain1 }]}>Xác nhận vị trí này</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xác nhận vị trí này</Text>
         </TouchableOpacity>
       )}
     </View>

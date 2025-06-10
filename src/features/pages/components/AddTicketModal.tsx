@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 12,
     borderRadius: 10,
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     alignItems: "center",
     marginTop: 10,
   },

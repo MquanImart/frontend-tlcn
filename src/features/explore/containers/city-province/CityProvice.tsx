@@ -135,7 +135,7 @@ const CityProvince = () => {
               ListFooterComponent={
                 isLoadingArticles ? (
                   <View style={styles.footer}>
-                    <ActivityIndicator size="large" color={Color.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
                   </View>
                 ) : null
               }
@@ -174,7 +174,7 @@ const CityProvince = () => {
                     </View>
                   ) : (
                     <View style={styles.centered}>
-                      <ActivityIndicator size="large" color={Color.mainColor1} />
+                      <ActivityIndicator size="large" color={Color.mainColor2} />
                     </View>
                   )
                 ) : pages ? (
@@ -192,7 +192,7 @@ const CityProvince = () => {
                   </View>
                 ) : (
                   <View style={styles.centered}>
-                    <ActivityIndicator size="large" color={Color.mainColor1} />
+                    <ActivityIndicator size="large" color={Color.mainColor2} />
                   </View>
                 )}
               </View>
@@ -229,7 +229,7 @@ const CityProvince = () => {
                   onChangeText={setNewReply}
                 />
                 <TouchableOpacity onPress={handleAddComment}>
-                  <Ionicons name="send" size={24} color={Color.mainColor1} />
+                  <Ionicons name="send" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -237,7 +237,7 @@ const CityProvince = () => {
         </View>
       ) : (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
         </View>
       )}
     </View>

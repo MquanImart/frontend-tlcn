@@ -21,21 +21,25 @@ const MemberRequestItem: React.FC<MemberRequestItemProps> = ({
 }) => {
   useTheme();
   return (
-    <View style={[styles.container, styles.shadowEffect]}>
+    <View style={[
+      styles.container,
+      { backgroundColor: Color.background, borderColor: Color.border },
+      styles.shadowEffect
+    ]}>
       {/* Avatar & Thông tin */}
       <View style={styles.header}>
-        <Image source={{ uri: avatar }} style={styles.avatar} />
+        <Image source={{ uri: avatar }} style={[styles.avatar, { borderColor: Color.mainColor2 }]} />
         <View style={styles.infoContainer}>
           <View style={styles.row}>
-            <Text style={styles.name}>{name}</Text>
-            <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={onReject}>
-              <Text style={styles.buttonText}>Từ chối</Text>
+            <Text style={[styles.name, { color: Color.textPrimary }]}>{name}</Text>
+            <TouchableOpacity style={[styles.button, styles.rejectButton, { backgroundColor: Color.mainColor2 }]} onPress={onReject}>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Từ chối</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <Text style={styles.date}>Ngày gửi: {requestDate}</Text>
-            <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={onAccept}>
-              <Text style={styles.buttonText}>Duyệt</Text>
+            <Text style={[styles.date, { color: Color.textSecondary }]}>Ngày gửi: {requestDate}</Text>
+            <TouchableOpacity style={[styles.button, styles.acceptButton, { backgroundColor: Color.mainColor2 }]} onPress={onAccept}>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Duyệt</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -48,12 +52,10 @@ export default MemberRequestItem;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Color.backGround,
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
     marginBottom: 15,
   },
   shadowEffect: {
@@ -73,7 +75,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 15,
     borderWidth: 2,
-    borderColor: Color.mainColor1,
   },
   infoContainer: {
     flex: 1,
@@ -87,27 +88,24 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
   },
   date: {
     fontSize: 14,
-    color: Color.textColor3,
   },
   button: {
-    width: 80, // ✅ Đảm bảo hai nút có cùng kích thước
+    width: 80,
     height: 32,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
   },
   rejectButton: {
-    backgroundColor: Color.mainColor2,
+    // This style block is empty here because the background color is applied inline
   },
   acceptButton: {
-    backgroundColor: Color.mainColor1,
+    // This style block is empty here because the background color is applied inline
   },
   buttonText: {
-    color: Color.textColor2,
     fontWeight: "600",
     fontSize: 14,
   },

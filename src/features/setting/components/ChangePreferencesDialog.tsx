@@ -127,7 +127,7 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
           key: 'loading',
           content: (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={Color.mainColor1} />
+              <ActivityIndicator size="large" color={Color.mainColor2} />
               <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải...</Text>
             </View>
           ),
@@ -155,7 +155,7 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
               style={[styles.dropdown, { borderColor: Color.border, backgroundColor: Color.backgroundTertiary }]}
               dropDownContainerStyle={[styles.dropdownContent, { borderColor: Color.border, backgroundColor: Color.backgroundTertiary }]}
               labelStyle={[styles.dropdownLabel, { color: Color.textPrimary }]}
-              selectedItemLabelStyle={{ color: Color.mainColor1 }}
+              selectedItemLabelStyle={{ color: Color.mainColor2 }}
               textStyle={{ color: Color.textPrimary }}
               listMode="SCROLLVIEW"
               zIndex={3000}
@@ -234,14 +234,14 @@ const ChangePreferencesDialog = ({ visible, onClose, onSave, userId, initialPref
               style={[styles.modalButton, { backgroundColor: Color.textTertiary }]}
               onPress={onClose}
             >
-              <Text style={[styles.modalButtonText, { color: Color.textOnMain1 }]}>Hủy</Text>
+              <Text style={[styles.modalButtonText, { color: Color.textOnMain2 }]}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: Color.mainColor1 }]}
+              style={[styles.modalButton, { backgroundColor: Color.mainColor2 }]}
               onPress={handleSave}
               disabled={loading}
             >
-              <Text style={[styles.modalButtonText, { color: Color.textOnMain1 }]}>
+              <Text style={[styles.modalButtonText, { color: Color.textOnMain2 }]}>
                 {loading ? "Đang lưu..." : "Lưu"}
               </Text>
             </TouchableOpacity>

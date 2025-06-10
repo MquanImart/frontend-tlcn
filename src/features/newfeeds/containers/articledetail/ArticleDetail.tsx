@@ -79,7 +79,7 @@ export default function ArticleDetail() {
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color={Color.mainColor2} />
           <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải...</Text>
         </View>
       ) : currentArticle ? (
@@ -158,7 +158,7 @@ export default function ArticleDetail() {
 
               <View style={[styles.commentInputContainer, { borderTopColor: Color.border, backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
                   style={[styles.commentInput, { color: Color.textPrimary }]}
@@ -169,10 +169,10 @@ export default function ArticleDetail() {
                   multiline
                 />
                 {isCommentChecking ? (
-                  <ActivityIndicator size="small" color={Color.mainColor1} />
+                  <ActivityIndicator size="small" color={Color.mainColor2} />
                 ) : (
                   <TouchableOpacity onPress={handleAddComment}>
-                    <Ionicons name="send" size={20} color={Color.mainColor1} />
+                    <Ionicons name="send" size={20} color={Color.mainColor2} />
                   </TouchableOpacity>
                 )}
               </View>

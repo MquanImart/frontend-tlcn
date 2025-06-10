@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.backGround2,
   },
   viewAllText: {
-    color: Color.mainColor1,
+    color: Color.mainColor2,
   },
   suggestedText: {
     fontSize: 18,

@@ -22,7 +22,7 @@ interface JoinedGroupsTabProps {
 }
 
 const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
-  useTheme();
+  useTheme(); // Activate theme context
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
   const { savedGroups, loading, error, loadMoreGroups, isLoadingMore, fetchSavedGroups } =
     useJoinedGroups(userId);
@@ -36,25 +36,25 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>Đang tải...</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Đang tải...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>{error}</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.error }]}>{error}</Text>
         <TouchableOpacity onPress={() => fetchSavedGroups(1)}>
-          <Text style={styles.retryText}>Thử lại</Text>
+          <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {savedGroups.length > 0 ? (
         <FlatList
           data={savedGroups}
@@ -75,7 +75,7 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor1} />
+                <ActivityIndicator size="large" color={Color.mainColor2} />
               </View>
             ) : null
           }
@@ -83,13 +83,13 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchSavedGroups(1)}
-              colors={[Color.mainColor1]}
+              colors={[Color.mainColor2]}
             />
           }
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Bạn chưa tham gia nhóm nào!</Text>
+        <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
+          <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Bạn chưa tham gia nhóm nào!</Text>
         </View>
       )}
     </View>
@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: Color.backGround,
   },
   emptyContainer: {
     flex: 1,
@@ -111,7 +110,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
     fontStyle: "italic",
   },
   centered: {
@@ -125,7 +123,6 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    color: Color.mainColor1,
     marginTop: 10,
     fontWeight: "bold",
   },

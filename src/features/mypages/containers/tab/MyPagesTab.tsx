@@ -18,7 +18,7 @@ const MyPagesTab = ({ userId, handleScroll }: MyPagesTabProps) => {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
         <Text>Đang tải...</Text>
       </View>
     );

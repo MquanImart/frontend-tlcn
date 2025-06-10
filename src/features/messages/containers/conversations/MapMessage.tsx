@@ -48,7 +48,7 @@ const MapMessage= ({addressString} : MapMessageProps) => {
             />
           ) : loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={Color.mainColor1} />
+              <ActivityIndicator size="large" color={Color.mainColor2} />
               <Text style={styles.loadingText}>Đang tải bản đồ...</Text>
             </View>
           ) : mapRegion ? (
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   messageButton: {
     marginBottom: 10,
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",

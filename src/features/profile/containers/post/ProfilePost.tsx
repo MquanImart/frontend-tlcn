@@ -103,7 +103,7 @@ export default function ProfilePost({ userId }: ProfilePostProps) {
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={20} color={Color.mainColor1} />
+              <Ionicons name="send" size={20} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>

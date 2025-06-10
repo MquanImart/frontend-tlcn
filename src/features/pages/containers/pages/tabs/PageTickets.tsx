@@ -41,7 +41,7 @@ const PageTickets: React.FC<PageTicketsProps> = ({ page, role , updatePage}) => 
           style={{
             width: "90%",
             height: 50,
-            backColor: Color.mainColor1,
+            backColor: Color.mainColor2,
             textColor: "white",
             fontSize: 18,
             fontWeight: "bold",

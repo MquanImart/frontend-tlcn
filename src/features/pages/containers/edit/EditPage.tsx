@@ -85,7 +85,7 @@ const EditPage: React.FC<EditPageProps> = ({ route }) => {
         backPress={() => navigation.goBack()}
         showBackButton={true}
         labelColor={Color.white_contrast}
-        iconColor={Color.mainColor1}
+        iconColor={Color.mainColor2}
       />
 
       {/* Tên Page */}
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 10,
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   updateButton: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",

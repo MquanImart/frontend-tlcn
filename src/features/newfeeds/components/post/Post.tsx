@@ -167,7 +167,7 @@ const Post: React.FC<PostProps> = ({
         />
         {photos.length > 1 && (
           <View style={[styles.imageIndex, { backgroundColor: Color.backgroundTertiary + '80' }]}>
-            <Text style={{ color: Color.textOnMain1, fontWeight: "bold" }}>
+            <Text style={{ color: Color.textOnMain2, fontWeight: "bold" }}>
               {currentIndex + 1}/{photos.length}
             </Text>
           </View>

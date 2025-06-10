@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: Color.mainColor1,
+        backgroundColor: Color.mainColor2,
         padding: 20,
         borderRadius: 20
     },

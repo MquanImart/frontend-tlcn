@@ -23,7 +23,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ inputText, onChangeText, onSend }
         multiline
       />
       <TouchableOpacity onPress={onSend} style={styles.sendButton}>
-        <Ionicons name="send" size={24} color={Color.mainColor1} />
+        <Ionicons name="send" size={24} color={Color.mainColor2} />
       </TouchableOpacity>
     </View>
   );

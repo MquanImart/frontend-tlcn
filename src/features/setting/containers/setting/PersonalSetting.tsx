@@ -259,7 +259,7 @@ const ProfileScreen = () => {
   if (loading && !userId) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
         <Text style={{ color: Color.textPrimary, marginTop: 10 }}>Đang tải dữ liệu...</Text>
       </View>
     );
@@ -270,7 +270,7 @@ const ProfileScreen = () => {
       <View style={[styles.errorContainer, { backgroundColor: Color.background }]}>
         <Text style={[styles.errorText, { color: Color.error }]}>Lỗi: {error}</Text>
         <TouchableOpacity onPress={() => { getUserId(); setError(null); }} style={{ marginTop: 20 }}>
-          <Text style={{ color: Color.mainColor1, fontSize: 16 }}>Thử lại</Text>
+          <Text style={{ color: Color.mainColor2, fontSize: 16 }}>Thử lại</Text>
         </TouchableOpacity>
       </View>
     );
@@ -344,11 +344,11 @@ const ProfileScreen = () => {
 
           {isChanged && (
             <TouchableOpacity
-              style={[styles.saveButton, { backgroundColor: loading ? Color.backgroundTertiary : Color.mainColor1 }]}
+              style={[styles.saveButton, { backgroundColor: loading ? Color.backgroundTertiary : Color.mainColor2 }]}
               onPress={handleSaveChanges}
               disabled={loading}
             >
-              <Text style={[styles.saveText, { color: Color.textOnMain1 }]}>
+              <Text style={[styles.saveText, { color: Color.textOnMain2 }]}>
                 {loading ? "Đang lưu..." : "Lưu thay đổi"}
               </Text>
             </TouchableOpacity>

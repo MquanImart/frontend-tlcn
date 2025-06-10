@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     currTab: {
         width: 110,
         padding: 10,
-        backgroundColor: Color.mainColor1,
+        backgroundColor: Color.mainColor2,
         borderRadius: 50
     },
     tab: {

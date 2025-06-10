@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 10,
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   createButton: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: Color.mainColor2,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",
