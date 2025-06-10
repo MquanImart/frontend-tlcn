@@ -1,5 +1,4 @@
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, TouchableWithoutFeedback, Keyboard, Modal } from "react-native"
 import FriendCard from "../../components/FriendCard";
 import CSearch from "../../components/CSearch";

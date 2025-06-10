@@ -38,6 +38,7 @@ export interface Color {
     success: string;
     error: string;
     warning: string;
+    shadow: string; 
 }
 
 export const lightColor: Color = {
@@ -82,7 +83,7 @@ export const lightColor: Color = {
     success: "#4CAF50",
     error: "#F44336",
     warning: "#FFC107",
-
+    shadow: "rgba(0, 0, 0, 0.15)", // Bóng đổ cho theme sáng
 };
 
 export const darkColor: Color = {
@@ -128,4 +129,5 @@ export const darkColor: Color = {
     success: "#81C784", // Sáng hơn để nổi bật trên nền tối
     error: "#E57373", // Sáng hơn
     warning: "#FFD54F", // Sáng hơn
+    shadow: "rgba(0, 0, 0, 0.3)",
 };

@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     textViewAll: {
-        color: Color.textColor3
+        color: Color.textOnMain2
     },
     boxContent: {
         width: '100%'
