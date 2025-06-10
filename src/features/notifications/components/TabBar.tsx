@@ -23,7 +23,7 @@ const TabBar: React.FC<TabBarProps> = ({ selectedTab, onSelectTab, unreadCount }
           onPress={() => onSelectTab(tab)}
           activeOpacity={0.7}
         >
-          <Text style={[styles.tabText, selectedTab === tab ? { color: Color.mainColor2, fontWeight: "bold" } : { color: Color.textSecondary }]}>
+          <Text style={[styles.tabText, selectedTab === tab ? { color: Color.mainColor1, fontWeight: "bold" } : { color: Color.textSecondary }]}>
             {tab}
           </Text>
           {tab === "Chưa đọc" && unreadCount > 0 && (
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: Color.mainColor2,
+    borderBottomColor: Color.mainColor1,
   },
   tabText: {
     fontSize: 16,

@@ -48,7 +48,7 @@ const Setting = () => {
                         Màn hình
                     </Text>
                     {activeTab === "screen" && (
-                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor2 }]} />
+                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor1 }]} />
                     )}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -65,7 +65,7 @@ const Setting = () => {
                         Riêng tư
                     </Text>
                     {activeTab === "privacy" && (
-                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor2 }]} />
+                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor1 }]} />
                     )}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -82,7 +82,7 @@ const Setting = () => {
                         Cá nhân
                     </Text>
                     {activeTab === "personal" && (
-                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor2 }]} />
+                        <View style={[styles.activeTabIndicator, { backgroundColor: Color.mainColor1 }]} />
                     )}
                 </TouchableOpacity>
             </View>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     activeTabIndicator: {
         height: 2,
         width: 30,
-        // backgroundColor will be set dynamically based on Color.mainColor2
+        // backgroundColor will be set dynamically based on Color.mainColor1
         marginTop: 5,
     },
     contentContainer: {

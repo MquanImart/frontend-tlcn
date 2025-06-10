@@ -58,10 +58,10 @@ const AddRuleModal: React.FC<AddRuleModalProps> = ({
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={[styles.cancelButton, { backgroundColor: Color.textSecondary }]} onPress={handleCancel}>
-              <Text style={[styles.cancelButtonText, { color: Color.textOnMain2 }]}>HỦY</Text>
+              <Text style={[styles.cancelButtonText, { color: Color.textOnMain1 }]}>HỦY</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.addButton, { backgroundColor: Color.mainColor2 }]} onPress={handleAdd}>
-              <Text style={[styles.addButtonText, { color: Color.textOnMain2 }]}>THÊM</Text>
+            <TouchableOpacity style={[styles.addButton, { backgroundColor: Color.mainColor1 }]} onPress={handleAdd}>
+              <Text style={[styles.addButtonText, { color: Color.textOnMain1 }]}>THÊM</Text>
             </TouchableOpacity>
           </View>
         </View>

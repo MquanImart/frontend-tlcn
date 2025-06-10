@@ -357,7 +357,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
               onPress={handlePickImage}
               disabled={isLoading}
             >
-              <Ionicons name="image-outline" size={34} color={Color.mainColor2} />
+              <Ionicons name="image-outline" size={34} color={Color.mainColor1} />
               <Text style={[styles.toolText, { color: Color.textPrimary }]}>Ảnh</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -365,7 +365,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
               onPress={handleTakePhoto}
               disabled={isLoading}
             >
-              <Ionicons name="camera-outline" size={34} color={Color.mainColor2} />
+              <Ionicons name="camera-outline" size={34} color={Color.mainColor1} />
               <Text style={[styles.toolText, { color: Color.textPrimary }]}>Chụp</Text>
             </TouchableOpacity>
           </View>
@@ -379,7 +379,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
                 onPress={handleRemoveImage}
                 disabled={isLoading}
               >
-                <Ionicons name="close" size={18} color={Color.textOnMain2} />
+                <Ionicons name="close" size={18} color={Color.textOnMain1} />
               </TouchableOpacity>
             </View>
           )}
@@ -393,7 +393,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
                 width: "45%",
                 height: 50,
                 backColor: "transparent",
-                textColor: Color.mainColor2,
+                textColor: Color.mainColor1,
                 fontSize: 16,
                 borderColor: Color.border, // Using 'border' from your colors
                 borderWidth: 1,
@@ -406,8 +406,8 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
               style={{
                 width: "45%",
                 height: 50,
-                backColor: isLoading ? Color.backgroundTertiary : Color.mainColor2, // Using backgroundTertiary for disabled state
-                textColor: Color.textOnMain2, // Using textOnMain2 for text on main color button
+                backColor: isLoading ? Color.backgroundTertiary : Color.mainColor1, // Using backgroundTertiary for disabled state
+                textColor: Color.textOnMain1, // Using textOnMain1 for text on main color button
                 fontSize: 16,
                 radius: 25,
               }}
@@ -418,7 +418,7 @@ const ChangeIDDialog = ({ visible, onClose, onSave, initialCCCD, user }: ChangeI
           {isLoading && (
             <ActivityIndicator
               size="large"
-              color={Color.mainColor2}
+              color={Color.mainColor1}
               style={styles.loading}
             />
           )}

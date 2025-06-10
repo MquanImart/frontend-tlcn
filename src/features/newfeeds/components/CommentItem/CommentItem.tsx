@@ -102,7 +102,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       onPress={() => openImageModal(item.url || DEFAULT_AVATAR)}
     >
       {imageLoading[item._id] && (
-        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor2} />
+        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor1} />
       )}
       <Image
         source={{ uri: item.url || DEFAULT_AVATAR }}
@@ -184,7 +184,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           )}
           <View style={[styles.replyInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
             <TouchableOpacity onPress={pickMedia}>
-              <Ionicons name="image" size={24} color={Color.mainColor2} />
+              <Ionicons name="image" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
             <TextInput
               style={[styles.replyInput, { color: Color.textPrimary }]}
@@ -195,7 +195,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               multiline
             />
             <TouchableOpacity onPress={handleSubmitReply}>
-              <Ionicons name="send" size={20} color={Color.mainColor2} />
+              <Ionicons name="send" size={20} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>

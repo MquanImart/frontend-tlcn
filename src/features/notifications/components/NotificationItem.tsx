@@ -161,8 +161,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           </Text>
         </View>
         {notification?.status === "unread" && (
-          // Dấu chấm tròn vẫn sẽ có màu mainColor2 để dễ nhận biết
-          <View style={[styles.unreadDot, { backgroundColor: Color.mainColor2 }]} />
+          // Dấu chấm tròn vẫn sẽ có màu mainColor1 để dễ nhận biết
+          <View style={[styles.unreadDot, { backgroundColor: Color.mainColor1 }]} />
         )}
       </TouchableOpacity>
     </View>

@@ -140,7 +140,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
                     style={{
                       width: "100%",
                       height: 40,
-                      backColor: isLoadingMore ? Color.textColor3 : Color.mainColor2,
+                      backColor: isLoadingMore ? Color.textColor3 : Color.mainColor1,
                       textColor: Color.white_homologous,
                       fontSize: 14,
                       fontWeight: "bold",

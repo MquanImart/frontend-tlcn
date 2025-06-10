@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     button:{
       width: '60%',
       alignSelf: 'center',
-      backgroundColor: Color.mainColor2,
+      backgroundColor: Color.mainColor1,
       padding: 10,
       borderRadius: 5
     },

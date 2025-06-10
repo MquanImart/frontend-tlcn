@@ -101,7 +101,7 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={24} color={Color.mainColor2} />
+              <Ionicons name="send" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>

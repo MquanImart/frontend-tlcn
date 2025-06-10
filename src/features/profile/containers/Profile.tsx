@@ -383,7 +383,7 @@ const Profile = () => {
                 style={{
                   width: "100%",
                   height: 40,
-                  backColor: friendRequestSent ? Color.backgroundTertiary : Color.mainColor2,
+                  backColor: friendRequestSent ? Color.backgroundTertiary : Color.mainColor1,
                   textColor: friendRequestSent ? Color.textSecondary : Color.textOnMain1,
                   fontSize: 14,
                   fontWeight: "bold",
@@ -438,7 +438,7 @@ const Profile = () => {
                 backColor:
                   isFriend || friendRequestSent || hasReceivedRequest
                     ? Color.backgroundTertiary
-                    : Color.mainColor2,
+                    : Color.mainColor1,
                 textColor: Color.white_white,
                 fontSize: 14,
                 fontWeight: "bold",
@@ -454,7 +454,7 @@ const Profile = () => {
               style={{
                 width: "100%",
                 height: 40,
-                backColor: isFollowing ? Color.backgroundTertiary : Color.mainColor2,
+                backColor: isFollowing ? Color.backgroundTertiary : Color.mainColor1,
                 textColor: Color.white_white,
                 fontSize: 14,
                 fontWeight: "bold",
@@ -470,7 +470,7 @@ const Profile = () => {
               style={{
                 width: "100%",
                 height: 40,
-                backColor: Color.mainColor2,
+                backColor: Color.mainColor1,
                 textColor: Color.white_white,
                 fontSize: 14,
                 fontWeight: "bold",

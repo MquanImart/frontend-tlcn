@@ -99,7 +99,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       onPress={() => openImageModal(item.url || DEFAULT_AVATAR)}
     >
       {imageLoading[item._id] && (
-        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor2} />
+        <ActivityIndicator style={styles.loading} size="small" color={Color.mainColor1} />
       )}
       <Image
         source={{ uri: item.url || DEFAULT_AVATAR }}
@@ -156,7 +156,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
             </TouchableOpacity>
             <Text style={[styles.separator, { color: Color.textColor3 }]}>·</Text>
             <TouchableOpacity onPress={toggleReplyInput}>
-              <Text style={[styles.actionText, { color: Color.mainColor2 }]}>Phản hồi</Text>
+              <Text style={[styles.actionText, { color: Color.mainColor1 }]}>Phản hồi</Text>
             </TouchableOpacity>
             <Text style={[styles.separator, { color: Color.textColor3 }]}>·</Text>
             <Text style={[styles.time, { color: Color.textColor3 }]}>{timeAgo(comment.createdAt)}</Text>
@@ -177,7 +177,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           )}
           <View style={styles.replyInputContainer}>
             <TouchableOpacity onPress={pickMedia}>
-              <Ionicons name="image" size={24} color={Color.mainColor2} />
+              <Ionicons name="image" size={24} color={Color.mainColor1} />
             </TouchableOpacity>
             <TextInput
               style={[styles.replyInput, { color: Color.textColor1 }]}
@@ -188,7 +188,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               multiline
             />
             <TouchableOpacity onPress={handleSubmitReply}>
-              <Ionicons name="send" size={20} color={Color.mainColor2} />
+              <Ionicons name="send" size={20} color={Color.mainColor1} />
             </TouchableOpacity>
           </View>
         </View>
@@ -196,7 +196,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
       {replies.length > 0 && (
         <TouchableOpacity onPress={toggleReplies}>
-          <Text style={[styles.toggleReplies, { color: Color.mainColor2 }]}>
+          <Text style={[styles.toggleReplies, { color: Color.mainColor1 }]}>
             {areRepliesVisible ? "Ẩn bớt" : `Xem tất cả ${replies.length} phản hồi`}
           </Text>
         </TouchableOpacity>
