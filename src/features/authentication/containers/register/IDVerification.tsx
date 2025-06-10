@@ -18,7 +18,6 @@ type NavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 type IDVerificationRouteProp = RouteProp<AuthStackParamList, "IDVerification">;
 
 const extractCCCDData = async (imageUri: string, mimeType: string = 'image/jpeg') => {
-    useTheme();
     try {
         const formData = new FormData();
         formData.append('cccdImage', {
@@ -78,6 +77,7 @@ const calculateAge = (dateOfBirth: string): number => {
 };
 
 const IDVerification = () => {
+    useTheme();
     const [displayName, setDisplayName] = useState<string>("");
     const [hashtag, setHashtag] = useState<string>("");
     const [selectedImage, setSelectedImage] = useState<{ uri: string, type: string } | null>(null);

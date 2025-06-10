@@ -1,6 +1,5 @@
 import { WeatherStackParamList } from "@/src/shared/routes/WeatherNavigation";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import { LinearGradient } from "expo-linear-gradient";
