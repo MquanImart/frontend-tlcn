@@ -1,4 +1,3 @@
-// src/features/search/containers/SearchPost/PostSearch.tsx
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import { Article } from "@/src/features/newfeeds/interface/article";
@@ -121,45 +120,45 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: Color.backGround }]}>
-      <View style={styles.containerSearch}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: Color.background }]}>
+      <View style={[styles.containerSearch, { backgroundColor: Color.background }]}>
         <CIconButton
-          icon={<Ionicons name="arrow-back" size={24} color="#000" />}
+          icon={<Ionicons name="arrow-back" size={24} color={Color.textPrimary} />}
           onSubmit={() => navigation.goBack()}
           style={{
             width: 40,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.background,
+            textColor: Color.textPrimary,
             fontSize: 16,
             fontWeight: "normal",
             radius: 0,
             flex_direction: "row",
           }}
         />
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, { backgroundColor: Color.backgroundTertiary }]}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: Color.textPrimary }]}
             placeholder="Tìm kiếm bài viết bằng hashtag"
-            placeholderTextColor="#000"
+            placeholderTextColor={Color.textTertiary}
             value={searchText}
             onChangeText={setSearchText}
             onSubmitEditing={() => handleSearchSubmit()}
           />
           {searchText.length > 0 && (
             <TouchableOpacity style={styles.clearButton} onPress={handleClearSearch}>
-              <Ionicons name="close" size={20} color="#000" />
+              <Ionicons name="close" size={20} color={Color.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
         <CIconButton
-          icon={<Ionicons name="search" size={24} color="#000" />}
+          icon={<Ionicons name="search" size={24} color={Color.textPrimary} />}
           onSubmit={() => handleSearchSubmit()}
           style={{
             width: 50,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.background,
+            textColor: Color.textPrimary,
             fontSize: 16,
             fontWeight: "normal",
             radius: 20,
@@ -183,11 +182,11 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
       >
         {isSearching ? (
           <View style={styles.loadingContainer}>
-            <Text style={{ color: Color.textColor3 }}>Đang tìm kiếm...</Text>
+            <Text style={{ color: Color.textSecondary }}>Đang tìm kiếm...</Text>
           </View>
         ) : articles.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: Color.textColor3 }]}>
+            <Text style={[styles.emptyText, { color: Color.textTertiary }]}>
               {searchText.trim()
                 ? `Không tìm thấy bài viết nào cho ${searchText}`
                 : "Nhập hashtag để tìm kiếm"}
@@ -208,7 +207,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
         )}
         {loadingMore && (
           <View style={styles.loadingMoreContainer}>
-            <Text style={{ color: Color.textColor3 }}>Đang tải thêm bài viết...</Text>
+            <Text style={{ color: Color.textSecondary }}>Đang tải thêm bài viết...</Text>
           </View>
         )}
       </ScrollView>
@@ -226,13 +225,13 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
-              <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
+              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
                   {calculateTotalComments(currentArticle?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textColor1} />
+                  <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
 
@@ -260,14 +259,21 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
                 </View>
               )}
 
-              <View style={styles.commentInputContainer}>
+              <View style={[
+                styles.commentInputContainer,
+                {
+                  borderTopColor: Color.border,
+                  backgroundColor: Color.background,
+                  borderColor: Color.border,
+                }
+              ]}>
                 <TouchableOpacity onPress={pickMedia}>
                   <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
-                  style={styles.commentInput}
+                  style={[styles.commentInput, { color: Color.textPrimary }]}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
@@ -290,7 +296,7 @@ const styles = StyleSheet.create({
   containerSearch: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.white_homologous,
+    backgroundColor: Color.background,
     borderRadius: 25,
     margin: 10,
     paddingHorizontal: 5,
@@ -299,7 +305,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary,
     borderRadius: 25,
     position: "relative",
   },
@@ -310,7 +316,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 20,
     paddingRight: 40,
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary,
   },
   clearButton: {
     position: "absolute",
@@ -354,7 +360,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
   },
   commentTitle: {
     fontSize: 18,
@@ -362,20 +367,17 @@ const styles = StyleSheet.create({
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: Color.textColor1,
     paddingHorizontal: 10,
   },
   commentList: {

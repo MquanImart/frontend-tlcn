@@ -45,45 +45,45 @@ const SearchUserAndGroup: React.FC<SearchUserAndGroupProps> = ({ route, navigati
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.containerSearch}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Color.background }]}>
+      <View style={[styles.containerSearch, { backgroundColor: Color.background }]}>
         <CIconButton
-          icon={<Ionicons name="arrow-back" size={24} color="#000" />}
+          icon={<Ionicons name="arrow-back" size={24} color={Color.textPrimary} />}
           onSubmit={() => navigation.goBack()}
           style={{
             width: 40,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.background,
+            textColor: Color.textPrimary,
             fontSize: 16,
             fontWeight: "normal",
             radius: 0,
             flex_direction: "row",
           }}
         />
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, { backgroundColor: Color.backgroundTertiary }]}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: Color.textPrimary }]}
             placeholder="Tìm kiếm người dùng hoặc nhóm"
-            placeholderTextColor="#000"
+            placeholderTextColor={Color.textTertiary}
             value={searchText}
             onChangeText={setSearchText}
             onSubmitEditing={handleSearchSubmit}
           />
           {searchText.length > 0 && (
             <TouchableOpacity style={styles.clearButton} onPress={handleClearSearch}>
-              <Ionicons name="close" size={20} color="#000" />
+              <Ionicons name="close" size={20} color={Color.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
         <CIconButton
-          icon={<Ionicons name="search" size={24} color="#000" />}
+          icon={<Ionicons name="search" size={24} color={Color.textPrimary} />}
           onSubmit={handleSearchSubmit}
           style={{
             width: 50,
             height: 50,
-            backColor: Color.white_homologous,
-            textColor: Color.white_contrast,
+            backColor: Color.background,
+            textColor: Color.textPrimary,
             fontSize: 16,
             fontWeight: "normal",
             radius: 20,
@@ -107,12 +107,12 @@ const SearchUserAndGroup: React.FC<SearchUserAndGroupProps> = ({ route, navigati
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
   },
   containerSearch: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.white_homologous,
+    backgroundColor: Color.background,
     borderRadius: 25,
     margin: 10,
     paddingHorizontal: 5,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary,
     borderRadius: 25,
     position: "relative",
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 20,
     paddingRight: 40,
-    backgroundColor: Color.backGround2,
+    backgroundColor: Color.backgroundTertiary,
   },
   clearButton: {
     position: "absolute",
@@ -142,7 +142,6 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
     width: "100%",
-    paddingHorizontal: 40,
   },
 });
 

@@ -48,7 +48,7 @@ const FriendCard = ({_id, name, img, sameFriends, sameGroups, aboutMe, sendDate,
         <View key={`view-${_id}`} style={[
             styles.container,
             {
-                backgroundColor: Color.background,
+                backgroundColor: Color.backgroundSecondary,
                 shadowColor: Color.shadow,
             }
         ]}>

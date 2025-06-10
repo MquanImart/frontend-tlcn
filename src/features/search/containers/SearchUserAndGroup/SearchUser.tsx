@@ -27,7 +27,7 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
   useTheme()
   const [allFriends, setAllFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1); // Biến page để quản lý phân trang
+  const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const limit = 5;
@@ -57,7 +57,6 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
 
     try {
       setIsLoading(true);
-      // Tính skip từ page
       const skip = reset ? 0 : (currentPage - 1) * limit;
       const queryParams = new URLSearchParams({
         displayName: textSearch.trim(),
@@ -72,7 +71,6 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
 
       if (result.success) {
         const users: Friend[] = Array.isArray(result.data) ? result.data : [];
-        // Loại bỏ người dùng hiện tại và trùng lặp
         const filteredData = users.filter(
           (friend: Friend) => friend._id !== userId && !allFriends.some(existing => existing._id === friend._id)
         );
@@ -96,31 +94,31 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
   };
 
   useEffect(() => {
-    setPage(1); // Reset page về 1 khi tìm kiếm mới
+    setPage(1);
     setAllFriends([]);
     setHasMore(true);
-    getAllFriends(true, 1); // Lấy trang đầu tiên
+    getAllFriends(true, 1);
   }, [textSearch]);
 
   const handleLoadMore = () => {
     if (!isLoading && hasMore) {
       setPage(prevPage => {
-        const newPage = prevPage + 1; // Tăng page trước khi gọi API
-        getAllFriends(false, newPage); // Gọi API với page mới
+        const newPage = prevPage + 1;
+        getAllFriends(false, newPage);
         return newPage;
       });
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {isLoading && page === 1 ? (
-        <Text style={styles.loadingText}>Đang tải...</Text>
+        <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải...</Text>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {allFriends.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
+              <Text style={[styles.emptyText, { color: Color.textSecondary }]}>
                 {textSearch
                   ? `Không tìm thấy người dùng nào cho "${textSearch}"`
                   : "Vui lòng nhập từ khóa để tìm kiếm"}
@@ -140,18 +138,18 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
                   />
                 </View>
               ))}
-              {isLoading && <Text style={styles.loadingText}>Đang tải thêm...</Text>}
+              {isLoading && <Text style={[styles.loadingText, { color: Color.textPrimary }]}>Đang tải thêm...</Text>}
               {hasMore && (
                 <View style={styles.buttonContainer}>
                   <CButton
                     label="Xem thêm kết quả khác"
                     onSubmit={handleLoadMore}
-                    disabled={isLoading} // Vô hiệu hóa nút khi đang tải
+                    disabled={isLoading}
                     style={{
                       width: "100%",
                       height: 40,
-                      backColor: isLoading ? Color.textColor3 : Color.mainColor2, // Màu xám khi disabled
-                      textColor: Color.white_homologous,
+                      backColor: isLoading ? Color.backgroundTertiary : Color.mainColor2,
+                      textColor: Color.textOnMain1,
                       fontSize: 14,
                       fontWeight: "bold",
                       radius: 20,
@@ -171,7 +169,7 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: Color.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
     fontSize: 16,
-    color: Color.textColor1,
+    color: Color.textPrimary,
   },
   emptyContainer: {
     flex: 1,
@@ -196,7 +194,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
+    color: Color.textSecondary,
     fontStyle: "italic",
     textAlign: "center",
   },
