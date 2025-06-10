@@ -1,84 +1,16 @@
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader';
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+// Removed: import { useTheme } from '@/src/contexts/ThemeContext';
+// Removed: import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
-import { ActivityIndicator, Alert, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import TabBarCustom, { Tab } from '@/src/features/group/components/TabBarCustom';
-import { Account } from '@/src/interface/interface_reference';
+import { Account } from '@/src/interface/interface_reference'; // Make sure this path is correct
 import useAdminAccountList from './useAdminAccountList';
+import AccountRow from '../../components/AccountRow';
 
 const { height, width } = Dimensions.get('window');
-const AccountRow: React.FC<{ account: Account; onDelete: (accountId: string) => void }> = ({ account, onDelete }) => {
-  useTheme();
-  const confirmDelete = () => {
-    Alert.alert(
-      'Xác nhận xóa tài khoản',
-      `Bạn có chắc chắn muốn xóa tài khoản ${account.email}?`,
-      [
-        { text: 'Hủy', style: 'cancel' },
-        {
-          text: 'Xóa',
-          onPress: () => onDelete(account._id),
-          style: 'destructive',
-        },
-      ]
-    );
-  };
-
-  return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: account._destroy ? Color.backGround2 : Color.backGround,
-          borderLeftColor: account.state === 'online' ? '#34C759' : '#FF3B30',
-        },
-      ]}
-    >
-      <View style={styles.cardContent}>
-        <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: Color.textColor3 }]}>Email:</Text>
-          <Text style={[styles.value, { color: Color.textColor1 }]}>{account.email}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: Color.textColor3 }]}>SĐT:</Text>
-          <Text style={[styles.value, { color: Color.textColor1 }]}>{account.phone || 'N/A'}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: Color.textColor3 }]}>Vai trò:</Text>
-          <Text style={[styles.value, { color: Color.textColor1 }]}>{account.role}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: Color.textColor3 }]}>Trạng thái:</Text>
-          <Text
-            style={[
-              styles.value,
-              { color: account.state === 'online' ? '#34C759' : '#FF3B30' },
-            ]}
-          >
-            {account.state === 'online' ? 'Trực tuyến' : 'Ngoại tuyến'}
-          </Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={[styles.label, { color: Color.textColor3 }]}>Tạo lúc:</Text>
-          <Text style={[styles.value, { color: Color.textColor1 }]}>
-            {new Date(account.createdAt).toLocaleDateString('vi-VN')}
-          </Text>
-        </View>
-      </View>
-      {!account._destroy && (
-        <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: '#FF3B30' }]}
-          onPress={confirmDelete}
-        >
-          <Text style={[styles.actionText, { color: Color.white_homologous }]}>Xóa</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-};
 
 const AdminAccountListScreen: React.FC = () => {
   const {
@@ -91,7 +23,7 @@ const AdminAccountListScreen: React.FC = () => {
     filter,
     setFilter,
     deleteAccount,
-  } = useAdminAccountList();
+  } = useAdminAccountList(); // <-- Warning points here, but cause is usually in JSX below
 
   const renderAccount = ({ item }: { item: Account }) => (
     <AccountRow account={item} onDelete={deleteAccount} />
@@ -109,19 +41,17 @@ const AdminAccountListScreen: React.FC = () => {
     }
   };
 
-  // Define tabs for TabBarCustom based on your FilterType
   const tabs: Tab[] = [
-    { label: 'Tất cả tài khoản', icon: 'list' }, // Corresponds to 'all_active' or 'all'
+    { label: 'Tất cả tài khoản', icon: 'list' },
     { label: 'Đã xóa', icon: 'delete' },
     { label: 'Trực tuyến', icon: 'wifi-tethering' },
     { label: 'Ngoại tuyến', icon: 'wifi-off' },
   ];
 
-  // Helper function to map current filter to tab label
   const getSelectedTabLabel = (currentFilter: string) => {
     switch (currentFilter) {
       case 'all':
-      case 'all_active': // 'all_active' is the default and likely maps to 'Tất cả tài khoản'
+      case 'all_active':
         return 'Tất cả tài khoản';
       case 'deleted':
         return 'Đã xóa';
@@ -134,11 +64,10 @@ const AdminAccountListScreen: React.FC = () => {
     }
   };
 
-  // Handler for tab selection
   const handleTabSelect = (tabLabel: string) => {
     switch (tabLabel) {
       case 'Tất cả tài khoản':
-        setFilter('all_active'); // Use 'all_active' as default filter for "Tất cả tài khoản"
+        setFilter('all_active');
         break;
       case 'Đã xóa':
         setFilter('deleted');
@@ -159,7 +88,7 @@ const AdminAccountListScreen: React.FC = () => {
       <SafeAreaView style={styles.loadingContainer}>
         <CHeader label="Danh sách tài khoản" showBackButton={false} />
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={Color.mainColor1} />
+          <ActivityIndicator size="large" color="#4B164C" />
         </View>
       </SafeAreaView>
     );
@@ -170,25 +99,31 @@ const AdminAccountListScreen: React.FC = () => {
       <SafeAreaView style={styles.errorContainer}>
         <CHeader label="Danh sách tài khoản" showBackButton={false} />
         <View style={styles.centerContent}>
-          <Text style={[styles.errorText, { color: Color.textColor1 }]}>{error}</Text>
+          <Text style={[styles.errorText, { color: '#212121' }]}>{error}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: Color.backGround, maxHeight: height }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: '#F5F5F5', maxHeight: height }]}>
       <CHeader label="Danh sách tài khoản" showBackButton={false} />
+      {/*
+        CRITICAL FIX: Remove ALL whitespace/newlines between these sibling JSX elements.
+        Even a single space or newline character outside a <Text> component can cause this warning.
+        This often involves making your JSX less readable in the editor,
+        but it's a common fix for this specific React Native warning.
+      */}
       <View style={styles.content}>
         <TabBarCustom
           tabs={tabs}
           selectedTab={getSelectedTabLabel(filter)}
           onSelectTab={handleTabSelect}
-          style={styles.tabBarCustomStyle}
-          activeTabStyle={styles.activeTabStyle}
+          style={[styles.tabBarCustomStyle, { backgroundColor: '#E0E0E0' }]}
+          activeTabStyle={[styles.activeTabStyle, { backgroundColor: '#4B164C' }]}
           inactiveTabStyle={styles.inactiveTabStyle}
-          activeTextStyle={styles.activeTextStyle}
-          inactiveTextStyle={styles.inactiveTextStyle}
+          activeTextStyle={[styles.activeTextStyle, { color: '#FFFFFF' }]}
+          inactiveTextStyle={[styles.inactiveTextStyle, { color: '#212121' }]}
         />
         <FlatList
           data={accounts}
@@ -200,25 +135,25 @@ const AdminAccountListScreen: React.FC = () => {
           windowSize={5}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={[styles.noAccounts, { color: Color.textColor3 }]}>
+            <Text style={[styles.noAccounts, { color: '#9E9E9E' }]}>
               Không có tài khoản nào
             </Text>
           }
           ListFooterComponent={
-            <View style={styles.paginationContainer}>
+            <View style={[styles.paginationContainer, { backgroundColor: '#F8F8F8' }]}>
               <CButton
                 label="Trước"
                 onSubmit={handlePrevPage}
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: Color.mainColor1,
-                  textColor: Color.white_homologous,
+                  backColor: '#4B164C',
+                  textColor: '#FFFFFF',
                   radius: 8,
                 }}
                 disabled={currentPage === 1}
               />
-              <Text style={[styles.pageText, { color: Color.textColor1 }]}>
+              <Text style={[styles.pageText, { color: '#212121' }]}>
                 Trang {currentPage} / {totalPages}
               </Text>
               <CButton
@@ -227,8 +162,8 @@ const AdminAccountListScreen: React.FC = () => {
                 style={{
                   width: width * 0.3,
                   height: 40,
-                  backColor: Color.mainColor1,
-                  textColor: Color.white_homologous,
+                  backColor: '#4B164C',
+                  textColor: '#FFFFFF',
                   radius: 8,
                 }}
                 disabled={currentPage === totalPages}
@@ -244,7 +179,7 @@ const AdminAccountListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: '#F5F5F5',
   },
   content: {
     flex: 1,
@@ -256,11 +191,11 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: '#F5F5F5',
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: Color.backGround,
+    backgroundColor: '#F5F5F5',
   },
   centerContent: {
     flex: 1,
@@ -277,7 +212,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: Color.backGround1,
+    backgroundColor: '#F8F8F8',
     borderRadius: 12,
     marginTop: 16,
     marginHorizontal: 8,
@@ -288,7 +223,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-    color: Color.textColor1,
+    color: '#212121',
     minWidth: 80,
   },
   filterContainer: {
@@ -301,7 +236,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     paddingVertical: 20,
+    color: '#9E9E9E',
   },
+  // These styles are for AccountRow and should ideally be in AccountRow.tsx's StyleSheet.
+  // Keeping them here as they were in your provided code for context.
   card: {
     marginVertical: 8,
     marginHorizontal: 16,
@@ -327,13 +265,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: Color.textColor3,
+    color: '#9E9E9E', // textColor3
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: Color.textColor1,
+    color: '#212121', // textColor1
   },
   actionButton: {
     paddingVertical: 8,
@@ -351,12 +289,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginHorizontal: 0,
     borderRadius: 8,
-    backgroundColor: Color.backGround2,
+    backgroundColor: '#E0E0E0',
     elevation: 0,
     shadowOpacity: 0,
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor1,
+    backgroundColor: '#4B164C',
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -368,13 +306,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   activeTextStyle: {
-    color: Color.white_homologous,
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: 'bold',
     marginLeft: 5,
   },
   inactiveTextStyle: {
-    color: Color.textColor1,
+    color: '#212121',
     fontSize: 14,
   },
 });

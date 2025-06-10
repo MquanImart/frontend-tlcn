@@ -10,21 +10,24 @@ interface ChatInputProps {
   onSend: () => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ inputText, onChangeText, onSend }) => (
-  <View style={styles.inputContainer}>
-    <TextInput
-      style={styles.input}
-      value={inputText}
-      onChangeText={onChangeText}
-      placeholder="Nhập tin nhắn..."
-      placeholderTextColor={Color.textColor3}
-      multiline
-    />
-    <TouchableOpacity onPress={onSend} style={styles.sendButton}>
-      <Ionicons name="send" size={24} color={Color.mainColor1} />
-    </TouchableOpacity>
-  </View>
-);
+const ChatInput: React.FC<ChatInputProps> = ({ inputText, onChangeText, onSend }) => {
+  useTheme(); // Ensure theme is active here
+  return (
+    <View style={[styles.inputContainer, { backgroundColor: Color.background, borderTopColor: Color.border }]}>
+      <TextInput
+        style={[styles.input, { backgroundColor: Color.backgroundSecondary, color: Color.textPrimary }]}
+        value={inputText}
+        onChangeText={onChangeText}
+        placeholder="Nhập tin nhắn..."
+        placeholderTextColor={Color.textSecondary} // Using textSecondary for placeholder
+        multiline
+      />
+      <TouchableOpacity onPress={onSend} style={styles.sendButton}>
+        <Ionicons name="send" size={24} color={Color.mainColor2} />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -32,17 +35,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
-    backgroundColor: Color.backGround,
   },
   input: {
     flex: 1,
-    backgroundColor: Color.backGround2 || "#f0f0f0",
     borderRadius: 20,
     paddingHorizontal: 15,
     paddingVertical: 8,
     fontSize: 14,
-    color: Color.textColor1,
     maxHeight: 100,
   },
   sendButton: {

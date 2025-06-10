@@ -1,3 +1,4 @@
+// src/features/newfeeds/containers/newfeeds/NewFeed.tsx
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import usePostDialog from "@/src/features/newfeeds/components/PostDialog/usePostDialog";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
@@ -132,14 +133,14 @@ export default function NewFeed() {
     if (!loadingMore) return null;
     return (
       <View style={styles.loadingFooter}>
-        <ActivityIndicator size="large" color={Color.mainColor1} />
+        <ActivityIndicator size="large" color={Color.mainColor2} />
       </View>
     );
   };
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: Color.backGround }]}
+      style={[styles.container, { backgroundColor: Color.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
     >
@@ -189,13 +190,13 @@ export default function NewFeed() {
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
+            <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
               <View style={styles.commentHeader}>
-                <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
                   {calculateTotalComments(currentArticle?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textColor1} />
+                  <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
 
@@ -223,22 +224,22 @@ export default function NewFeed() {
                 </View>
               )}
 
-              <View style={styles.commentInputContainer}>
+              <View style={[styles.commentInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor1} />
+                  <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
-                  style={styles.commentInput}
+                  style={[styles.commentInput, { color: Color.textPrimary }]}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textColor3}
+                  placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
                 {isCommentChecking ? (
-                  <ActivityIndicator size="small" color={Color.mainColor1} />
+                  <ActivityIndicator size="small" color={Color.mainColor2} />
                 ) : (
                   <TouchableOpacity onPress={handleAddComment}>
-                    <Ionicons name="send" size={20} color={Color.mainColor1} />
+                    <Ionicons name="send" size={20} color={Color.mainColor2} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -304,7 +305,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
+    borderBottomColor: Color.border,
   },
   commentTitle: {
     fontSize: 18,
@@ -312,20 +313,16 @@ const styles = StyleSheet.create({
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backGround,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: Color.textColor1,
     paddingHorizontal: 10,
   },
   commentList: {

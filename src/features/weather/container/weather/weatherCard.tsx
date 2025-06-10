@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+// import { useTheme } from '@/src/contexts/ThemeContext'; // Không cần thiết vì không dùng biến theme
+// import { colors as Color } from '@/src/styles/DynamicColors'; // Không cần vì màu chữ là cố định (trắng)
 
 interface WeatherCardProps {
   city: string;
@@ -19,10 +19,12 @@ const getBackgroundImage = (description: string) => {
   } else if (description.toLowerCase().includes("nắng")) {
     return require("../../../../assets/images/Weather/backgroudSun.jpg");
   }
+  // Thêm một ảnh mặc định nếu không khớp với bất kỳ mô tả nào
+  return require("../../../../assets/images/Weather/backgroudCloud.jpg");
 };
 
 const WeatherCard: React.FC<WeatherCardProps> = ({ city, temperature, description, high, low }) => {
-  useTheme()
+  // useTheme() // Không cần thiết ở đây vì màu chữ là cố định để phù hợp với ImageBackground
   return (
     <ImageBackground source={getBackgroundImage(description)} style={styles.card} imageStyle={{ borderRadius: 12 }}>
       <View style={styles.overlay}>
@@ -41,7 +43,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ city, temperature, descriptio
 
 const styles = StyleSheet.create({
   card: {
-    marginTop:10,
+    marginTop: 10,
     height: 120,
     padding: 16,
     borderRadius: 12,
@@ -56,32 +58,32 @@ const styles = StyleSheet.create({
   },
   leftColumn: {
     flex: 1,
-    gap:15,
+    gap: 15,
     justifyContent: "center",
   },
   rightColumn: {
     alignItems: "flex-end",
-    gap:15,
+    gap: 15,
     justifyContent: "center",
   },
   city: {
     fontSize: 26,
     fontWeight: "bold",
-    color: Color.white_homologous,
+    color: "#FFFFFF", // Màu trắng để nổi bật trên ảnh nền
   },
   description: {
     fontSize: 17,
-    color: Color.white_homologous,
+    color: "#FFFFFF", // Màu trắng
     marginTop: 8,
   },
   temperature: {
     fontSize: 30,
     fontWeight: "bold",
-    color: Color.white_homologous,
+    color: "#FFFFFF", // Màu trắng
   },
   range: {
     fontSize: 16,
-    color: Color.white_homologous,
+    color: "#FFFFFF", // Màu trắng
     marginTop: 8,
   },
 });

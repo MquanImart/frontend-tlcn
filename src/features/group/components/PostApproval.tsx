@@ -45,7 +45,7 @@ const PostApproval: React.FC<PostProps> = ({ article, onAccept, onReject }) => {
               key={item._id}
               source={{ uri: item.url }}
               style={styles.postImage}
-              resizeMode="contain" 
+              resizeMode="contain"
             />
           )}
         />
@@ -60,7 +60,7 @@ const PostApproval: React.FC<PostProps> = ({ article, onAccept, onReject }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background, borderColor: Color.border }]}>
       {/* Header */}
       <View style={styles.header}>
         <Image
@@ -68,13 +68,13 @@ const PostApproval: React.FC<PostProps> = ({ article, onAccept, onReject }) => {
           style={styles.avatar}
         />
         <View style={styles.headerInfo}>
-          <Text style={styles.username}>{article.createdBy.displayName}</Text>
-          <Text style={styles.handle}>@{article.createdBy._id}</Text>
+          <Text style={[styles.username, { color: Color.textPrimary }]}>{article.createdBy.displayName}</Text>
+          <Text style={[styles.handle, { color: Color.textSecondary }]}>@{article.createdBy._id}</Text>
         </View>
       </View>
 
       {/* Content */}
-      <Text style={styles.contentText}>{article.content}</Text>
+      <Text style={[styles.contentText, { color: Color.textPrimary }]}>{article.content}</Text>
 
       {/* Images */}
       {renderImage(article.listPhoto)}
@@ -82,16 +82,16 @@ const PostApproval: React.FC<PostProps> = ({ article, onAccept, onReject }) => {
       {/* Actions */}
       <View style={styles.actions}>
         <TouchableOpacity
-          style={[styles.button, styles.acceptButton]}
+          style={[styles.button, styles.acceptButton, { backgroundColor: Color.mainColor2 }]}
           onPress={onAccept}
         >
-          <Text style={styles.buttonText}>Duyệt</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Duyệt</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.rejectButton]}
+          style={[styles.button, styles.rejectButton, { backgroundColor: Color.error }]}
           onPress={onReject}
         >
-          <Text style={styles.buttonText}>Từ chối</Text>
+          <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Từ chối</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -102,7 +102,6 @@ export default PostApproval;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Color.white_homologous,
     borderRadius: 15,
     padding: 15,
     marginVertical: 10,
@@ -112,7 +111,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
   },
   header: {
     flexDirection: "row",
@@ -131,28 +129,25 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
   },
   handle: {
     fontSize: 14,
-    color: Color.textColor3,
     marginTop: 3,
   },
   contentText: {
     fontSize: 16,
-    color: Color.textColor1,
     marginBottom: 10,
     lineHeight: 22,
   },
   imageContainer: {
     position: "relative",
-    width: SCREEN_WIDTH - 30,
+    width: SCREEN_WIDTH - 30, // Adjust this if your container padding changes
     height: 400,
     alignSelf: "center",
-    overflow: "hidden",    
+    overflow: "hidden",
   },
   postImage: {
-    width: 400,
+    width: SCREEN_WIDTH - 30, // Image width should match container width if using paging
     height: 400,
   },
   imageCounterContainer: {
@@ -182,14 +177,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  acceptButton: {
-    backgroundColor: Color.mainColor1,
-  },
-  rejectButton: {
-    backgroundColor: "#FF3B30", 
-  },
+  acceptButton: {}, // Styles are applied inline
+  rejectButton: {}, // Styles are applied inline
   buttonText: {
-    color: Color.textColor2,
     fontWeight: "bold",
     fontSize: 14,
   },

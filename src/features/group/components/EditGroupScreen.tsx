@@ -35,7 +35,7 @@ const hobbiesClient = restClient.apiClient.service("apis/hobbies");
 const groupsClient = restClient.apiClient.service("apis/groups");
 
 const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) => {
-  
+
   const [groupName, setGroupName] = useState(group?.groupName || "");
   const [groupDescription, setGroupDescription] = useState(group?.introduction || "");
   const [hobbyOpen, setHobbyOpen] = useState(false);
@@ -47,7 +47,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
   const [groupType, setGroupType] = useState<"public" | "private">(group?.type || "public");
   const [typeOpen, setTypeOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  useTheme();
+  useTheme(); // Hook để lấy đối tượng màu sắc động
 
   useEffect(() => {
     const fetchHobbies = async () => {
@@ -162,8 +162,13 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       key: "Tên nhóm",
       component: (
         <TextInput
-          style={styles.input}
+          style={[styles.input, {
+            backgroundColor: Color.backgroundTertiary,
+            color: Color.textPrimary,
+            borderColor: Color.border,
+          }]}
           placeholder="Nhập tên nhóm"
+          placeholderTextColor={Color.textTertiary}
           value={groupName}
           onChangeText={setGroupName}
         />
@@ -173,8 +178,13 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       key: "Giới thiệu nhóm",
       component: (
         <TextInput
-          style={[styles.input, styles.textarea]}
+          style={[styles.input, styles.textarea, {
+            backgroundColor: Color.backgroundTertiary,
+            color: Color.textPrimary,
+            borderColor: Color.border,
+          }]}
           placeholder="Nhập giới thiệu nhóm"
+          placeholderTextColor={Color.textTertiary}
           value={groupDescription}
           onChangeText={setGroupDescription}
           multiline
@@ -191,8 +201,17 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
           setValue={setHobby}
           items={hobbies}
           placeholder={placeholderText}
-          style={styles.dropdown}
-          dropDownContainerStyle={styles.dropdownContainer}
+          style={[styles.dropdown, {
+            backgroundColor: Color.backgroundTertiary,
+            borderColor: Color.border,
+          }]}
+          dropDownContainerStyle={[styles.dropdownContainer, {
+            borderColor: Color.border,
+            backgroundColor: Color.backgroundTertiary,
+          }]}
+          textStyle={{ color: Color.textPrimary }}
+          labelStyle={{ color: Color.textPrimary }}
+          placeholderStyle={{ color: Color.textTertiary }}
           multiple={true}
           min={1}
           listMode="SCROLLVIEW"
@@ -205,23 +224,32 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
         <>
           <View style={styles.ruleInputContainer}>
             <TextInput
-              style={styles.ruleInput}
+              style={[styles.ruleInput, {
+                backgroundColor: Color.backgroundTertiary,
+                color: Color.textPrimary,
+                borderColor: Color.border,
+              }]}
               placeholder="Nhập quy định nhóm"
+              placeholderTextColor={Color.textTertiary}
               value={ruleInput}
               onChangeText={setRuleInput}
             />
-            <TouchableOpacity style={styles.addButton} onPress={handleAddRule}>
-              <Text style={styles.addButtonText}>Thêm</Text>
+            <TouchableOpacity style={[styles.addButton, {
+              backgroundColor: Color.mainColor2,
+            }]} onPress={handleAddRule}>
+              <Text style={[styles.addButtonText, { color: Color.textOnMain2 }]}>Thêm</Text>
             </TouchableOpacity>
           </View>
 
           {rules.length > 0 && (
             <View style={styles.rulesContainer}>
               {rules.map((rule, index) => (
-                <View key={index} style={styles.ruleItem}>
-                  <Text style={styles.ruleText}>{rule}</Text>
+                <View key={index} style={[styles.ruleItem, {
+                  backgroundColor: Color.mainColor2,
+                }]}>
+                  <Text style={[styles.ruleText, { color: Color.textOnMain2 }]}>{rule}</Text>
                   <TouchableOpacity onPress={() => handleDeleteRule(index)}>
-                    <Ionicons name="close-circle" size={20} color={Color.white_homologous} />
+                    <Ionicons name="close-circle" size={20} color={Color.textOnMain2} />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -242,8 +270,17 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
             { label: "Công khai", value: "public" },
             { label: "Riêng tư", value: "private" },
           ]}
-          style={styles.dropdown}
-          dropDownContainerStyle={styles.dropdownContainer}
+          style={[styles.dropdown, {
+            backgroundColor: Color.backgroundTertiary,
+            borderColor: Color.border,
+          }]}
+          dropDownContainerStyle={[styles.dropdownContainer, {
+            borderColor: Color.border,
+            backgroundColor: Color.backgroundTertiary,
+          }]}
+          textStyle={{ color: Color.textPrimary }}
+          labelStyle={{ color: Color.textPrimary }}
+          placeholderStyle={{ color: Color.textTertiary }}
         />
       ),
     },
@@ -251,14 +288,16 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       key: "Ảnh đại diện",
       component: (
         <View>
-          <TouchableOpacity style={styles.filePicker} onPress={handlePickAvatar}>
-            <Text style={styles.filePickerText}>
+          <TouchableOpacity style={[styles.filePicker, {
+            backgroundColor: Color.backgroundTertiary,
+          }]} onPress={handlePickAvatar}>
+            <Text style={[styles.filePickerText, { color: Color.textPrimary }]}>
               {avatar ? "Thay đổi ảnh đại diện" : "Chọn ảnh"}
             </Text>
             {avatar && (
               <Image
                 source={{ uri: avatar }}
-                style={styles.avatarPreview}
+                style={[styles.avatarPreview, { borderColor: Color.border }]}
                 onError={() => {
                   setAvatar(null);
                   Alert.alert("Lỗi", "Không thể tải ảnh đại diện");
@@ -267,25 +306,29 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
             )}
           </TouchableOpacity>
           {avatar && (
-            <TouchableOpacity style={styles.removeButton} onPress={handleRemoveAvatar}>
-              <Text style={styles.removeButtonText}>Xóa ảnh đại diện</Text>
+            <TouchableOpacity style={[styles.removeButton, {
+              backgroundColor: Color.error,
+            }]} onPress={handleRemoveAvatar}>
+              <Text style={[styles.removeButtonText, { color: Color.textOnMain1 }]}>Xóa ảnh đại diện</Text>
             </TouchableOpacity>
           )}
         </View>
       ),
     },
     {
-      key: "",
+      key: "", // Empty key for the save button section
       component: (
         <TouchableOpacity
-          style={[styles.button, styles.saveButton]}
+          style={[styles.button, styles.saveButton, {
+            backgroundColor: Color.mainColor2,
+          }]}
           onPress={handleSaveGroup}
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={Color.textOnMain2} />
           ) : (
-            <Text style={styles.buttonText}>Lưu thay đổi</Text>
+            <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Lưu thay đổi</Text>
           )}
         </TouchableOpacity>
       ),
@@ -295,13 +338,13 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: Color.background }]}
     >
       <FlatList
         data={sections}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 15 }}>
-            <Text style={styles.label}>{item.key}</Text>
+            <Text style={[styles.label, { color: Color.textPrimary }]}>{item.key}</Text>
             {item.component}
           </View>
         )}
@@ -315,25 +358,20 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
     paddingHorizontal: 20,
     paddingTop: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: "600",
-    color: Color.textColor1,
     marginBottom: 5,
     marginTop: 10,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
     borderRadius: 8,
     padding: 10,
-    color: Color.textColor1,
-    backgroundColor: Color.white_homologous,
   },
   textarea: {
     height: 100,
@@ -341,14 +379,11 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: Color.borderColor1,
     borderRadius: 8,
-    backgroundColor: Color.white_homologous,
     marginBottom: 15,
   },
   dropdownContainer: {
     borderWidth: 1,
-    borderColor: Color.borderColor1,
   },
   ruleInputContainer: {
     flexDirection: "row",
@@ -358,52 +393,43 @@ const styles = StyleSheet.create({
   ruleInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
     borderRadius: 8,
     padding: 10,
-    color: Color.textColor1,
-    backgroundColor: Color.white_homologous,
     marginRight: 10,
   },
   addButton: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
-    backgroundColor: Color.mainColor1,
     alignItems: "center",
     justifyContent: "center",
   },
   addButtonText: {
-    color: "#fff",
     fontWeight: "600",
   },
   filePicker: {
     padding: 15,
     borderRadius: 10,
-    backgroundColor: Color.white_homologous,
     alignItems: "center",
     marginBottom: 10,
   },
   filePickerText: {
-    color: Color.textColor1,
+    // color is set inline
   },
   avatarPreview: {
     width: 100,
     height: 100,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: "#ccc",
     marginTop: 10,
   },
   removeButton: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: Color.backGround || "#ff4d4d",
     alignItems: "center",
     marginBottom: 10,
   },
   removeButtonText: {
-    color: "#fff",
     fontWeight: "600",
   },
   button: {
@@ -413,11 +439,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveButton: {
-    backgroundColor: Color.mainColor1,
-    marginRight: 10,
+    marginRight: 10, // Consider if this margin is needed when flex: 1
   },
   buttonText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
@@ -428,13 +452,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: Color.mainColor1,
     padding: 10,
     borderRadius: 8,
     marginBottom: 5,
   },
   ruleText: {
-    color: Color.white_homologous,
     fontSize: 14,
     flex: 1,
   },

@@ -12,7 +12,7 @@ interface InviteAdminModalProps {
   onAccept: () => void;
   onReject: () => void;
   groupName: string;
-  inviterName: string;
+  inviterName: string; // This prop is not used in the current render logic.
   inviteDate: string;
   inviterAvatar: string;
 }
@@ -23,20 +23,21 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
   onAccept,
   onReject,
   groupName,
-  inviterName,
+  // inviterName, // Removed as it's unused
   inviteDate,
   inviterAvatar,
 }) => {
-  useTheme();
+  useTheme(); // Ensure this hook is called to get the dynamic colors
+
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.container}>
+      <View style={[styles.overlay, { backgroundColor: Color.backgroundSecondary + 'cc' }]}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
           {/* Tiêu đề */}
           <View style={styles.header}>
-            <Text style={styles.title}>Lời mời làm quản trị viên</Text>
+            <Text style={[styles.title, { color: Color.textPrimary }]}>Lời mời làm quản trị viên</Text>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textPrimary} />
             </TouchableOpacity>
           </View>
 
@@ -44,10 +45,10 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
           <View style={styles.content}>
             <Image source={{ uri: inviterAvatar }} style={styles.avatar} />
             <View style={styles.textContainer}>
-              <Text style={styles.inviteText}>
-                Nhóm <Text style={styles.highlight}>{groupName}</Text> đã mời bạn làm quản trị viên
+              <Text style={[styles.inviteText, { color: Color.textPrimary }]}>
+                Nhóm <Text style={[styles.highlight, { color: Color.mainColor2 }]}>{groupName}</Text> đã mời bạn làm quản trị viên
               </Text>
-              <Text style={styles.inviteDate}>Thời gian: {inviteDate}</Text>
+              <Text style={[styles.inviteDate, { color: Color.textSecondary }]}>Thời gian: {inviteDate}</Text>
             </View>
           </View>
 
@@ -59,13 +60,13 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
               style={{
                 width: "48%",
                 height: 45,
-                backColor: "white",
-                textColor: Color.mainColor1,
+                backColor: Color.background,
+                textColor: Color.textOnMain2,
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,
                 borderWidth: 1,
-                borderColor: Color.mainColor1,
+                borderColor: Color.mainColor2,
               }}
             />
             <CButton
@@ -74,8 +75,8 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
               style={{
                 width: "48%",
                 height: 45,
-                backColor: Color.mainColor1,
-                textColor: "white",
+                backColor: Color.mainColor2,
+                textColor: Color.textOnMain2,
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,
@@ -93,13 +94,11 @@ export default InviteAdminModal;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
   container: {
     width: "90%",
-    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
     shadowColor: "#000",
@@ -117,7 +116,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor1,
   },
   content: {
     flexDirection: "row",
@@ -135,15 +133,12 @@ const styles = StyleSheet.create({
   },
   inviteText: {
     fontSize: 16,
-    color: Color.textColor1,
   },
   highlight: {
     fontWeight: "bold",
-    color: Color.mainColor1,
   },
   inviteDate: {
     fontSize: 14,
-    color: Color.textColor3,
     marginTop: 5,
   },
   buttonContainer: {

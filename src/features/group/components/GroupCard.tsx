@@ -13,7 +13,7 @@ interface GroupCardProps {
 }
 
 const GroupCard: React.FC<GroupCardProps> = ({ group, currentUserId, onJoinGroup, onViewGroup }) => {
-  useTheme();
+  useTheme(); // Kích hoạt theme context để lấy màu động
   const isGroupCreator = group.idCreater === currentUserId;
   const currentUserMember = group.members?.find((member) => member.idUser._id === currentUserId);
 
@@ -21,73 +21,68 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, currentUserId, onJoinGroup
   const isMemberPending = currentUserMember?.state === 'pending';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.backgroundSecondary }]}>
       <Image source={{ uri: group.avt?.url || "" }} style={styles.avatar} />
       <View style={styles.content}>
-        <Text style={styles.groupName}>{group.groupName}</Text>
-        <Text style={styles.groupType}>
+        <Text style={[styles.groupName, { color: Color.textPrimary }]}>{group.groupName}</Text>
+        <Text style={[styles.groupType, { color: Color.textSecondary }]}>
           {group.type === "public" ? "Nhóm công khai" : "Nhóm riêng tư"}
         </Text>
-        {group.introduction && <Text style={styles.introduction}>{group.introduction}</Text>}
+        {group.introduction && <Text style={[styles.introduction, { color: Color.textPrimary }]}>{group.introduction}</Text>}
 
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, { gap: 10 }]}>
           {isGroupCreator ? (
-            // Người tạo nhóm
             <TouchableOpacity
-              style={[styles.button, styles.viewButton]}
+              style={[styles.button, { backgroundColor: Color.mainColor2 }]}
               onPress={() => onViewGroup(group._id)}
             >
-              <Text style={styles.buttonText}>Xem nhóm</Text>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
             </TouchableOpacity>
           ) : isMemberAccepted ? (
-            // Người đã tham gia nhóm và được chấp nhận
             <TouchableOpacity
-              style={[styles.button, styles.viewButton]}
+              style={[styles.button, { backgroundColor: Color.mainColor2 }]}
               onPress={() => onViewGroup(group._id)}
             >
-              <Text style={styles.buttonText}>Xem nhóm</Text>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
             </TouchableOpacity>
           ) : isMemberPending ? (
-            // Người đã gửi yêu cầu tham gia nhóm nhưng chưa được chấp nhận
             <>
               <TouchableOpacity
-                style={[styles.button, styles.pendingButton]}
-                onPress={() => onJoinGroup(group._id)}
+                style={[styles.button, { backgroundColor: Color.backgroundTertiary }]}
+                disabled={true}
               >
-                <Text style={styles.buttonText}>Đã gửi yêu cầu</Text>
+                <Text style={[styles.buttonText, { color: Color.textSecondary }]}>Đã gửi yêu cầu</Text>
               </TouchableOpacity>
               {group.type === "public" && (
                 <TouchableOpacity
-                  style={[styles.button, styles.viewButton]}
+                  style={[styles.button, { backgroundColor: Color.mainColor2 }]}
                   onPress={() => onViewGroup(group._id)}
                 >
-                  <Text style={styles.buttonText}>Xem nhóm</Text>
+                  <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
                 </TouchableOpacity>
               )}
             </>
           ) : group.type === "public" ? (
-            // Nhóm công khai (chưa tham gia)
             <>
               <TouchableOpacity
-                style={[styles.button, styles.joinButton]}
+                style={[styles.button, { backgroundColor: Color.mainColor2 }]}
                 onPress={() => onJoinGroup(group._id)}
               >
-                <Text style={styles.buttonText}>Tham gia nhóm</Text>
+                <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Tham gia nhóm</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.viewButton]}
+                style={[styles.button, { backgroundColor: Color.mainColor2 }]}
                 onPress={() => onViewGroup(group._id)}
               >
-                <Text style={styles.buttonText}>Xem nhóm</Text>
+                <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xem nhóm</Text>
               </TouchableOpacity>
             </>
           ) : (
-            // Nhóm riêng tư (chưa tham gia)
             <TouchableOpacity
-              style={[styles.button, styles.joinButton]}
+              style={[styles.button, { backgroundColor: Color.mainColor2 }]}
               onPress={() => onJoinGroup(group._id)}
             >
-              <Text style={styles.buttonText}>Tham gia nhóm</Text>
+              <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Tham gia nhóm</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -96,14 +91,11 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, currentUserId, onJoinGroup
   );
 };
 
-
-
 export default GroupCard;
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: Color.backGround,
     borderRadius: 15,
     padding: 10,
     marginBottom: 10,
@@ -125,22 +117,18 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Color.textColor1,
     marginBottom: 5,
   },
   groupType: {
     fontSize: 12,
-    color: Color.textColor3,
     marginBottom: 5,
   },
   introduction: {
     fontSize: 12,
-    color: Color.textColor1,
     marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
   },
   button: {
     flex: 1,
@@ -150,18 +138,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 5,
   },
-  joinButton: {
-    backgroundColor: Color.mainColor1,
-  },
-  viewButton: {
-    backgroundColor: Color.mainColor1,
-  },
-  pendingButton: {
-    backgroundColor: Color.mainColor1,  
-  },
   buttonText: {
     fontSize: 12,
-    color: "#fff",
     fontWeight: "600",
   },
 });

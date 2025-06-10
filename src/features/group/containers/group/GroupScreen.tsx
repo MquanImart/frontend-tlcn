@@ -17,7 +17,7 @@ import CTabbar from "@/src/shared/components/tabbar/CTabbar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GroupScreen = () => {
-  useTheme();
+  useTheme(); // Kích hoạt theme context
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
@@ -31,7 +31,7 @@ const GroupScreen = () => {
     } catch (error) {
       console.error("Lỗi khi lấy userId:", error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -54,16 +54,16 @@ const GroupScreen = () => {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <View style={styles.loading}>
-          <Text>Đang tải...</Text>
+        <View style={[styles.loading, { backgroundColor: Color.background }]}>
+          <Text style={{ color: Color.textPrimary }}>Đang tải...</Text>
         </View>
       );
     }
 
     if (!userId) {
       return (
-        <View style={styles.loading}>
-          <Text>Không tìm thấy userId</Text>
+        <View style={[styles.loading, { backgroundColor: Color.background }]}>
+          <Text style={{ color: Color.textPrimary }}>Không tìm thấy userId</Text>
         </View>
       );
     }
@@ -72,7 +72,7 @@ const GroupScreen = () => {
       <>
         {selectedTab === "Bảng tin" && <FeedTab userId={userId} handleScroll={handleScroll} />}
         {selectedTab === "Khám phá" && <ExploreTab userId={userId} handleScroll={handleScroll} />}
-        {selectedTab === "Nhóm đã tham gia" && (  <JoinedGroupsTab userId={userId} handleScroll={handleScroll} /> )}
+        {selectedTab === "Nhóm đã tham gia" && (<JoinedGroupsTab userId={userId} handleScroll={handleScroll} />)}
         {selectedTab === "Nhóm của tôi" && <MyGroupsTab userId={userId} handleScroll={handleScroll} />}
         {selectedTab === "Tạo nhóm" && <CreateGroupTab userId={userId} handleScroll={handleScroll} />}
       </>
@@ -80,17 +80,17 @@ const GroupScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       <CHeader label="Nhóm" showBackButton={false} />
       <TabBarCustom
         tabs={tabs}
         selectedTab={selectedTab}
         onSelectTab={(tab) => setSelectedTab(tab)}
-        style={styles.tabBarStyle}
-        activeTabStyle={styles.activeTabStyle}
-        inactiveTabStyle={styles.inactiveTabStyle}
-        activeTextStyle={styles.activeTextStyle}
-        inactiveTextStyle={styles.inactiveTextStyle}
+        style={[styles.tabBarStyle, { backgroundColor: Color.backgroundSecondary }]}
+        activeTabStyle={{ backgroundColor: Color.mainColor2 }}
+        inactiveTabStyle={{ backgroundColor: "transparent" }}
+        activeTextStyle={{ color: Color.textOnMain2, fontWeight: "bold" }}
+        inactiveTextStyle={{ color: Color.textSecondary }}
       />
       <View style={styles.content}>{renderContent()}</View>
       <CTabbar tabbarPosition={tabbarPosition} />
@@ -103,7 +103,6 @@ export default GroupScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.backGround,
   },
   tabBarStyle: {
     marginHorizontal: 15,
@@ -111,17 +110,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   activeTabStyle: {
-    backgroundColor: Color.mainColor1,
+    // backgroundColor: Color.mainColor2, // Đã chuyển sang inline style
   },
   inactiveTabStyle: {
     backgroundColor: "transparent",
   },
   activeTextStyle: {
-    color: "#fff",
+    // color: "#fff", // Đã chuyển sang inline style
     fontWeight: "bold",
   },
   inactiveTextStyle: {
-    color: Color.textColor3,
+    // color: Color.textColor3, // Đã chuyển sang inline style
   },
   content: {
     flex: 1,
@@ -130,5 +129,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    // backgroundColor được áp dụng inline
   },
 });

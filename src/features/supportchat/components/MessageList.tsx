@@ -1,6 +1,7 @@
 import { FlatList, StyleSheet } from "react-native";
 import { Message } from "../interface/Message";
 import MessageBubble from "./MessageBubble";
+import React from "react"; // Explicitly import React if not already
 
 interface MessageListProps {
   messages: Message[];
@@ -11,7 +12,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, flatListRef }) => (
   <FlatList
     ref={flatListRef}
     data={messages}
-    renderItem={({ item }) => <MessageBubble message={item} />}
+    renderItem={({ item }) => <MessageBubble message={item} />} // Using MessageBubble here
     keyExtractor={(item) => item.id}
     style={styles.flatList}
     contentContainerStyle={styles.messageList}

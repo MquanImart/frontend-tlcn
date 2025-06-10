@@ -145,7 +145,7 @@ const Register = () => {
                             style={{
                                 width: "85%",
                                 height: 50,
-                                backColor: Color.mainColor1,
+                                backColor: Color.mainColor2,
                                 textColor: Color.white_homologous,
                                 fontSize: 18,
                                 radius: 25,

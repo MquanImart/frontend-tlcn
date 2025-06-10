@@ -1,8 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
-import { FlatList } from "react-native-gesture-handler";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
-import { useState } from "react";
 
 
 export interface TabProps{
@@ -21,8 +19,24 @@ interface TabbarTopProps{
 const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
     useTheme()
     return (
-        <TouchableOpacity style={isCurrentTab?styles.currenttab:styles.tab} onPress={onPressTab}>
-            <Text style={isCurrentTab?styles.currenttext:styles.text}>{label}</Text>
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            // Đảm bảo tab có cùng màu nền với container chính
+            { backgroundColor: Color.backgroundSecondary }, // Sử dụng Color.backgroundSecondary làm nền mặc định cho tab
+            isCurrentTab ? styles.currenttab : null
+          ]}
+          onPress={onPressTab}
+        >
+            <Text
+              style={[
+                styles.text,
+                isCurrentTab ? styles.currenttext : null,
+                { color: isCurrentTab ? Color.mainColor2 : Color.textPrimary } // Đặt màu chữ cho tab không chọn là Color.textPrimary
+              ]}
+            >
+              {label}
+            </Text>
         </TouchableOpacity>
     )
 }
@@ -30,20 +44,12 @@ const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
 const TabbarTop = ({tabs, startTab, setTab} : TabbarTopProps) => {
     useTheme()
     return (
-        <View style={styles.container}>
-            {/* <FlatList style={styles.listTabs} data={tabs} renderItem={({item}) => 
-              <Tab label={item.label} 
-                onPressTab={() => {setTab(item.label)}} 
-                isCurrentTab={startTab===item.label?true:false}
-              />}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            /> */}
+        // Đảm bảo container của tabbar cũng dùng chung màu nền
+        <View style={[styles.container, { backgroundColor: Color.backgroundSecondary }]}>
             <View  style={styles.listTabs}>
-            {tabs.map((item, index) => 
-              <Tab key={index} label={item.label} 
-                onPressTab={() => {setTab(item.label)}} 
+            {tabs.map((item, index) =>
+              <Tab key={index} label={item.label}
+                onPressTab={() => {setTab(item.label)}}
                 isCurrentTab={startTab===item.label?true:false}
               />
             )}
@@ -55,35 +61,33 @@ const TabbarTop = ({tabs, startTab, setTab} : TabbarTopProps) => {
 const styles = StyleSheet.create({
     container: {
       width: '100%',
-      height: 60
+      height: 60,
     },
     listTabs: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-around',
       marginVertical: 10,
+      paddingHorizontal: 10,
     },
     tab: {
-      width: "30%",
       paddingVertical: 10,
+      paddingHorizontal: 8,
       marginHorizontal: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     currenttab: {
-      width: "30%",
-      paddingVertical: 10,
-      marginHorizontal: 5,
-      borderBottomColor: Color.borderColorwb,
-      borderBottomWidth: 1,
+      borderBottomColor: Color.mainColor2,
+      borderBottomWidth: 2,
     },
     text: {
-      color: Color.textColor1,
       fontSize: 16,
-      fontWeight: '300',
+      fontWeight: '400',
       textAlign: 'center',
     },
     currenttext: {
-        color: Color.textColor1,
         fontSize: 16,
-        fontWeight: '500',
+        fontWeight: '600',
         textAlign: 'center',
       },
   });

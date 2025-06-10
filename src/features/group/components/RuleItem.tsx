@@ -13,19 +13,19 @@ interface RuleItemProps {
 const RuleItem: React.FC<RuleItemProps> = ({ index, text, onDelete }) => {
   useTheme();
   return (
-    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.background, borderColor: Color.border }]}>
       <View style={styles.ruleInfo}>
-        <View style={[styles.indexContainer, { backgroundColor: Color.backGround1 }]}>
-          <Text style={[styles.index, { color: Color.textColor1 }]}>{index}</Text>
+        <View style={[styles.indexContainer, { backgroundColor: Color.backgroundSecondary }]}>
+          <Text style={[styles.index, { color: Color.textPrimary }]}>{index}</Text>
         </View>
-        <Text style={[styles.text, { color: Color.textColor1 }]} numberOfLines={2} ellipsizeMode="tail">
+        <Text style={[styles.text, { color: Color.textPrimary }]} numberOfLines={2} ellipsizeMode="tail">
           {text}
         </Text>
       </View>
 
       {onDelete && (
-        <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-          <Icon name="remove" size={24} color="#FFF" />
+        <TouchableOpacity style={[styles.deleteButton, { backgroundColor: Color.error, shadowColor: Color.error }]} onPress={onDelete}>
+          <Icon name="remove" size={24} color={Color.textOnMain2} />
         </TouchableOpacity>
       )}
     </View>
@@ -43,15 +43,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 25,
     marginTop: 15,
-    backgroundColor: Color.backGround,
     borderWidth: 1,
-    borderColor: Color.borderColor1,
   },
   ruleInfo: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1, 
-    flexWrap: "wrap", 
+    flex: 1,
+    flexWrap: "wrap",
   },
   indexContainer: {
     width: 40,
@@ -60,7 +58,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
-    backgroundColor: Color.borderColor1,
   },
   index: {
     fontSize: 16,
@@ -70,7 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: "bold",
-    lineHeight: 22, 
+    lineHeight: 22,
   },
   deleteButton: {
     width: 40,
@@ -79,13 +76,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 15,
-    backgroundColor: "#FF0000", 
-
-    // ✅ Bóng đổ tạo hiệu ứng nổi
-    shadowColor: "#FF0000",
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
-    elevation: 4, 
+    elevation: 4,
   },
 });

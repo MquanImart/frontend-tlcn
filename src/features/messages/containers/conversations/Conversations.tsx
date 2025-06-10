@@ -105,7 +105,7 @@ const Conversations = () => {
                     onSubmit={handleOpenImagePicker} 
                     style={{
                     width: 40, height: 40,
-                    backColor: Color.mainColor1,
+                    backColor: Color.mainColor2,
                     radius: 50,
                 }}/>
                 <InputText text={text} setText={setText}/>
@@ -113,7 +113,7 @@ const Conversations = () => {
                     onSubmit={() => {createMessage('text', null)}} 
                     style={{
                     width: 40, height: 40,
-                    backColor: Color.mainColor1,
+                    backColor: Color.mainColor2,
                     radius: 50,
                 }}/>
             </View>

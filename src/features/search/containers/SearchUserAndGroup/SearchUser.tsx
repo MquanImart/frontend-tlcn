@@ -150,7 +150,7 @@ const SearchUser: React.FC<SearchUserProps> = ({ textSearch, userId, navigation 
                     style={{
                       width: "100%",
                       height: 40,
-                      backColor: isLoading ? Color.textColor3 : Color.mainColor1, // Màu xám khi disabled
+                      backColor: isLoading ? Color.textColor3 : Color.mainColor2, // Màu xám khi disabled
                       textColor: Color.white_homologous,
                       fontSize: 14,
                       fontWeight: "bold",

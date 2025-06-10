@@ -117,7 +117,7 @@ const HeaderMap = ({startTab, rightPress, getDetails, closeDetails}: HeaderMapPr
                             style={{
                                 width: 110,
                                 height: 35,
-                                backColor: currTab === item.label ? Color.mainColor1 : undefined,
+                                backColor: currTab === item.label ? Color.mainColor2 : undefined,
                                 textColor: currTab === item.label ? Color.textColor2 : undefined,
                                 fontSize: 13,
                                 radius: 50,

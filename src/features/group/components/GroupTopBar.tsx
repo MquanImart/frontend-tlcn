@@ -86,15 +86,15 @@ const GroupTopBar: React.FC<GroupTopBarProps> = ({
   };
 
   return (
-    <View style={[styles.topBar, { paddingTop: insets.top }]}>
+    <View style={[styles.topBar, { paddingTop: insets.top, backgroundColor: Color.mainColor2 }]}>
       <View style={styles.groupInfo}>
         <Image source={{ uri: groupAvatar || "" }} style={styles.avatar} />
-        <Text style={styles.groupName}>{groupName}</Text>
+        <Text style={[styles.groupName, { color: Color.textOnMain2 }]}>{groupName}</Text>
       </View>
-      {role !== "Guest" && ( // ❌ Guest không có menu
+      {role !== "Guest" && (
         <View style={styles.actionButtons}>
           <CIconButton
-            icon={<Icon name="more-vert" size={24} color={Color.textColor2} />}
+            icon={<Icon name="more-vert" size={24} color={Color.textOnMain2} />}
             onSubmit={handleMoreOptions}
             style={{
               width: 60,
@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: Color.mainColor1,
   },
   groupInfo: {
     flexDirection: "row",
@@ -132,7 +131,6 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Color.textColor2,
   },
   actionButtons: {
     flexDirection: "row",

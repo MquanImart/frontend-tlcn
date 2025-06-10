@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import CButton from "@/src/shared/components/button/CButton"; // Import CButton
+import CButton from "@/src/shared/components/button/CButton";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 
@@ -42,14 +42,14 @@ const ReportModal: React.FC<ReportModalProps> = ({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={[styles.dialog, { backgroundColor: Color.backGround }]}>
+        <View style={[styles.dialog, { backgroundColor: Color.background }]}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: Color.textColor1 }]}>
+            <Text style={[styles.title, { color: Color.textPrimary }]}>
               Báo cáo bài viết
             </Text>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -62,12 +62,12 @@ const ReportModal: React.FC<ReportModalProps> = ({
                 {
                   backgroundColor:
                     selectedReason === reason
-                      ? Color.mainColor1
-                      : Color.backGround,
+                      ? Color.mainColor2
+                      : Color.background,
                   borderColor:
                     selectedReason === reason
-                      ? Color.mainColor1
-                      : Color.borderColor1,
+                      ? Color.mainColor2
+                      : Color.border,
                 },
               ]}
               onPress={() => setSelectedReason(reason)}
@@ -78,8 +78,8 @@ const ReportModal: React.FC<ReportModalProps> = ({
                   {
                     color:
                       selectedReason === reason
-                        ? Color.textColor2
-                        : Color.textColor1,
+                        ? Color.textOnMain2
+                        : Color.textPrimary,
                   },
                 ]}
               >
@@ -95,8 +95,8 @@ const ReportModal: React.FC<ReportModalProps> = ({
             style={{
               width: "100%",
               height: 50,
-              backColor: Color.mainColor1,
-              textColor: Color.textColor2,
+              backColor: Color.mainColor2,
+              textColor: Color.textOnMain2,
               fontSize: 16,
               fontWeight: "bold",
               radius: 8,

@@ -61,7 +61,7 @@ const SettingsMessages = () => {
                 <View style={styles.settings}>
                     <Text style={styles.textSetting}>Cho phép nhận tin nhắn từ người lạ</Text>
                     {setting !== null ? <Switch
-                      trackColor={{ false: '#000', true: Color.mainColor1 }}
+                      trackColor={{ false: '#000', true: Color.mainColor2 }}
                       thumbColor={Color.white_homologous}
                       ios_backgroundColor={Color.backGround1}
                       onValueChange={changeallowMessagesFromStrangers}

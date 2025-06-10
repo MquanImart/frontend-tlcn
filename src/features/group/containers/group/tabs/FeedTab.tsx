@@ -2,7 +2,7 @@ import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentI
 import Post from "@/src/features/newfeeds/components/post/Post";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color } from '@/src/styles/DynamicColors'; // Đảm bảo import đúng
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -23,7 +23,7 @@ interface FeedTabProps {
 }
 
 const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
-  useTheme();
+  useTheme(); // Kích hoạt theme context
   const { articleGroups, setArticleGroups, loading, error, loadMoreArticles, isLoadingMore } =
     useFeed(userId);
   const {
@@ -44,22 +44,22 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>Đang tải...</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.textSecondary }]}>Đang tải...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.emptyText}>{error}</Text>
+      <View style={[styles.centered, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.error }]}>{error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: Color.backGround }]}>
+    <View style={[styles.container, { backgroundColor: Color.background }]}>
       {/* Danh sách bài viết */}
       <FlatList
         data={articleGroups}
@@ -82,7 +82,7 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.footer}>
-              <ActivityIndicator size="large" color={Color.mainColor1} />
+              <ActivityIndicator size="large" color={Color.mainColor2} />
             </View>
           ) : null
         }
@@ -95,13 +95,13 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
         swipeDirection="down"
         onSwipeComplete={closeComments}
       >
-        <View style={[styles.commentContainer, { backgroundColor: Color.backGround }]}>
-          <View style={styles.commentHeader}>
-            <Text style={[styles.commentTitle, { color: Color.textColor1 }]}>
+        <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
+          <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+            <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
               {calculateTotalComments(currentArticle?.comments || [])} bình luận
             </Text>
             <TouchableOpacity onPress={closeComments}>
-              <Ionicons name="close" size={24} color={Color.textColor1} />
+              <Ionicons name="close" size={24} color={Color.textPrimary} />
             </TouchableOpacity>
           </View>
 
@@ -118,23 +118,23 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
             )}
           />
 
-          <View style={styles.commentInputContainer}>
+          <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
             <TextInput
               style={[
                 styles.commentInput,
                 {
-                  borderColor: Color.borderColor1,
-                  color: Color.textColor1,
-                  backgroundColor: Color.backGround,
+                  borderColor: Color.border,
+                  color: Color.textPrimary,
+                  backgroundColor: Color.backgroundTertiary,
                 },
               ]}
               placeholder="Thêm bình luận..."
-              placeholderTextColor={Color.textColor3}
+              placeholderTextColor={Color.textTertiary}
               value={newReply}
               onChangeText={setNewReply}
             />
             <TouchableOpacity onPress={handleAddComment}>
-              <Ionicons name="send" size={24} color={Color.mainColor1} />
+              <Ionicons name="send" size={24} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
         </View>
@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Color.textColor3,
     fontStyle: "italic",
   },
   modal: {
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.borderColor1,
+    // borderBottomColor: Color.borderColor1, // Đã chuyển sang inline style
   },
   commentTitle: {
     fontSize: 18,
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: Color.borderColor1,
+    // borderTopColor: Color.borderColor1, // Đã chuyển sang inline style
     paddingVertical: 10,
   },
   commentInput: {
