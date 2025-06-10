@@ -12,7 +12,13 @@ const RecentPage = ({recent} : RecentPagePops) => {
     useTheme();
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Đã xem gần đây</Text>
+            <Text style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: Color.mainColor2, // Màu chữ động
+                marginTop: 20,
+                paddingHorizontal: 20,
+            }}>Đã xem gần đây</Text>
             {recent ? (<FlatList
               style={styles.listItem}
               data={recent}
@@ -24,7 +30,7 @@ const RecentPage = ({recent} : RecentPagePops) => {
               showsHorizontalScrollIndicator={false}
             />
             ) : (
-            <View style={{height: 110, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+            <View style={{height: 110, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
             )}
         </View>
     )
@@ -33,13 +39,6 @@ const RecentPage = ({recent} : RecentPagePops) => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: Color.mainColor2,
-        marginTop: 20,
-        paddingHorizontal: 20,
     },
     listItem: {
         alignSelf: 'center',

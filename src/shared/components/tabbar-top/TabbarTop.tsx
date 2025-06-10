@@ -22,6 +22,8 @@ const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
         <TouchableOpacity
           style={[
             styles.tab,
+            // Đảm bảo tab có cùng màu nền với container chính
+            { backgroundColor: Color.backgroundSecondary }, // Sử dụng Color.backgroundSecondary làm nền mặc định cho tab
             isCurrentTab ? styles.currenttab : null
           ]}
           onPress={onPressTab}
@@ -30,7 +32,7 @@ const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
               style={[
                 styles.text,
                 isCurrentTab ? styles.currenttext : null,
-                { color: isCurrentTab ? Color.mainColor2 : Color.textSecondary }
+                { color: isCurrentTab ? Color.mainColor2 : Color.textPrimary } // Đặt màu chữ cho tab không chọn là Color.textPrimary
               ]}
             >
               {label}
@@ -42,7 +44,8 @@ const Tab = ({label, onPressTab, isCurrentTab} : TabProps) => {
 const TabbarTop = ({tabs, startTab, setTab} : TabbarTopProps) => {
     useTheme()
     return (
-        <View style={[styles.container, { backgroundColor: Color.background }]}>
+        // Đảm bảo container của tabbar cũng dùng chung màu nền
+        <View style={[styles.container, { backgroundColor: Color.backgroundSecondary }]}>
             <View  style={styles.listTabs}>
             {tabs.map((item, index) =>
               <Tab key={index} label={item.label}

@@ -21,8 +21,8 @@ const Discovery = () => {
     useTheme();
     const tabbarNavigation = useNavigation<TabbarNavigationProp>();
     const { tabbarPosition,handleScroll} = useScrollTabbar();
-    const { 
-        navigation, animationHeight, toggleExpand, 
+    const {
+        navigation, animationHeight, toggleExpand,
         currTab, setCurrTab, expanded,
          filterProvinces,
         search, handleSearch,
@@ -35,33 +35,103 @@ const Discovery = () => {
     }, []);
 
     return (
-        <View style={{flex: 1}}>
-            <View style={styles.container}>
-                <CHeaderIcon label={"Khám phá"} 
+        <View style={{ flex: 1 }}>
+            <View style={{
+              flex: 1,
+              backgroundColor: Color.background // Màu nền động
+            }}>
+                <CHeaderIcon label={"Khám phá"}
                     IconLeft={"chevron-left"} onPressLeft={() => {tabbarNavigation.goBack()}}
                     borderIcon={true}
                 />
                 <RecentPage recent={recentPage}/>
-                <View style={styles.mainContent}>
+                <View style={{
+                  backgroundColor: Color.background, // Màu nền động
+                  shadowColor: Color.shadow, // Màu bóng đổ động
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 5,
+                  elevation: 5,
+                }}>
                     <Animated.View style={[styles.boxOptions, { height: animationHeight }]}>
                         <View style={styles.options}>
-                            <View style={[styles.tabs, styles.shadow]}>
-                                <TouchableOpacity style={currTab === "nb"?styles.currTab:styles.tab} onPress={() => {setCurrTab("nb")}}>
-                                    <Text style={currTab === "nb"?styles.currText:styles.textTab}>Nổi bật</Text>
+                            <View style={[styles.tabs, {
+                              shadowColor: Color.shadow, // Màu bóng đổ động
+                              shadowOffset: {
+                                width: 0,
+                                height: 4,
+                              },
+                              shadowOpacity: 0.3,
+                              shadowRadius: 4.65,
+                              elevation: 8,
+                            }]}>
+                                <TouchableOpacity style={currTab === "nb" ? {
+                                  width: 110,
+                                  padding: 10,
+                                  backgroundColor: Color.mainColor2, // Màu nền cho tab đang chọn
+                                  borderRadius: 50
+                                } : {
+                                  width: 90,
+                                  padding: 10,
+                                  backgroundColor: 'transparent', // Tab không chọn có nền trong suốt
+                                  borderRadius: 50
+                                }} onPress={() => {setCurrTab("nb")}}>
+                                    <Text style={currTab === "nb" ? {
+                                      alignSelf: 'center',
+                                      color: Color.textOnMain2 // Màu chữ trên tab đang chọn
+                                    } : {
+                                      alignSelf: 'center',
+                                      color: 'white' // Đổi thành màu đen cho tab không chọn
+                                    }}>Nổi bật</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={currTab !== "nb"?styles.currTab:styles.tab} onPress={() => {setCurrTab("dd")}}>
-                                    <Text style={currTab !== "nb"?styles.currText:styles.textTab}>Địa điểm</Text>
+                                <TouchableOpacity style={currTab !== "nb" ? {
+                                  width: 110,
+                                  padding: 10,
+                                  backgroundColor: Color.mainColor2, // Màu nền cho tab đang chọn
+                                  borderRadius: 50
+                                } : {
+                                  width: 90,
+                                  padding: 10,
+                                  backgroundColor: 'transparent', // Tab không chọn có nền trong suốt
+                                  borderRadius: 50
+                                }} onPress={() => {setCurrTab("dd")}}>
+                                    <Text style={currTab !== "nb" ? {
+                                      alignSelf: 'center',
+                                      color: Color.textOnMain2 // Màu chữ trên tab đang chọn
+                                    } : {
+                                      alignSelf: 'center',
+                                      color: 'white' // Đổi thành màu đen cho tab không chọn
+                                    }}>Địa điểm</Text>
                                 </TouchableOpacity>
                             </View>
                             <TouchableOpacity style={styles.search} onPress={toggleExpand}>
-                                <Text style={styles.textSearch}>{expanded?"Ẩn tìm kiếm":"Tìm kiếm"}</Text>
+                                <Text style={{
+                                  fontSize: 12,
+                                  color: Color.textSecondary // Màu chữ "Tìm kiếm"
+                                }}>{expanded?"Ẩn tìm kiếm":"Tìm kiếm"}</Text>
                             </TouchableOpacity>
                         </View>
                         {expanded && (
-                        <View style={styles.boxExpand}>
-                            <TextInput style={styles.textInput} 
+                        <View style={{
+                          height: 60,
+                          paddingVertical: 10, paddingHorizontal: 20,
+                          backgroundColor: Color.background, // Nền cho phần mở rộng tìm kiếm
+                          borderEndEndRadius: 10, borderEndStartRadius: 10,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                            <TextInput style={{
+                                width: '70%',
+                                borderWidth: 0.5,
+                                padding: 10,
+                                borderRadius: 20,
+                                borderColor: Color.border, // Màu viền input
+                                color: Color.textPrimary, // Màu chữ khi gõ
+                                backgroundColor: Color.backgroundTertiary, // Màu nền input
+                            }}
                                 placeholder="Tìm kiếm..."
-                                placeholderTextColor={Color.textColor3}
+                                placeholderTextColor={Color.textTertiary}
                                 value={search}
                                 onChangeText={(value) => handleSearch(value)}
                             />
@@ -73,13 +143,18 @@ const Discovery = () => {
                     )
                     : filterProvinces ? (
                         <FlatList onScroll={handleScroll}
-                        style={styles.boxContent} 
-                        data={filterProvinces} 
+                        style={{
+                          width: '100%',
+                          height: WINDOW_HEIGHT - 300,
+                          padding: 5,
+                          backgroundColor: Color.background, // Nền cho nội dung
+                        }}
+                        data={filterProvinces}
                         renderItem={({item}) => (
-                            <CardExplore 
-                              images={item.avt} 
-                              name={item.name} 
-                              country={"Viet Nam"} 
+                            <CardExplore
+                              images={item.avt}
+                              name={item.name}
+                              country={"Viet Nam"}
                               size={{
                                 width: "49%",
                                 height: 250
@@ -91,7 +166,7 @@ const Discovery = () => {
                         columnWrapperStyle={styles.row}
                     />
                     ) : (
-                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size="large" color={Color.mainColor2}/></View>
                     )}
                 </View>
             </View>
@@ -101,10 +176,6 @@ const Discovery = () => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Color.backGround
-    },
     boxOptions: {
         width: '100%',
     },
@@ -114,76 +185,13 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
-    boxExpand: {
-        height: 60,
-        paddingVertical: 10, paddingHorizontal: 20,
-        backgroundColor: Color.backGround,
-        borderEndEndRadius: 10, borderEndStartRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
     tabs: {
         flexDirection: 'row',
-        backgroundColor: Color.backGround,
+        backgroundColor: Color.backgroundSecondary, // Màu nền cho các tab chưa chọn
         borderRadius: 50,
-    },
-    shadow: {
-        shadowColor: "#000", // Màu bóng
-        shadowOffset: {
-          width: 0, // Đổ bóng theo chiều ngang
-          height: 4, // Đổ bóng theo chiều dọc
-        },
-        shadowOpacity: 0.3, // Độ mờ của bóng (0 - 1)
-        shadowRadius: 4.65, // Độ mờ viền của bóng
-        elevation: 8, // Dùng cho Android (giá trị càng cao bóng càng đậm)
-    },
-    currTab: {
-        width: 110,
-        padding: 10,
-        backgroundColor: Color.mainColor2,
-        borderRadius: 50
-    },
-    tab: {
-        width: 90,
-        padding: 10,
-        backgroundColor: Color.backGround,
-        borderRadius: 50
-    },
-    currText: {
-        alignSelf: 'center',
-        color: Color.textColor2
-    },
-    textTab: {
-        alignSelf: 'center',
-        color: Color.textColor1
     },
     search: {
         padding: 10,
-    },
-    textSearch: {
-        fontSize: 12,
-        color: Color.textColor3
-    },
-    textInput: {
-        width: '70%',
-        borderWidth: 0.5,
-        padding: 10,
-        borderRadius: 20,
-    },
-    boxContent: {
-        width: '100%',
-        height: WINDOW_HEIGHT - 300,
-        padding: 5,
-        backgroundColor: Color.backGround,
-    },
-    mainContent: {
-        backgroundColor: Color.backGround,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 5,
     },
     row: {
         width: '100%',
@@ -191,9 +199,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 5,
     },
-    tabbar: {
-        width: '100%',
-    }
-})
+});
 
 export default Discovery;
