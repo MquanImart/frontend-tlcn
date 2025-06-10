@@ -2,7 +2,7 @@ import { Reels } from '@/src/features/reel/interface/reels';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors'; // Đã import đối tượng Color
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -112,7 +112,7 @@ export default function ReelDetail() {
 
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}> {/* Áp dụng màu nền */}
+      <View style={[styles.loadingContainer, { backgroundColor: Color.background }]}>
         <ActivityIndicator size="large" color={Color.mainColor2} />
       </View>
     );
@@ -120,14 +120,14 @@ export default function ReelDetail() {
 
   if (!reel) {
     return (
-      <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}> {/* Áp dụng màu nền */}
-        <Text style={[styles.emptyText, { color: Color.textPrimary }]}>Không tìm thấy reel</Text> {/* Áp dụng màu chữ */}
+      <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
+        <Text style={[styles.emptyText, { color: Color.textPrimary }]}>Không tìm thấy reel</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: Color.black_black }}> {/* Thay đổi màu nền */}
+    <View style={{ flex: 1, backgroundColor: Color.black_black }}>
       <SingleReel
         reel={reel}
         onCommentPress={() => openComments(reel)}
@@ -136,12 +136,12 @@ export default function ReelDetail() {
         userId={userID || ''}
       />
 
-      <View style={[styles.headerContainer, {backgroundColor: Color.backGround}]}> 
+      <View style={styles.headerContainer}>
         <CHeader
           label="Reel"
           backPress={() => navigation.goBack()}
-          labelColor={Color.white_white} 
-          iconColor={Color.white_white} 
+          labelColor={Color.white_white}
+          iconColor={Color.white_white}
         />
       </View>
 
@@ -158,13 +158,13 @@ export default function ReelDetail() {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}> {/* Áp dụng màu nền */}
-              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}> {/* Áp dụng màu viền */}
-                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}> {/* Áp dụng màu chữ */}
+            <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
+              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
+                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
                   {calculateTotalComments(currentReel?.comments || [])} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textPrimary} /> {/* Áp dụng màu icon */}
+                  <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
 
@@ -192,14 +192,14 @@ export default function ReelDetail() {
                 </View>
               )}
 
-              <View style={[styles.commentInputContainer, {backgroundColor: Color.backgroundSecondary, borderColor: Color.border, borderTopColor: Color.border}]}> {/* Áp dụng màu nền và viền */}
+              <View style={[styles.commentInputContainer, {backgroundColor: Color.backgroundSecondary, borderColor: Color.border, borderTopColor: Color.border}]}>
                 <TouchableOpacity onPress={pickMedia}>
                   <Ionicons name="image" size={24} color={Color.mainColor2} />
                 </TouchableOpacity>
                 <TextInput
-                  style={[styles.commentInput, { color: Color.textPrimary }]} 
+                  style={[styles.commentInput, { color: Color.textPrimary }]}
                   placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textTertiary} 
+                  placeholderTextColor={Color.textTertiary}
                   value={newReply}
                   onChangeText={setNewReply}
                 />
@@ -224,16 +224,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Color.background, // Thay đổi màu nền
+    backgroundColor: Color.background,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Color.background, // Thay đổi màu nền
+    backgroundColor: Color.background,
   },
   emptyText: {
-    color: Color.textPrimary, // Thay đổi màu chữ
+    color: Color.textPrimary,
     fontSize: 16,
   },
   headerContainer: {
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    backgroundColor: Color.backGround,
+    // Removed backgroundColor here as CHeader now handles its own background.
   },
   modal: {
     justifyContent: 'flex-end',
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 15,
-    backgroundColor: Color.backgroundSecondary, // Thay đổi màu nền
+    backgroundColor: Color.backgroundSecondary,
   },
   commentHeader: {
     flexDirection: 'row',
@@ -261,29 +261,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.border, // Thay đổi màu viền
+    borderBottomColor: Color.border,
   },
   commentTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Color.textPrimary, // Thay đổi màu chữ
+    color: Color.textPrimary,
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Color.border, // Thay đổi màu viền
+    borderTopColor: Color.border,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Color.backgroundSecondary, // Thay đổi màu nền
+    backgroundColor: Color.backgroundSecondary,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Color.border, // Thay đổi màu viền
+    borderColor: Color.border,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: Color.textPrimary, // Thay đổi màu chữ
+    color: Color.textPrimary,
     paddingHorizontal: 10,
   },
   commentList: {

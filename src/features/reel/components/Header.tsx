@@ -6,42 +6,42 @@ import { colors as Color } from '@/src/styles/DynamicColors';
 interface CHeaderProps {
   label: string;
   backPress?: () => void;
-  rightPress?: () => void;    // Added for right icon click handler
-  showBackButton?: boolean;   // Controls back button visibility
-  labelColor?: string;        // Custom label color
-  iconColor?: string;         // Custom icon color
-  rightIcon?: string;         // Name of the right icon (MaterialIcons)
+  rightPress?: () => void;
+  showBackButton?: boolean;
+  labelColor?: string;
+  iconColor?: string;
+  rightIcon?: string;
 }
 
-const CHeader = ({ 
-  label, 
-  backPress, 
-  rightPress, 
-  labelColor, 
-  iconColor, 
-  showBackButton = true, 
-  rightIcon = "add"  // Default right icon is "add"
+const CHeader = ({
+  label,
+  backPress,
+  rightPress,
+  labelColor,
+  iconColor,
+  showBackButton = true,
+  rightIcon = "add"
 }: CHeaderProps) => {
   useTheme()
   return (
-    <View style={[styles.container, {backgroundColor: Color.background}]}> {/* Áp dụng màu nền cho container */}
+    <View style={[styles.container, {backgroundColor: Color.background}]}>
       {showBackButton && (
         <TouchableOpacity onPress={backPress} style={styles.buttonBack}>
-          <Icon 
-            name="arrow-back" 
-            size={35} 
-            color={iconColor || Color.textPrimary}  // Thay đổi màu mặc định của icon
+          <Icon
+            name="arrow-back"
+            size={35}
+            color={iconColor || Color.textPrimary}
           />
         </TouchableOpacity>
       )}
-      <Text style={[styles.textLabel, { color: labelColor || Color.textPrimary }]}> {/* Thay đổi màu mặc định của label */}
+      <Text style={[styles.textLabel, { color: labelColor || Color.textPrimary }]}>
         {label}
       </Text>
       <TouchableOpacity onPress={rightPress} style={styles.buttonRight}>
-        <Icon 
-          name={rightIcon} 
-          size={35} 
-          color={iconColor || Color.textPrimary}  // Thay đổi màu mặc định của icon
+        <Icon
+          name={rightIcon}
+          size={35}
+          color={iconColor || Color.textPrimary}
         />
       </TouchableOpacity>
     </View>
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor sẽ được định nghĩa inline trong component để sử dụng Color.background
   },
   buttonBack: {
     position: "absolute",
