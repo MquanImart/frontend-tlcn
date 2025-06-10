@@ -235,8 +235,8 @@ const Menu = () => {
           style={{
             width: 290,
             height: 50,
-            backColor: Color.mainColor2, // Using mainColor2 for primary action
-            textColor: Color.textOnMain2,
+            backColor: Color.gray1, // Using mainColor2 for primary action
+            textColor: Color.black,
             radius: 15,
             fontSize: 18,
           }}
@@ -293,6 +293,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 5,
+    padding: 20
   },
   icon: {
     width: 50,

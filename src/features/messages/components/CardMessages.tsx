@@ -17,11 +17,12 @@ type ChatNavigationProp = StackNavigationProp<ChatStackParamList, "ListMessages"
 
 export interface CardMessagesProps {
     conversation: Conversation;
+    isFriend?:boolean;
 }
 
-const CardMessages = ({conversation}: CardMessagesProps) => {
+const CardMessages = ({conversation, isFriend}: CardMessagesProps) => {
     useTheme(); // Ensure this hook is called to get dynamic colors
-    const { cardData, setting } = useCardMessage(conversation);
+    const { cardData, setting } = useCardMessage({conversation, isFriend});
 
     if (!cardData) {
         return (
@@ -43,12 +44,11 @@ const CardMessages = ({conversation}: CardMessagesProps) => {
                     style={styles.images}
                 />
                 <View style={styles.content}>
-                    <View style={styles.title}>
-                      <Text style={[
-                          styles.name,
-                          { color: Color.textPrimary }, // Dynamic color for name
-                          (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }
-                      ]}>
+                    <View style={styles.title}> 
+                      <Text 
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={[styles.name, { color: Color.black }, (cardData.isRead || setting?.notifications === false) ? {} : { fontWeight: 'bold' }]}>
                         {cardData.name}
                       </Text>
                       {setting?.notifications === false ? (
@@ -94,7 +94,7 @@ export interface DataCardProps {
     onPress: () => void;
 }
 
-const useCardMessage = (conversation: Conversation) => {
+const useCardMessage = ({conversation, isFriend} : CardMessagesProps) => {
     const [userId, setUserId] = useState<string | null>(null);
     const [cardData, setCardData] = useState<DataCardProps | null> (null);
     const [setting, setSetting] = useState<ConversationSettings|null>(null);
@@ -146,7 +146,7 @@ const useCardMessage = (conversation: Conversation) => {
                 sendDate: conversation.lastMessage?conversation.lastMessage.createdAt:0,
                 userSend: getSenderName(conversation, userId),
                 message: getContent(conversation),
-                onPress: () => {navigation.navigate("BoxChat", {conversationId: conversation._id})}
+                onPress: () => {navigation.navigate("BoxChat", {conversationId: conversation._id, isFriend: isFriend})}
             }
         } else { // type === "page"
             const userData = getOtherParticipantById(conversation, userId);
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         flexShrink: 1, // Allow text to shrink
         marginRight: 5, // Small margin to separate from date/icon
+        width: '80%',
     },
     date: {
         fontSize: 10,

@@ -40,7 +40,7 @@ const DetailsConversations = () => {
     if (!listActionUser || !listActionMessage || !display) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.background, paddingTop: insets.top }}><ActivityIndicator size="large" color={Color.mainColor2}/></View>
 
     return (
-        <View style={[styles.container, { backgroundColor: Color.background, paddingTop: insets.top }]}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
             <CHeaderIcon label={""} IconLeft={"arrow-back-ios"} onPressLeft={onPressHeaderLeft}/>
             <View style={styles.column_center}>
                 <TouchableOpacity onPress={() => {handleOpenImagePicker()}}>

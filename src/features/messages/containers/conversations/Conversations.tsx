@@ -17,7 +17,7 @@ const Conversations = () => {
   useTheme();
   const route = useRoute<RouteProp<ChatStackParamList, "BoxChat">>();
   const { conversationId, isFriend, friend } = route.params || {};
-
+  
   const insets = useSafeAreaInsets();
 
   const {

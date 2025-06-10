@@ -30,8 +30,8 @@ type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
   // Removed useTheme() since we are explicitly using lightColor
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("phanquanhcmute@gmail.com");
-  const [password, setPassword] = useState<string>("123456");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("21110740@student.hcmute.edu.vn");
+  const [password, setPassword] = useState<string>("quan123");
   const navigation = useNavigation<AuthNavigationProp>();
 
   // Ref to focus on the password input after entering email/phone

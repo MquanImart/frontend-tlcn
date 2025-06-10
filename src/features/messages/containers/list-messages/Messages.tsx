@@ -56,7 +56,7 @@ const Messages = () => {
               ) : !isSearch? (
                 <FlatList style={styles.listMessages} onScroll={handleScroll} data={conversations} renderItem={({item}) =>
                   <CardMessages
-                    conversation={item}
+                    conversation={item} isFriend={true}
                   />}
                   keyExtractor={(item) => item._id.toString()}
                 />

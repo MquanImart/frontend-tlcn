@@ -54,7 +54,7 @@ export type ChatStackParamList = {
   NewGroupChat: {defaultChoose?: UserDisplay[]};
   BoxChat: { 
     conversationId: string | null, 
-    isFriend?: boolean;
+    isFriend?: boolean,
     friend? : {
       _id: string;
       displayName: string;

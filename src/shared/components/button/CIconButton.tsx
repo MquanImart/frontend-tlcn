@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import ConvertDimension from "../../utils/ConvertDimension";
 
-interface CIconButton {
+interface CIconButtonProps {
     label?: string;
     icon: ReactNode;
     onSubmit: () => void;
@@ -20,7 +20,7 @@ interface CIconButton {
     }
 }
 
-const CIconButton = ({label, icon, onSubmit, style} : CIconButton) => {
+const CIconButton = ({label, icon, onSubmit, style} : CIconButtonProps) => {
 
     const defaultStyles = {
         width: style.width || "100%",
@@ -53,6 +53,8 @@ const CIconButton = ({label, icon, onSubmit, style} : CIconButton) => {
             {icon}
             {label && 
             <Text 
+            numberOfLines={1}
+            ellipsizeMode="tail"
             style={{
                 color: defaultStyles.textColor, 
                 fontSize: defaultStyles.fontSize,

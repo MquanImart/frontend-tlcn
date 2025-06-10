@@ -61,9 +61,9 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
             )}
             <View style={styles.boxContent}>
                 {showAvatar && <Text style={[styles.nameUser, { color: Color.textPrimary }]}>{user.displayName}</Text>}
-                <View style={message.content.contentType === "text" ? [styles.boxMessage, { backgroundColor: Color.backgroundSecondary }] : styles.boxMessage_Photo}>
+                <View style={message.content.contentType === "text" ? [styles.boxMessage, { backgroundColor: Color.gray4 }] : styles.boxMessage_Photo}>
                 {message.content.contentType === "text" ? (
-                    <Text style={[styles.message, { color: Color.textPrimary }]}>{message.content.message}</Text>
+                    <Text style={[styles.message, { color: Color.white }]}>{message.content.message}</Text>
                 ) : message.content.contentType === "img" ? (
                     <TouchableOpacity style={styles.boxImg}
                         onPress={() => {setVisiable(true)}}
