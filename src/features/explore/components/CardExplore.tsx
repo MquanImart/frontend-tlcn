@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
         color: Color.white_homologous,
         fontSize: 25,
         fontWeight: 'bold',
+        alignContent: 'center'
     },
     textCountry: {
         color: Color.white_homologous,
