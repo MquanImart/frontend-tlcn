@@ -22,7 +22,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ groupName, role, joinDate, onPress 
         styles.container,
         {
           backgroundColor: Color.background, // Dynamic background
-          shadowColor: Color.mainColor2,
+          shadowColor: Color.mainColor1,
           borderColor: Color.border, // Thêm viền động
           borderWidth: 1, // Độ dày của viền
         },
@@ -39,7 +39,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ groupName, role, joinDate, onPress 
         <Ionicons name="calendar-outline" size={20} color={Color.textPrimary} />
         <Text style={[styles.infoText, { color: Color.textPrimary }]}>
           Thành viên từ ngày:{" "}
-          <Text style={[styles.highlight, { color: Color.mainColor2 }]}>
+          <Text style={[styles.highlight, { color: Color.mainColor1 }]}>
             {new Date(joinDate).toLocaleDateString("vi-VN")}
           </Text>
         </Text>
@@ -47,7 +47,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ groupName, role, joinDate, onPress 
       <View style={styles.infoRow}>
         <Ionicons name="briefcase-outline" size={20} color={Color.textPrimary} />
         <Text style={[styles.infoText, { color: Color.textPrimary }]}>
-          Vai trò: <Text style={[styles.highlight, { color: Color.mainColor2 }]}>{role}</Text>
+          Vai trò: <Text style={[styles.highlight, { color: Color.mainColor1 }]}>{role}</Text>
         </Text>
       </View>
     </TouchableOpacity>

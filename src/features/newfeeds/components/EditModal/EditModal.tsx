@@ -126,7 +126,7 @@ const EditModal: React.FC<EditModalProps> = ({
                 <Ionicons
                   name="add-circle"
                   size={26}
-                  color={isLoading ? Color.textTertiary : Color.mainColor2}
+                  color={isLoading ? Color.textTertiary : Color.mainColor1}
                 />
               </TouchableOpacity>
             </View>
@@ -161,8 +161,8 @@ const EditModal: React.FC<EditModalProps> = ({
               style={{
                 width: "100%",
                 height: 50,
-                backColor: Color.mainColor2,
-                textColor: Color.textOnMain2, // Sử dụng textOnMain2 cho màu chữ trên nút chính
+                backColor: Color.mainColor1,
+                textColor: Color.textOnMain1, // Sử dụng textOnMain1 cho màu chữ trên nút chính
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,
@@ -171,7 +171,7 @@ const EditModal: React.FC<EditModalProps> = ({
               disabled={isLoading}
             >
               {isLoading && (
-                <ActivityIndicator size="small" color={Color.textOnMain2} style={{ marginLeft: 10 }} />
+                <ActivityIndicator size="small" color={Color.textOnMain1} style={{ marginLeft: 10 }} />
               )}
             </CButton>
           </View>

@@ -224,7 +224,7 @@ export default function ReelsList() {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.loadingMoreContainer}>
-                <ActivityIndicator size="large" color={Color.mainColor2} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : !hasMore && reels.length > 0 ? (
               <View style={styles.loadingMoreContainer}>
@@ -240,7 +240,7 @@ export default function ReelsList() {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={35} color={Color.backGround1} style={styles.headerIcon} />
           </TouchableOpacity>
-          <Text style={styles.headerLabel}>Reels</Text>
+              <Text style={[styles.headerLabel, { color: Color.mainColor1 }]}>Reels</Text>
           <TouchableOpacity onPress={toggleNewReelModal}>
             <Ionicons name="add" size={35} color={Color.backGround1} style={styles.headerIcon} />
           </TouchableOpacity>
@@ -296,7 +296,7 @@ export default function ReelsList() {
 
               <View style={styles.commentInputContainer}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor2}  />
+                  <Ionicons name="image" size={24} color={Color.mainColor1}  />
                 </TouchableOpacity>
                 <TextInput
                   style={styles.commentInput}
@@ -307,9 +307,9 @@ export default function ReelsList() {
                 />
                 <TouchableOpacity onPress={handleAddComment} disabled={isCommentLoading}>
                   {isCommentLoading ? (
-                    <ActivityIndicator size="small" color={Color.mainColor2} />
+                    <ActivityIndicator size="small" color={Color.mainColor1} />
                   ) : (
-                    <Ionicons name="send" size={20} color={Color.mainColor2}  />
+                    <Ionicons name="send" size={20} color={Color.mainColor1}  />
                   )}
                 </TouchableOpacity>
               </View>
@@ -349,12 +349,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 25,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)', // Black shadow for text
+    textShadowColor: 'rgba(0, 0, 0, 0.75)', 
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   headerIcon: {
-    shadowColor: '#000', // Black shadow for icons
+    shadowColor: '#000', 
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.75,
     shadowRadius: 2,

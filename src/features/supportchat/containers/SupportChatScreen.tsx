@@ -44,12 +44,12 @@ const SupportChatScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.safeContainer, { backgroundColor: Color.background }]}>
-      <View style={[styles.header, { backgroundColor: Color.mainColor2 }]}>
+      <View style={[styles.header, { backgroundColor: Color.mainColor1 }]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={28} color={Color.textOnMain2} />
+          <Ionicons name="arrow-back" size={28} color={Color.textOnMain1} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Image
@@ -57,7 +57,7 @@ const SupportChatScreen: React.FC = () => {
             style={styles.avatar}
             resizeMode="contain"
           />
-          <Text style={[styles.headerText, { color: Color.textOnMain2 }]}>Hỗ trợ</Text>
+          <Text style={[styles.headerText, { color: Color.textOnMain1 }]}>Hỗ trợ</Text>
         </View>
       </View>
       <KeyboardAvoidingView

@@ -47,7 +47,7 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
       <View style={[styles.centered, { backgroundColor: Color.background }]}>
         <Text style={[styles.emptyText, { color: Color.error }]}>{error}</Text>
         <TouchableOpacity onPress={() => fetchSavedGroups(1)}>
-          <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
+          <Text style={[styles.retryText, { color: Color.mainColor1 }]}>Thử lại</Text>
         </TouchableOpacity>
       </View>
     );
@@ -75,7 +75,7 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor2} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : null
           }
@@ -83,7 +83,7 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchSavedGroups(1)}
-              colors={[Color.mainColor2]}
+              colors={[Color.mainColor1]}
             />
           }
         />

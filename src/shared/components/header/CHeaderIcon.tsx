@@ -26,10 +26,10 @@ const CHeaderIcon = ({label, IconLeft, onPressLeft, IconRight, onPressRight, tex
             <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressLeft}>
                 <Icon name={IconLeft} size={24} color={Color.textPrimary} />
             </TouchableOpacity>
-            <Text style={[styles.label, { color: Color.mainColor2 }]}>{label}</Text>
+            <Text style={[styles.label, { color: Color.mainColor1 }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
-                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
-                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}
+                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor1} />}
+                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor1 }]}>{textRight}</Text>}
             </TouchableOpacity> : <View style={styles.placeHolder}/>}
         </View>
     )
@@ -40,7 +40,6 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
     const [userId, setUserId] = useState<string|null>(null);
     const [conversations, setConversations] = useState<Conversation[] | null>(null);
 
-    // Bổ sung useTheme để cập nhật màu động
     useTheme();
 
     useEffect(() => {
@@ -53,10 +52,13 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
 
     useEffect(() => {
         if (conversations && userId){
-            {conversations.map((conver) => {
+            // Store cleanup functions for socket listeners to prevent multiple listeners
+            const cleanupFunctions: (() => void)[] = [];
+
+            conversations.forEach((conver) => {
                 socket.emit("joinChat", conver._id);
 
-                socket.on("newMessage", (newMessage) => {
+                const handleNewMessage = (newMessage: any) => {
                     setConversations((prevConversations) => {
                         if (!prevConversations) return null;
                 
@@ -66,20 +68,25 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
                                 : conversation
                         );
                     });
-                });
-                
-            
-                return () => {
-                    socket.emit("leaveChat", conver._id);
-                    socket.off("newMessage");
                 };
-            })}
+
+                socket.on("newMessage", handleNewMessage);
+                cleanupFunctions.push(() => {
+                    socket.off("newMessage", handleNewMessage);
+                    socket.emit("leaveChat", conver._id);
+                });
+            });
+
+            // Return a cleanup function for this useEffect
+            return () => {
+                cleanupFunctions.forEach(cleanup => cleanup());
+            };
         }
     }, [conversations, userId]);
 
     useEffect(() => {
         let count = 0;
-        if (conversations && userId)
+        if (conversations && userId) {
             for (const conv of conversations) {
                 const lastMsg = conv.lastMessage;
                 if (!lastMsg) continue;
@@ -94,6 +101,7 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
                   count++;
                 }
             }
+        }
         setNumMessages(count);
     }, [conversations, userId]);
     
@@ -103,31 +111,33 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
     }
 
     const getNumMessages = async () => {
-        
         if (!userId) return;
-        const conversationAPI = restClient.apiClient.service(`apis/conversations/user`);
-        const result = await conversationAPI.get(userId);
-        if (result.success) {
-          const conversations: Conversation[] = result.data;
-          let unreadCount = 0;
-          setConversations(result.data);
-          
-          for (const conv of conversations) {
-            const lastMsg = conv.lastMessage;
-            if (!lastMsg) continue;
-          
-            const userSetting = conv.settings.find(s => s.userId === userId);
-            if (
-              userSetting &&
-              userSetting.active &&
-              userSetting.notifications &&
-              !lastMsg.seenBy.includes(userId)
-            ) {
-              unreadCount++;
+        try {
+            const conversationAPI = restClient.apiClient.service(`apis/conversations/user`);
+            const result = await conversationAPI.get(userId);
+            if (result.success) {
+              const fetchedConversations: Conversation[] = result.data;
+              setConversations(fetchedConversations); // Update conversations state
+              
+              let unreadCount = 0;
+              for (const conv of fetchedConversations) {
+                const lastMsg = conv.lastMessage;
+                if (!lastMsg) continue;
+              
+                const userSetting = conv.settings.find(s => s.userId === userId);
+                if (
+                  userSetting &&
+                  userSetting.active &&
+                  userSetting.notifications &&
+                  !lastMsg.seenBy.includes(userId)
+                ) {
+                  unreadCount++;
+                }
+              }
+              setNumMessages(unreadCount);
             }
-          }
-    
-          setNumMessages(unreadCount);
+        } catch (error) {
+            console.error("Error fetching conversations:", error);
         }
     };
     
@@ -136,12 +146,13 @@ export const CHeaderIconNewFeed = ({label, IconLeft, onPressLeft, IconRight, onP
             <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressLeft}>
                 <Icon name={IconLeft} size={24} color={Color.textPrimary} />
             </TouchableOpacity>
-            <Text style={[styles.label, { color: Color.textPrimary }]}>{label}</Text>
+            {/* Changed label color to Color.mainColor1 as requested */}
+            <Text style={[styles.label, { color: Color.mainColor1 }]}>{label}</Text>
             {(IconRight || textRight) ? <TouchableOpacity style={[styles.buttonIcon, borderIcon&&styles.borderIcon]} onPress={onPressRight}>
-                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor2} />}
-                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor2 }]}>{textRight}</Text>}
+                {IconRight && <Icon name={IconRight} size={24} color={Color.mainColor1} />}
+                {textRight && <Text style={[styles.textIcon, { color: Color.mainColor1 }]}>{textRight}</Text>}
                 {numMessages !== 0 && <View style={[styles.messages, { backgroundColor: Color.error }]}>
-                    <Text style={[styles.textMessages, { color: Color.textOnMain2 }]}>{numMessages}</Text>
+                    <Text style={[styles.textMessages, { color: Color.textOnMain1 }]}>{numMessages}</Text>
                 </View>}
             </TouchableOpacity> : <View style={styles.placeHolder}/>}
         </View>

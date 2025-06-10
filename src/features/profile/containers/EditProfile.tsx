@@ -169,7 +169,7 @@ const EditProfile = () => {
   return (
     <View style={{ flex: 1, backgroundColor: Color.background }}>
       <CHeader label="Chỉnh sửa hồ sơ" backPress={() => navigation.goBack()} 
-        labelColor={Color.mainColor2}
+        labelColor={Color.mainColor1}
         iconColor={Color.textPrimary} 
       />
       {loading ? (

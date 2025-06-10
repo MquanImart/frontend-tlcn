@@ -111,7 +111,7 @@ const InputForgot = () => {
                                     textColor: Color.white_contrast,
                                     fontSize: 18,
                                     radius: 25,
-                                    borderColor: Color.mainColor2,
+                                    borderColor: Color.mainColor1,
                                 }}
                                 onChangeText={(text) => setPhoneOrMail(text)}
                             />
@@ -125,7 +125,7 @@ const InputForgot = () => {
                             style={{
                                 width: "90%",
                                 height: 50,
-                                backColor: loading ? Color.mainColor2 : Color.mainColor2, // Change background color when loading
+                                backColor: loading ? Color.mainColor1 : Color.mainColor1, // Change background color when loading
                                 textColor: Color.white_homologous,
                                 fontSize: 18,
                                 radius: 25,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     loginLink: {
-        color: Color.mainColor2,
+        color: Color.mainColor1,
         fontWeight: "bold",
     },
     loadingIndicator: {

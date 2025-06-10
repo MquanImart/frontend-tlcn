@@ -21,7 +21,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
         if (!data) {
             return (
                 <View style={styles.activityIndicatorContainer}>
-                    <ActivityIndicator size="large" color={Color.mainColor2} />
+                    <ActivityIndicator size="large" color={Color.mainColor1} />
                 </View>
             );
         }
@@ -62,7 +62,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                 shadowRadius: 4.65,
                 elevation: 8,
             }]}>
-                <Text style={[styles.label, { color: Color.mainColor2 }]}>Đề xuất cho bạn</Text>
+                <Text style={[styles.label, { color: Color.mainColor1 }]}>Đề xuất cho bạn</Text>
                 {renderPageList(suggestedPageCB)}
             </View>
             <View style={[styles.listContent, { backgroundColor: Color.backgroundSecondary }, {
@@ -75,7 +75,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                 shadowRadius: 4.65,
                 elevation: 8,
             }]}>
-                <Text style={[styles.label, { color: Color.mainColor2 }]}>Có thể bạn thích</Text>
+                <Text style={[styles.label, { color: Color.mainColor1 }]}>Có thể bạn thích</Text>
                 {renderPageList(suggestedPageCF)}
             </View>
             <View style={[styles.listContent, { backgroundColor: Color.backgroundSecondary }, {
@@ -88,7 +88,7 @@ const Outstanding = ({handleScroll} : OutstandingProps) => {
                 shadowRadius: 4.65,
                 elevation: 8,
             }]}>
-                <Text style={[styles.label, { color: Color.mainColor2 }]}>Nổi bật trong tháng</Text>
+                <Text style={[styles.label, { color: Color.mainColor1 }]}>Nổi bật trong tháng</Text>
                 {renderPageList(suggestedPageMonth)}
             </View>
         </ScrollView>

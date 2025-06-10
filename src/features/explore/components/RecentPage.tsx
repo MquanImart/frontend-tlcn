@@ -15,7 +15,7 @@ const RecentPage = ({recent} : RecentPagePops) => {
             <Text style={{
                 fontSize: 18,
                 fontWeight: 'bold',
-                color: Color.mainColor2, // Màu chữ động
+                color: Color.mainColor1, // Màu chữ động
                 marginTop: 20,
                 paddingHorizontal: 20,
             }}>Đã xem gần đây</Text>
@@ -30,7 +30,7 @@ const RecentPage = ({recent} : RecentPagePops) => {
               showsHorizontalScrollIndicator={false}
             />
             ) : (
-            <View style={{height: 110, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor2}/></View>
+            <View style={{height: 110, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator color={Color.mainColor1}/></View>
             )}
         </View>
     )

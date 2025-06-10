@@ -121,7 +121,7 @@ const CardDetails = ({details, location, closeDetails, pressDirection}: CardDeta
                     style={{
                         width: 110,
                         height: 35,
-                        backColor: index === 0 ? Color.mainColor2 : undefined,
+                        backColor: index === 0 ? Color.mainColor1 : undefined,
                         textColor: index === 0 ? Color.textColor2 : undefined,
                         fontSize: 13,
                         radius: 50,

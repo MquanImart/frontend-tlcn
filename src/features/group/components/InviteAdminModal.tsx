@@ -46,7 +46,7 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
             <Image source={{ uri: inviterAvatar }} style={styles.avatar} />
             <View style={styles.textContainer}>
               <Text style={[styles.inviteText, { color: Color.textPrimary }]}>
-                Nhóm <Text style={[styles.highlight, { color: Color.mainColor2 }]}>{groupName}</Text> đã mời bạn làm quản trị viên
+                Nhóm <Text style={[styles.highlight, { color: Color.mainColor1 }]}>{groupName}</Text> đã mời bạn làm quản trị viên
               </Text>
               <Text style={[styles.inviteDate, { color: Color.textSecondary }]}>Thời gian: {inviteDate}</Text>
             </View>
@@ -61,12 +61,12 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
                 width: "48%",
                 height: 45,
                 backColor: Color.background,
-                textColor: Color.textOnMain2,
+                textColor: Color.textOnMain1,
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,
                 borderWidth: 1,
-                borderColor: Color.mainColor2,
+                borderColor: Color.mainColor1,
               }}
             />
             <CButton
@@ -75,8 +75,8 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
               style={{
                 width: "48%",
                 height: 45,
-                backColor: Color.mainColor2,
-                textColor: Color.textOnMain2,
+                backColor: Color.mainColor1,
+                textColor: Color.textOnMain1,
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,

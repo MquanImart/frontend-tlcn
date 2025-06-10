@@ -227,7 +227,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               </View>
             ) : (
               <TouchableOpacity style={styles.uploadButton} onPress={pickVideo} disabled={isLoading || uploading}>
-                <Feather name="video" size={40} color={Color.mainColor2} />
+                <Feather name="video" size={40} color={Color.mainColor1} />
                 <Text style={[styles.uploadText, { color: Color.textColor1 }]}>
                   Chọn video từ thiết bị
                 </Text>
@@ -257,7 +257,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
                 blurOnSubmit={true}
               />
               <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading || uploading}>
-                <Ionicons name="add-circle" size={26} color={Color.mainColor2} />
+                <Ionicons name="add-circle" size={26} color={Color.mainColor1} />
               </TouchableOpacity>
             </View>
 
@@ -284,7 +284,7 @@ const NewReel: React.FC<NewReelProps> = ({ isModalVisible, toggleModal, isLoadin
               style={{
                 width: '100%',
                 height: 50,
-                backColor: uploading ? Color.borderColor1 : Color.mainColor2,
+                backColor: uploading ? Color.borderColor1 : Color.mainColor1,
                 textColor: Color.textColor2,
                 radius: 10,
                 fontSize: 16,

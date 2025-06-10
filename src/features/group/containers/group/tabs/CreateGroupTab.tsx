@@ -110,19 +110,19 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
                   dropDownContainerStyle={[styles.dropdownContainer, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary }]}
                   listMode="SCROLLVIEW"
                   textStyle={{ color: Color.textPrimary }} // Style cho text của item trong danh sách thả xuống
-                  selectedItemLabelStyle={{ color: Color.textOnMain2 }} // Style cho text của item được chọn trong danh sách thả xuống
-                  selectedItemContainerStyle={{ backgroundColor: Color.mainColor2 }} // Style nền của item được chọn trong danh sách
+                  selectedItemLabelStyle={{ color: Color.textOnMain1 }} // Style cho text của item được chọn trong danh sách thả xuống
+                  selectedItemContainerStyle={{ backgroundColor: Color.mainColor1 }} // Style nền của item được chọn trong danh sách
                   itemSeparatorStyle={{ backgroundColor: Color.border }} // Màu đường phân cách item
 
                   // --- THÊM CÁC THUỘC TÍNH NÀY ĐỂ HIỂN THỊ TEXT TRONG BADGE ---
                   badgeStyle={{
-                    backgroundColor: Color.mainColor2, // Màu nền của badge, ví dụ màu chủ đạo
-                    borderColor: Color.mainColor2, // Viền của badge nếu muốn
+                    backgroundColor: Color.mainColor1, // Màu nền của badge, ví dụ màu chủ đạo
+                    borderColor: Color.mainColor1, // Viền của badge nếu muốn
                     borderWidth: 1,
                     // Các style khác cho badge nếu cần, ví dụ padding, borderRadius
                   }}
                   badgeTextStyle={{
-                    color: Color.textOnMain2, // Màu chữ của text trong badge, đảm bảo tương phản với nền badge
+                    color: Color.textOnMain1, // Màu chữ của text trong badge, đảm bảo tương phản với nền badge
                     fontSize: 14, // Kích thước chữ của text trong badge
                     // Các style khác cho text trong badge
                   }}
@@ -144,8 +144,8 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
                     value={ruleInput}
                     onChangeText={setRuleInput}
                   />
-                  <TouchableOpacity style={[styles.addButton, { backgroundColor: Color.mainColor2 }]} onPress={handleAddRule}>
-                    <Ionicons name="add-circle" size={24} color={Color.textOnMain2} />
+                  <TouchableOpacity style={[styles.addButton, { backgroundColor: Color.mainColor1 }]} onPress={handleAddRule}>
+                    <Ionicons name="add-circle" size={24} color={Color.textOnMain1} />
                   </TouchableOpacity>
                 </View>
                 {rules.map((rule, index) => (
@@ -177,8 +177,8 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
                   dropDownContainerStyle={[styles.dropdownContainer, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary }]}
                   listMode="SCROLLVIEW"
                   textStyle={{ color: Color.textPrimary }}
-                  selectedItemLabelStyle={{ color: Color.textOnMain2 }}
-                  selectedItemContainerStyle={{ backgroundColor: Color.mainColor2 }}
+                  selectedItemLabelStyle={{ color: Color.textOnMain1 }}
+                  selectedItemContainerStyle={{ backgroundColor: Color.mainColor1 }}
                   itemSeparatorStyle={{ backgroundColor: Color.border }}
                 />
               </View>
@@ -204,14 +204,14 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
             key: "Nút tạo nhóm",
             content: (
               <TouchableOpacity
-                style={[styles.createButton, { backgroundColor: Color.mainColor2 }, loading && styles.disabledButton]}
+                style={[styles.createButton, { backgroundColor: Color.mainColor1 }, loading && styles.disabledButton]}
                 onPress={handleCreateGroup}
                 disabled={loading}
               >
                 {loading ? (
-                  <ActivityIndicator size="small" color={Color.textOnMain2} />
+                  <ActivityIndicator size="small" color={Color.textOnMain1} />
                 ) : (
-                  <Text style={[styles.createButtonText, { color: Color.textOnMain2 }]}>Tạo Nhóm</Text>
+                  <Text style={[styles.createButtonText, { color: Color.textOnMain1 }]}>Tạo Nhóm</Text>
                 )}
               </TouchableOpacity>
             ),

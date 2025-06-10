@@ -81,7 +81,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       style={[
         styles.messageBubble,
         message.isUser ? styles.userMessage : styles.supportMessage,
-        { backgroundColor: message.isUser ? Color.mainColor2 : Color.backgroundSecondary }, // Dynamic background
+        { backgroundColor: message.isUser ? Color.mainColor1 : Color.backgroundSecondary }, // Dynamic background
       ]}
     >
       {formatMessage()}
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   userText: {
-    color: Color.textOnMain2, // Text color for user messages
+    color: Color.textOnMain1, // Text color for user messages
   },
   supportText: {
     color: Color.textPrimary, // Text color for support messages

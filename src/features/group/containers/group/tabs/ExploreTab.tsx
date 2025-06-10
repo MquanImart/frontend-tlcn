@@ -47,7 +47,7 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
       <View style={[styles.emptyContainer, { backgroundColor: Color.background }]}>
         <Text style={[styles.emptyText, { color: Color.error }]}>{error}</Text>
         <TouchableOpacity onPress={() => fetchGroups(1)}>
-          <Text style={[styles.retryText, { color: Color.mainColor2 }]}>Thử lại</Text>
+          <Text style={[styles.retryText, { color: Color.mainColor1 }]}>Thử lại</Text>
         </TouchableOpacity>
       </View>
     );
@@ -75,7 +75,7 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>
-                <ActivityIndicator size="large" color={Color.mainColor2} />
+                <ActivityIndicator size="large" color={Color.mainColor1} />
               </View>
             ) : null
           }
@@ -83,7 +83,7 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
             <RefreshControl
               refreshing={loading}
               onRefresh={() => fetchGroups(1)}
-              colors={[Color.mainColor2]}
+              colors={[Color.mainColor1]}
             />
           }
         />

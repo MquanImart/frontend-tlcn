@@ -57,7 +57,7 @@ const ModalChooseConversation = ({ visible, onCancel }: {
                 <View >
                     <Icon 
                         name={isSelected? "radio-button-on": "radio-button-off"} 
-                        size={24} color={Color.mainColor2} // Use dynamic color for the icon
+                        size={24} color={Color.mainColor1} // Use dynamic color for the icon
                     />    
                 </View>
             </TouchableOpacity>
@@ -92,7 +92,7 @@ const ModalChooseConversation = ({ visible, onCancel }: {
                   title="Xác nhận"
                   onPress={handleSubmit}
                   disabled={selectedConversations.length === 0}
-                  color={Color.mainColor2} // Use dynamic color for button
+                  color={Color.mainColor1} // Use dynamic color for button
                 />
               </View>
             </View>

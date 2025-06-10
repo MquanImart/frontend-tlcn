@@ -23,7 +23,7 @@ const AdminTabNavigator: React.FC = () => {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         // Thay thế bằng mã màu hex cứng cho màu hoạt động
-        tabBarActiveTintColor: '#2196F3', // Đây có thể là mainColor2 từ lightColors
+        tabBarActiveTintColor: '#2196F3', // Đây có thể là mainColor1 từ lightColors
         // Thay thế bằng mã màu hex cứng cho màu không hoạt động
         tabBarInactiveTintColor: '#616161', // Đây có thể là textSecondary từ lightColors
         tabBarStyle: {

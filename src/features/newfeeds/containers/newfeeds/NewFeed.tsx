@@ -133,7 +133,7 @@ export default function NewFeed() {
     if (!loadingMore) return null;
     return (
       <View style={styles.loadingFooter}>
-        <ActivityIndicator size="large" color={Color.mainColor2} />
+        <ActivityIndicator size="large" color={Color.mainColor1} />
       </View>
     );
   };
@@ -226,7 +226,7 @@ export default function NewFeed() {
 
               <View style={[styles.commentInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
                 <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor2} />
+                  <Ionicons name="image" size={24} color={Color.mainColor1} />
                 </TouchableOpacity>
                 <TextInput
                   style={[styles.commentInput, { color: Color.textPrimary }]}
@@ -236,10 +236,10 @@ export default function NewFeed() {
                   onChangeText={setNewReply}
                 />
                 {isCommentChecking ? (
-                  <ActivityIndicator size="small" color={Color.mainColor2} />
+                  <ActivityIndicator size="small" color={Color.mainColor1} />
                 ) : (
                   <TouchableOpacity onPress={handleAddComment}>
-                    <Ionicons name="send" size={20} color={Color.mainColor2} />
+                    <Ionicons name="send" size={20} color={Color.mainColor1} />
                   </TouchableOpacity>
                 )}
               </View>

@@ -30,7 +30,7 @@ const ListCollections = ({ collections, createCollection }: ListCollectionsProps
                     style={{
                     width: 100,
                     height: 37,
-                    backColor: Color.mainColor2,
+                    backColor: Color.mainColor1,
                     textColor: Color.textColor2,
                     flex_direction: "row"
                 }}/>
