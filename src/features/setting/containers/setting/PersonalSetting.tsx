@@ -4,13 +4,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from '@/src/contexts/ThemeContext';
@@ -22,10 +22,8 @@ import ChangePreferencesDialog from "../../components/ChangePreferencesDialog";
 import ChangeIDDialog from "../../components/ChangeIDDialog";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
-import { TabbarStackParamList } from "@/src/shared/routes/TabbarBottom";
 import { MenuStackParamList } from "@/src/shared/routes/MenuNavigation";
 
-type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
 
 const UsersClient = restClient.apiClient.service("apis/users");

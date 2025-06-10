@@ -22,11 +22,9 @@ import ViewAllVideo from "./video/ViewAllVideo";
 import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProfileStackParamList } from "@/src/shared/routes/ProfileNavigation";
-import { ChatStackParamList, StrangeChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 
 const UsersClient = restClient.apiClient.service("apis/users");
 const myPhotosClient = restClient.apiClient.service("apis/myphotos");
-const DEFAULT_AVATAR = "https://picsum.photos/200/300";
 
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
 
@@ -76,7 +74,7 @@ const Profile = () => {
           const myAvt = await myPhotosClient.get(userData.data.avt[userData.data.avt.length - 1]);
           setAvt(myAvt.data.url);
         } else {
-          setAvt(DEFAULT_AVATAR);
+          setAvt(null);
         }
       } else {
         throw new Error("Không thể lấy dữ liệu người dùng");
@@ -373,7 +371,7 @@ const Profile = () => {
           </View>
         ) : !canViewProfile ? (
           <View style={styles.emptyContainer}>
-            <Image source={{ uri: avt || DEFAULT_AVATAR }} style={styles.profileImage} />
+            <Image source={avt? { uri: avt }: require('@/src/assets/images/default/default_user.png')} style={styles.profileImage} />
             <Text style={[styles.name, { color: Color.textPrimary }]}>{user?.displayName || "Không có tên"}</Text>
             <Text style={[styles.emptyText, { color: Color.textSecondary }]}>
               Hồ sơ này không công khai. Vui lòng kết bạn để xem thêm thông tin.
@@ -398,7 +396,7 @@ const Profile = () => {
         ) : (
           <>
             <Image
-              source={{ uri: avt || DEFAULT_AVATAR }}
+              source={avt? { uri: avt }: require('@/src/assets/images/default/default_user.png')}
               style={styles.profileImage}
             />
             <Text style={[styles.name, { color: Color.textPrimary }]}>{user?.displayName || "Không có tên"}</Text>
