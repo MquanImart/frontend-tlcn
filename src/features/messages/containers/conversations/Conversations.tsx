@@ -68,7 +68,7 @@ const Conversations = () => {
     }
   };
 
-    if (!conversation || !messages) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.background}}><ActivityIndicator size="large" color={Color.mainColor2} /></View>;
+    if (isFriend && (!conversation || !messages)) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.background}}><ActivityIndicator size="large" color={Color.mainColor2} /></View>;
 
     return (
     <KeyboardAvoidingView

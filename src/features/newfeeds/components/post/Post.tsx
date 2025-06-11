@@ -96,12 +96,14 @@ const Post: React.FC<PostProps> = ({
 
   const handleAvatarPress = () => {
     if (article.createdBy._id === userId) {
-      navigation.navigate("MyProfile", { screen: "MyProfile", params: { userId: userId! } });
+      navigation.navigate("ProfileNavigation", { screen: "MyProfile", params: { userId: userId! } });
     } else {
-      navigation.navigate("Profile", { userId: article.createdBy._id });
+       navigation.navigate("ProfileNavigation", { screen: "Profile", params: {  userId: article.createdBy._id } });
     }
   };
 
+
+ 
   // New function to handle group name press
   const handleGroupPress = () => {
     if (article.groupID?._id) {

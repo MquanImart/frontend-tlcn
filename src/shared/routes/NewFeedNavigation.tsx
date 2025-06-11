@@ -2,8 +2,8 @@ import GroupDetailsScreen from "@/src/features/group/containers/detail-group/Gro
 import ArticleDetail from "@/src/features/newfeeds/containers/articledetail/ArticleDetail";
 import NewFeed from "@/src/features/newfeeds/containers/newfeeds/NewFeed";
 import { Article } from "@/src/features/newfeeds/interface/article";
-import MyProfile from "@/src/features/profile/containers/MyProfile";
 import Profile from "@/src/features/profile/containers/Profile";
+import { ProfileNavigation } from "./ProfileNavigation";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import MessagesDrawerWrapper from "./MessageNavigation";
@@ -21,7 +21,7 @@ export type NewFeedParamList = {
   MessageNavigation: undefined;
   SupportChatNavigation: undefined;
   Profile: { userId: string };
-  MyProfile: {
+  ProfileNavigation: {
       screen?: keyof ProfileStackParamList;
       params?: ProfileStackParamList[keyof ProfileStackParamList];
     };
@@ -35,9 +35,9 @@ export function NewFeedNavigation() {
       <Stack.Screen name="NewFeed" component={NewFeed} />
       <Stack.Screen name="SearchNavigation" component={SearchNavigation} />
       <Stack.Screen name="MessageNavigation" component={MessagesDrawerWrapper} />
-      <Stack.Screen name="SupportChatNavigation" component={SupportChatNavigation} />
+      <Stack.Screen name="SupportChatNavigation" component={SupportChatNavigation}/>
       <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="MyProfile" component={MyProfile} />
+      <Stack.Screen name="ProfileNavigation" component={ProfileNavigation} />
       <Stack.Screen name="ArticleDetail" component={ArticleDetail} />
       <Stack.Screen name="GroupDetailsScreen" component={GroupDetailsScreen} />
     </Stack.Navigator>
