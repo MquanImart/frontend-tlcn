@@ -51,7 +51,6 @@ const ModalChooseConversation = ({ visible, onCancel }: {
                         require('@/src/assets/images/default/default_user.png'))} 
                         style={styles.images}
                     />
-                    {/* Ensure text is wrapped in Text component and uses dynamic colors */}
                     <Text style={[styles.text, { color: Color.textPrimary }]}>{user?.name}</Text>
                 </View>}
                 <View >
@@ -72,8 +71,7 @@ const ModalChooseConversation = ({ visible, onCancel }: {
           onRequestClose={onCancel}
         >
           <View style={styles.modalContainer}>
-            <View style={[styles.modalContent, { backgroundColor: Color.background }]}> {/* Apply dynamic background */}
-              {/* Ensure text is wrapped in Text component and uses dynamic colors */}
+            <View style={[styles.modalContent, { backgroundColor: Color.background }]}>
               <Text style={[styles.title, { color: Color.textPrimary }]}>Chọn cuộc trò chuyện</Text>
               {conversations && conversations.length > 0 ? (
                 <FlatList
@@ -83,16 +81,15 @@ const ModalChooseConversation = ({ visible, onCancel }: {
                   style={styles.list}
                 />
               ) : (
-                // Ensure text is wrapped in Text component and uses dynamic colors
                 <Text style={[styles.noData, { color: Color.textSecondary }]}>Không có cuộc trò chuyện nào</Text>
               )}
               <View style={styles.buttonContainer}>
-                <Button title="Hủy" onPress={onCancel} color={Color.error} /> {/* Use dynamic color for button */}
+                <Button title="Hủy" onPress={onCancel} color={Color.error} />
                 <Button
                   title="Xác nhận"
                   onPress={handleSubmit}
                   disabled={selectedConversations.length === 0}
-                  color={Color.mainColor2} // Use dynamic color for button
+                  color={Color.mainColor2}
                 />
               </View>
             </View>

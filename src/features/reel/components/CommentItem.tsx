@@ -121,16 +121,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { marginLeft: getMarginLeft(level), backgroundColor: Color.background }]} // Thay đổi màu nền container
+      style={[styles.container, { marginLeft: getMarginLeft(level), backgroundColor: Color.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={styles.commentRow}>
-        <Image source={{ uri: avatarUrl }} style={[styles.avatar, {backgroundColor: Color.backgroundSecondary}]} /> {/* Thay đổi màu nền avatar */}
+        <Image source={{ uri: avatarUrl }} style={[styles.avatar, {backgroundColor: Color.backgroundSecondary}]} />
         <View style={styles.content}>
-          <Text style={[styles.username, { color: Color.textPrimary }]}> {/* Thay đổi màu chữ username */}
+          <Text style={[styles.username, { color: Color.textPrimary }]}>
             {comment._iduser?.displayName || "Unknown"}
           </Text>
-          <Text style={[styles.text, { color: Color.textPrimary }]}>{comment.content}</Text> {/* Thay đổi màu chữ text */}
+          <Text style={[styles.text, { color: Color.textPrimary }]}>{comment.content}</Text>
 
           {mediaList.length > 0 && (
             <FlatList
@@ -148,18 +148,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
               <Ionicons
                 name={isLiked ? "heart" : "heart-outline"}
                 size={14}
-                color={isLiked ? Color.error : Color.textSecondary} // Thay đổi màu trái tim
+                color={isLiked ? Color.error : Color.textSecondary}
               />
-              <Text style={[styles.count, { color: isLiked ? Color.error : Color.textSecondary }]}> {/* Thay đổi màu số lượng like */}
+              <Text style={[styles.count, { color: isLiked ? Color.error : Color.textSecondary }]}>
                 {comment.emoticons?.length || 0}
               </Text>
             </TouchableOpacity>
-            <Text style={[styles.separator, { color: Color.textTertiary }]}>·</Text> {/* Thay đổi màu separator */}
+            <Text style={[styles.separator, { color: Color.textTertiary }]}>·</Text>
             <TouchableOpacity onPress={toggleReplyInput}>
               <Text style={[styles.actionText, { color: Color.mainColor2 }]}>Phản hồi</Text>
             </TouchableOpacity>
-            <Text style={[styles.separator, { color: Color.textTertiary }]}>·</Text> {/* Thay đổi màu separator */}
-            <Text style={[styles.time, { color: Color.textTertiary }]}>{timeAgo(comment.createdAt)}</Text> {/* Thay đổi màu thời gian */}
+            <Text style={[styles.separator, { color: Color.textTertiary }]}>·</Text>
+            <Text style={[styles.time, { color: Color.textTertiary }]}>{timeAgo(comment.createdAt)}</Text>
           </View>
         </View>
       </View>
