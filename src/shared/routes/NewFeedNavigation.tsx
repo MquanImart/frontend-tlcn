@@ -28,7 +28,7 @@ export type NewFeedParamList = {
     };
   ArticleDetail: { articleId: string; commentId?: string }; 
   GroupDetailsScreen: { groupId: string; currentUserId: string };
-      MapNavigation: {
+  MapNavigation: {
         screen?: keyof MapStackParamList;
         params?: MapStackParamList[keyof MapStackParamList];
   };
