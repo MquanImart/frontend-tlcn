@@ -3,14 +3,14 @@ import CButton from "@/src/shared/components/button/CButton";
 import CIconButton from "@/src/shared/components/button/CIconButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
-import { lightColor } from '@/src/styles/Colors'; // Import lightColor
+import { lightColor } from '@/src/styles/Colors';
 
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -24,6 +24,7 @@ import {
   TouchableWithoutFeedback,
   View,
   ScrollView,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -55,7 +56,6 @@ const extractCCCDData = async (imageUri: string, mimeType: string = 'image/jpeg'
       .create(formData);
 
     if (!response || !response.success) {
-      // Check for specific backend duplicate key error from the extraction service
       if (response?.messages && response.messages.includes("E11000 duplicate key error collection")) {
         throw new Error("Căn cước công dân đã được sử dụng!");
       }
@@ -73,9 +73,8 @@ const extractCCCDData = async (imageUri: string, mimeType: string = 'image/jpeg'
       dateOfExpiry: cccdData.dateOfExpiry || '',
     };
   } catch (error) {
-    // Re-throw specific error messages or provide a general one
     if (error instanceof Error && error.message.includes("Căn cước công dân đã được sử dụng!")) {
-      throw error; // Propagate the specific duplicate CCCD error
+      throw error;
     }
     throw new Error("Căn cước công dân không hợp lệ hoặc không thể đọc được.");
   }
@@ -83,7 +82,6 @@ const extractCCCDData = async (imageUri: string, mimeType: string = 'image/jpeg'
 
 const calculateAge = (dateOfBirth: string): number => {
   try {
-    // Convert DD/MM/YYYY to YYYY-MM-DD for Date object
     const dob = new Date(dateOfBirth.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1'));
     if (isNaN(dob.getTime())) {
       throw new Error('Ngày sinh không hợp lệ');
@@ -102,18 +100,81 @@ const calculateAge = (dateOfBirth: string): number => {
     throw new Error('Không thể tính tuổi từ ngày sinh');
   }
 };
+const validateCccdData = (data: CccdDataType): { isValid: boolean; error: string } => {
+  // Validate CCCD Number
+  if (!data.number || !/^\d{12}$/.test(data.number)) {
+    return { isValid: false, error: "Số CCCD phải là 12 chữ số." };
+  }
 
+  // Validate Date of Birth
+  const dobRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  if (!data.dateOfBirth || !dobRegex.test(data.dateOfBirth)) {
+    return { isValid: false, error: "Ngày sinh phải có định dạng DD/MM/YYYY." };
+  }
+  const [, day, month, year] = data.dateOfBirth.match(dobRegex) || [];
+  const dob = new Date(`${year}-${month}-${day}`);
+  if (isNaN(dob.getTime())) {
+    return { isValid: false, error: "Ngày sinh không hợp lệ." };
+  }
+  const age = calculateAge(data.dateOfBirth);
+  if (age < 18) {
+    return { isValid: false, error: "Bạn phải từ 18 tuổi trở lên." };
+  }
+
+  // Validate Sex
+  if (!data.sex || !["male", "female"].includes(data.sex.toLowerCase())) {
+    return { isValid: false, error: "Giới tính phải là 'male' hoặc 'female'." };
+  }
+
+  // Validate Date of Expiry
+  if (!data.dateOfExpiry || !dobRegex.test(data.dateOfExpiry)) {
+    return { isValid: false, error: "Ngày hết hạn phải có định dạng DD/MM/YYYY." };
+  }
+  const [, expDay, expMonth, expYear] = data.dateOfExpiry.match(dobRegex) || [];
+  const expiryDate = new Date(`${expYear}-${expMonth}-${expDay}`);
+  if (isNaN(expiryDate.getTime())) {
+    return { isValid: false, error: "Ngày hết hạn không hợp lệ." };
+  }
+  const today = new Date("2025-06-12"); // Current date as per your context
+  if (expiryDate <= today) {
+    return { isValid: false, error: "Ngày hết hạn phải là một ngày trong tương lai." };
+  }
+
+  return { isValid: true, error: "" };
+};
 const IDVerification = () => {
   const [displayName, setDisplayName] = useState<string>("");
   const [hashtag, setHashtag] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<{ uri: string, type: string } | null>(null);
-  const [cccdData, setCccdData] = useState<CccdDataType | null>(null); // Use CccdDataType for better type safety
+  const [cccdData, setCccdData] = useState<CccdDataType | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const [tempCccdData, setTempCccdData] = useState<CccdDataType | null>(null);
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<IDVerificationRouteProp>();
   const emailOrPhone = route.params?.emailOrPhone;
   const password = route.params?.password;
   const codeInputRef = useRef<TextInput>(null);
+
+  // Automatically extract CCCD data when an image is selected
+  useEffect(() => {
+    const extractData = async () => {
+      if (selectedImage) {
+        setIsLoading(true);
+        try {
+          Keyboard.dismiss();
+          const extractedData = await extractCCCDData(selectedImage.uri);
+          setCccdData(extractedData);
+        } catch (error) {
+          Alert.alert("Lỗi", error instanceof Error ? error.message : "Không thể trích xuất dữ liệu CCCD.");
+          setSelectedImage(null);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    extractData();
+  }, [selectedImage]);
 
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -129,9 +190,7 @@ const IDVerification = () => {
     });
 
     if (!result.canceled && result.assets?.length) {
-      const imageData = { uri: result.assets[0].uri, type: "image" };
-      setSelectedImage(imageData);
-      setCccdData(null); // Clear previous CCCD data when a new image is selected
+      setSelectedImage({ uri: result.assets[0].uri, type: "image" });
     }
   };
 
@@ -148,72 +207,82 @@ const IDVerification = () => {
     });
 
     if (!result.canceled && result.assets?.length) {
-      const imageData = { uri: result.assets[0].uri, type: "image" };
-      setSelectedImage(imageData);
-      setCccdData(null); // Clear previous CCCD data when a new image is taken
+      setSelectedImage({ uri: result.assets[0].uri, type: "image" });
     }
   };
 
+  const handleEditCccdData = () => {
+    if (cccdData) {
+      setTempCccdData({ ...cccdData }); // Copy current CCCD data to temporary state
+      setIsEditModalVisible(true);
+    }
+  };
+
+const handleSaveCccdData = () => {
+  if (tempCccdData) {
+    const { isValid, error } = validateCccdData(tempCccdData);
+    if (!isValid) {
+      Alert.alert("Lỗi", error);
+      return;
+    }
+    setCccdData(tempCccdData); 
+  }
+  setIsEditModalVisible(false);
+};
+
+  const handleCancelEdit = () => {
+    setTempCccdData(null);
+    setIsEditModalVisible(false);
+  };
+
   const handleCreateAccount = async () => {
-    if (isLoading) return; // Prevent multiple submissions
+    if (isLoading) return;
 
     if (!displayName || !hashtag) {
       Alert.alert("Lỗi", "Vui lòng nhập đầy đủ tên và mã hashtag.");
       return;
     }
 
-    setIsLoading(true); // Start loading before API calls
+    if (!cccdData) {
+      Alert.alert("Lỗi", "Vui lòng chọn hoặc chụp ảnh CCCD và xác nhận thông tin.");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      // 1. Check hashtag uniqueness
       const hashtagCheck = await restClient.apiClient
         .service("apis/accounts/check-hashtag")
         .create({ hashtag });
       if (hashtagCheck.exists) {
         Alert.alert("Lỗi", "Hashtag đã tồn tại trong hệ thống");
-        setIsLoading(false); // Stop loading on error
+        setIsLoading(false);
         return;
       }
 
-      // 2. Ensure an image is selected
-      if (!selectedImage) {
-        Alert.alert("Lỗi", "Vui lòng chọn hoặc chụp ảnh CCCD.");
-        setIsLoading(false); // Stop loading on error
-        return;
-      }
-
-      // 3. Extract CCCD data from the selected image
-      const extractedData = await extractCCCDData(selectedImage.uri);
-      setCccdData(extractedData); // Update state with extracted data
-
-      // 4. Verify age
-      const age = calculateAge(extractedData.dateOfBirth);
+      const age = calculateAge(cccdData.dateOfBirth);
       if (age < 18) {
         Alert.alert("Lỗi", "Bạn phải từ 18 tuổi trở lên để tạo tài khoản!");
-        setIsLoading(false); // Stop loading on error
+        setIsLoading(false);
         return;
       }
 
-      // 5. Process address and fetch coordinates
       let province = "";
       let district = "";
       let ward = "";
       let street = "";
-      // 'placeName' is not used, consider removing if not needed for backend.
-      // let placeName = "";
       let lat: number | null = null;
       let long: number | null = null;
 
-      if (extractedData.placeOfResidence) {
-        const addressParts = extractedData.placeOfResidence.split(", ").map((part: string) => part.trim());
+      if (cccdData.placeOfResidence) {
+        const addressParts = cccdData.placeOfResidence.split(", ").map((part: string) => part.trim());
         province = addressParts[addressParts.length - 1] || "";
         district = addressParts[addressParts.length - 2] || "";
         ward = addressParts[addressParts.length - 3] || "";
-        // Join remaining parts for street, excluding ward, district, province
         street = addressParts.slice(0, addressParts.length - 3).join(", ") || "";
 
         const fullAddressForGeo = `${ward}, ${district}, ${province}`.trim();
-        if (fullAddressForGeo) { // Only try to geocode if address is non-empty
+        if (fullAddressForGeo) {
           try {
             const response = await axios.get(
               `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddressForGeo)}&format=json&limit=1`
@@ -232,7 +301,6 @@ const IDVerification = () => {
         }
       }
 
-      // 6. Call the account creation API
       const result = await restClient.apiClient
         .service("apis/accounts/create")
         .create({
@@ -240,19 +308,18 @@ const IDVerification = () => {
           password,
           displayName,
           hashtag,
-          number: extractedData.number,
-          fullName: extractedData.fullName,
-          dateOfBirth: extractedData.dateOfBirth,
-          sex: extractedData.sex,
-          nationality: extractedData.nationality || "Việt Nam", // Default if empty
-          placeOfOrigin: extractedData.placeOfOrigin,
-          placeOfResidence: extractedData.placeOfResidence,
-          dateOfExpiry: extractedData.dateOfExpiry,
+          number: cccdData.number,
+          fullName: cccdData.fullName,
+          dateOfBirth: cccdData.dateOfBirth,
+          sex: cccdData.sex,
+          nationality: cccdData.nationality || "Việt Nam",
+          placeOfOrigin: cccdData.placeOfOrigin,
+          placeOfResidence: cccdData.placeOfResidence,
+          dateOfExpiry: cccdData.dateOfExpiry,
           province,
           district,
           ward,
           street,
-          // placeName, // Removed as it's not used
           lat,
           long,
         });
@@ -262,13 +329,12 @@ const IDVerification = () => {
           { text: "OK", onPress: () => navigation.navigate("PreferenceSelection", { email: emailOrPhone }) },
         ]);
       } else {
-        // Generic error message for other backend issues from account creation
         Alert.alert("Lỗi", result.message || "Không thể tạo tài khoản.");
       }
     } catch (error) {
       Alert.alert("Lỗi", error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định.");
     } finally {
-      setIsLoading(false); // Always stop loading
+      setIsLoading(false);
     }
   };
 
@@ -341,7 +407,7 @@ const IDVerification = () => {
                   height: 50,
                   backColor: lightColor.mainColor2,
                   textColor: lightColor.textOnMain1,
-                  radius: 25,
+                  radius: 27,
                   shadow: true,
                 }}
               />
@@ -353,7 +419,20 @@ const IDVerification = () => {
 
             {cccdData && (
               <View style={styles.cccdDataContainer}>
-                <Text style={styles.cccdDataTitle}>Thông tin CCCD đã trích xuất:</Text>
+                <View style={styles.cccdHeader}>
+                  <Text style={styles.cccdDataTitle}>Thông tin CCCD đã trích xuất:</Text>
+                  <CIconButton
+                    icon={<Icon name="edit" size={24} color={lightColor.textPrimary} />}
+                    onSubmit={handleEditCccdData}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backColor: lightColor.background,
+                      radius: 20,
+                      shadow: false,
+                    }}
+                  />
+                </View>
                 <Text style={styles.cccdDataItem}><Text style={styles.cccdDataLabel}>Số CCCD:</Text> {cccdData.number}</Text>
                 <Text style={styles.cccdDataItem}><Text style={styles.cccdDataLabel}>Họ và tên:</Text> {cccdData.fullName}</Text>
                 <Text style={styles.cccdDataItem}><Text style={styles.cccdDataLabel}>Ngày sinh:</Text> {cccdData.dateOfBirth}</Text>
@@ -366,8 +445,143 @@ const IDVerification = () => {
               </View>
             )}
 
+            {/* Edit Modal */}
+            {cccdData && (
+              <Modal
+                visible={isEditModalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={handleCancelEdit}
+              >
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Chỉnh sửa thông tin CCCD</Text>
+                    <ScrollView style={styles.modalScrollView}>
+                      <CInput
+                        placeholder="Số CCCD"
+                        value={tempCccdData?.number}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, number: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                      <CInput
+                        placeholder="Họ và tên"
+                        value={tempCccdData?.fullName}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, fullName: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                      <CInput
+                        placeholder="Ngày sinh (DD/MM/YYYY)"
+                        value={tempCccdData?.dateOfBirth}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, dateOfBirth: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                      <CInput
+                        placeholder="Giới tính"
+                        value={tempCccdData?.sex}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, sex: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                      <CInput
+                        placeholder="Quốc tịch"
+                        value={tempCccdData?.nationality}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, nationality: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                      <CInput
+                        placeholder="Nơi thường trú"
+                        value={tempCccdData?.placeOfResidence}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, placeOfResidence: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                      <CInput
+                        placeholder="Ngày hết hạn (DD/MM/YYYY)"
+                        value={tempCccdData?.dateOfExpiry}
+                        onChangeText={(text) => setTempCccdData((prev) => prev ? { ...prev, dateOfExpiry: text } : prev)}
+                        style={{
+                          width: "100%",
+                          height: 50,
+                          backColor: lightColor.background,
+                          textColor: lightColor.textPrimary,
+                          radius: 25,
+                          borderColor: lightColor.mainColor2,
+                        }}
+                      />
+                    </ScrollView>
+                    <View style={styles.modalButtonContainer}>
+                      <CButton
+                        label="Hủy"
+                        onSubmit={handleCancelEdit}
+                        style={{
+                          width: "45%",
+                          height: 50,
+                          backColor: lightColor.mainColor2,
+                          textColor: lightColor.textOnMain1,
+                          fontSize: 18,
+                          radius: 25,
+                        }}
+                      />
+                      <CButton
+                        label="Lưu"
+                        onSubmit={handleSaveCccdData}
+                        style={{
+                          width: "45%",
+                          height: 50,
+                          backColor: lightColor.mainColor2,
+                          textColor: lightColor.textOnMain1,
+                          fontSize: 18,
+                          radius: 25,
+                        }}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </Modal>
+            )}
+
             {isLoading ? (
-              <ActivityIndicator size="large" color={lightColor.mainColor2} /> 
+              <ActivityIndicator size="large" color={lightColor.mainColor2} />
             ) : (
               <CButton
                 label="Xác nhận"
@@ -375,7 +589,7 @@ const IDVerification = () => {
                 style={{
                   width: "85%",
                   height: 50,
-                  backColor: lightColor.mainColor2, 
+                  backColor: lightColor.mainColor2,
                   textColor: lightColor.textOnMain1,
                   fontSize: 18,
                   radius: 25,
@@ -462,7 +676,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: lightColor.mainColor2,
     marginBottom: 20,
-    paddingHorizontal: 15,
   },
   pickImageTouchable: {
     flex: 1,
@@ -472,6 +685,7 @@ const styles = StyleSheet.create({
     color: lightColor.textPrimary,
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: "center",
   },
   selectedImagePreview: {
     width: 150,
@@ -495,11 +709,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  cccdHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   cccdDataTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: lightColor.textPrimary,
-    marginBottom: 10,
     textAlign: 'center',
   },
   cccdDataItem: {
@@ -519,5 +738,43 @@ const styles = StyleSheet.create({
   loginLink: {
     color: lightColor.mainColor2,
     fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: lightColor.background,
+    padding: 20,
+    borderRadius: 10,
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: lightColor.textPrimary,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalScrollView: {
+    maxHeight: '100%',
+  },
+  modalInput: {
+    width: '100%',
+    height: 50,
+    borderColor: lightColor.mainColor2,
+    marginBottom: 10,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  modalButton: {
+    width: '45%',
+    height: 50,
   },
 });
