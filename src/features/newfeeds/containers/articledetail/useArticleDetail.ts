@@ -44,133 +44,124 @@ export default function useArticleDetail(articleId: string, commentId?: string) 
     }
   }, []);
 
-  const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 3000) => {
-    for (let i = 0; i < retries; i++) {
-      try {
-        const result = await fn();
-        return result;
-      } catch (error) {
-        console.warn(`Thử lại yêu cầu ${i + 1}/${retries}:`, error);
-        if (i < retries - 1) {
-          await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
-        } else {
-          throw error;
-        }
-      }
-    }
-  };
-
   const checkTextContent = async (text: string): Promise<boolean> => {
-    if (!text.trim()) return false;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
-      const response = await retryRequest(() =>
-        fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
-          method: "POST",
-          headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Content-Type": "application/json",
-            "Connection": "keep-alive",
-          },
-          body: JSON.stringify({ text }),
-          signal: controller.signal,
-        })
-      );
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+
+      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
+        method: "POST",
+        headers: {
+          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+        signal: controller.signal,
+      });
+
       clearTimeout(timeoutId);
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       const data = await response.json();
-      return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
+      return data.contains_bad_word || false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra văn bản:", {
-        message: error.message,
-        status: error.response?.status,
-        stack: error.stack,
-      });
+      console.error("❌ Lỗi kiểm tra văn bản:", error.message, error.stack);
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (90s). Vui lòng thử lại!");
-        return false;
+        Alert.alert("Lỗi", "Yêu cầu kiểm tra văn bản hết thời gian. Vui lòng thử lại!");
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
-        return true;
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung văn bản. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
+      return true; // Coi là nhạy cảm để an toàn
     }
   };
 
-  // Hàm kiểm tra nội dung hình ảnh
+  // Hàm kiểm tra hình ảnh
   const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
     if (!mediaAssets || mediaAssets.length === 0) return false;
-    for (const media of mediaAssets) {
-      if (media.type !== "image") {
-        Alert.alert("Lỗi", `File "${media.fileName || media.uri.split("/").pop()}" không phải là ảnh.`);
-        return true;
-      }
+
+    const imageAssets = mediaAssets.filter((media) => media.type === "image");
+
+    if (imageAssets.length === 0) return false;
+
+    for (const media of imageAssets) {
       if (media.fileSize && media.fileSize > 5 * 1024 * 1024) {
         Alert.alert("Lỗi", `Ảnh "${media.fileName || media.uri.split("/").pop()}" quá lớn, tối đa 5MB.`);
         return true;
       }
     }
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 seconds timeout
+
       const formData = new FormData();
-      for (const media of mediaAssets) {
+      for (const media of imageAssets) {
         const resizedUri = await ImageManipulator.manipulateAsync(
           media.uri,
           [{ resize: { width: 600 } }],
           { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
         ).then((result) => result.uri);
-        formData.append("files", {
+
+        formData.append("files", { // Notice 'files' here, plural
           uri: resizedUri,
           name: media.fileName || resizedUri.split("/").pop(),
           type: media.mimeType || "image/jpeg",
         } as any);
       }
-      const response = await retryRequest(() =>
-        fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
-          method: "POST",
-          headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Connection": "keep-alive",
-          },
-          body: formData,
-          signal: controller.signal,
-        })
-      );
+      
+      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
+        method: "POST",
+        headers: {
+          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+          "Connection": "keep-alive", // This is fine
+        },
+        body: formData,
+        signal: controller.signal,
+      });
+
       clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, Body: ${errorText}`);
       }
+
       const data = await response.json();
+
       let sensitiveImageDetected = false;
       let sensitiveFilename = "";
+
       for (const resultItem of data.results) {
         const isImageSensitive = resultItem.image_result?.is_sensitive;
         const isTextSensitive =
           resultItem.text_result?.text_sensitivity &&
           Object.values(resultItem.text_result.text_sensitivity).some((v: any) => v.is_sensitive);
+
         if (isImageSensitive || isTextSensitive) {
           sensitiveImageDetected = true;
           sensitiveFilename = resultItem.filename;
           break;
         }
       }
+
       if (sensitiveImageDetected) {
         Alert.alert("Cảnh báo nội dung nhạy cảm", `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
         return true;
       }
+
       return false;
     } catch (error: any) {
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!"); // Update timeout message
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra hình ảnh. Vui lòng kiểm tra mạng và thử lại!");
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
       return true;
     }
-  };
+};
 
   const getArticleById = useCallback(async () => {
     setIsLoading(true);

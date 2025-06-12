@@ -12,8 +12,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ResizeMode, Video } from "expo-av";
 import { Image } from 'expo-image';
+import * as Location from "expo-location"; // Đảm bảo đã import
 import { useEffect, useState } from "react";
+import { Location as MapLocationType } from "@/src/features/maps/containers/directions/interfaceLocation";
 import {
+  Alert,
   Dimensions,
   FlatList,
   StyleSheet,
@@ -21,6 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import useLocationInfo from "@/src/features/pages/containers/pages/tabs/useLocationInfo";
 
 interface PostProps {
   article: Article;
@@ -87,6 +91,23 @@ const Post: React.FC<PostProps> = ({
     isSaved,
   } = usePostActions(deleteArticle, editArticle, article, userId);
 
+  const { address, error, loading } = useLocationInfo(article.address?._id || "");
+  const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null); // Khai báo state userLocation
+
+  // Fetch user location
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Quyền truy cập vị trí bị từ chối", "Vui lòng cấp quyền truy cập vị trí để sử dụng chức năng bản đồ.");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setUserLocation(location);
+    })();
+  }, []);
+
   const isSharedPost = !!article.sharedPostId;
   const isLiked = article.emoticons?.some((id) => id.toString() === userId) ?? false;
 
@@ -114,14 +135,42 @@ const Post: React.FC<PostProps> = ({
     }
   };
 
-  // Hàm xử lý khi bấm vào hashtag
   const handleHashtagPress = (tag: string) => {
-    // Chỉ truyền thẳng tag (bao gồm cả dấu #) vào params
     navigation.navigate("SearchNavigation", {
       screen: "SearchPost",
       params: { textSearch: [tag] }, // Truyền trực tiếp tag, bao gồm dấu #
     });
   };
+
+  const handleMapPress = () => {
+      if (address?.lat && address?.long) {
+        try {
+          navigation.navigate("MapNavigation", {
+            screen: "Directions",
+            params: {
+              start: userLocation // Sử dụng userLocation làm điểm bắt đầu nếu có
+                ? {
+                    latitude: userLocation.coords.latitude,
+                    longitude: userLocation.coords.longitude,
+                    displayName: "Vị trí của bạn",
+                  }
+                : undefined, // Nếu không có vị trí người dùng, không truyền điểm bắt đầu
+              end: {
+                latitude: address.lat,
+                longitude: address.long,
+                displayName: article.address?.placeName || "Địa điểm", // Sử dụng placeName nếu có
+              } as MapLocationType,
+            },
+          });
+        } catch (err) {
+          console.error("Lỗi điều hướng:", err);
+          Alert.alert("Lỗi", "Không thể điều hướng đến Directions. Vui lòng thử lại.");
+        }
+      } else {
+        Alert.alert("Lỗi", "Không có tọa độ hợp lệ để điều hướng.");
+      }
+    };
+
 
   const renderImage = (photos: Article["listPhoto"]) => {
     if (!photos || photos.length === 0) return null;
@@ -238,13 +287,16 @@ const Post: React.FC<PostProps> = ({
               )}
             </View>
             {article.address && (
-              <Text
-                style={[styles.location, { color: Color.textSecondary }]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {article.address.ward}, {article.address.district}, {article.address.province}
-              </Text>
+              // Bọc phần địa chỉ bằng TouchableOpacity
+              <TouchableOpacity onPress={handleMapPress}>
+                <Text
+                  style={[styles.location, { color: Color.textSecondary }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {article.address.ward}, {article.address.district}, {article.address.province}
+                </Text>
+              </TouchableOpacity>
             )}
             <View style={styles.scopeContainer}>
               {getScopeIcon(normalizedScope)}
@@ -475,7 +527,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 10,
     right: 10,
-    // backgroundColor: "rgba(0,0,0,0.5)", // Đã thay bằng Color.backgroundTertiary + '80'
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,

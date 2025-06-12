@@ -10,6 +10,7 @@ import MessagesDrawerWrapper from "./MessageNavigation";
 import { SearchNavigation, SearchStackParamList } from "./SearchNavigation";
 import { SupportChatNavigation } from "./SupportChatNavigation";
 import { ProfileStackParamList } from "./ProfileNavigation";
+import { MapNavigation, MapStackParamList } from "./MapNavigation";
 const Stack = createStackNavigator<NewFeedParamList>();
 
 export type NewFeedParamList = {
@@ -27,6 +28,10 @@ export type NewFeedParamList = {
     };
   ArticleDetail: { articleId: string; commentId?: string }; 
   GroupDetailsScreen: { groupId: string; currentUserId: string };
+      MapNavigation: {
+        screen?: keyof MapStackParamList;
+        params?: MapStackParamList[keyof MapStackParamList];
+  };
 };
 
 export function NewFeedNavigation() {
@@ -40,6 +45,7 @@ export function NewFeedNavigation() {
       <Stack.Screen name="ProfileNavigation" component={ProfileNavigation} />
       <Stack.Screen name="ArticleDetail" component={ArticleDetail} />
       <Stack.Screen name="GroupDetailsScreen" component={GroupDetailsScreen} />
+      <Stack.Screen name="MapNavigation" component={MapNavigation} />
     </Stack.Navigator>
   );
 }

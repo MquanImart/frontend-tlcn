@@ -126,6 +126,7 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
               groupName={groupState?.groupName || ""}
               groupAvatar={groupState?.avt?.url || ""}
               role={userRole}
+              currentUserId = {currentUserId}
               onEditGroup={handleEditGroup}
               onDeleteGroup={deleteGroup}
             />

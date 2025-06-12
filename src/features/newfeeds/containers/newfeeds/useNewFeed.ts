@@ -32,54 +32,41 @@ export default function useNewFeed(
   const [loadingMore, setLoadingMore] = useState(false);
   const [isCommentChecking, setIsCommentChecking] = useState(false);
 
-  const retryRequest = async (fn: () => Promise<any>, retries = 5, delay = 3000) => {
-    for (let i = 0; i < retries; i++) {
-      try {
-        const result = await fn();
-        return result;
-      } catch (error) {
-        if (i < retries - 1) {
-          await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
-        } else {
-          throw error;
-        }
-      }
-    }
-  };
-
-  const checkTextContent = async (text: string): Promise<boolean> => {
-    if (!text.trim()) return false;
+    const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 300);
-      const response = await retryRequest(() =>
-        fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
-          method: "POST",
-          headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Content-Type": "application/json",
-            "Connection": "keep-alive",
-          },
-          body: JSON.stringify({ text }),
-          signal: controller.signal,
-        })
-      );
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+
+      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
+        method: "POST",
+        headers: {
+          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+        signal: controller.signal,
+      });
+
       clearTimeout(timeoutId);
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       const data = await response.json();
-      return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
+      return data.contains_bad_word || false;
     } catch (error: any) {
+      console.error("❌ Lỗi kiểm tra văn bản:", error.message, error.stack);
       if (error.name === "AbortError") {
-        return false;
+        Alert.alert("Lỗi", "Yêu cầu kiểm tra văn bản hết thời gian. Vui lòng thử lại!");
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
-        return true;
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung văn bản. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
+      return true; // Coi là nhạy cảm để an toàn
     }
   };
 
+  // Hàm kiểm tra hình ảnh
   const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
     if (!mediaAssets || mediaAssets.length === 0) return false;
 
@@ -96,7 +83,7 @@ export default function useNewFeed(
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 seconds timeout
 
       const formData = new FormData();
       for (const media of imageAssets) {
@@ -106,24 +93,22 @@ export default function useNewFeed(
           { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
         ).then((result) => result.uri);
 
-        formData.append("files", {
+        formData.append("files", { // Notice 'files' here, plural
           uri: resizedUri,
           name: media.fileName || resizedUri.split("/").pop(),
           type: media.mimeType || "image/jpeg",
         } as any);
       }
-
-      const response = await retryRequest(() =>
-        fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
-          method: "POST",
-          headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Connection": "keep-alive",
-          },
-          body: formData,
-          signal: controller.signal,
-        })
-      );
+      
+      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
+        method: "POST",
+        headers: {
+          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+          "Connection": "keep-alive", // This is fine
+        },
+        body: formData,
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 
@@ -158,13 +143,13 @@ export default function useNewFeed(
       return false;
     } catch (error: any) {
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (90s). Vui lòng dùng ảnh nhỏ hơn!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!"); // Update timeout message
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
       return true;
     }
-  };
+};
 
   const getUserId = async () => {
     const id = await AsyncStorage.getItem("userId");

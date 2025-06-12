@@ -16,6 +16,7 @@ interface GroupTopBarProps {
   groupName: string;
   groupAvatar: string;
   role: "Guest" | "Member" | "Admin" | "Owner";
+  currentUserId: string;
   onEditGroup: () => void;
   onDeleteGroup: () => void;
 }
@@ -25,6 +26,7 @@ const GroupTopBar: React.FC<GroupTopBarProps> = ({
   groupName,
   groupAvatar,
   role,
+  currentUserId,
   onEditGroup,
   onDeleteGroup,
 }) => {
@@ -55,9 +57,9 @@ const GroupTopBar: React.FC<GroupTopBarProps> = ({
         text: "Xác nhận",
         onPress: () => {
           if (role === "Admin") {
-            handleUpdateMemberStatus(groupId, "remove-admin");
+            handleUpdateMemberStatus(currentUserId, "remove-admin");
           } else if (role === "Member") {
-            handleUpdateMemberStatus(groupId, "rejected");
+            handleUpdateMemberStatus(currentUserId, "rejected");
           }
         },
       },

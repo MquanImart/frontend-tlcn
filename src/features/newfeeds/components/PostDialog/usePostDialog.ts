@@ -28,72 +28,46 @@ const usePostDialog = (userId: string) => {
   const [isMapPickerVisible, setMapPickerVisible] = useState(false);
 
   // Hàm retry request
-  const retryRequest = async (fn: () => Promise<Response>, retries: number = 5, delay: number = 3000): Promise<Response> => {
-    let lastError: unknown;
-    for (let i = 0; i < retries; i++) {
-      try {
-        const response = await fn();
-        return response;
-      } catch (error) {
-        console.warn(`Retry ${i + 1}/${retries}:`, error);
-        lastError = error;
-        if (i < retries - 1) {
-          await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
-        }
-      }
-    }
-    throw lastError ?? new Error("All retries failed");
-  };
-
   const checkTextContent = async (text: string): Promise<boolean> => {
-    if (!text.trim()) return false;
-    console.time("CheckTextContent"); // Bắt đầu đo thời gian kiểm tra văn bản
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout 3s
-      const response = await retryRequest(() =>
-        fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
-          method: "POST",
-          headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Content-Type": "application/json",
-            "Connection": "keep-alive",
-          },
-          body: JSON.stringify({ text }),
-          signal: controller.signal,
-        })
-      );
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+
+      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
+        method: "POST",
+        headers: {
+          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+        signal: controller.signal,
+      });
+
       clearTimeout(timeoutId);
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       const data = await response.json();
-      console.timeEnd("CheckTextContent"); // Kết thúc đo thời gian
-      return data.contains_bad_word || Object.values(data.text_sensitivity || {}).some((v: any) => v.is_sensitive);
+      return data.contains_bad_word || false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra văn bản:", {
-        message: error.message,
-        status: error.response?.status,
-        stack: error.stack,
-      });
-      console.timeEnd("CheckTextContent"); // Đảm bảo kết thúc đo thời gian ngay cả khi có lỗi
+      console.error("❌ Lỗi kiểm tra văn bản:", error.message, error.stack);
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra văn bản (3s). Vui lòng thử lại!");
-        return false;
+        Alert.alert("Lỗi", "Yêu cầu kiểm tra văn bản hết thời gian. Vui lòng thử lại!");
       } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra văn bản. Vui lòng kiểm tra mạng và thử lại!");
-        return true;
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung văn bản. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
+      return true; // Coi là nhạy cảm để an toàn
     }
   };
 
+  // Hàm kiểm tra hình ảnh
   const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
     if (!mediaAssets || mediaAssets.length === 0) return false;
 
-    // Lọc chỉ các media là ảnh
     const imageAssets = mediaAssets.filter((media) => media.type === "image");
 
-    // Nếu không có ảnh, trả về false (không cần kiểm tra)
     if (imageAssets.length === 0) return false;
 
     for (const media of imageAssets) {
@@ -103,10 +77,9 @@ const usePostDialog = (userId: string) => {
       }
     }
 
-    console.time("CheckMediaContent"); // Bắt đầu đo thời gian kiểm tra hình ảnh
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 3 seconds timeout
 
       const formData = new FormData();
       for (const media of imageAssets) {
@@ -116,24 +89,22 @@ const usePostDialog = (userId: string) => {
           { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
         ).then((result) => result.uri);
 
-        formData.append("files", {
+        formData.append("files", { // Notice 'files' here, plural
           uri: resizedUri,
           name: media.fileName || resizedUri.split("/").pop(),
           type: media.mimeType || "image/jpeg",
         } as any);
       }
-
-      const response = await retryRequest(() =>
-        fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
-          method: "POST",
-          headers: {
-            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-            "Connection": "keep-alive",
-          },
-          body: formData,
-          signal: controller.signal,
-        })
-      );
+      
+      const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
+        method: "POST",
+        headers: {
+          "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+          "Connection": "keep-alive", // This is fine
+        },
+        body: formData,
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 
@@ -160,7 +131,6 @@ const usePostDialog = (userId: string) => {
         }
       }
 
-      console.timeEnd("CheckMediaContent"); // Kết thúc đo thời gian
       if (sensitiveImageDetected) {
         Alert.alert("Cảnh báo nội dung nhạy cảm", `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
         return true;
@@ -168,14 +138,8 @@ const usePostDialog = (userId: string) => {
 
       return false;
     } catch (error: any) {
-      console.error("❌ Lỗi kiểm tra nội dung ảnh:", {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      });
-      console.timeEnd("CheckMediaContent"); // Đảm bảo kết thúc đo thời gian ngay cả khi có lỗi
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (10s). Vui lòng dùng ảnh nhỏ hơn!");
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!"); // Update timeout message
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }

@@ -47,7 +47,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
   const [groupType, setGroupType] = useState<"public" | "private">(group?.type || "public");
   const [typeOpen, setTypeOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  useTheme(); // Hook để lấy đối tượng màu sắc động
+  useTheme();
 
   useEffect(() => {
     const fetchHobbies = async () => {
@@ -66,7 +66,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
           setHobby(selectedHobbies);
         }
       } catch (error) {
-        console.error("Lỗi khi lấy danh sách sở thích:", error);
+          console.error("Lỗi khi lấy danh sách sở thích:", error);
       }
     };
 
@@ -146,7 +146,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
         Alert.alert("Lỗi", response.message || "Không thể cập nhật nhóm");
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật nhóm:", error);
+        console.error("Lỗi khi cập nhật nhóm:", error);
       Alert.alert("Lỗi", "Không thể cập nhật nhóm, vui lòng thử lại!");
     } finally {
       setIsLoading(false);
@@ -163,7 +163,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       component: (
         <TextInput
           style={[styles.input, {
-            backgroundColor: Color.backgroundTertiary,
+            backgroundColor: Color.backgroundSecondary, // Changed
             color: Color.textPrimary,
             borderColor: Color.border,
           }]}
@@ -179,7 +179,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       component: (
         <TextInput
           style={[styles.input, styles.textarea, {
-            backgroundColor: Color.backgroundTertiary,
+            backgroundColor: Color.backgroundSecondary, // Changed
             color: Color.textPrimary,
             borderColor: Color.border,
           }]}
@@ -194,28 +194,37 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
     {
       key: "Sở thích",
       component: (
-        <DropDownPicker
-          open={hobbyOpen}
-          setOpen={setHobbyOpen}
-          value={hobby}
-          setValue={setHobby}
-          items={hobbies}
-          placeholder={placeholderText}
-          style={[styles.dropdown, {
-            backgroundColor: Color.backgroundTertiary,
-            borderColor: Color.border,
-          }]}
-          dropDownContainerStyle={[styles.dropdownContainer, {
-            borderColor: Color.border,
-            backgroundColor: Color.backgroundTertiary,
-          }]}
-          textStyle={{ color: Color.textPrimary }}
-          labelStyle={{ color: Color.textPrimary }}
-          placeholderStyle={{ color: Color.textTertiary }}
-          multiple={true}
-          min={1}
-          listMode="SCROLLVIEW"
-        />
+        <>
+          <Text style={[styles.label, { color: Color.textPrimary }]}>Sở thích</Text>
+          <DropDownPicker
+            open={hobbyOpen}
+            setOpen={setHobbyOpen}
+            value={hobby}
+            setValue={setHobby}
+            items={hobbies}
+            multiple={true}
+            min={1}
+            showTickIcon
+            mode="BADGE"
+            placeholder="Chọn sở thích"
+            style={[styles.dropdown, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary }]}
+            dropDownContainerStyle={[styles.dropdownContainer, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary }]}
+            listMode="SCROLLVIEW"
+            textStyle={{ color: Color.textPrimary }}
+            selectedItemLabelStyle={{ color: Color.textOnMain2 }}
+            selectedItemContainerStyle={{ backgroundColor: Color.mainColor2 }}
+            itemSeparatorStyle={{ backgroundColor: Color.border }}
+            badgeStyle={{
+              backgroundColor: Color.mainColor2,
+              borderColor: Color.mainColor2,
+              borderWidth: 1,
+            }}
+            badgeTextStyle={{
+              color: Color.mainColor2,
+              fontSize: 14,
+            }}
+          />
+        </>
       ),
     },
     {
@@ -225,7 +234,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
           <View style={styles.ruleInputContainer}>
             <TextInput
               style={[styles.ruleInput, {
-                backgroundColor: Color.backgroundTertiary,
+                backgroundColor: Color.backgroundSecondary, // Changed
                 color: Color.textPrimary,
                 borderColor: Color.border,
               }]}
@@ -271,12 +280,12 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
             { label: "Riêng tư", value: "private" },
           ]}
           style={[styles.dropdown, {
-            backgroundColor: Color.backgroundTertiary,
+            backgroundColor: Color.backgroundSecondary, // Changed
             borderColor: Color.border,
           }]}
           dropDownContainerStyle={[styles.dropdownContainer, {
             borderColor: Color.border,
-            backgroundColor: Color.backgroundTertiary,
+            backgroundColor: Color.backgroundSecondary, // Changed
           }]}
           textStyle={{ color: Color.textPrimary }}
           labelStyle={{ color: Color.textPrimary }}
@@ -289,7 +298,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       component: (
         <View>
           <TouchableOpacity style={[styles.filePicker, {
-            backgroundColor: Color.backgroundTertiary,
+            backgroundColor: Color.backgroundSelected, // This was already Color.backgroundSelected, keeping as is
           }]} onPress={handlePickAvatar}>
             <Text style={[styles.filePickerText, { color: Color.textPrimary }]}>
               {avatar ? "Thay đổi ảnh đại diện" : "Chọn ảnh"}
@@ -316,7 +325,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
       ),
     },
     {
-      key: "", // Empty key for the save button section
+      key: "",
       component: (
         <TouchableOpacity
           style={[styles.button, styles.saveButton, {
@@ -344,7 +353,7 @@ const EditGroupScreen: React.FC<EditGroupProps> = ({ group, onCancel, onSave }) 
         data={sections}
         renderItem={({ item }) => (
           <View style={{ marginBottom: 15 }}>
-            <Text style={[styles.label, { color: Color.textPrimary }]}>{item.key}</Text>
+            {item.key !== "Sở thích" && <Text style={[styles.label, { color: Color.textPrimary }]}>{item.key}</Text>}
             {item.component}
           </View>
         )}
@@ -379,11 +388,13 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 10,
+    zIndex: 2000,
     marginBottom: 15,
   },
   dropdownContainer: {
     borderWidth: 1,
+    zIndex: 3000,
   },
   ruleInputContainer: {
     flexDirection: "row",
@@ -413,9 +424,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  filePickerText: {
-    // color is set inline
-  },
+  filePickerText: {},
   avatarPreview: {
     width: 100,
     height: 100,
@@ -439,7 +448,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveButton: {
-    marginRight: 10, // Consider if this margin is needed when flex: 1
+    marginRight: 10,
   },
   buttonText: {
     fontSize: 16,

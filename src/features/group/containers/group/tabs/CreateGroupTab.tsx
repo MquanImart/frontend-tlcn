@@ -23,7 +23,7 @@ interface CreateGroupProps {
 }
 
 const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
-  useTheme(); // Activate theme context
+  useTheme();
   const {
     groupName,
     setGroupName,
@@ -54,10 +54,9 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={[styles.container, { backgroundColor: Color.background }]} // Use dynamic background color
+      style={[styles.container, { backgroundColor: Color.background }]}
     >
       <FlatList
-        // The overall container handles the background, so no need for it here
         data={[
           {
             key: "Tên nhóm",
@@ -66,7 +65,7 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
                 <Ionicons name="people-outline" size={20} color={Color.textSecondary} />
                 <TextInput
                   style={[styles.input, { color: Color.textPrimary }]}
-                  placeholder="Tên nhóm"
+                  placeholder="Nhập tên nhóm"
                   placeholderTextColor={Color.textTertiary}
                   value={groupName}
                   onChangeText={setGroupName}
@@ -81,7 +80,7 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
                 <Ionicons name="document-text-outline" size={20} color={Color.textSecondary} />
                 <TextInput
                   style={[styles.input, { color: Color.textPrimary }]}
-                  placeholder="Giới thiệu nhóm"
+                  placeholder="Nhập giới thiệu nhóm"
                   placeholderTextColor={Color.textTertiary}
                   value={groupDescription}
                   onChangeText={setGroupDescription}
@@ -109,24 +108,19 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
                   style={[styles.dropdown, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary }]}
                   dropDownContainerStyle={[styles.dropdownContainer, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary }]}
                   listMode="SCROLLVIEW"
-                  textStyle={{ color: Color.textPrimary }} // Style cho text của item trong danh sách thả xuống
-                  selectedItemLabelStyle={{ color: Color.textOnMain2 }} // Style cho text của item được chọn trong danh sách thả xuống
-                  selectedItemContainerStyle={{ backgroundColor: Color.mainColor2 }} // Style nền của item được chọn trong danh sách
-                  itemSeparatorStyle={{ backgroundColor: Color.border }} // Màu đường phân cách item
-
-                  // --- THÊM CÁC THUỘC TÍNH NÀY ĐỂ HIỂN THỊ TEXT TRONG BADGE ---
+                  textStyle={{ color: Color.textPrimary }}
+                  selectedItemLabelStyle={{ color: Color.textOnMain2 }}
+                  selectedItemContainerStyle={{ backgroundColor: Color.mainColor2 }}
+                  itemSeparatorStyle={{ backgroundColor: Color.border }}
                   badgeStyle={{
-                    backgroundColor: Color.mainColor2, // Màu nền của badge, ví dụ màu chủ đạo
-                    borderColor: Color.mainColor2, // Viền của badge nếu muốn
+                    backgroundColor: Color.mainColor2,
+                    borderColor: Color.mainColor2,
                     borderWidth: 1,
-                    // Các style khác cho badge nếu cần, ví dụ padding, borderRadius
                   }}
                   badgeTextStyle={{
-                    color: Color.textOnMain2, // Màu chữ của text trong badge, đảm bảo tương phản với nền badge
-                    fontSize: 14, // Kích thước chữ của text trong badge
-                    // Các style khác cho text trong badge
+                    color: Color.mainColor2,
+                    fontSize: 14,
                   }}
-                  // --- KẾT THÚC CÁC THUỘC TÍNH CẦN THÊM ---
                 />
               </>
             ),
@@ -136,26 +130,39 @@ const CreateGroupTab = ({ userId, handleScroll }: CreateGroupProps) => {
             content: (
               <>
                 <Text style={[styles.label, { color: Color.textPrimary }]}>Quy định nhóm</Text>
-                <View style={styles.ruleContainer}>
+                <View style={styles.ruleInputContainer}>
                   <TextInput
-                    style={[styles.input, { borderColor: Color.border, backgroundColor: Color.backgroundSecondary, color: Color.textPrimary }]}
-                    placeholder="Nhập quy định"
+                    style={[styles.ruleInput, {
+                      backgroundColor: Color.backgroundSecondary, // Changed to backgroundSecondary
+                      color: Color.textPrimary,
+                      borderColor: Color.border,
+                    }]}
+                    placeholder="Nhập quy định nhóm"
                     placeholderTextColor={Color.textTertiary}
                     value={ruleInput}
                     onChangeText={setRuleInput}
                   />
-                  <TouchableOpacity style={[styles.addButton, { backgroundColor: Color.mainColor2 }]} onPress={handleAddRule}>
-                    <Ionicons name="add-circle" size={24} color={Color.textOnMain2} />
+                  <TouchableOpacity style={[styles.addButton, {
+                    backgroundColor: Color.mainColor2,
+                  }]} onPress={handleAddRule}>
+                    <Text style={[styles.addButtonText, { color: Color.textOnMain2 }]}>Thêm</Text>
                   </TouchableOpacity>
                 </View>
-                {rules.map((rule, index) => (
-                  <View key={index} style={[styles.ruleItem, { backgroundColor: Color.backgroundTertiary }]}>
-                    <Text style={{ color: Color.textPrimary }}>• {rule}</Text>
-                    <TouchableOpacity onPress={() => setRules(rules.filter((_, i) => i !== index))}>
-                      <Ionicons name="close-circle" size={18} color={Color.error} />
-                    </TouchableOpacity>
+
+                {rules.length > 0 && (
+                  <View style={styles.rulesContainer}>
+                    {rules.map((rule, index) => (
+                      <View key={index} style={[styles.ruleItem, {
+                        backgroundColor: Color.mainColor2, // This was already mainColor2 for rules, keeping as is
+                      }]}>
+                        <Text style={[styles.ruleText, { color: Color.textOnMain2 }]}>{rule}</Text>
+                        <TouchableOpacity onPress={() => setRules(rules.filter((_, i) => i !== index))}>
+                          <Ionicons name="close-circle" size={20} color={Color.textOnMain2} />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
                   </View>
-                ))}
+                )}
               </>
             ),
           },
@@ -273,17 +280,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-  ruleItem: {
+  ruleInputContainer: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    padding: 10,
+    marginBottom: 15, // Add marginBottom here to match other input containers
+  },
+  ruleInput: {
+    flex: 1,
+    borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 5,
+    padding: 10,
+    marginRight: 10,
   },
   addButton: {
-    padding: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 8,
-    marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addButtonText: {
+    fontWeight: "600",
   },
   filePicker: {
     padding: 15,
@@ -291,8 +309,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  filePickerText: {
-    // This style was already commented out, as its color is set inline, which is fine.
+  filePickerText: {},
+  avatarPreview: {
+    width: 150,
+    height: 150,
+    borderRadius: 80,
+    alignSelf: "center",
+    marginTop: 10,
   },
   createButton: {
     padding: 15,
@@ -304,15 +327,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  avatarPreview: {
-    width: 150,
-    height: 150,
-    borderRadius: 80,
-    alignSelf: "center",
-    marginTop: 10,
-  },
   disabledButton: {
     opacity: 0.6,
+  },
+  rulesContainer: {
+    marginTop: 10,
+  },
+  ruleItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 5,
+  },
+  ruleText: {
+    fontSize: 14,
+    flex: 1,
   },
 });
 
