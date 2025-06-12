@@ -73,26 +73,26 @@ const Discovery = () => {
                                 } : {
                                   width: 90,
                                   padding: 10,
-                                  backgroundColor: 'transparent', // Tab không chọn có nền trong suốt
+                                  backgroundColor: 'transparent',
                                   borderRadius: 50
                                 }} onPress={() => {setCurrTab("nb")}}>
                                     <Text style={currTab === "nb" ? {
                                       alignSelf: 'center',
-                                      color: Color.textOnMain2 // Màu chữ trên tab đang chọn
+                                      color: Color.textOnMain2 
                                     } : {
                                       alignSelf: 'center',
-                                      color: 'white' // Đổi thành màu đen cho tab không chọn
+                                      color: 'white' 
                                     }}>Nổi bật</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={currTab !== "nb" ? {
                                   width: 110,
                                   padding: 10,
-                                  backgroundColor: Color.mainColor2, // Màu nền cho tab đang chọn
+                                  backgroundColor: Color.mainColor2,
                                   borderRadius: 50
                                 } : {
                                   width: 90,
                                   padding: 10,
-                                  backgroundColor: 'transparent', // Tab không chọn có nền trong suốt
+                                  backgroundColor: 'transparent', 
                                   borderRadius: 50
                                 }} onPress={() => {setCurrTab("dd")}}>
                                     <Text style={currTab !== "nb" ? {
