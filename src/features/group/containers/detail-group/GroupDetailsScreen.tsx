@@ -154,7 +154,6 @@ const GroupDetailsScreen: React.FC<GroupDetailsScreenProps> = ({ route }) => {
                   onClose={() => setInviteModalVisible(false)}
                   onInvite={(selectedUsers) => console.log("Mời", selectedUsers)}
                 />
-
                 <TabBarCustom
                   tabs={filteredTabs}
                   selectedTab={selectedTab}
