@@ -31,7 +31,7 @@ const usePostDialog = (userId: string) => {
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
         method: "POST",
@@ -79,7 +79,7 @@ const usePostDialog = (userId: string) => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 3 seconds timeout
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const formData = new FormData();
       for (const media of imageAssets) {
@@ -89,7 +89,7 @@ const usePostDialog = (userId: string) => {
           { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
         ).then((result) => result.uri);
 
-        formData.append("files", { // Notice 'files' here, plural
+        formData.append("files", {
           uri: resizedUri,
           name: media.fileName || resizedUri.split("/").pop(),
           type: media.mimeType || "image/jpeg",

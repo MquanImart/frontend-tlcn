@@ -32,7 +32,7 @@ export default function useNewFeed(
   const [loadingMore, setLoadingMore] = useState(false);
   const [isCommentChecking, setIsCommentChecking] = useState(false);
 
-    const checkTextContent = async (text: string): Promise<boolean> => {
+  const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s

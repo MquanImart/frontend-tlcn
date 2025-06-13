@@ -609,8 +609,6 @@ export default function usePost(
   };
 
 
-
-
   const recordView = async (articleId: string) => {
     if (!userId) {
       console.warn("⚠️ userId không tồn tại");
