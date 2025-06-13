@@ -30,8 +30,8 @@ type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
   // Removed useTheme() since we are explicitly using lightColor
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("21110740@student.hcmute.edu.vn");
-  const [password, setPassword] = useState<string>("quan123");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigation = useNavigation<AuthNavigationProp>();
 
   // Ref to focus on the password input after entering email/phone
@@ -91,7 +91,7 @@ const Login = () => {
             {/* Email or Phone Input */}
             <View style={styles.inputContainer}>
               <CInput
-                placeholder="Nhập email hoặc số điện thoại"
+                placeholder="Nhập email "
                 value={emailOrPhone}
                 onChangeText={setEmailOrPhone}
                 returnKeyType="next"
