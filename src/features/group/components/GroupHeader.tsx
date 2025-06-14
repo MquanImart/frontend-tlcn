@@ -27,53 +27,31 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({
       <Image source={{ uri: group.avt?.url || "" }} style={styles.coverImage} />
 
       <View style={styles.infoContainer}>
-        <Text style={[styles.memberCount, { color: Color.textSecondary }]}>
-          {`${group.type === "public" ? "Nhóm công khai" : "Nhóm riêng tư"} • ${
-            group.members?.filter((member) => member.state === "accepted").length || 0
-          } thành viên`}
-        </Text>
-      </View>
+        {/* Dòng thông tin nhóm và nút mời sẽ nằm ngang hàng trong cùng một View */}
+        <View style={styles.topRow}>
+          <Text style={[styles.groupDetails, { color: Color.textSecondary }]}>
+            {`${group.type === "public" ? "Nhóm công khai" : "Nhóm riêng tư"} • ${
+              group.members?.filter((member) => member.state === "accepted").length || 0
+            } thành viên`}
+          </Text>
 
-      {role !== "Guest" && (
-        <View style={styles.buttonRow}>
-          <CIconButton
-            label={isJoined ? "Đã tham gia" : "Tham gia"}
-            icon={
-              <Icon
-                name={isJoined ? "check-circle" : "group-add"}
-                size={20}
-                color={Color.textOnMain2}
-                style={{ marginRight: 10 }}
-              />
-            }
-            onSubmit={isJoined ? () => {} : () => {}}
-            style={{
-              width: "48%",
-              height: 45,
-              backColor: Color.mainColor2,
-              textColor: Color.textOnMain2,
-              fontSize: 16,
-              fontWeight: "bold",
-              radius: 8,
-              flex_direction: "row",
-              justifyContent: "center",
-            }}
-          />
-          <CButton
-            label="Mời"
-            onSubmit={onInvite}
-            style={{
-              width: "48%",
-              height: 45,
-              backColor: Color.mainColor2,
-              textColor: Color.textOnMain2,
-              fontSize: 16,
-              fontWeight: "bold",
-              radius: 8,
-            }}
-          />
+          {role !== "Guest" && (
+            <CButton
+              label="Mời"
+              onSubmit={onInvite}
+              style={{
+                width: 80, // Giảm chiều rộng để nó nằm vừa một hàng
+                height: 35, // Giảm chiều cao để nó nhỏ gọn hơn
+                backColor: Color.mainColor2,
+                textColor: Color.textOnMain2,
+                fontSize: 14, // Giảm kích thước chữ
+                fontWeight: "bold",
+                radius: 8,
+              }}
+            />
+          )}
         </View>
-      )}
+      </View>
     </View>
   );
 };
@@ -88,14 +66,19 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 10,
+    // Không cần flexDirection ở đây nữa, vì đã có topRow
   },
-  memberCount: {
+  topRow: {
+    flexDirection: 'row', // Sắp xếp các phần tử con theo hàng ngang
+    justifyContent: 'space-between', // Đẩy các phần tử ra hai bên
+    alignItems: 'center', // Căn giữa theo chiều dọc
+    marginBottom: 5, // Khoảng cách với các nội dung khác nếu có
+  },
+  groupDetails: { // Đổi tên từ memberCount để phản ánh nội dung tổng thể hơn
     fontSize: 14,
-    marginVertical: 5,
+    // Không cần marginVertical ở đây nữa vì đã căn chỉnh bằng alignItems
+    flexShrink: 1, // Cho phép text co lại nếu dài
+    marginRight: 10, // Khoảng cách giữa text và nút
   },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
-  },
+  // buttonRow không cần thiết nữa, logic đã được chuyển vào topRow
 });

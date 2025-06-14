@@ -1,3 +1,4 @@
+// src/features/group/containers/detail-group/tabs/useGroupMySelf.ts
 import { Article } from "@/src/features/newfeeds/interface/article";
 import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,6 +12,7 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Keep modalVisible and setModalVisible here as they relate to adminInvite
   const [modalVisible, setModalVisible] = useState(false);
   const [adminInvite, setAdminInvite] = useState<{
     groupName: string;
@@ -105,6 +107,7 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
 
     try {
       const response = await groupsClient.patch(`${groupId}/members/${currentUserId}`, { state: "accept-admin" });
+      console.log('response', response)
       if (response.success) {
         if (adminInvite.inviterId && adminInvite.inviterId !== currentUserId) {
           try {
@@ -123,7 +126,7 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
 
         Alert.alert("Thành công", "Bạn đã trở thành quản trị viên của nhóm.");
         setAdminInvite(null);
-        setModalVisible(false);
+        setModalVisible(false); // Close modal
       } else {
         Alert.alert("Lỗi", response.message || "Không thể chấp nhận lời mời.");
       }
@@ -137,11 +140,10 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
     if (!adminInvite) return;
 
     try {
-      const response = await groupsClient.patch(`${groupId}/members/${currentUserId}`, { state: "remove-admin" });
+      const response = await groupsClient.patch(`${groupId}/members/${currentUserId}`, { state: "remove-admin" }); // Assuming "remove-admin" state is used for rejection
       if (response.success) {
-        Alert.alert("Thành công", "Bạn đã từ chối lời mời làm quản trị viên.");
         setAdminInvite(null);
-        setModalVisible(false);
+        setModalVisible(false); // Close modal
       } else {
         Alert.alert("Lỗi", response.message || "Không thể từ chối lời mời.");
       }
@@ -167,7 +169,7 @@ export const useGroupMySelf = (groupId: string, currentUserId: string) => {
     modalVisible,
     setModalVisible,
     adminInvite,
-    handleAcceptInvite,
+    handleAcceptInvite, 
     handleRejectInvite,
     loadMoreArticles,
     isLoadingMore,

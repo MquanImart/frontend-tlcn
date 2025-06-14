@@ -24,7 +24,7 @@ interface ExploreTabProps {
 const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
   useTheme(); // Kích hoạt theme context
   const navigation = useNavigation<StackNavigationProp<GroupParamList>>();
-  const { groupsNotJoined, loading, error, handleJoinGroup, loadMoreGroups, isLoadingMore, fetchGroups } =
+  const { groupsNotJoined, loading, error, handleJoinGroup, loadMoreGroups, isLoadingMore, fetchGroups, handleCancelJoinRequest } =
     useExplore(userId);
 
   const handleViewGroup = (groupId: string) => {
@@ -66,6 +66,7 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
               currentUserId={userId}
               onJoinGroup={() => handleJoinGroup(item._id)}
               onViewGroup={() => handleViewGroup(item._id)}
+              onCancelJoinRequest={() => handleCancelJoinRequest(item._id)} 
             />
           )}
           onScroll={handleScroll}

@@ -8,6 +8,7 @@ import restClient from "@/src/shared/services/RestClient";
 import { Group } from "@/src/features/newfeeds/interface/article";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { SearchStackParamList } from "@/src/shared/routes/SearchNavigation";
+import { useExplore } from "@/src/features/group/containers/group/tabs/useExplore";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 
@@ -26,15 +27,14 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
   const [totalPages, setTotalPages] = useState(1);
   const limit = 5;
 
-  const handleJoinGroup = async (groupId: string) => {
-    try {
-      await groupsClient.create({ groupId, userId });
-      setAllGroups((prev) => prev.filter((group) => group._id !== groupId));
-    } catch (error: any) {
-      Alert.alert("Lỗi", "Không thể tham gia nhóm. Vui lòng thử lại.");
-      console.error("Lỗi khi tham gia nhóm:", error);
-    }
-  };
+  const { 
+    groupsNotJoined, 
+    loading, error, 
+    handleJoinGroup, 
+    loadMoreGroups, 
+    handleCancelJoinRequest 
+  } = useExplore(userId);
+
 
   const fetchGroups = useCallback(
     async (newPage = 1, append = false) => {
@@ -126,6 +126,7 @@ const SearchGroup: React.FC<SearchGroupProps> = ({ textSearch, userId, navigatio
                         currentUserId: userId,
                       })
                     }
+                  onCancelJoinRequest={handleCancelJoinRequest}
                   />
                 </View>
               ))}
