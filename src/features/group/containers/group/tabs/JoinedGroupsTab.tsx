@@ -66,6 +66,7 @@ const JoinedGroupsTab = ({ userId, handleScroll }: JoinedGroupsTabProps) => {
               currentUserId={userId}
               onJoinGroup={() => {}}
               onViewGroup={() => handleViewGroup(item._id)}
+              onCancelJoinRequest={() => {}}
             />
           )}
           onScroll={handleScroll}

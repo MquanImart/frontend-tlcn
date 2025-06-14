@@ -1,4 +1,3 @@
-import InviteAdminModal from "@/src/features/group/components/InviteAdminModal";
 import UserInfo from "@/src/features/group/components/UserInfo";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
 import Post from "@/src/features/newfeeds/components/post/Post";
@@ -23,25 +22,27 @@ import { useGroupMySelf } from "./useGroupMySelf";
 interface GroupMySelfProps {
   groupId: string;
   currentUserId: string;
+  currentUserJoinDate: number;
+  groupName: string;
   role: "Guest" | "Member" | "Admin" | "Owner";
   onRoleUpdated: () => void;
 }
 
-const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role, onRoleUpdated }) => {
+const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, currentUserJoinDate, role, groupName, onRoleUpdated }) => {
   useTheme();
   const {
     articles,
     setArticles,
     loading,
     error,
-    modalVisible,
-    setModalVisible,
-    adminInvite,
-    handleAcceptInvite,
-    handleRejectInvite,
     loadMoreArticles,
     isLoadingMore,
     fetchUserArticles,
+    adminInvite,
+    modalVisible: adminInviteModalVisible,
+    setModalVisible: setAdminInviteModalVisibility,
+    handleAcceptInvite,
+    handleRejectInvite,
   } = useGroupMySelf(groupId, currentUserId);
 
   const {
@@ -60,46 +61,13 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
     editArticle,
   } = useNewFeed(articles, setArticles);
 
-  const handleAcceptInviteWithRoleUpdate = async () => {
-    await handleAcceptInvite();
-    onRoleUpdated();
-  };
-
-  const handleRejectInviteWithRoleUpdate = async () => {
-    await handleRejectInvite();
-    onRoleUpdated();
-  };
-
   return (
     <View style={[styles.container, { backgroundColor: Color.background }]}>
-      <Text style={[styles.infoText, { color: Color.textPrimary }]}>Thông tin</Text>
-
-      {/* Hiển thị thông tin người dùng */}
-      {adminInvite ? (
-        <UserInfo
-          groupName={adminInvite.groupName || ""} // Ensure UserInfo wraps this in <Text>
-          role={role} // Ensure UserInfo wraps this in <Text> if displayed directly
-          joinDate={Date.now()} // Ensure UserInfo handles dates correctly for display
-          inviterAvatar={adminInvite.inviterAvatar || ""} // Ensure UserInfo handles this for display (e.g., as part of Image source)
-          onPress={() => adminInvite.hasInvite && setModalVisible(true)}
-        />
-      ) : (
-        <Text style={[styles.noInviteText, { color: Color.textSecondary }]}>Không có lời mời làm quản trị viên</Text>
-      )}
-
-      {/* Hiển thị modal lời mời làm quản trị viên nếu có */}
-      {adminInvite && modalVisible && (
-        <InviteAdminModal
-          visible={modalVisible}
-          onClose={() => setModalVisible(false)}
-          onAccept={handleAcceptInviteWithRoleUpdate}
-          onReject={handleRejectInviteWithRoleUpdate}
-          groupName={adminInvite.groupName} // Ensure InviteAdminModal wraps this in <Text>
-          inviterName={adminInvite.inviterName} // Ensure InviteAdminModal wraps this in <Text>
-          inviteDate={new Date(adminInvite.inviteDate).toLocaleDateString("vi-VN")} // Ensure InviteAdminModal wraps this in <Text>
-          inviterAvatar={adminInvite.inviterAvatar} // Ensure InviteAdminModal handles this for display
-        />
-      )}
+      <UserInfo
+        groupName={groupName}
+        role={role}
+        joinDate={currentUserJoinDate}
+      />
 
       <Text style={[styles.infoText, { color: Color.textPrimary }]}>Bài viết trong nhóm</Text>
 
@@ -120,7 +88,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <Post
-              article={item} // Ensure Post component wraps all its text content in <Text>
+              article={item}
               userId={currentUserId}
               onCommentPress={() => openComments(item)}
               onLike={() => likeArticle(item._id, item.createdBy._id)}
@@ -149,7 +117,6 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
         />
       )}
 
-      {/* Modal bình luận */}
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={closeComments}
@@ -174,7 +141,7 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, role,
             renderItem={({ item }) => (
               <CommentItem
                 userId={currentUserId}
-                comment={item} // Ensure CommentItem wraps all its text content in <Text>
+                comment={item}
                 onLike={likeComment}
                 onReply={replyToComment}
               />

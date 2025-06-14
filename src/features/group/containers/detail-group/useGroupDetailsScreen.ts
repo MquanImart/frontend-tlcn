@@ -9,11 +9,14 @@ import { Group } from "@/src/features/newfeeds/interface/article";
 
 const groupsClient = restClient.apiClient.service("apis/groups");
 
+// Đảm bảo interface Member đã bao gồm joinDate
 interface Member {
   id: string;
   name: string;
   avatar: string;
   description?: string;
+  joinDate?: number; // Unix timestamp
+  state?: string; // T
 }
 
 interface GroupData {
@@ -56,9 +59,9 @@ export const useGroupDetailsScreen = (groupId: string, currentUserId: string) =>
     isLocationLoading,
     setPageID,
     setGroupID,
-    MapPickerDialog, 
+    MapPickerDialog,
     isMapPickerVisible,
-    setMapPickerVisible, 
+    setMapPickerVisible,
   } = usePostDialog(currentUserId);
 
   useEffect(() => {
@@ -129,6 +132,10 @@ export const useGroupDetailsScreen = (groupId: string, currentUserId: string) =>
 
   const userRole = getRole(groupData, currentUserId) as "Guest" | "Member" | "Admin" | "Owner";
 
+  // Lấy joinDate của người dùng hiện tại (nếu là thành viên đã chấp nhận)
+  const currentUserJoinDate = groupData?.idCreater?.joinDate
+
+
   const handleEditGroup = () => setIsEditingGroup(true);
   const handleInvite = () => setInviteModalVisible(true);
   const handleSaveGroup = (updatedGroup: Group) => {
@@ -175,10 +182,11 @@ export const useGroupDetailsScreen = (groupId: string, currentUserId: string) =>
     handleMapPointSelect,
     clearLocation,
     isLocationLoading,
-    MapPickerDialog, 
+    MapPickerDialog,
     isMapPickerVisible,
-    setMapPickerVisible, 
+    setMapPickerVisible,
     setPageID,
-    openMapPicker
+    openMapPicker,
+    currentUserJoinDate
   };
 };

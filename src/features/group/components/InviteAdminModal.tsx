@@ -61,7 +61,7 @@ const InviteAdminModal: React.FC<InviteAdminModalProps> = ({
                 width: "48%",
                 height: 45,
                 backColor: Color.background,
-                textColor: Color.textOnMain2,
+                textColor: Color.mainColor2,
                 fontSize: 16,
                 fontWeight: "bold",
                 radius: 8,
