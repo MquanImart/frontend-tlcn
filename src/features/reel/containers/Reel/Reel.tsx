@@ -2,7 +2,7 @@ import { Reels } from '@/src/features/reel/interface/reels';
 import { ReelStackParamList } from '@/src/shared/routes/ReelNavigation';
 import { TabbarStackParamList } from '@/src/shared/routes/TabbarBottom';
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors'; // Đã import đối tượng Color
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -37,7 +37,7 @@ type ReelNavigationProp = StackNavigationProp<ReelStackParamList, 'Reel'>;
 type ReelListRouteProp = RouteProp<ReelStackParamList, 'Reel'>;
 
 export default function ReelsList() {
-  useTheme()
+  useTheme();
   const [reels, setReels] = useState<Reels[]>([]);
   const navigation = useNavigation<SettingNavigationProp>();
   const navigationReel = useNavigation<ReelNavigationProp>();
@@ -52,6 +52,7 @@ export default function ReelsList() {
   const [isLoadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [totalComments, setTotalComments] = useState<number>(0); // State để lưu tổng số comment
 
   const flatListRef = useRef<FlatList<Reels>>(null);
   const initialReelId = route.params?.reelId;
@@ -101,7 +102,6 @@ export default function ReelsList() {
       if (result?.success && result.data.length > 0) {
         const newReels = result.data;
         setReels(pageNum === 0 ? newReels : [...reels, ...newReels]);
-        // Giả định tổng số lượng reel là 100 để test phân trang, bạn nên lấy total từ API
         setHasMore(newReels.length === 4); // Giả định mỗi lần load 4 reels
       } else {
         console.warn('Không có dữ liệu reels hoặc lỗi từ API');
@@ -140,6 +140,17 @@ export default function ReelsList() {
     if (!hasMore || isLoadingMore) return;
     fetchReels(page + 1);
   };
+
+  // Lấy tổng số comment khi mở modal bình luận
+  useEffect(() => {
+    if (isModalVisible && currentReel?._id) {
+      const fetchTotalComments = async () => {
+        const total = await calculateTotalComments(currentReel._id);
+        setTotalComments(total);
+      };
+      fetchTotalComments();
+    }
+  }, [isModalVisible, currentReel?._id, calculateTotalComments]);
 
   useEffect(() => {
     const currentVideo = videoRefs.current[currentVideoIndex.current];
@@ -262,7 +273,7 @@ export default function ReelsList() {
             <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
               <View style={styles.commentHeader}>
                 <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
-                  {calculateTotalComments(currentReel?.comments || [])} bình luận
+                  {totalComments} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
                   <Ionicons name="close" size={24} color={Color.textPrimary} />
@@ -349,18 +360,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,
-    paddingTop: Platform.OS === 'ios' ? 50 : 30, // Adjust for status bar
+    paddingTop: Platform.OS === 'ios' ? 50 : 30,
   },
   headerLabel: {
-    color: Color.white_white, // Thay 'white' bằng Color.white_white
+    color: Color.white_white,
     fontSize: 25,
     fontWeight: 'bold',
-    textShadowColor: Color.shadow, // Thay 'rgba(0, 0, 0, 0.75)' bằng Color.shadow
+    textShadowColor: Color.shadow,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   headerIcon: {
-    shadowColor: Color.black_black, // Thay '#000' bằng Color.black_black
+    shadowColor: Color.black_black,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.75,
     shadowRadius: 2,
@@ -381,7 +392,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     marginBottom: 10,
-    borderBottomColor: Color.border, // Thay Color.borderColor1 bằng Color.border
+    borderBottomColor: Color.border,
   },
   emptyContainer: {
     flex: 1,
@@ -389,9 +400,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    color: Color.white_white, // Thay 'white' bằng Color.white_white
+    color: Color.white_white,
     fontSize: 16,
-    textShadowColor: Color.shadow, // Thay 'rgba(0, 0, 0, 0.75)' bằng Color.shadow
+    textShadowColor: Color.shadow,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
@@ -399,24 +410,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textShadowRadius: 2,
-    color: Color.textPrimary, // Thêm màu chữ cho commentTitle
+    color: Color.textPrimary,
   },
   commentInputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Color.border, // Thay Color.borderColor1 bằng Color.border
+    borderTopColor: Color.border,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Color.backgroundSecondary, // Thay Color.backGround bằng Color.backgroundSecondary
+    backgroundColor: Color.backgroundSecondary,
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: Color.border, // Thay Color.borderColor1 bằng Color.border
+    borderColor: Color.border,
   },
   commentInput: {
     flex: 1,
     fontSize: 14,
-    color: Color.textPrimary, // Thay Color.textColor1 bằng Color.textPrimary
+    color: Color.textPrimary,
     paddingHorizontal: 10,
   },
   commentList: {

@@ -64,6 +64,7 @@ export const SingleReel: React.FC<ReelProps> = ({
   const [editScope, setEditScope] = useState<string>('');
   const [editHashtags, setEditHashtags] = useState<string[]>([]);
   const isOwnPost = reel.createdBy._id === userId;
+  const [totalComments, setTotalComments] = useState<number>(0); // State để lưu tổng số comment
 
   useEffect(() => {
     setVideoRef(videoRef.current);
@@ -108,7 +109,25 @@ export const SingleReel: React.FC<ReelProps> = ({
       setError('Không thể kiểm tra trạng thái theo dõi');
     }
   };
-
+  useEffect(() => {
+    const initialize = async () => {
+      const id = await getCurrentUserId();
+      if (id && reel.createdBy._id) {
+        await checkFollowingStatus(id);
+      }
+      // Lấy tổng số comment khi component mount
+      if (reel._id) {
+        const total = await reelsClient.get(`${reel._id}/total-comments`);
+        if (total.success && typeof total.data === 'number') {
+          setTotalComments(total.data);
+        } else {
+          console.error('Lỗi khi lấy tổng số comment:', total.message);
+          setTotalComments(0);
+        }
+      }
+    };
+    initialize();
+  }, [reel._id, reel.createdBy._id]);
   useEffect(() => {
     const initialize = async () => {
       const id = await getCurrentUserId();
@@ -400,7 +419,7 @@ export const SingleReel: React.FC<ReelProps> = ({
                 style={styles.iconShadow}
               />
               <Text style={[styles.iconText, {color: Color.white_white, textShadowColor: Color.shadow}]}>
-                {calculateTotalComments(reel?.comments || []) || 0}
+                {totalComments}
               </Text>
             </TouchableOpacity>
 

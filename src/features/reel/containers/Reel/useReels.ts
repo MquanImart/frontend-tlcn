@@ -300,11 +300,19 @@ export default function useReel(
     }
   };
 
-  const calculateTotalComments = (comments: Comment[]): number => {
-    return comments.reduce((total, comment) => {
-      const replyCount = comment.replyComment?.length || 0;
-      return total + 1 + replyCount;
-    }, 0);
+  const calculateTotalComments = async (reelId: string): Promise<number> => {
+    try {
+      const response = await reelsClient.get(`${reelId}/total-comments`);
+      if (response.success && typeof response.data === 'number') {
+        return response.data;
+      } else {
+        console.error("Lỗi khi lấy tổng số comment:", response.message);
+        return 0;
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API tính tổng comment:", error);
+      return 0;
+    }
   };
 
   const calculateTotalLikes = (emoticons?: User[]): number => {

@@ -44,6 +44,7 @@ export default function ReelDetail() {
   const navigation = useNavigation<SettingNavigationProp>();
   const route = useRoute<ReelDetailRouteProp>();
   const { reelId, currentId } = route.params;
+  const [totalComments, setTotalComments] = useState<number>(0); // State để lưu tổng số comment
 
   const {
     getReelById,
@@ -98,7 +99,16 @@ export default function ReelDetail() {
     getUserID();
     fetchReel();
   }, [reelId]);
-
+  // Lấy tổng số comment khi mở modal bình luận
+  useEffect(() => {
+    if (isModalVisible && currentReel?._id) {
+      const fetchTotalComments = async () => {
+        const total = await calculateTotalComments(currentReel._id);
+        setTotalComments(total);
+      };
+      fetchTotalComments();
+    }
+  }, [isModalVisible, currentReel?._id, calculateTotalComments]);
   useEffect(() => {
     if (reel && videoRef.current && !isModalVisible) {
       videoRef.current.playAsync();
@@ -160,7 +170,7 @@ export default function ReelDetail() {
             <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
               <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
                 <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
-                  {calculateTotalComments(currentReel?.comments || [])} bình luận
+                  {totalComments} bình luận
                 </Text>
                 <TouchableOpacity onPress={closeComments}>
                   <Ionicons name="close" size={24} color={Color.textPrimary} />
