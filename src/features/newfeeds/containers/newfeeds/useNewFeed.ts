@@ -35,7 +35,7 @@ export default function useNewFeed(
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+      const timeoutId = setTimeout(() => controller.abort(), 50000); // Timeout 10s
 
       const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
         method: "POST",
@@ -83,7 +83,7 @@ export default function useNewFeed(
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 seconds timeout
+      const timeoutId = setTimeout(() => controller.abort(), 50000); // 3 seconds timeout
 
       const formData = new FormData();
       for (const media of imageAssets) {
