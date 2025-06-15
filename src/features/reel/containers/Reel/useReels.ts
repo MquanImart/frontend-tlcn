@@ -37,7 +37,7 @@ export default function useReel(
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+      const timeoutId = setTimeout(() => controller.abort(), 50000); // Timeout 10s
 
       const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
         method: "POST",
@@ -75,7 +75,7 @@ export default function useReel(
     }
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10s
+      const timeoutId = setTimeout(() => controller.abort(), 50000); // Timeout 10s
 
       const formData = new FormData();
       formData.append("file", {
