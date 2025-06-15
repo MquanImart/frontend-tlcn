@@ -7,6 +7,9 @@ import * as Location from "expo-location";
 import { Alert, Animated, Linking } from "react-native";
 import { NearbySearchResponse, PlaceData } from "./interfaceAPI";
 import { callGetGoogleApi, callPostGoogleApi } from "@/src/shared/services/API_Google";
+import restClient from "@/src/shared/services/RestClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Address, MyPhoto } from "@/src/interface/interface_reference";
 
 type MapNavigationProp = StackNavigationProp<MapStackParamList, "CustomMap">;
 
@@ -15,16 +18,29 @@ export interface LocationProps {
     longitude: number;
 }
 
+export interface LocationArticlesProps {
+    _id: string;
+    address: Address;
+    createdBy: {
+      _id: string;
+      displayName: string;
+      avt: MyPhoto[];
+    }
+}
+
 const useMap = (lat?: number, long?:number) => {
     const translateY = useRef(new Animated.Value(0)).current;
     const translateY_S = useRef(new Animated.Value(0)).current;
-    
+    const [loadingLocations, setLoadingLocations] = useState<boolean>(true);
+
     const navigation = useNavigation<MapNavigationProp>();
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
-    const mapRef = useRef<MapView>(null);
+    const mapRef = useRef<MapView | null>(null);
     const [currSaved, setCurrSaved] = useState<boolean>(false);
     const [selectedMarker, setSelectedMarker] = useState<LocationProps | null>(lat && long? {latitude: lat, longitude: long} : null);
     const [details, setDetails] = useState<PlaceData | null>(null);
+
+    const [locationArticles, setLocationArticles] = useState<LocationArticlesProps[] | null>(null);
 
     const moveDetails = (up: boolean) => {
         Animated.timing(translateY, {
@@ -42,9 +58,12 @@ const useMap = (lat?: number, long?:number) => {
           useNativeDriver: true,
         }).start();
     };
-    
     useEffect(() => {
-      if (selectedMarker && lat && long){
+      getLocationArticlesOfFriends();
+    }, []);
+
+    useEffect(() => {
+      if (selectedMarker){
         getNearbyPlaces(selectedMarker.latitude, selectedMarker.latitude)
       }
     }, [selectedMarker]);
@@ -84,28 +103,51 @@ const useMap = (lat?: number, long?:number) => {
           setLocation(loc);
         })();
     }, []);
-    
+
     useEffect(() => {
-      if (location && selectedMarker && mapRef.current) {
-        mapRef.current.fitToCoordinates(
-          [
-            {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            },
-            {
-              latitude: selectedMarker.latitude,
-              longitude: selectedMarker.longitude,
-            },
-          ],
-          {
-            edgePadding: { top: 160, right: 80, bottom: 80, left: 80 }, // padding bản đồ
-            animated: true,
-          }
-        );
-      }
-    }, [location, selectedMarker]);
+      if (!mapRef.current || !selectedMarker) return;
+      mapRef.current.animateToRegion({
+        latitude: selectedMarker.latitude -0.002,
+        longitude: selectedMarker.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
+    }, [selectedMarker]);
+
+    useEffect(() => {
+      if (!mapRef.current || !location || selectedMarker) return;
+      mapRef.current.animateToRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
+    }, [location, loadingLocations]);
     
+    const getLocationArticlesOfFriends = async () => {
+      setLoadingLocations(true);
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        if (userId) {
+          const userAPI = restClient.apiClient.service(`apis/users/friends-location-articles`);
+          const result = await userAPI.get(userId);
+          if (result.success) {
+            const data: any[] = result.data || [];
+            setLocationArticles(data);
+          } else {
+            setLocationArticles([]);
+          }
+        } else {
+          setLocationArticles([]);
+        }
+      } catch (err) {
+        console.log("Lỗi khi lấy locationArticles:", err);
+        setLocationArticles([]);
+      } finally {
+        setLoadingLocations(false);
+      }
+    };
+
     const handleMapPress = (event: MapPressEvent) => {
         const location = event.nativeEvent.coordinate;
         setSelectedMarker(location);
@@ -189,7 +231,8 @@ const useMap = (lat?: number, long?:number) => {
         setCurrSaved, closeDetails,
         moveDetails, moveSaved,
         handleMapPress, getDetails,
-        navigationDirection, clickSavedLocation
+        navigationDirection, clickSavedLocation,
+        locationArticles, loadingLocations
     }
 }
 

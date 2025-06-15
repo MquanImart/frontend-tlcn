@@ -1,14 +1,70 @@
-import { View, StyleSheet, Animated } from "react-native"
-import MapView, { Marker } from "react-native-maps";
+import { View, StyleSheet, Animated, ActivityIndicator, Text, Image } from "react-native"
+import MapView, { Marker, Callout } from "react-native-maps";
 import HeaderMap from "../components/HeaderMap";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import CardDetails from "../components/CardDetails";
 import ListSaveLocation from "./saved/ListSaved";
-import useMap from "./useMap";
+import useMap, { LocationArticlesProps } from "./useMap";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
 
+interface FriendLocationMarkerProps {
+  item: LocationArticlesProps;
+}
+
+const FriendLocationMarker: React.FC<FriendLocationMarkerProps> = ({ item }) => {
+  const latRaw = item.address?.lat;
+  const longRaw = item.address?.long;
+  const latNum = latRaw != null ? Number(latRaw) : NaN;
+  const longNum = longRaw != null ? Number(longRaw) : NaN;
+  if (isNaN(latNum) || isNaN(longNum)) {
+    return null;
+  }
+
+  const creator = item.createdBy;
+  const displayName = creator?.displayName || 'Bạn bè đã ghé thăm';
+
+  const avatarArr = creator?.avt;
+  const avatarUrl = avatarArr && avatarArr.length > 0
+    ? avatarArr[avatarArr.length - 1].url
+    : null;
+
+  return (
+    <Marker
+      key={item._id} // key sẽ được truyền khi dùng trong map
+      coordinate={{ latitude: latNum, longitude: longNum }}
+      anchor={{ x: 0.5, y: 0.5 }}
+    >
+      {avatarUrl ? (
+        <Image
+          source={{ uri: avatarUrl }}
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+            borderWidth: 1,
+            borderColor: '#fff',
+          }}
+        />
+      ) : (
+        <Image
+          source={require('@/src/assets/images/default/default_user.png')}
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+          }}
+        />
+      )}
+      <Callout tooltip>
+        <View style={styles.markerText}>
+          <Text>{displayName}</Text>
+        </View>
+      </Callout>
+    </Marker>
+  );
+};
 
 const CustomMap = () => {
   useTheme()
@@ -20,12 +76,16 @@ const CustomMap = () => {
     currSaved, selectedMarker,
     location, details,
     translateY, translateY_S,
+    locationArticles,
+    loadingLocations,
     moveSaved,
     handleMapPress, closeDetails,
     getDetails, navigationDirection,
     clickSavedLocation,
 
   } = useMap(lat, long);
+
+  if (!locationArticles) return <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator/></View>
 
   return (
     <View style={styles.container}>
@@ -49,6 +109,7 @@ const CustomMap = () => {
             longitude: location.coords.longitude,
           }}
           title="Vị trí của tôi"
+          image={require('@/src/assets/images/default/default_user.png')}
         />}
         {selectedMarker && <Marker
           coordinate={{
@@ -57,7 +118,16 @@ const CustomMap = () => {
           }}
           title="Chọn"
         />}
+        {locationArticles?.map(item => (
+          <FriendLocationMarker key={item._id} item={item} />
+        ))}
       </MapView>
+      {loadingLocations && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Đang tải điểm của bạn bè...</Text>
+        </View>
+      )}
       <Animated.View style={[styles.details, {
             transform: [{ translateY }],
             backgroundColor: Color.background, 
@@ -108,6 +178,23 @@ const styles = StyleSheet.create({
       padding: 10,
       borderStartEndRadius: 20, borderStartStartRadius: 20,
       zIndex: 6,
+    },
+    loadingOverlay: {
+      position: 'absolute',
+      top: 0, left: 0, right: 0, bottom: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(255,255,255,0.7)',
+      zIndex: 10,
+    },
+    markerText: {
+      backgroundColor: 'white',
+      padding: 5,
+      borderRadius: 6,
+      borderColor: '#fff',
+      borderWidth: 1,
+      minWidth: 100,
+      alignItems: 'center',
     }
   });
 

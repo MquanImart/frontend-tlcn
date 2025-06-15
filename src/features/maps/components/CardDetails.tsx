@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     name: {
+      maxWidth: '85%',
       fontSize: 20,
       fontWeight: 'bold',
       marginVertical: 20,
