@@ -2,7 +2,6 @@ import { Address } from "@/src/interface/interface_reference";
 import CButton from "@/src/shared/components/button/CButton";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import React, { useState } from "react";
 import {
@@ -14,7 +13,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
+import axios from "axios";
+import * as ImageManipulator from "expo-image-manipulator";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import env from "@/env";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 interface PostDialogProps {
   isModalVisible: boolean;
@@ -75,6 +80,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
 }) => {
   useTheme();
   const [isPrivacyModalVisible, setPrivacyModalVisible] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false); // State nội bộ cho loading sinh nội dung
 
   const togglePrivacyModal = () => setPrivacyModalVisible(!isPrivacyModalVisible);
 
@@ -91,13 +97,163 @@ const PostDialog: React.FC<PostDialogProps> = ({
     }
   };
 
+  // Hàm kiểm tra nội dung ảnh nhạy cảm
+  const checkMediaContent = async (imageUris: string[]): Promise<boolean> => {
+    if (!imageUris || imageUris.length === 0) return false;
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 50000);
+
+      const formData = new FormData();
+      for (const uri of imageUris) {
+        const fileName = uri.split("/").pop() || `image-${Date.now()}.jpg`;
+        const fileSize = await (await fetch(uri)).blob().then(blob => blob.size);
+
+        if (fileSize > 5 * 1024 * 1024) {
+          Alert.alert("Lỗi", `Ảnh "${fileName}" quá lớn, tối đa 5MB.`);
+          return true;
+        }
+
+        const resizedUri = await ImageManipulator.manipulateAsync(
+          uri,
+          [{ resize: { width: 600 } }],
+          { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+        ).then((result) => result.uri);
+
+        formData.append("files", {
+          uri: resizedUri,
+          name: fileName,
+          type: "image/jpeg",
+        } as any);
+      }
+
+      const response = await axios.post(
+        `${env.API_URL_CHECK_TOXIC}/check-image/`,
+        formData,
+        {
+          headers: {
+            "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
+            "Content-Type": "multipart/form-data",
+          },
+          signal: controller.signal,
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!response.data || !response.data.results) {
+        throw new Error("Invalid response from check-image API");
+      }
+
+      let sensitiveImageDetected = false;
+      let sensitiveFilename = "";
+
+      for (const resultItem of response.data.results) {
+        const isImageSensitive = resultItem.image_result?.is_sensitive;
+        const isTextSensitive =
+          resultItem.text_result?.text_sensitivity &&
+          Object.values(resultItem.text_result.text_sensitivity).some((v: any) => v.is_sensitive);
+
+        if (isImageSensitive || isTextSensitive) {
+          sensitiveImageDetected = true;
+          sensitiveFilename = resultItem.filename;
+          break;
+        }
+      }
+
+      if (sensitiveImageDetected) {
+        Alert.alert("Cảnh báo nội dung nhạy cảm", `Ảnh "${sensitiveFilename}" chứa nội dung không phù hợp.`);
+        return true;
+      }
+
+      return false;
+    } catch (error: any) {
+      console.error("Lỗi kiểm tra ảnh:", error.message);
+      if (error.name === "AbortError") {
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (30s). Vui lòng dùng ảnh nhỏ hơn!");
+      } else {
+        Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
+      }
+      return true; // Coi là nhạy cảm để an toàn
+    }
+  };
+
+  // Hàm sinh nội dung tự động
+  const handleGenerateContent = async () => {
+    if (selectedImages.length === 0) {
+      Alert.alert("Thông báo", "Vui lòng chọn ít nhất một ảnh!");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      // Kiểm tra nội dung ảnh nhạy cảm trước
+      const isMediaSensitive = await checkMediaContent(selectedImages);
+      if (isMediaSensitive) {
+        return; // Dừng nếu ảnh nhạy cảm
+      }
+
+      const formData = new FormData();
+      for (const uri of selectedImages) {
+        const resizedUri = await ImageManipulator.manipulateAsync(
+          uri,
+          [{ resize: { width: 600 } }],
+          { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
+        ).then((result) => result.uri);
+
+        const fileName = uri.split("/").pop() || `image-${Date.now()}.jpg`;
+        formData.append("images", {
+          uri: resizedUri,
+          name: fileName,
+          type: "image/jpeg",
+        } as any);
+      }
+
+      const token = await AsyncStorage.getItem("token");
+      const response = await axios.post(
+        `${env.URL_BACKEND}/apis/ai/generate-content`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        const { generatedContent, imageTags } = response.data.data;
+        setPostContent(generatedContent);
+        // Thêm hashtag từ imageTags
+        const newHashtags = imageTags.map((tag: { tag: string }) =>
+          `#${tag.tag.toLowerCase().replace(/\s+/g, "")}`
+        );
+        newHashtags.forEach((tag: string) => {
+          if (!hashtags.includes(tag)) {
+            setHashtagInput(tag);
+            handleAddHashtag();
+          }
+        });
+      } else {
+        Alert.alert("Lỗi", response.data.messages || "Không thể sinh nội dung!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API sinh nội dung:", error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi sinh nội dung!");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Modal visible={isModalVisible} transparent animationType="slide">
       <View style={styles.overlay}>
         <View style={[styles.dialog, { backgroundColor: Color.background }]}>
           <View style={styles.header}>
             <Text style={[styles.headerTitle, { color: Color.textPrimary }]}>Tạo bài viết</Text>
-            <TouchableOpacity onPress={toggleModal} disabled={isLoading}>
+            <TouchableOpacity onPress={toggleModal} disabled={isLoading || isGenerating}>
               <Ionicons name="close" size={24} color={Color.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -105,7 +261,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
           <TouchableOpacity
             style={[styles.privacySelector, { borderColor: Color.border }]}
             onPress={togglePrivacyModal}
-            disabled={isLoading}
+            disabled={isLoading || isGenerating}
           >
             {getPrivacyIcon(privacy)}
             <Text style={[styles.privacyText, { color: Color.textPrimary }]}>{privacy}</Text>
@@ -141,7 +297,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
             value={postContent}
             onChangeText={setPostContent}
             multiline
-            editable={!isLoading}
+            editable={!isLoading && !isGenerating}
           />
 
           {selectedImages.length > 0 && (
@@ -154,7 +310,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
                   <TouchableOpacity
                     style={[styles.removeImage, { backgroundColor: Color.backgroundTertiary }]}
                     onPress={() => handleRemoveImage(index)}
-                    disabled={isLoading}
+                    disabled={isLoading || isGenerating}
                   >
                     <Ionicons name="close" size={18} color={Color.textOnMain2} />
                   </TouchableOpacity>
@@ -172,9 +328,9 @@ const PostDialog: React.FC<PostDialogProps> = ({
               value={hashtagInput}
               onChangeText={setHashtagInput}
               onSubmitEditing={handleAddHashtag}
-              editable={!isLoading}
+              editable={!isLoading && !isGenerating}
             />
-            <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading}>
+            <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading || isGenerating}>
               <Ionicons name="add-circle" size={26} color={Color.mainColor2} />
             </TouchableOpacity>
           </View>
@@ -183,7 +339,7 @@ const PostDialog: React.FC<PostDialogProps> = ({
             {hashtags.map((tag, index) => (
               <View key={index} style={[styles.hashtagItem, { backgroundColor: Color.backgroundSecondary }]}>
                 <Text style={[styles.hashtagText, { color: Color.textPrimary }]}>{tag}</Text>
-                <TouchableOpacity onPress={() => handleRemoveHashtag(index)} disabled={isLoading}>
+                <TouchableOpacity onPress={() => handleRemoveHashtag(index)} disabled={isLoading || isGenerating}>
                   <Ionicons name="close-circle" size={18} color={Color.textSecondary} />
                 </TouchableOpacity>
               </View>
@@ -194,11 +350,11 @@ const PostDialog: React.FC<PostDialogProps> = ({
             {location.address ? (
               <View style={[styles.locationInfo, { borderColor: Color.border }]}>
                 <MaterialIcons name="location-on" size={20} color={Color.mainColor2} />
-                  <Text style={[styles.locationText, { color: Color.textPrimary }]} numberOfLines={1}>
+                <Text style={[styles.locationText, { color: Color.textPrimary }]} numberOfLines={1}>
                   {location.address?.placeName ||
-                  `${location.address?.street}, ${location.address?.ward}, ${location.address?.district}, ${location.address?.province}`}
+                    `${location.address?.street}, ${location.address?.ward}, ${location.address?.district}, ${location.address?.province}`}
                 </Text>
-                <TouchableOpacity onPress={clearLocation} disabled={isLoading}>
+                <TouchableOpacity onPress={clearLocation} disabled={isLoading || isGenerating}>
                   <Ionicons name="close" size={18} color={Color.textSecondary} />
                 </TouchableOpacity>
               </View>
@@ -207,13 +363,13 @@ const PostDialog: React.FC<PostDialogProps> = ({
                 <CButton
                   label={isLocationLoading ? "Đang lấy vị trí..." : "Check-in"}
                   onSubmit={getCurrentLocation}
-                  disabled={isLoading || isLocationLoading}
+                  disabled={isLoading || isLocationLoading || isGenerating}
                   style={{ width: "48%", height: 40, backColor: Color.backgroundSecondary, textColor: Color.textPrimary, radius: 8, fontSize: 14 }}
                 />
                 <CButton
                   label="Chọn trên bản đồ"
                   onSubmit={openMapPicker}
-                  disabled={isLoading}
+                  disabled={isLoading || isGenerating}
                   style={{ width: "48%", height: 40, backColor: Color.backgroundSecondary, textColor: Color.textPrimary, radius: 8, fontSize: 14 }}
                 />
               </View>
@@ -221,24 +377,28 @@ const PostDialog: React.FC<PostDialogProps> = ({
           </View>
 
           <View style={styles.tools}>
-            <TouchableOpacity style={styles.toolButton} onPress={handlePickImage} disabled={isLoading}>
+            <TouchableOpacity style={styles.toolButton} onPress={handlePickImage} disabled={isLoading || isGenerating}>
               <Ionicons name="image-outline" size={26} color={Color.textSecondary} />
               <Text style={[styles.toolText, { color: Color.textPrimary }]}>Ảnh</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.toolButton} onPress={handleTakePhoto} disabled={isLoading}>
+            <TouchableOpacity style={styles.toolButton} onPress={handleTakePhoto} disabled={isLoading || isGenerating}>
               <Ionicons name="camera-outline" size={26} color={Color.textSecondary} />
               <Text style={[styles.toolText, { color: Color.textPrimary }]}>Chụp</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.toolButton} onPress={handleGenerateContent} disabled={isLoading || isGenerating}>
+              <Ionicons name="sparkles-outline" size={26} color={Color.textSecondary} />
+              <Text style={[styles.toolText, { color: Color.textPrimary }]}>{isGenerating ? "Đang sinh..." : "Sinh nội dung"}</Text>
             </TouchableOpacity>
           </View>
 
           <CButton
             label={isLoading ? "Đang đăng..." : "Đăng bài"}
             onSubmit={handlePost}
-            disabled={isLoading}
+            disabled={isLoading || isGenerating}
             style={{
               width: "100%",
               height: 50,
-              backColor: isLoading ? Color.backgroundTertiary : Color.mainColor2,
+              backColor: isLoading || isGenerating ? Color.backgroundTertiary : Color.mainColor2,
               textColor: Color.textOnMain2,
               radius: 10,
               fontSize: 16,
@@ -266,7 +426,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: "bold" },
   privacySelector: { flexDirection: "row", alignItems: "center", padding: 12, borderRadius: 8, borderWidth: 1, marginBottom: 10 },
   privacyText: { fontSize: 14, marginLeft: 8 },
-  textInput: { height: 100, borderWidth: 1, borderRadius: 10, padding: 12, marginBottom: 15, textAlignVertical: "top", fontSize: 16 },
+  textInput: { height: 300, borderWidth: 1, borderRadius: 10, padding: 12, marginBottom: 15, textAlignVertical: "top", fontSize: 16 }, // Tăng height từ 100 lên 150
   imageWrapper: { position: "relative", marginRight: 10 },
   selectedImage: { width: 100, height: 100, borderRadius: 8, marginBottom: 10 },
   removeImage: { position: "absolute", top: 5, right: 5, borderRadius: 15, padding: 6 },
