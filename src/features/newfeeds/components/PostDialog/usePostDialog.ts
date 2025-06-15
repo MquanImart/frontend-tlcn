@@ -31,7 +31,7 @@ const usePostDialog = (userId: string) => {
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 50000);
 
       const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-text/`, {
         method: "POST",
@@ -79,7 +79,7 @@ const usePostDialog = (userId: string) => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 50000);
 
       const formData = new FormData();
       for (const media of imageAssets) {
