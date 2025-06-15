@@ -102,10 +102,12 @@ const LocationInfo: React.FC<LocationInfoProps> = ({ page, currentUserId, role, 
 
   return (
     <View style={[styles.container, { backgroundColor: Color.background }]}>
-      {/* Nút nhắn tin */}
-      <TouchableOpacity style={[styles.messageButton, { backgroundColor: Color.mainColor2 }]} onPress={onMessagePress}>
-        <Text style={[styles.messageText, { color: Color.textOnMain2 }]}>Nhắn tin</Text>
-      </TouchableOpacity>
+      {/* Nút nhắn tin - Chỉ hiển thị nếu role KHÔNG phải là "isOwner" */}
+      {role !== "isOwner" && (
+        <TouchableOpacity style={[styles.messageButton, { backgroundColor: Color.mainColor2 }]} onPress={onMessagePress}>
+          <Text style={[styles.messageText, { color: Color.textOnMain2 }]}>Nhắn tin</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Tên địa điểm */}
       <Text style={[styles.placeName, { color: Color.textPrimary }]}>{page.name}</Text>
@@ -190,19 +192,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     marginTop: 10,
-    // backgroundColor applied inline
   },
   placeName: {
     fontSize: 20,
     fontWeight: "bold",
-    // color applied inline
     marginBottom: 12,
   },
   infoWrapper: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 15,
-    // backgroundColor applied inline
     borderRadius: 50,
     padding: 10,
   },
@@ -210,7 +209,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    // backgroundColor applied inline
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
@@ -222,11 +220,9 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    // color applied inline
   },
   infoText: {
     fontSize: 14,
-    // color applied inline
     flex: 1,
   },
   mapContainer: {

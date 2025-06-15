@@ -27,7 +27,6 @@ const usePostDialog = (userId: string) => {
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [isMapPickerVisible, setMapPickerVisible] = useState(false);
 
-  // Hàm retry request
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
@@ -58,11 +57,10 @@ const usePostDialog = (userId: string) => {
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra nội dung văn bản. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
-      return true; // Coi là nhạy cảm để an toàn
+      return true;
     }
   };
 
-  // Hàm kiểm tra hình ảnh
   const checkMediaContent = async (mediaAssets: ImagePicker.ImagePickerAsset[]): Promise<boolean> => {
     if (!mediaAssets || mediaAssets.length === 0) return false;
 
@@ -100,7 +98,7 @@ const usePostDialog = (userId: string) => {
         method: "POST",
         headers: {
           "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-          "Connection": "keep-alive", // This is fine
+          "Connection": "keep-alive",
         },
         body: formData,
         signal: controller.signal,
@@ -139,7 +137,7 @@ const usePostDialog = (userId: string) => {
       return false;
     } catch (error: any) {
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!"); // Update timeout message
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!");
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
@@ -153,6 +151,7 @@ const usePostDialog = (userId: string) => {
       setPostContent("");
       setSelectedImages([]);
       setHashtags([]);
+      setHashtagInput(""); // Reset ô nhập hashtag
       setLocation({ coords: null, address: null });
     }
   };
@@ -164,10 +163,9 @@ const usePostDialog = (userId: string) => {
     }
 
     setIsLoading(true);
-    console.time("HandlePost"); // Bắt đầu đo thời gian toàn bộ quá trình đăng bài
+    console.time("HandlePost");
 
     try {
-      // Kiểm tra nội dung văn bản
       if (postContent.trim()) {
         const isTextSensitive = await checkTextContent(postContent);
         if (isTextSensitive) {
@@ -176,7 +174,6 @@ const usePostDialog = (userId: string) => {
         }
       }
 
-      // Kiểm tra hình ảnh
       if (selectedImages.length > 0) {
         const isMediaSensitive = await checkMediaContent(selectedImages);
         if (isMediaSensitive) {
@@ -185,7 +182,6 @@ const usePostDialog = (userId: string) => {
         }
       }
 
-      // Nếu không nhạy cảm, tiếp tục gửi bài viết
       const formData = new FormData();
       formData.append("createdBy", userId);
       formData.append("content", postContent);
@@ -224,12 +220,11 @@ const usePostDialog = (userId: string) => {
         } as any);
       });
 
-      console.time("BackendCreateArticle"); // Bắt đầu đo thời gian gửi yêu cầu backend
+      console.time("BackendCreateArticle");
       const response = await articlesClient.create(formData);
-      console.timeEnd("BackendCreateArticle"); // Kết thúc đo thời gian backend
+      console.timeEnd("BackendCreateArticle");
 
       if (response.success) {
-        // Ghi log thời gian xử lý từ backend (nếu có)
         if (response.backendProcessingTime) {
           console.log(`⏱️ Backend processing time: ${response.backendProcessingTime} ms`);
         }
@@ -242,7 +237,7 @@ const usePostDialog = (userId: string) => {
       console.error("❌ Lỗi khi đăng bài viết:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi đăng bài. Vui lòng thử lại!");
     } finally {
-      console.timeEnd("HandlePost"); // Kết thúc đo thời gian toàn bộ quá trình
+      console.timeEnd("HandlePost");
       setIsLoading(false);
     }
   };

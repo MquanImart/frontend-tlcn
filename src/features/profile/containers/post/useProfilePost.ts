@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Article, Comment, User, Group, Address, MyPhoto } from "@/src/features/newfeeds/interface/article";
 import restClient from "@/src/shared/services/RestClient";
+import { Keyboard } from "react-native";
 
 const articlesClient = restClient.apiClient.service("apis/articles");
 const commentsClient = restClient.apiClient.service("apis/comments");
@@ -60,6 +61,7 @@ export default function useProfilePost(userId: string) {
   const closeComments = () => {
     setModalVisible(false);
     setCurrentArticle(null);
+    Keyboard.dismiss();
   };
 
   const likeComment = async (commentId: string) => {

@@ -252,7 +252,6 @@ export default function ReelsList() {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <KeyboardAvoidingView
@@ -284,6 +283,13 @@ export default function ReelsList() {
                 showsVerticalScrollIndicator={true}
                 contentContainerStyle={styles.commentList}
                 keyboardShouldPersistTaps="handled"
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                removeClippedSubviews={true}
+                getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+                nestedScrollEnabled={true}
+                onScrollBeginDrag={() => Keyboard.dismiss()}
               />
 
               {selectedMedia.length > 0 && (

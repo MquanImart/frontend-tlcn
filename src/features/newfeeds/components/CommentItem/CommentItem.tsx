@@ -1,4 +1,3 @@
-// src/features/newfeeds/components/CommentItem/CommentItem.tsx
 import { Comment } from "@/src/features/newfeeds/interface/article";
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import { useTheme } from '@/src/contexts/ThemeContext';
@@ -10,9 +9,7 @@ import React from "react";
 import {
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -62,7 +59,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
   const replies = comment.replyComment || [];
   const mediaList = comment.img || [];
 
-  const getMarginLeft = (currentLevel: number) => Math.min((currentLevel - 1) * 20, 40);
+  const getIndentation = (currentLevel: number) => {
+    const maxIndentationPx = 40;
+    const indentationPerLevel = 20; 
+    const calculatedLevel = Math.min(currentLevel, 3);
+    return (calculatedLevel - 1) * indentationPerLevel;
+  };
+  const currentIndentation = getIndentation(level);
+
 
   const toggleReplyInput = () => {
     isReplyInputVisible ? (hideReplyInput(), setSelectedMedia([])) : showReplyInput();
@@ -123,15 +127,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
   );
 
   return (
-    <KeyboardAvoidingView
-      style={[
-        styles.container,
-        { marginLeft: getMarginLeft(level) },
-        isHighlighted && { backgroundColor: Color.backgroundSelected },
-      ]}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <View style={styles.commentRow}>
+    <View style={[styles.container, isHighlighted && { backgroundColor: Color.backgroundSelected }]}>
+      <View style={[styles.commentRow, { marginLeft: currentIndentation }]}>
         <Image source={{ uri: avatarUrl }} style={styles.avatar} />
         <View style={styles.content}>
           <Text style={[styles.username, { color: Color.textPrimary }]}>
@@ -172,7 +169,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       </View>
 
       {isReplyInputVisible && (
-        <View style={styles.replySection}>
+        <View style={[styles.replySection, { marginLeft: styles.avatar.width + styles.avatar.marginRight }]}>
           {selectedMedia.length > 0 && (
             <FlatList
               data={selectedMedia}
@@ -202,7 +199,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
       )}
 
       {replies.length > 0 && (
-        <TouchableOpacity onPress={toggleReplies}>
+        <TouchableOpacity
+          onPress={toggleReplies}
+          style={[styles.toggleRepliesContainer, { marginLeft: styles.avatar.width + styles.avatar.marginRight }]}
+        >
           <Text style={[styles.toggleReplies, { color: Color.textSecondary }]}>
             {areRepliesVisible ? "Ẩn bớt" : `Xem tất cả ${replies.length} phản hồi`}
           </Text>
@@ -236,13 +236,20 @@ const CommentItem: React.FC<CommentItemProps> = ({
           />
         </TouchableOpacity>
       </Modal>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 12, backgroundColor: Color.background },
-  commentRow: { flexDirection: "row", alignItems: "flex-start" },
+  container: {
+    paddingVertical: 12,
+    paddingRight: 12
+  },
+  commentRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingLeft: 12,
+  },
   avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: Color.backgroundTertiary },
   content: { flex: 1 },
   username: { fontWeight: "bold", fontSize: 15 },
@@ -253,7 +260,10 @@ const styles = StyleSheet.create({
   separator: { fontSize: 12, marginHorizontal: 6 },
   actionText: { fontSize: 12, fontWeight: "600" },
   time: { fontSize: 12 },
-  replySection: { marginLeft: 40 },
+  replySection: {
+    marginLeft: 38 + 12, 
+    marginTop: 10,
+  },
   previewContainer: { maxHeight: 100, marginVertical: 10 },
   replyInputContainer: {
     flexDirection: "row",
@@ -263,7 +273,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   replyInput: { flex: 1, fontSize: 14, paddingHorizontal: 10, maxHeight: 100 },
-  toggleReplies: { fontSize: 14, marginVertical: 6, marginLeft: 50, fontWeight: "600" },
+  toggleRepliesContainer: {
+    marginLeft: 38 + 12, 
+    marginVertical: 6,
+  },
+  toggleReplies: { fontSize: 14, fontWeight: "600" },
   mediaGrid: { marginTop: 8 },
   mediaItem: { width: "48%", margin: "1%", aspectRatio: 1, position: "relative" },
   mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: Color.backgroundTertiary },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
 import useNewFeed from "@/src/features/newfeeds/containers/newfeeds/useNewFeed";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import Modal from "react-native-modal";
@@ -59,7 +59,6 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
@@ -83,6 +82,16 @@ const PageHome: React.FC<PageHomeProps> = ({ page, currentUserId, role }) => {
                 onReply={replyToComment}
               />
             )}
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={styles.commentList}
+            keyboardShouldPersistTaps="handled"
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
+            getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+            nestedScrollEnabled={true}
+            onScrollBeginDrag={() => Keyboard.dismiss()}
           />
 
           <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
@@ -157,4 +166,5 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginRight: 10,
   },
+  commentList: { flexGrow: 1, paddingBottom: 10 },
 });

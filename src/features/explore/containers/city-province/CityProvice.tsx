@@ -18,6 +18,7 @@ import {
   Animated,
   Dimensions,
   FlatList,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -237,6 +238,16 @@ const CityProvince = () => {
                     onReply={replyToComment}
                   />
                 )}
+                showsVerticalScrollIndicator={true}
+                contentContainerStyle={styles.commentList}
+                keyboardShouldPersistTaps="handled"
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                removeClippedSubviews={true}
+                getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+                nestedScrollEnabled={true}
+                onScrollBeginDrag={() => Keyboard.dismiss()}
               />
               <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
                 <TextInput
@@ -373,6 +384,10 @@ const styles = StyleSheet.create({
   },
   paddingAnimated: {
     height: PADDING_ANIMATED_HEIGHT,
+  },
+  commentList: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
 });
 

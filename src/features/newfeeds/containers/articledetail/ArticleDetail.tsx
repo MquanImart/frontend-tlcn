@@ -104,7 +104,6 @@ export default function ArticleDetail() {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <KeyboardAvoidingView
@@ -139,13 +138,13 @@ export default function ArticleDetail() {
                 showsVerticalScrollIndicator={true}
                 contentContainerStyle={styles.commentList}
                 keyboardShouldPersistTaps="handled"
-                onScrollToIndexFailed={(info) => {
-                  console.warn("Failed to scroll to comment index:", info);
-                  commentListRef.current?.scrollToIndex({
-                    index: Math.min(info.index, (currentArticle?.comments?.length || 1) - 1),
-                    animated: true,
-                  });
-                }}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                removeClippedSubviews={true}
+                getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+                nestedScrollEnabled={true}
+                onScrollBeginDrag={() => Keyboard.dismiss()}
               />
 
               {selectedMedia.length > 0 && (

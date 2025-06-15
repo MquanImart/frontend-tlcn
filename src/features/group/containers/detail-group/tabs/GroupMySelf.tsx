@@ -9,6 +9,7 @@ import React from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Keyboard,
   RefreshControl,
   StyleSheet,
   Text,
@@ -122,7 +123,6 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, curre
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
@@ -146,8 +146,16 @@ const GroupMySelf: React.FC<GroupMySelfProps> = ({ groupId, currentUserId, curre
                 onReply={replyToComment}
               />
             )}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             contentContainerStyle={styles.commentList}
+            keyboardShouldPersistTaps="handled"
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
+            getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+            nestedScrollEnabled={true}
+            onScrollBeginDrag={() => Keyboard.dismiss()}
           />
 
           <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>

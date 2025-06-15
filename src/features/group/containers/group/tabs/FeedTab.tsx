@@ -8,6 +8,7 @@ import React from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -92,7 +93,6 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
@@ -116,6 +116,16 @@ const FeedTab = ({ userId, handleScroll }: FeedTabProps) => {
                 onReply={replyToComment}
               />
             )}
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={styles.commentList}
+            keyboardShouldPersistTaps="handled"
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
+            getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+            nestedScrollEnabled={true}
+            onScrollBeginDrag={() => Keyboard.dismiss()}
           />
 
           <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
@@ -198,5 +208,9 @@ const styles = StyleSheet.create({
   footer: {
     padding: 10,
     alignItems: "center",
+  },
+  commentList: {
+    flexGrow: 1,
+    paddingBottom: 10,
   },
 });

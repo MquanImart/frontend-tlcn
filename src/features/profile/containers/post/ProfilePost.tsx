@@ -7,6 +7,8 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
+  FlatList,
+  Keyboard,
 } from "react-native";
 import Post from "@/src/features/newfeeds/components/post/Post";
 import CommentItem from "@/src/features/newfeeds/components/CommentItem/CommentItem";
@@ -66,7 +68,6 @@ export default function ProfilePost({ userId }: ProfilePostProps) {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
@@ -79,20 +80,28 @@ export default function ProfilePost({ userId }: ProfilePostProps) {
             </TouchableOpacity>
           </View>
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.commentList}
-          >
-            {currentArticle?.comments?.map((item) => (
-              <CommentItem
-                userId={userId} // Truyền userId vào component CommentItem
-                key={item._id}
-                comment={item}
-                onLike={likeComment}
-                onReply={replyToComment}
-              />
-            ))}
-          </ScrollView>
+          <FlatList
+              data={currentArticle?.comments || []}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <CommentItem
+                  userId={userId || ""}
+                  comment={item}
+                  onLike={likeComment}
+                  onReply={replyToComment}
+                />
+              )}
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={styles.commentList}
+              keyboardShouldPersistTaps="handled"
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              removeClippedSubviews={true}
+              getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+              nestedScrollEnabled={true}
+              onScrollBeginDrag={() => Keyboard.dismiss()}
+            />
 
           <View style={[styles.commentInputContainer, { borderTopColor: Color.border }]}>
             <TextInput

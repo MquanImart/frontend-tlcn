@@ -3,7 +3,7 @@ import CButton from "@/src/shared/components/button/CButton";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,6 +14,11 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
 } from "react-native";
 import axios from "axios";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -80,7 +85,10 @@ const PostDialog: React.FC<PostDialogProps> = ({
 }) => {
   useTheme();
   const [isPrivacyModalVisible, setPrivacyModalVisible] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false); // State nội bộ cho loading sinh nội dung
+  const [isGenerating, setIsGenerating] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const contentInputRef = useRef<TextInput>(null);
+  const hashtagInputRef = useRef<TextInput>(null);
 
   const togglePrivacyModal = () => setPrivacyModalVisible(!isPrivacyModalVisible);
 
@@ -97,7 +105,6 @@ const PostDialog: React.FC<PostDialogProps> = ({
     }
   };
 
-  // Hàm kiểm tra nội dung ảnh nhạy cảm
   const checkMediaContent = async (imageUris: string[]): Promise<boolean> => {
     if (!imageUris || imageUris.length === 0) return false;
 
@@ -169,17 +176,10 @@ const PostDialog: React.FC<PostDialogProps> = ({
 
       return false;
     } catch (error: any) {
-      console.error("Lỗi kiểm tra ảnh:", error.message);
-      if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (30s). Vui lòng dùng ảnh nhỏ hơn!");
-      } else {
-        Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
-      }
-      return true; // Coi là nhạy cảm để an toàn
+      return true;
     }
   };
 
-  // Hàm sinh nội dung tự động
   const handleGenerateContent = async () => {
     if (selectedImages.length === 0) {
       Alert.alert("Thông báo", "Vui lòng chọn ít nhất một ảnh!");
@@ -188,10 +188,9 @@ const PostDialog: React.FC<PostDialogProps> = ({
 
     setIsGenerating(true);
     try {
-      // Kiểm tra nội dung ảnh nhạy cảm trước
       const isMediaSensitive = await checkMediaContent(selectedImages);
       if (isMediaSensitive) {
-        return; // Dừng nếu ảnh nhạy cảm
+        return;
       }
 
       const formData = new FormData();
@@ -226,7 +225,6 @@ const PostDialog: React.FC<PostDialogProps> = ({
       if (response.data.success) {
         const { generatedContent, imageTags } = response.data.data;
         setPostContent(generatedContent);
-        // Thêm hashtag từ imageTags
         const newHashtags = imageTags.map((tag: { tag: string }) =>
           `#${tag.tag.toLowerCase().replace(/\s+/g, "")}`
         );
@@ -247,168 +245,200 @@ const PostDialog: React.FC<PostDialogProps> = ({
     }
   };
 
+  const handleContentInputFocus = () => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
+
+  const handleHashtagInputFocus = () => {
+    scrollViewRef.current?.scrollTo({ y: 200, animated: true }); // Điều chỉnh dựa trên layout
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
     <Modal visible={isModalVisible} transparent animationType="slide">
-      <View style={styles.overlay}>
-        <View style={[styles.dialog, { backgroundColor: Color.background }]}>
-          <View style={styles.header}>
-            <Text style={[styles.headerTitle, { color: Color.textPrimary }]}>Tạo bài viết</Text>
-            <TouchableOpacity onPress={toggleModal} disabled={isLoading || isGenerating}>
-              <Ionicons name="close" size={24} color={Color.textSecondary} />
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.privacySelector, { borderColor: Color.border }]}
-            onPress={togglePrivacyModal}
-            disabled={isLoading || isGenerating}
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
+        <View style={styles.overlay}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.keyboardAvoidingView}
           >
-            {getPrivacyIcon(privacy)}
-            <Text style={[styles.privacyText, { color: Color.textPrimary }]}>{privacy}</Text>
-            <Ionicons name="chevron-down" size={18} color={Color.textSecondary} />
-          </TouchableOpacity>
-
-          <Modal visible={isPrivacyModalVisible} transparent animationType="fade">
-            <View style={styles.privacyOverlay}>
-              <View style={[styles.privacyModal, { backgroundColor: Color.background }]}>
-                {["Công khai", "Bạn bè", "Riêng tư"].map((option) => (
-                  <TouchableOpacity
-                    key={option}
-                    style={styles.privacyOption}
-                    onPress={() => {
-                      setPrivacy(option as "Công khai" | "Bạn bè" | "Riêng tư");
-                      togglePrivacyModal();
-                    }}
-                  >
-                    {getPrivacyIcon(option)}
-                    <Text style={[styles.privacyOptionText, { color: Color.textPrimary }]}>
-                      {option}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          </Modal>
-
-          <TextInput
-            style={[styles.textInput, { color: Color.textPrimary, borderColor: Color.border }]}
-            placeholder="Bạn đang nghĩ gì?"
-            placeholderTextColor={Color.textSecondary}
-            value={postContent}
-            onChangeText={setPostContent}
-            multiline
-            editable={!isLoading && !isGenerating}
-          />
-
-          {selectedImages.length > 0 && (
-            <FlatList
-              data={selectedImages}
-              horizontal
-              renderItem={({ item, index }) => (
-                <View style={styles.imageWrapper}>
-                  <Image source={{ uri: item }} style={styles.selectedImage} />
-                  <TouchableOpacity
-                    style={[styles.removeImage, { backgroundColor: Color.backgroundTertiary }]}
-                    onPress={() => handleRemoveImage(index)}
-                    disabled={isLoading || isGenerating}
-                  >
-                    <Ionicons name="close" size={18} color={Color.textOnMain2} />
+            <View style={[styles.dialog, { backgroundColor: Color.background }]}>
+              <ScrollView
+                ref={scrollViewRef}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View style={styles.header}>
+                  <Text style={[styles.headerTitle, { color: Color.textPrimary }]}>Tạo bài viết</Text>
+                  <TouchableOpacity onPress={toggleModal} disabled={isLoading || isGenerating}>
+                    <Ionicons name="close" size={24} color={Color.textSecondary} />
                   </TouchableOpacity>
                 </View>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          )}
 
-          <View style={[styles.hashtagContainer, { borderColor: Color.border }]}>
-            <TextInput
-              style={[styles.hashtagInput, { color: Color.textPrimary }]}
-              placeholder="#hashtag"
-              placeholderTextColor={Color.textSecondary}
-              value={hashtagInput}
-              onChangeText={setHashtagInput}
-              onSubmitEditing={handleAddHashtag}
-              editable={!isLoading && !isGenerating}
-            />
-            <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading || isGenerating}>
-              <Ionicons name="add-circle" size={26} color={Color.mainColor2} />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.hashtagList}>
-            {hashtags.map((tag, index) => (
-              <View key={index} style={[styles.hashtagItem, { backgroundColor: Color.backgroundSecondary }]}>
-                <Text style={[styles.hashtagText, { color: Color.textPrimary }]}>{tag}</Text>
-                <TouchableOpacity onPress={() => handleRemoveHashtag(index)} disabled={isLoading || isGenerating}>
-                  <Ionicons name="close-circle" size={18} color={Color.textSecondary} />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-
-          <View style={styles.locationContainer}>
-            {location.address ? (
-              <View style={[styles.locationInfo, { borderColor: Color.border }]}>
-                <MaterialIcons name="location-on" size={20} color={Color.mainColor2} />
-                <Text style={[styles.locationText, { color: Color.textPrimary }]} numberOfLines={1}>
-                  {location.address?.placeName ||
-                    `${location.address?.street}, ${location.address?.ward}, ${location.address?.district}, ${location.address?.province}`}
-                </Text>
-                <TouchableOpacity onPress={clearLocation} disabled={isLoading || isGenerating}>
-                  <Ionicons name="close" size={18} color={Color.textSecondary} />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.locationButtons}>
-                <CButton
-                  label={isLocationLoading ? "Đang lấy vị trí..." : "Check-in"}
-                  onSubmit={getCurrentLocation}
-                  disabled={isLoading || isLocationLoading || isGenerating}
-                  style={{ width: "48%", height: 40, backColor: Color.backgroundSecondary, textColor: Color.textPrimary, radius: 8, fontSize: 14 }}
-                />
-                <CButton
-                  label="Chọn trên bản đồ"
-                  onSubmit={openMapPicker}
+                <TouchableOpacity
+                  style={[styles.privacySelector, { borderColor: Color.border }]}
+                  onPress={togglePrivacyModal}
                   disabled={isLoading || isGenerating}
-                  style={{ width: "48%", height: 40, backColor: Color.backgroundSecondary, textColor: Color.textPrimary, radius: 8, fontSize: 14 }}
+                >
+                  {getPrivacyIcon(privacy)}
+                  <Text style={[styles.privacyText, { color: Color.textPrimary }]}>{privacy}</Text>
+                  <Ionicons name="chevron-down" size={18} color={Color.textSecondary} />
+                </TouchableOpacity>
+
+                <Modal visible={isPrivacyModalVisible} transparent animationType="fade">
+                  <View style={styles.privacyOverlay}>
+                    <View style={[styles.privacyModal, { backgroundColor: Color.background }]}>
+                      {["Công khai", "Bạn bè", "Riêng tư"].map((option) => (
+                        <TouchableOpacity
+                          key={option}
+                          style={styles.privacyOption}
+                          onPress={() => {
+                            setPrivacy(option as "Công khai" | "Bạn bè" | "Riêng tư");
+                            togglePrivacyModal();
+                          }}
+                        >
+                          {getPrivacyIcon(option)}
+                          <Text style={[styles.privacyOptionText, { color: Color.textPrimary }]}>
+                            {option}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                </Modal>
+
+                <TextInput
+                  ref={contentInputRef}
+                  style={[styles.textInput, { color: Color.textPrimary, borderColor: Color.border }]}
+                  placeholder="Bạn đang nghĩ gì?"
+                  placeholderTextColor={Color.textSecondary}
+                  value={postContent}
+                  onChangeText={setPostContent}
+                  multiline
+                  editable={!isLoading && !isGenerating}
+                  returnKeyType="done"
+                  onFocus={handleContentInputFocus}
+                  onSubmitEditing={dismissKeyboard}
                 />
-              </View>
-            )}
-          </View>
 
-          <View style={styles.tools}>
-            <TouchableOpacity style={styles.toolButton} onPress={handlePickImage} disabled={isLoading || isGenerating}>
-              <Ionicons name="image-outline" size={26} color={Color.textSecondary} />
-              <Text style={[styles.toolText, { color: Color.textPrimary }]}>Ảnh</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.toolButton} onPress={handleTakePhoto} disabled={isLoading || isGenerating}>
-              <Ionicons name="camera-outline" size={26} color={Color.textSecondary} />
-              <Text style={[styles.toolText, { color: Color.textPrimary }]}>Chụp</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.toolButton} onPress={handleGenerateContent} disabled={isLoading || isGenerating}>
-              <Ionicons name="sparkles-outline" size={26} color={Color.textSecondary} />
-              <Text style={[styles.toolText, { color: Color.textPrimary }]}>{isGenerating ? "Đang sinh..." : "Sinh nội dung"}</Text>
-            </TouchableOpacity>
-          </View>
+                {selectedImages.length > 0 && (
+                  <FlatList
+                    data={selectedImages}
+                    horizontal
+                    renderItem={({ item, index }) => (
+                      <View style={styles.imageWrapper}>
+                        <Image source={{ uri: item }} style={styles.selectedImage} />
+                        <TouchableOpacity
+                          style={[styles.removeImage, { backgroundColor: Color.backgroundTertiary }]}
+                          onPress={() => handleRemoveImage(index)}
+                          disabled={isLoading || isGenerating}
+                        >
+                          <Ionicons name="close" size={18} color={Color.textOnMain2} />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                )}
 
-          <CButton
-            label={isLoading ? "Đang đăng..." : "Đăng bài"}
-            onSubmit={handlePost}
-            disabled={isLoading || isGenerating}
-            style={{
-              width: "100%",
-              height: 50,
-              backColor: isLoading || isGenerating ? Color.backgroundTertiary : Color.mainColor2,
-              textColor: Color.textOnMain2,
-              radius: 10,
-              fontSize: 16,
-              fontWeight: "bold",
-            }}
-          >
-            {isLoading && <ActivityIndicator size="small" color={Color.textOnMain2} style={styles.loadingIndicator} />}
-          </CButton>
+                <View style={[styles.hashtagContainer, { borderColor: Color.border }]}>
+                  <TextInput
+                    ref={hashtagInputRef}
+                    style={[styles.hashtagInput, { color: Color.textPrimary }]}
+                    placeholder="#hashtag"
+                    placeholderTextColor={Color.textSecondary}
+                    value={hashtagInput}
+                    onChangeText={setHashtagInput}
+                    onSubmitEditing={handleAddHashtag}
+                    editable={!isLoading && !isGenerating}
+                    returnKeyType="done"
+                    onFocus={handleHashtagInputFocus}
+                  />
+                  <TouchableOpacity onPress={handleAddHashtag} disabled={isLoading || isGenerating}>
+                    <Ionicons name="add-circle" size={26} color={Color.mainColor2} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.hashtagList}>
+                  {hashtags.map((tag, index) => (
+                    <View key={index} style={[styles.hashtagItem, { backgroundColor: Color.backgroundSecondary }]}>
+                      <Text style={[styles.hashtagText, { color: Color.textPrimary }]}>{tag}</Text>
+                      <TouchableOpacity onPress={() => handleRemoveHashtag(index)} disabled={isLoading || isGenerating}>
+                        <Ionicons name="close-circle" size={18} color={Color.textSecondary} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+
+                <View style={styles.locationContainer}>
+                  {location.address ? (
+                    <View style={[styles.locationInfo, { borderColor: Color.border }]}>
+                      <MaterialIcons name="location-on" size={20} color={Color.mainColor2} />
+                      <Text style={[styles.locationText, { color: Color.textPrimary }]} numberOfLines={1}>
+                        {location.address?.placeName ||
+                          `${location.address?.street}, ${location.address?.ward}, ${location.address?.district}, ${location.address?.province}`}
+                      </Text>
+                      <TouchableOpacity onPress={clearLocation} disabled={isLoading || isGenerating}>
+                        <Ionicons name="close" size={18} color={Color.textSecondary} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View style={styles.locationButtons}>
+                      <CButton
+                        label={isLocationLoading ? "Đang lấy vị trí..." : "Check-in"}
+                        onSubmit={getCurrentLocation}
+                        disabled={isLoading || isLocationLoading || isGenerating}
+                        style={{ width: "48%", height: 40, backColor: Color.backgroundSecondary, textColor: Color.textPrimary, radius: 8, fontSize: 14 }}
+                      />
+                      <CButton
+                        label="Chọn trên bản đồ"
+                        onSubmit={openMapPicker}
+                        disabled={isLoading || isGenerating}
+                        style={{ width: "48%", height: 40, backColor: Color.backgroundSecondary, textColor: Color.textPrimary, radius: 8, fontSize: 14 }}
+                      />
+                    </View>
+                  )}
+                </View>
+
+                <View style={styles.tools}>
+                  <TouchableOpacity style={styles.toolButton} onPress={handlePickImage} disabled={isLoading || isGenerating}>
+                    <Ionicons name="image-outline" size={26} color={Color.textSecondary} />
+                    <Text style={[styles.toolText, { color: Color.textPrimary }]}>Ảnh</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.toolButton} onPress={handleTakePhoto} disabled={isLoading || isGenerating}>
+                    <Ionicons name="camera-outline" size={26} color={Color.textSecondary} />
+                    <Text style={[styles.toolText, { color: Color.textPrimary }]}>Chụp</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.toolButton} onPress={handleGenerateContent} disabled={isLoading || isGenerating}>
+                    <Ionicons name="sparkles-outline" size={26} color={Color.textSecondary} />
+                    <Text style={[styles.toolText, { color: Color.textPrimary }]}>{isGenerating ? "Đang sinh..." : "Sinh nội dung"}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <CButton
+                  label={isLoading ? "Đang đăng..." : "Đăng bài"}
+                  onSubmit={handlePost}
+                  disabled={isLoading || isGenerating}
+                  style={{
+                    width: "100%",
+                    height: 50,
+                    backColor: isLoading || isGenerating ? Color.backgroundTertiary : Color.mainColor2,
+                    textColor: Color.textOnMain2,
+                    radius: 10,
+                    fontSize: 16,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {isLoading && <ActivityIndicator size="small" color={Color.textOnMain2} style={styles.loadingIndicator} />}
+                </CButton>
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
 
       <MapPickerDialog
         isVisible={isMapPickerVisible}
@@ -421,12 +451,13 @@ const PostDialog: React.FC<PostDialogProps> = ({
 
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)", justifyContent: "center", alignItems: "center" },
-  dialog: { width: "90%", borderRadius: 15, padding: 20, elevation: 5 },
+  keyboardAvoidingView: { flex: 1, justifyContent: "center", alignItems: "center", width: "100%" },
+  dialog: { width: "90%", borderRadius: 15, padding: 20, elevation: 5, maxHeight: "80%" },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
   headerTitle: { fontSize: 18, fontWeight: "bold" },
   privacySelector: { flexDirection: "row", alignItems: "center", padding: 12, borderRadius: 8, borderWidth: 1, marginBottom: 10 },
   privacyText: { fontSize: 14, marginLeft: 8 },
-  textInput: { height: 300, borderWidth: 1, borderRadius: 10, padding: 12, marginBottom: 15, textAlignVertical: "top", fontSize: 16 }, // Tăng height từ 100 lên 150
+  textInput: { height: 200, borderWidth: 1, borderRadius: 10, padding: 12, marginBottom: 15, textAlignVertical: "top", fontSize: 16 },
   imageWrapper: { position: "relative", marginRight: 10 },
   selectedImage: { width: 100, height: 100, borderRadius: 8, marginBottom: 10 },
   removeImage: { position: "absolute", top: 5, right: 5, borderRadius: 15, padding: 6 },
