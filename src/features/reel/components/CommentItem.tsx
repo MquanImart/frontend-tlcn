@@ -1,6 +1,6 @@
 import timeAgo from "@/src/shared/utils/TimeAgo";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors'; // Đã import đối tượng Color
+import { colors as Color } from '@/src/styles/DynamicColors';
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
@@ -17,7 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Comment } from "../interface/reels";
+import { Comment } from "../interface/reels"; // Đảm bảo đúng interface
 import { useCommentVisibility } from "./useCommentVisibility";
 import { useReplyInput } from "./useReplyInput";
 
@@ -38,6 +38,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   onReply,
   level = 1,
 }) => {
+  useTheme();
   const { areRepliesVisible, toggleReplies } = useCommentVisibility();
   const {
     isReplyInputVisible,
@@ -47,7 +48,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
     handleReplyChange,
     resetReplyContent,
   } = useReplyInput();
-  useTheme()
 
   const [selectedMedia, setSelectedMedia] = React.useState<ImagePicker.ImagePickerAsset[]>([]);
   const [imageLoading, setImageLoading] = React.useState<{ [key: string]: boolean }>({});
@@ -59,7 +59,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
   const replies = comment.replyComment || [];
   const mediaList = comment.img || [];
 
-  const getMarginLeft = (currentLevel: number) => Math.min((currentLevel - 1) * 20, 40);
+  const getIndentation = (currentLevel: number) => {
+    const maxIndentationPx = 40;
+    const indentationPerLevel = 20; 
+
+    const calculatedLevel = Math.min(currentLevel, 3);
+    return (calculatedLevel - 1) * indentationPerLevel;
+  };
+  const currentIndentation = getIndentation(level);
+
 
   const toggleReplyInput = () => {
     isReplyInputVisible ? (hideReplyInput(), setSelectedMedia([])) : showReplyInput();
@@ -121,11 +129,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { marginLeft: getMarginLeft(level), backgroundColor: Color.background }]}
+      style={[
+        styles.container,
+        { backgroundColor: Color.background }
+      ]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.commentRow}>
-        <Image source={{ uri: avatarUrl }} style={[styles.avatar, {backgroundColor: Color.backgroundSecondary}]} />
+      <View style={[styles.commentRow, { marginLeft: currentIndentation }]}>
+        <Image source={{ uri: avatarUrl }} style={[styles.avatar, { backgroundColor: Color.backgroundSecondary }]} />
         <View style={styles.content}>
           <Text style={[styles.username, { color: Color.textPrimary }]}>
             {comment._iduser?.displayName || "Unknown"}
@@ -165,7 +176,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       </View>
 
       {isReplyInputVisible && (
-        <View style={styles.replySection}>
+        <View style={[styles.replySection, { marginLeft: styles.avatar.width + styles.avatar.marginRight }]}>
           {selectedMedia.length > 0 && (
             <FlatList
               data={selectedMedia}
@@ -175,14 +186,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
               style={styles.previewContainer}
             />
           )}
-          <View style={[styles.replyInputContainer, {backgroundColor: Color.backgroundSecondary, borderColor: Color.border}]}> {/* Thay đổi màu nền và viền reply input */}
+          <View style={[styles.replyInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}>
             <TouchableOpacity onPress={pickMedia}>
               <Ionicons name="image" size={24} color={Color.mainColor2} />
             </TouchableOpacity>
             <TextInput
-              style={[styles.replyInput, { color: Color.textPrimary }]} // Thay đổi màu chữ reply input
+              style={[styles.replyInput, { color: Color.textPrimary }]}
               placeholder="Viết phản hồi..."
-              placeholderTextColor={Color.textTertiary} // Thay đổi màu placeholder
+              placeholderTextColor={Color.textTertiary}
               value={replyContent}
               onChangeText={handleReplyChange}
               multiline
@@ -195,7 +206,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
       )}
 
       {replies.length > 0 && (
-        <TouchableOpacity onPress={toggleReplies}>
+        <TouchableOpacity
+          onPress={toggleReplies}
+          style={[styles.toggleRepliesContainer, { marginLeft: styles.avatar.width + styles.avatar.marginRight }]}
+        >
           <Text style={[styles.toggleReplies, { color: Color.mainColor2 }]}>
             {areRepliesVisible ? "Ẩn bớt" : `Xem tất cả ${replies.length} phản hồi`}
           </Text>
@@ -213,14 +227,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
         />
       ))}
 
-      {/* Modal for Enlarged Image */}
       <Modal
         visible={modalVisible}
         transparent
         animationType="fade"
         onRequestClose={closeImageModal}
       >
-        <TouchableOpacity style={[styles.modalOverlay, {backgroundColor: Color.shadow}]} onPress={closeImageModal}> {/* Thay đổi màu nền modal overlay */}
+        <TouchableOpacity style={[styles.modalOverlay, { backgroundColor: Color.shadow }]} onPress={closeImageModal}>
           <Image
             source={{ uri: selectedImage || DEFAULT_AVATAR }}
             style={styles.enlargedImage}
@@ -233,39 +246,52 @@ const CommentItem: React.FC<CommentItemProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 12, backgroundColor: Color.background }, // Thay đổi màu nền
-  commentRow: { flexDirection: "row", alignItems: "flex-start" },
-  avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: Color.backgroundSecondary }, // Thay đổi màu nền avatar
-  content: { flex: 1 ,},
-  username: { fontWeight: "bold", fontSize: 15, color: Color.textPrimary }, // Thay đổi màu chữ username
-  text: { fontSize: 14, marginTop: 4, lineHeight: 20, color: Color.textPrimary }, // Thay đổi màu chữ text
+  container: {
+    paddingVertical: 12,
+    backgroundColor: Color.background,
+  },
+  commentRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingLeft: 12,
+    paddingRight: 12, 
+  },
+  avatar: { width: 38, height: 38, borderRadius: 19, marginRight: 12, backgroundColor: Color.backgroundSecondary },
+  content: { flex: 1 },
+  username: { fontWeight: "bold", fontSize: 15, color: Color.textPrimary },
+  text: { fontSize: 14, marginTop: 4, lineHeight: 20, color: Color.textPrimary },
   actions: { flexDirection: "row", alignItems: "center", marginTop: 6 },
   actionButton: { flexDirection: "row", alignItems: "center" },
-  count: { marginLeft: 6, fontSize: 12, color: Color.textSecondary }, // Thay đổi màu số lượng like
-  separator: { fontSize: 12, marginHorizontal: 6, color: Color.textTertiary }, // Thay đổi màu separator
-  actionText: { fontSize: 12, fontWeight: "600", color: Color.mainColor2 }, // Thay đổi màu chữ action text
-  time: { fontSize: 12, color: Color.textTertiary }, // Thay đổi màu thời gian
-  replySection: { marginLeft: 40 },
+  count: { marginLeft: 6, fontSize: 12, color: Color.textSecondary },
+  separator: { fontSize: 12, marginHorizontal: 6, color: Color.textTertiary },
+  actionText: { fontSize: 12, fontWeight: "600", color: Color.mainColor2 },
+  time: { fontSize: 12, color: Color.textTertiary },
+  replySection: {
+    marginTop: 10,
+  },
   previewContainer: { maxHeight: 100, marginVertical: 10 },
   replyInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Color.backgroundSecondary, // Thay đổi màu nền
+    backgroundColor: Color.backgroundSecondary,
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,
-    borderColor: Color.border, // Thay đổi màu viền
+    borderColor: Color.border,
   },
-  replyInput: { flex: 1, fontSize: 14, paddingHorizontal: 10, maxHeight: 100, color: Color.textPrimary }, // Thay đổi màu chữ reply input
-  toggleReplies: { fontSize: 14, marginVertical: 6, marginLeft: 50, fontWeight: "600", color: Color.mainColor2 }, // Thay đổi màu chữ toggle replies
+  replyInput: { flex: 1, fontSize: 14, paddingHorizontal: 10, maxHeight: 100, color: Color.textPrimary },
+  toggleRepliesContainer: {
+    marginVertical: 6,
+  },
+  toggleReplies: { fontSize: 14, fontWeight: "600", color: Color.mainColor2 },
   mediaGrid: { marginTop: 8 },
   mediaItem: { width: "48%", margin: "1%", aspectRatio: 1, position: "relative" },
-  mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: Color.backgroundSecondary }, // Thay đổi màu nền media image
+  mediaImage: { width: "100%", height: "100%", borderRadius: 5, backgroundColor: Color.backgroundSecondary },
   loading: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center" },
   mediaPreview: { width: 80, height: 80, marginRight: 10, borderRadius: 5 },
   modalOverlay: {
     flex: 1,
-    backgroundColor: Color.shadow, // Thay đổi màu nền overlay
+    backgroundColor: Color.shadow,
     justifyContent: "center",
     alignItems: "center",
   },

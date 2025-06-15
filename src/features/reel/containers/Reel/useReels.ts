@@ -4,7 +4,7 @@ import restClient from "@/src/shared/services/RestClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, Keyboard } from "react-native";
 const articlesClient = restClient.apiClient.service("apis/articles");
 const commentsClient = restClient.apiClient.service("apis/comments");
 const reelsClient = restClient.apiClient.service("apis/reels");
@@ -130,6 +130,7 @@ export default function useReel(
     setModalVisible(false);
     setCurrentReel(null);
     setSelectedMedia([]);
+    Keyboard.dismiss();
   };
 
   const fetchComments = async (reelId: string) => {

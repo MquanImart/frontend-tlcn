@@ -13,6 +13,7 @@ import debounce from "lodash.debounce";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
+  FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -217,7 +218,6 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        swipeDirection="down"
         onSwipeComplete={closeComments}
       >
         <KeyboardAvoidingView
@@ -234,22 +234,28 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
                   <Ionicons name="close" size={24} color={Color.textPrimary} />
                 </TouchableOpacity>
               </View>
-
-              <ScrollView
-                showsVerticalScrollIndicator={true}
-                contentContainerStyle={styles.commentList}
-                keyboardShouldPersistTaps="handled"
-              >
-                {(currentArticle?.comments || []).map((item) => (
+              <FlatList
+                data={currentArticle?.comments || []}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => (
                   <CommentItem
-                    key={item._id}
                     userId={userId || ""}
                     comment={item}
                     onLike={likeComment}
                     onReply={replyToComment}
                   />
-                ))}
-              </ScrollView>
+                )}
+                showsVerticalScrollIndicator={true}
+                contentContainerStyle={styles.commentList}
+                keyboardShouldPersistTaps="handled"
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                removeClippedSubviews={true}
+                getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+                nestedScrollEnabled={true}
+                onScrollBeginDrag={() => Keyboard.dismiss()}
+            />
 
               {selectedMedia.length > 0 && (
                 <View style={styles.mediaPreviewContainer}>

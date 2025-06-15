@@ -2,7 +2,7 @@ import CHeaderIcon from "@/src/shared/components/header/CHeaderIcon";
 import { View, StyleSheet, Animated, TouchableOpacity, Text, TextInput, Dimensions, ActivityIndicator } from "react-native"
 import RecentPage from "../../components/RecentPage";
 import { useTheme } from '@/src/contexts/ThemeContext';
-import { colors as Color } from '@/src/styles/DynamicColors';
+import { colors as Color, colors } from '@/src/styles/DynamicColors';
 import CardExplore from "../../components/CardExplore";
 import { FlatList } from "react-native-gesture-handler";
 import useScrollTabbar from "@/src/shared/components/tabbar/useScrollTabbar";
@@ -78,10 +78,10 @@ const Discovery = () => {
                                 }} onPress={() => {setCurrTab("nb")}}>
                                     <Text style={currTab === "nb" ? {
                                       alignSelf: 'center',
-                                      color: Color.textOnMain2 
+                                      color: Color.white // Màu chữ t
                                     } : {
                                       alignSelf: 'center',
-                                      color: 'white' 
+                                     color: colors.black 
                                     }}>Nổi bật</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={currTab !== "nb" ? {
@@ -97,10 +97,10 @@ const Discovery = () => {
                                 }} onPress={() => {setCurrTab("dd")}}>
                                     <Text style={currTab !== "nb" ? {
                                       alignSelf: 'center',
-                                      color: Color.textOnMain2 // Màu chữ trên tab đang chọn
+                                      color: Color.white // Màu chữ trên tab đang chọn
                                     } : {
                                       alignSelf: 'center',
-                                      color: 'white' // Đổi thành màu đen cho tab không chọn
+                                      color: colors.black 
                                     }}>Địa điểm</Text>
                                 </TouchableOpacity>
                             </View>
@@ -126,7 +126,7 @@ const Discovery = () => {
                                 borderWidth: 0.5,
                                 padding: 10,
                                 borderRadius: 20,
-                                borderColor: Color.border, // Màu viền input
+                                borderColor: Color.border, 
                                 color: Color.textPrimary, // Màu chữ khi gõ
                                 backgroundColor: Color.backgroundTertiary, // Màu nền input
                             }}
@@ -147,7 +147,7 @@ const Discovery = () => {
                           width: '100%',
                           height: WINDOW_HEIGHT - 300,
                           padding: 5,
-                          backgroundColor: Color.background, // Nền cho nội dung
+                          backgroundColor: Color.background, 
                         }}
                         data={filterProvinces}
                         renderItem={({item}) => (
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     },
     tabs: {
         flexDirection: 'row',
-        backgroundColor: Color.backgroundSecondary, // Màu nền cho các tab chưa chọn
+        backgroundColor: Color.backgroundSecondary, 
         borderRadius: 50,
     },
     search: {

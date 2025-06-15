@@ -8,7 +8,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, Keyboard } from "react-native";
 
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList, "NewFeed">;
 
@@ -195,6 +195,7 @@ export default function useNewFeed(
     setModalVisible(false);
     setCurrentArticle(null);
     setSelectedMedia([]);
+    Keyboard.dismiss();
   };
 
   const likeComment = async (commentId: string) => {

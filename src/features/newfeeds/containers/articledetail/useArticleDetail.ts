@@ -9,7 +9,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, FlatList } from "react-native";
+import { Alert, FlatList, Keyboard } from "react-native";
 
 type ArticleDetailNavigationProp = StackNavigationProp<NewFeedParamList, "ArticleDetail">;
 
@@ -248,6 +248,7 @@ export default function useArticleDetail(articleId: string, commentId?: string) 
     setModalVisible(false);
     setNewReply("");
     setSelectedMedia([]);
+    Keyboard.dismiss();
   };
 
   const likeComment = async (commentId: string) => {
