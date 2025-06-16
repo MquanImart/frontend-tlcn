@@ -59,6 +59,7 @@ export const useGroupInvitedAdmins = ({ groupId, role, onRevokeSuccess }: UseGro
             limit: 5,
           },
         });
+        console.log(response)
 
         if (response.success) {
           const formattedData: InvitedAdmin[] = (response.data || []).map((admin: any) => ({
@@ -77,6 +78,7 @@ export const useGroupInvitedAdmins = ({ groupId, role, onRevokeSuccess }: UseGro
           }));
 
           setInvitedAdmins((prev) => (append ? [...prev, ...formattedData] : formattedData));
+          console.log('invitedAdmins', invitedAdmins)
           setTotalPages(response.totalPages || 1);
           setPage(newPage);
         } else {

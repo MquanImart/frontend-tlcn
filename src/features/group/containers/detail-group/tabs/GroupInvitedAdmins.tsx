@@ -1,9 +1,8 @@
 // src/features/group/containers/detail-group/tabs/GroupInvitedAdmins.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
-
 import InvitedAdminItem from "@/src/features/group/components/InvitedAdminItem"; 
 import { useGroupInvitedAdmins } from "./useGroupInvitedAdmins";
 
@@ -16,7 +15,6 @@ interface GroupInvitedAdminsProps {
 
 const GroupInvitedAdmins: React.FC<GroupInvitedAdminsProps> = ({ groupId, currentUserId, role, fetchGroupMembers }) => {
   const { theme } = useTheme(); 
-
   const {
     invitedAdmins,
     loading,
@@ -66,7 +64,7 @@ const GroupInvitedAdmins: React.FC<GroupInvitedAdminsProps> = ({ groupId, curren
               name={item.invitedUser?.username || "Người dùng không xác định"}
               avatar={item.invitedUser?.avatar?.url || ""}
               inviteDate={new Date(item.inviteDate).toLocaleDateString("vi-VN")}
-              onRevoke={() => handleRevokeInvite(item.invitedUser?._id || "", item.invitedUser?.username || "người dùng này")}
+              onRevoke={() => handleRevokeInvite(item.inviteId || "", item.invitedUser?.username || "người dùng này")}
               showRevokeButton={role === "Owner"} 
             />
           )}

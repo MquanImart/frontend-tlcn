@@ -170,6 +170,7 @@ export default function NewFeed() {
         onEndReached={loadMoreArticles}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
+        extraData={articles} 
       />
 
       <Modal
