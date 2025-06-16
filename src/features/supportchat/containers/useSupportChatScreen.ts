@@ -39,36 +39,15 @@ export const useSupportChatScreen = (initialMessages: Message[] = []) => {
           throw new Error("Phản hồi API rỗng");
         }
 
-        console.log("API Response:", botReplyText);
+        // Loại bỏ dấu sao (*) và khoảng trắng thừa ở đầu, giữ lại định dạng Markdown **
+        const cleanedBotReplyText = botReplyText.replace(/^\*+\s*/g, "");
 
-        // Tính toán boldRanges dựa trên *text* và giữ nguyên hashtag
-        const boldRanges: Array<{ start: number; end: number }> = [];
-        let plainText = botReplyText;
-        let offset = 0;
-
-        // Xử lý *text* và tính toán vị trí trong plainText
-        plainText = plainText.replace(/\*([^\*]+?)\*/g, (match: string, p1: string, index: number) => {
-          const start = index - offset;
-          const end = start + p1.length;
-          boldRanges.push({ start, end });
-          offset += 2; // 2 dấu sao (*)
-          return p1;
-        });
-
-        // Xóa **text** và <b> nếu có, giữ nguyên hashtag
-        plainText = plainText
-          .replace(/\*\*([^\*]+?)\*\*/g, "$1")
-          .replace(/<\/?b>/g, "")
-          .trim();
-
-        console.log("Plain Text:", plainText);
-        console.log("Bold Ranges:", boldRanges);
+        console.log("API Response:", cleanedBotReplyText);
 
         const botReply: Message = {
           id: (Date.now() + 1).toString(),
-          text: plainText,
+          text: cleanedBotReplyText, // Sử dụng văn bản đã được làm sạch
           isUser: false,
-          boldRanges,
         };
         setMessages((prev) => [...prev, botReply]);
         setIsLoading(false);

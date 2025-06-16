@@ -12,144 +12,94 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   useTheme();
 
   const handleHashtagPress = (hashtag: string) => {
-    // Loại bỏ dấu # để tạo truy vấn tìm kiếm
     const query = hashtag.replace('#', '');
-    // Mở URL tìm kiếm (ví dụ: Google Search)
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
     Linking.openURL(searchUrl).catch((err) => console.error('Không thể mở URL:', err));
-    // Hoặc, chuyển hướng đến màn hình tìm kiếm nội bộ:
-    // navigation.navigate('SearchScreen', { query });
   };
 
   const formatMessage = () => {
-    // Tách hashtag và văn bản chính
-    const regex = /(#\w+)/g;
-    const hashtags: string[] = [];
-    let cleanText = message.text;
-
-    // Thu thập hashtag và loại bỏ chúng khỏi văn bản chính
-    let match;
-    while ((match = regex.exec(message.text)) !== null) {
-      hashtags.push(match[0]);
-      cleanText = cleanText.replace(match[0], '');
+    if (!message.text || message.text.trim().length === 0) {
+      return (
+        <Text
+          style={[
+            styles.messageText,
+            message.isUser ? styles.userText : styles.supportText,
+          ]}
+        >
+          {' '}
+        </Text>
+      );
     }
-    // Loại bỏ khoảng trắng thừa
-    cleanText = cleanText.replace(/\s+/g, ' ').trim();
 
     const parts: React.ReactNode[] = [];
+    const text = message.text;
+    const regex = /\*\*([^\*]+)\*\*(.*?)(?=\*\*|$)/gs; // Lấy tiêu đề **text** và nội dung phía sau
 
-    // Xử lý văn bản chính (không có hashtag)
-    if (!message.boldRanges || message.isUser) {
-      // Nếu không có boldRanges hoặc là tin nhắn người dùng, hiển thị văn bản sạch
-      if (cleanText) {
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      const boldText = match[1].trim(); // Tiêu đề in đậm
+      let content = match[2].trim(); // Nội dung phía sau
+
+      // Loại bỏ hashtag (#tag)
+      content = content.replace(/#\w+/g, '').trim();
+
+      // Loại bỏ các dấu * thừa không thuộc định dạng Markdown (*text* hoặc **text**)
+      content = content.replace(/(?<!\*)\*(?!\*)/g, '').trim();
+
+      // Nếu nội dung không rỗng, hiển thị tiêu đề và nội dung
+      if (boldText) {
         parts.push(
-          <Text
-            key="clean-text"
-            style={[
-              styles.messageText,
-              message.isUser ? styles.userText : styles.supportText,
-            ]}
-          >
-            {cleanText}
-          </Text>
-        );
-      }
-    } else {
-      // Xử lý boldRanges cho tin nhắn bot
-      let lastIndex = 0;
-      const sortedRanges = [...message.boldRanges].sort((a, b) => a.start - b.start);
-
-      // Điều chỉnh boldRanges cho văn bản đã loại bỏ hashtag
-      const adjustedRanges: Array<{ start: number; end: number }> = [];
-      let offset = 0;
-      for (const range of sortedRanges) {
-        let start = range.start - offset;
-        let end = range.end - offset;
-        const segment = message.text.slice(range.start, range.end);
-        const hashtagMatches = segment.match(regex);
-        if (hashtagMatches) {
-          // Tính toán độ lệch do hashtag bị xóa trong đoạn in đậm
-          const hashtagLength = hashtagMatches.join('').length + hashtagMatches.length; // +1 for space
-          end -= hashtagLength;
-        }
-        if (start < cleanText.length && end <= cleanText.length && start < end) {
-          adjustedRanges.push({ start, end });
-        }
-        offset += range.end - range.start;
-      }
-
-      // Hiển thị văn bản với boldRanges
-      for (const range of adjustedRanges) {
-        if (range.start > lastIndex && cleanText.slice(lastIndex, range.start)) {
-          parts.push(
+          <View key={`section-${match.index}`} style={{ marginBottom: 12 }}>
             <Text
-              key={`text-${lastIndex}`}
-              style={[styles.messageText, styles.supportText]}
+              style={[
+                styles.messageText,
+                message.isUser ? styles.userText : styles.supportText,
+                { fontWeight: 'bold' },
+              ]}
             >
-              {cleanText.slice(lastIndex, range.start)}
+              {boldText}
             </Text>
-          );
-        }
-        if (cleanText.slice(range.start, range.end)) {
-          parts.push(
-            <Text
-              key={`bold-${range.start}`}
-              style={[styles.messageText, styles.supportText, { fontWeight: 'bold' }]}
-            >
-              {cleanText.slice(range.start, range.end)}
-            </Text>
-          );
-        }
-        lastIndex = range.end;
-      }
-
-      // Thêm phần văn bản còn lại
-      if (lastIndex < cleanText.length && cleanText.slice(lastIndex)) {
-        parts.push(
-          <Text
-            key={`text-${lastIndex}`}
-            style={[styles.messageText, styles.supportText]}
-          >
-            {cleanText.slice(lastIndex)}
-          </Text>
-        );
-      }
-    }
-
-    // Thêm hashtag ở cuối
-    if (hashtags.length > 0) {
-      parts.push(
-        <View key="hashtags" style={styles.hashtagContainer}>
-          {hashtags.map((hashtag, index) => (
-            <TouchableOpacity
-              key={`hashtag-${index}`}
-              onPress={() => handleHashtagPress(hashtag)}
-            >
+            {content && (
               <Text
                 style={[
                   styles.messageText,
                   message.isUser ? styles.userText : styles.supportText,
-                  { textDecorationLine: 'underline', color: Color.mainColor2 },
                 ]}
               >
-                {hashtag}
+                {content}
               </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+            )}
+          </View>
+        );
+      }
+    }
+
+    // Nếu không có tiêu đề in đậm, hiển thị toàn bộ văn bản (loại bỏ hashtag và dấu * thừa)
+    if (parts.length === 0) {
+      let cleanText = text.replace(/#\w+/g, '').trim();
+      cleanText = cleanText.replace(/(?<!\*)\*(?!\*)/g, '').trim();
+      return cleanText ? (
+        <Text
+          style={[
+            styles.messageText,
+            message.isUser ? styles.userText : styles.supportText,
+          ]}
+        >
+          {cleanText}
+        </Text>
+      ) : (
+        <Text
+          style={[
+            styles.messageText,
+            message.isUser ? styles.userText : styles.supportText,
+          ]}
+        >
+          Không có nội dung để hiển thị.
+        </Text>
       );
     }
 
-    return parts.length > 0 ? parts : (
-      <Text
-        style={[
-          styles.messageText,
-          message.isUser ? styles.userText : styles.supportText,
-        ]}
-      >
-        {cleanText || ' '}
-      </Text>
-    );
+    return parts;
   };
 
   return (
@@ -186,11 +136,6 @@ const styles = StyleSheet.create({
   },
   supportText: {
     color: Color.textPrimary,
-  },
-  hashtagContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 5,
   },
 });
 
