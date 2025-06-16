@@ -30,7 +30,7 @@ interface PostProps {
   article: Article;
   userId: string;
   onCommentPress: (article: Article) => void;
-  onLike: () => void;
+  onLike: (articleId: string, articleOwner: string) => void;
   deleteArticle: (articleId: string) => void;
   editArticle: (
     articleId: string,
@@ -325,7 +325,7 @@ const Post: React.FC<PostProps> = ({
       <View style={styles.actions}>
         <View style={styles.actionsLeft}>
           <TouchableOpacity
-            onPress={() => !isAdmin && onLike()}
+           onPress={() => !isAdmin && onLike(article._id, article.createdBy._id)}
             disabled={isAdmin}
           >
             <Ionicons
