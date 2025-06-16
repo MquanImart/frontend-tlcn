@@ -2,6 +2,7 @@ import env from "@/env";
 import { Article, Comment, User } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import socket from "@/src/shared/services/socketio";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -32,6 +33,81 @@ export default function useNewFeed(
   const [loadingMore, setLoadingMore] = useState(false);
   const [isCommentChecking, setIsCommentChecking] = useState(false);
 
+  useEffect(() => {
+    if (userId) {
+      socket.connect();
+      socket.emit("joinUser", userId);
+      console.log(`Socket connected for user: ${userId}`);
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error.message);
+      });
+
+      return () => {
+        socket.disconnect();
+        console.log("Socket disconnected");
+      };
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (currentArticle?._id) {
+      socket.emit("joinPost", currentArticle._id); 
+      console.log(`Joined post room: post-${currentArticle._id}`);
+    }
+    return () => {
+      if (currentArticle?._id) {
+        socket.emit("leavePost", currentArticle._id);
+        console.log(`Left post room: post-${currentArticle._id}`);
+      }
+    };
+  }, [currentArticle?._id]);
+
+  // Listen for new comments
+  useEffect(() => {
+    socket.on("newComment", ({ comment, articleId }) => {
+      if (currentArticle?._id === articleId) {
+        setCurrentArticle((prev) => {
+          if (!prev) return prev;
+          const commentExists = prev.comments?.some((c) => c._id === comment._id);
+          if (commentExists) return prev;
+          const updatedComments = [...(prev.comments || []), comment];
+          return { ...prev, comments: updatedComments };
+        });
+        setArticles((prevArticles) =>
+          prevArticles.map((article) =>
+            article._id === articleId
+              ? { ...article, comments: [...(article.comments || []), comment] }
+              : article
+          )
+        );
+      }
+    });
+
+    socket.on("newReplyComment", ({ comment, parentCommentId }) => {
+      if (currentArticle) {
+        setCurrentArticle((prev) => {
+          if (!prev) return prev;
+          const updatedComments = prev.comments?.map((c) => {
+            if (c._id === parentCommentId) {
+              return { ...c, replyComment: [...(c.replyComment || []), comment] };
+            }
+            return c;
+          });
+          return { ...prev, comments: updatedComments };
+        });
+      }
+    });
+
+
+    // Clean up socket listeners
+    return () => {
+      socket.off("newComment");
+      socket.off("newReplyComment");
+    };
+  }, [currentArticle, setArticles]);
+
+  
   const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
