@@ -2,7 +2,7 @@ import { Conversation, Message } from "@/src/interface/interface_flex";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useMessages from "../useMessage";
 import restClient from "@/src/shared/services/RestClient";
 import { Alert } from "react-native";
@@ -31,6 +31,12 @@ const useConversations = (
 
     const [conversation, setConversation] = useState<Conversation | null>(null);
     const [messages, setMessages] = useState<Message[] | null>(null);
+    const messageRef = useRef<Message[] | null>(null)
+
+    useEffect(() => {
+        messageRef.current = messages
+    }, [messages])
+
     const {
         getShortNames, 
         getOtherParticipantById
@@ -61,7 +67,8 @@ const useConversations = (
 
             socket.on("newMessage", (newMessage) => {
                 if (newMessage.sender !== userId){
-                    setMessages(messages?[newMessage, ...messages]: [newMessage])
+                    const updateMessage = messageRef.current?[newMessage, ...messageRef.current] : [newMessage]
+                    setMessages(updateMessage)
                 }
             });
         
@@ -70,7 +77,7 @@ const useConversations = (
                 socket.off("newMessage");
             };
         }
-    }, [conversationId, userId, conversation]);
+    }, [conversationId, userId, conversation, messageRef]);
 
     const getUserId = async () => {
         const userId = await AsyncStorage.getItem("userId");
