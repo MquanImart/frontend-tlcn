@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   city: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#FFFFFF", // Màu trắng để nổi bật trên ảnh nền
   },

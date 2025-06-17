@@ -278,14 +278,25 @@ export default function useNewFeed(
     }
   };
 
-  const fetchComments = async (articleId: string) => {
-    try {
-      const response = await articlesClient.get(`${articleId}/comments`);
-      return response.success ? response.data : [];
-    } catch (error) {
-      return [];
+const fetchComments = async (articleId: string) => {
+  try {
+    const response = await articlesClient.get(`${articleId}/comments`);
+    if (response.success) {
+      const validComments = response.data.filter(
+        (c: Comment) => c && typeof c._id === "string" && c._id.trim() !== ""
+      );
+      console.log("Bình luận nhận được:", validComments);
+      return validComments;
     }
-  };
+    console.error("Lỗi khi lấy bình luận:", response.message);
+    Alert.alert("Lỗi", response.message || "Không thể tải bình luận. Vui lòng thử lại!");
+    return [];
+  } catch (error) {
+    console.error("Lỗi khi lấy bình luận:", error);
+    Alert.alert("Lỗi", "Đã xảy ra lỗi khi tải bình luận. Vui lòng thử lại!");
+    return [];
+  }
+};
 
   const openComments = async (article: Article) => {
     try {
