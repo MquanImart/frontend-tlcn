@@ -138,7 +138,7 @@ const MyProfile = () => {
     );
 
     const renderContent = () => (
-        <View style={{ flex: 1, backgroundColor: Color.background }}>
+        <View style={{ flex: 1, backgroundColor: Color.background,padding: 10 }}>
             <View style={{ width: '100%', height: "100%" }}>
                 <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
                 {currTab === tabs[0].label ? (
