@@ -3,11 +3,12 @@ import { Province } from "@/src/interface/interface_reference";
 import { ExploreStackParamList } from "@/src/shared/routes/ExploreNavigation";
 import restClient from "@/src/shared/services/RestClient";
 import { removeVietnameseTones } from "@/src/shared/utils/removeVietnameseTones";
+import { useSuggestedPages } from "@/SuggestedPageContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect, useState } from "react";
-import { Animated } from "react-native";
+import { Alert, Animated } from "react-native";
 
 type ExploreNavigation = StackNavigationProp<ExploreStackParamList, "Discovery">;
 
@@ -23,6 +24,9 @@ const useDiscovery = () => {
     const [filterProvinces, setFilterProvinces] = useState<Province[] | null>(null);
     const [search, setSearch] = useState<string>("");
     const [recentPage, setRecentPage] = useState<HistoryPage[] | null>(null);
+
+    const { fetchSuggested } = useSuggestedPages();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (userId){
@@ -85,6 +89,17 @@ const useDiscovery = () => {
         setUserId(id);
     }
     
+    const reloadSuggested = async () => {
+        setIsLoading(true);
+        try {
+            await fetchSuggested();
+        } catch {
+            Alert.alert('Thông báo', 'Không thể tải lại gợi ý trang');
+        } finally{
+            setIsLoading(false);
+        }
+    }
+
     return {
         navigation, setUserId,
         animationHeight, toggleExpand,
@@ -92,7 +107,9 @@ const useDiscovery = () => {
         expanded, filterProvinces, getAllProvinces,
         handleSearch, search,
         recentPage, getHistoryPage,
-        getUserId
+        getUserId, 
+        isLoading,
+        reloadSuggested
     }
 }
 

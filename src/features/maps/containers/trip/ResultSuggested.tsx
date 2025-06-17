@@ -12,6 +12,7 @@ import CIconButton from "@/src/shared/components/button/CIconButton";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { CLocation, Trip } from "@/src/interface/interface_detail";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import formatBoldText from "@/src/shared/utils/FormatBoldText";
 
 export interface LocationProps{
   latitude: number;
@@ -221,7 +222,7 @@ const CardResult = ({
         </View>
       ))}
       <Text style={[styles.textLabel, { color: Color.textPrimary }]}>Mô tả</Text>
-      <Text style={[{ fontStyle: 'italic', color: Color.textPrimary }]}>{description}</Text>
+      <Text style={[{ fontStyle: 'italic', color: Color.textPrimary }]}>{formatBoldText(description)}</Text>
       <View style={{width: '100%'}}>
         <TouchableOpacity style={[styles.button, { backgroundColor: Color.mainColor2 }]} onPress={handleUseThisTrip}>
           <Text style={[styles.textButton, { color: Color.textOnMain2 }]}>Sử dụng lịch trình này</Text>

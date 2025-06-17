@@ -1,21 +1,17 @@
 import { ActivityIndicator, Text, View, StyleSheet, FlatList, ScrollView } from "react-native"
 import useOutstanding from "./useOutstanding";
-import { useEffect } from "react";
 import CardPage from "../../components/CardPage";
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
+import { useSuggestedPages } from "@/SuggestedPageContext";
 
 interface OutstandingProps {
     handleScroll: (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => void;
 }
 const Outstanding = ({handleScroll} : OutstandingProps) => {
     useTheme();
-    const { suggestedPageCB, suggestedPageCF, suggestedPageMonth, getSuggested, handleNavigateToPage
-    } = useOutstanding();
-
-    useEffect(() => {
-        getSuggested();
-    }, []);
+    const { handleNavigateToPage } = useOutstanding();
+    const { suggestedPageCF, suggestedPageCB, suggestedPageMonth } = useSuggestedPages();
 
     const renderPageList = (data: any[] | null) => {
         if (!data) {

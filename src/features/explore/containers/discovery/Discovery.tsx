@@ -27,7 +27,9 @@ const Discovery = () => {
          filterProvinces,
         search, handleSearch,
         recentPage,
-        getUserId
+        getUserId,
+        isLoading,
+        reloadSuggested
     } = useDiscovery();
 
     useEffect(() => {
@@ -104,13 +106,23 @@ const Discovery = () => {
                                     }}>Địa điểm</Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={styles.search} onPress={toggleExpand}>
+                            {currTab === 'nb'? (
+                              <TouchableOpacity style={styles.search} onPress={reloadSuggested}>
+                                <Text style={{
+                                  fontSize: 12,
+                                  color: Color.textSecondary
+                                }}>Tải lại gợi ý</Text>
+                            </TouchableOpacity>
+                            ):(
+                              <TouchableOpacity style={styles.search} onPress={toggleExpand}>
                                 <Text style={{
                                   fontSize: 12,
                                   color: Color.textSecondary // Màu chữ "Tìm kiếm"
                                 }}>{expanded?"Ẩn tìm kiếm":"Tìm kiếm"}</Text>
                             </TouchableOpacity>
+                            )}
                         </View>
+                        {isLoading && <Text style={styles.reloadText}>Đang tải lại danh sách gợi ý</Text>}
                         {expanded && (
                         <View style={{
                           height: 60,
@@ -199,6 +211,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 5,
     },
+    reloadText: {
+      alignSelf: 'center',
+      fontSize: 10
+    }
 });
 
 export default Discovery;

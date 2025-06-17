@@ -5,6 +5,7 @@ import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
 import restClient from "@/src/shared/services/RestClient";
 // import { useTheme } from '@/src/contexts/ThemeContext'; // Removed as it's not needed for static light theme
 import { lightColor } from "@/src/styles/Colors"; // Import lightColor directly
+import { useSuggestedPages } from "@/SuggestedPageContext";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -33,6 +34,7 @@ const Login = () => {
   const [emailOrPhone, setEmailOrPhone] = useState<string>("21110740@student.hcmute.edu.vn");
   const [password, setPassword] = useState<string>("quan123");
   const navigation = useNavigation<AuthNavigationProp>();
+  const { fetchSuggested } = useSuggestedPages();
 
   // Ref to focus on the password input after entering email/phone
   const passwordInputRef = useRef<TextInput>(null);
@@ -50,6 +52,7 @@ const Login = () => {
         if (role === "admin") {
           navigation.navigate("AdminDashboard");
         } else {
+          fetchSuggested();
           navigation.navigate("TabbarNavigation");
         }
       } else {

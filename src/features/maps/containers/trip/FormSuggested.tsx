@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  Button,
   ScrollView,
   Switch,
   StyleSheet,
@@ -35,9 +34,6 @@ interface FormSuggestedProps {
 const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSuggestedProps) => {
   useTheme();
   const [startDateTime, setStartDateTime] = useState(new Date());
-  const [useTime, setUseTime] = useState(false);
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [useDistance, setUseDistance] = useState(true);
   const [useDuration, setUseDuration] = useState(true);
@@ -58,7 +54,6 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
     event: DateTimePickerEvent,
     selectedDate?: Date
   ) => {
-    setShowDatePicker(false);
     if (selectedDate) setStartDateTime(selectedDate);
   };
 
@@ -81,9 +76,7 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
   const handleSubmit = () => {
     const payload = {
       tripId,
-      startDateTime: useTime
-        ? startDateTime.toISOString()
-        : startDateTime.toISOString().split("T")[0],
+      startDateTime: startDateTime.toISOString().split("T")[0],
       useDistance,
       useDuration,
       visitingTime: Object.fromEntries(
@@ -101,35 +94,15 @@ const FormSuggested = ({ tripId, numVisitPlaces, handleSubmitChange }: FormSugge
     <ScrollView contentContainerStyle={{ padding: 16, width: '100%', height: '90%', marginTop: 100 }}>
       {/* Ngày bắt đầu */}
       <Text style={[{ fontWeight: "bold", fontSize: 16, color: Color.textPrimary }]}>Ngày bắt đầu</Text>
-      <View style={styles.item}>
-        <Text style={{ color: Color.textPrimary }}>Thêm giờ bắt đầu</Text>
-        <Switch
-            value={useTime}
-            onValueChange={setUseTime}
-            trackColor={{ false: Color.textSecondary, true: Color.mainColor2 }}
-            thumbColor={useTime ? Color.mainColor2 : Color.backgroundTertiary}
-        />
-      </View>
-      <Button
-        title={
-          useTime
-            ? startDateTime.toLocaleString()
-            : startDateTime.toDateString()
-        }
-        onPress={() => setShowDatePicker(true)}
-        color={Color.mainColor2} // Sets button color
+      <DateTimePicker
+        style={{alignSelf: 'center'}}
+        value={startDateTime}
+        mode={"date"}
+        display="default"
+        is24Hour={true}
+        onChange={onDateChange}
+        accentColor={Color.mainColor2}
       />
-      {showDatePicker && (
-        <DateTimePicker
-          value={startDateTime}
-          mode={useTime ? "datetime" : "date"}
-          display="default"
-          is24Hour={true}
-          onChange={onDateChange}
-          accentColor={Color.mainColor2} // For iOS
-        />
-      )}
-
       <View style={{ marginTop: 16 }}>
         <Text style={[{ fontWeight: "bold", fontSize: 16, color: Color.textPrimary }]}>Tùy chọn:</Text>
 
