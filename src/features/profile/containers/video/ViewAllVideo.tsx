@@ -2,17 +2,17 @@ import { useTheme } from '@/src/contexts/ThemeContext';
 import { colors as Color } from '@/src/styles/DynamicColors';
 import { Image } from 'expo-image';
 import { useEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import { generateThumbnailsInBatches } from "../../utils/Thumbnail";
 import useViewAllVideo from "./useViewAllVideo";
 
 interface ViewAllVideoProps {
-  userId: string; // Thêm userId như một prop
+  userId: string;
 }
 
 const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
-  useTheme()
+  useTheme();
   const {
     thumbnails,
     setThumbnails,
@@ -21,7 +21,7 @@ const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
     dataVideo,
     isModalVisible,
     closeModal
-  } = useViewAllVideo(userId); // Truyền userId vào hook
+  } = useViewAllVideo(userId);
 
   useEffect(() => {
     if (dataVideo !== null) {
@@ -33,32 +33,35 @@ const ViewAllVideo: React.FC<ViewAllVideoProps> = ({ userId }) => {
     }
   }, [dataVideo]);
 
-  if (dataVideo === null) return <ActivityIndicator color={Color.mainColor2} />; 
+  if (dataVideo === null) return <ActivityIndicator color={Color.mainColor2} />;
+
+  const renderItem = ({ item, index }: { item: any; index: number }) => (
+    <TouchableOpacity
+      style={styles.video}
+      onPress={() => handleSelectedPhoto(item._id)}
+    >
+      {thumbnails[index] ? (
+        <Image
+          source={{ uri: thumbnails[index] }}
+          style={styles.thumbnail}
+        />
+      ) : (
+        <View style={[styles.placeholder, { backgroundColor: Color.backgroundTertiary }]}>
+          <ActivityIndicator color={Color.textPrimary} />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {dataVideo.map((item, index) => (
-          <TouchableOpacity
-            style={styles.video}
-            key={item._id}
-            onPress={() => {
-              handleSelectedPhoto(item._id);
-            }}
-          >
-            {thumbnails[index] ? (
-              <Image
-                source={{ uri: thumbnails[index] }}
-                style={styles.thumbnail}
-              />
-            ) : (
-              <View style={[styles.placeholder, { backgroundColor: Color.backgroundTertiary }]}> 
-                <ActivityIndicator color={Color.textPrimary} />
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <FlatList
+        data={dataVideo}
+        renderItem={renderItem}
+        keyExtractor={(item) => item._id}
+        numColumns={3}
+        contentContainerStyle={styles.flatListContainer}
+      />
       <DetailsPhoto
         source={selectedPhoto}
         isModalVisible={isModalVisible}
@@ -80,14 +83,12 @@ const styles = StyleSheet.create({
   },
   textViewAll: {
   },
-  scrollViewContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  flatListContainer: {
+    paddingBottom: 2,
   },
   video: {
     height: 200,
-    width: '33%', 
+    width: '33%',
     marginBottom: 2,
   },
   thumbnail: {
