@@ -2,12 +2,13 @@ import env from "@/env";
 import { Article, Comment, User } from "@/src/features/newfeeds/interface/article";
 import { NewFeedParamList } from "@/src/shared/routes/NewFeedNavigation";
 import restClient from "@/src/shared/services/RestClient";
+import socket from "@/src/shared/services/socketio";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, Keyboard } from "react-native";
 
 type NewFeedNavigationProp = StackNavigationProp<NewFeedParamList, "NewFeed">;
@@ -30,9 +31,138 @@ export default function usePost(
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [isCommentChecking, setIsCommentChecking] = useState(false);
 
-  // Hàm retry request
-      const checkTextContent = async (text: string): Promise<boolean> => {
+  // Socket connection management
+  useEffect(() => {
+    if (userId) {
+      socket.connect();
+      socket.emit("joinUser", userId);
+      console.log(`Socket connected for user: ${userId}`);
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error.message);
+      });
+
+      return () => {
+        socket.disconnect();
+        console.log("Socket disconnected");
+      };
+    }
+  }, [userId]);
+
+  // Join and leave post rooms
+  useEffect(() => {
+    articles.forEach((article) => {
+      socket.emit("joinPost", article._id);
+      console.log(`Joined post room: post-${article._id}`);
+    });
+    return () => {
+      articles.forEach((article) => {
+        socket.emit("leavePost", article._id);
+        console.log(`Left post room: post-${article._id}`);
+      });
+    };
+  }, [articles]);
+
+  // Socket event listeners
+  useEffect(() => {
+socket.on("newComment", ({ comment, articleId }) => {
+  if (!comment || !comment._id || typeof comment._id !== "string") {
+    console.warn("Nhận được bình luận không hợp lệ từ socket:", comment);
+    return;
+  }
+  console.log("Nhận bình luận mới từ socket:", { comment, articleId });
+  if (currentArticle?._id === articleId) {
+    setCurrentArticle((prev) => {
+      if (!prev) return prev;
+      const commentExists = prev.comments?.some(
+        (c) => c && c._id && typeof c._id === "string" && c._id === comment._id
+      );
+      if (commentExists) {
+        console.log(`Bình luận ${comment._id} đã tồn tại, bỏ qua.`);
+        return prev;
+      }
+      const updatedComments = prev.comments
+        ? prev.comments
+            .filter((c) => c && c._id && typeof c._id === "string" && !c._id.startsWith("temp-"))
+            .concat(comment)
+        : [comment];
+      console.log("Cập nhật bình luận cho currentArticle:", updatedComments);
+      return { ...prev, comments: updatedComments };
+    });
+    setArticles((prevArticles) =>
+      prevArticles.map((article) =>
+        article._id === articleId
+          ? {
+              ...article,
+              comments: [
+                ...(article.comments || []).filter(
+                  (c) => c && c._id && typeof c._id === "string" && !c._id.startsWith("temp-")
+                ),
+                comment,
+              ],
+            }
+          : article
+      )
+    );
+  }
+});
+
+    socket.on("newReplyComment", ({ comment, parentCommentId }) => {
+      if (currentArticle) {
+        setCurrentArticle((prev) => {
+          if (!prev) return prev;
+          const updatedComments = addNestedReply(
+            prev.comments?.filter((c) => !c._id.startsWith("temp-")) || [],
+            parentCommentId,
+            comment
+          );
+          return { ...prev, comments: updatedComments };
+        });
+      }
+    });
+
+    socket.on("articleLiked", ({ articleId, emoticons, userId: likerId }) => {
+      console.log(`articleLiked event received: articleId=${articleId}, emoticons=`, emoticons);
+      setArticles((prevArticles) => {
+        const newArticles = prevArticles.map((article) =>
+          article._id === articleId ? { ...article, emoticons } : article
+        );
+        console.log(`Updated articles for ${articleId}:`, newArticles.find((a) => a._id === articleId)?.emoticons);
+        return newArticles;
+      });
+      if (currentArticle?._id === articleId) {
+        setCurrentArticle((prev) => {
+          const newCurrent = prev ? { ...prev, emoticons } : prev;
+          console.log(`Updated currentArticle emoticons:`, newCurrent?.emoticons);
+          return newCurrent;
+        });
+      }
+    });
+
+    socket.on("commentLiked", ({ commentId, emoticons, userId: likerId }) => {
+      console.log(`Sự kiện commentLiked nhận được: commentId=${commentId}, emoticons=`, emoticons, `likerId=${likerId}`);
+      if (currentArticle) {
+        setCurrentArticle((prev) => {
+          if (!prev) return prev;
+          const updatedComments = updateNestedComment(prev.comments || [], commentId, emoticons as string[]);
+          return { ...prev, comments: updatedComments };
+        });
+      }
+    });
+
+    // Clean up socket listeners
+    return () => {
+      socket.off("newComment");
+      socket.off("newReplyComment");
+      socket.off("articleLiked");
+      socket.off("commentLiked");
+    };
+  }, [currentArticle, setArticles]);
+
+  // Hàm kiểm tra văn bản
+  const checkTextContent = async (text: string): Promise<boolean> => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 50000); // Timeout 10s
@@ -93,18 +223,18 @@ export default function usePost(
           { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG }
         ).then((result) => result.uri);
 
-        formData.append("files", { // Notice 'files' here, plural
+        formData.append("files", {
           uri: resizedUri,
           name: media.fileName || resizedUri.split("/").pop(),
           type: media.mimeType || "image/jpeg",
         } as any);
       }
-      
+
       const response = await fetch(`${env.API_URL_CHECK_TOXIC}/check-image/`, {
         method: "POST",
         headers: {
           "X-API-Key": env.API_KEY_CHECK_TOXIC || "",
-          "Connection": "keep-alive", // This is fine
+          "Connection": "keep-alive",
         },
         body: formData,
         signal: controller.signal,
@@ -143,18 +273,17 @@ export default function usePost(
       return false;
     } catch (error: any) {
       if (error.name === "AbortError") {
-        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!"); // Update timeout message
+        Alert.alert("Lỗi", "Hết thời gian kiểm tra hình ảnh (3s). Vui lòng dùng ảnh nhỏ hơn!");
       } else {
         Alert.alert("Lỗi", "Không thể kiểm tra nội dung ảnh. Vui lòng kiểm tra kết nối mạng và thử lại!");
       }
       return true;
     }
-};
+  };
 
   const getUserId = async () => {
     const id = await AsyncStorage.getItem("userId");
     const name = await AsyncStorage.getItem("displayName");
-
     setUserId(id);
     setDisplayName(name);
   };
@@ -181,15 +310,25 @@ export default function usePost(
     }
   };
 
-  const fetchComments = async (articleId: string) => {
-    try {
-      const response = await articlesClient.get(`${articleId}/comments`);
-      return response.success ? response.data : [];
-    } catch (error) {
-      console.error("Lỗi khi lấy bình luận:", error);
-      return [];
+const fetchComments = async (articleId: string) => {
+  try {
+    const response = await articlesClient.get(`${articleId}/comments`);
+    if (response.success) {
+      const validComments = response.data.filter(
+        (c: Comment) =>
+          c && typeof c._id === "string" && c._id.trim() !== "" && !c._id.startsWith("temp-")
+      );
+      return validComments;
     }
-  };
+    console.error("Lỗi khi lấy bình luận:", response.message);
+    Alert.alert("Lỗi", response.message || "Không thể tải bình luận. Vui lòng thử lại!");
+    return [];
+  } catch (error) {
+    console.error("Lỗi khi lấy bình luận:", error);
+    Alert.alert("Lỗi", "Đã xảy ra lỗi khi tải bình luận. Vui lòng thử lại!");
+    return [];
+  }
+};
 
   const openComments = async (article: Article) => {
     try {
@@ -210,44 +349,85 @@ export default function usePost(
 
   const likeComment = async (commentId: string) => {
     if (!userId) {
-      console.warn("⚠️ userId không tồn tại");
+      Alert.alert("Lỗi", "Vui lòng đăng nhập để thích bình luận!");
       return;
     }
+
+    if (isCommentChecking) {
+      console.log(`Bỏ qua yêu cầu like cho comment ${commentId}: đang xử lý`);
+      return;
+    }
+
+    setIsCommentChecking(true);
+    let originalEmoticons: string[] | undefined;
+
+    // Optimistic update
+    setCurrentArticle((prev) => {
+      if (!prev) return prev;
+      const updatedComments = updateNestedComment(
+        prev.comments || [],
+        commentId,
+        (prev.comments?.find((c) => c._id === commentId)?.emoticons || []).includes(userId)
+          ? (prev.comments?.find((c) => c._id === commentId)?.emoticons || []).filter((id) => id !== userId)
+          : [...(prev.comments?.find((c) => c._id === commentId)?.emoticons || []), userId]
+      );
+      originalEmoticons = prev.comments?.find((c) => c._id === commentId)?.emoticons || [];
+      console.log(`Cập nhật lạc quan cho bình luận: ${commentId}, emoticons:`, updatedComments.find((c) => c._id === commentId)?.emoticons);
+      return { ...prev, comments: updatedComments };
+    });
+
     try {
       const response = await commentsClient.patch(`${commentId}/like`, { userId });
-      if (response.success) {
-        if (currentArticle) {
-          const updatedComments = await fetchComments(currentArticle._id);
-          const likedComment = updatedComments.find((c: Comment) => c._id === commentId);
-          const currentComment = currentArticle.comments?.find((c) => c._id === commentId);
-          const wasLikedBefore = currentComment?.emoticons?.includes(userId) || false;
-          const isLikedNow = likedComment?.emoticons?.includes(userId) || false;
-          if (likedComment && userId !== likedComment._iduser._id && !wasLikedBefore && isLikedNow) {
-            try {
-              const notificationMessage = `đã yêu thích bình luận của bạn`;
-              await notificationsClient.create({
-                senderId: userId,
-                receiverId: likedComment._iduser._id,
-                message: notificationMessage,
-                status: "unread",
-                articleId: currentArticle._id,
-                commentId: commentId,
-                relatedEntityType: "Comment", 
-              });
-            } catch (notificationError: any) {
-              console.error("🔴 Lỗi khi gửi thông báo like comment:", {
-                message: notificationError.message,
-                response: notificationError.response?.data,
-              });
-            }
+      if (response.success && currentArticle) {
+        const likedComment = response.data;
+        // Sync with server data
+        setCurrentArticle((prev) => {
+          if (!prev) return prev;
+          const updatedComments = updateNestedComment(
+            prev.comments || [],
+            commentId,
+            likedComment.emoticons as string[]
+          );
+          console.log(`Đồng bộ emoticons từ server cho comment ${commentId}:`, likedComment.emoticons);
+          return { ...prev, comments: updatedComments };
+        });
+        if (userId !== likedComment._iduser._id) {
+          try {
+            await notificationsClient.create({
+              senderId: userId,
+              receiverId: likedComment._iduser._id,
+              message: `đã thích bình luận của bạn`,
+              status: "unread",
+              articleId: currentArticle._id,
+              commentId,
+              relatedEntityType: "Comment",
+            });
+          } catch (error) {
+            console.error("Lỗi khi gửi thông báo thích bình luận:", error);
           }
-          setCurrentArticle({ ...currentArticle, comments: updatedComments });
         }
       } else {
-        console.error("Lỗi khi like bình luận:", response.message);
+        // Rollback on server error
+        setCurrentArticle((prev) => {
+          if (!prev) return prev;
+          const updatedComments = updateNestedComment(prev.comments || [], commentId, originalEmoticons!);
+          console.log(`Rollback emoticons cho comment ${commentId}:`, originalEmoticons);
+          return { ...prev, comments: updatedComments };
+        });
+        Alert.alert("Lỗi", response.message || "Không thể thích bình luận. Vui lòng thử lại!");
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API like comment:", error);
+      // Rollback on network error
+      setCurrentArticle((prev) => {
+        if (!prev) return prev;
+        const updatedComments = updateNestedComment(prev.comments || [], commentId, originalEmoticons!);
+        console.log(`Rollback emoticons do lỗi mạng cho comment ${commentId}:`, originalEmoticons);
+        return { ...prev, comments: updatedComments };
+      });
+      console.error("Lỗi khi thích bình luận:", error);
+      Alert.alert("Lỗi", "Không thể thích bình luận. Vui lòng thử lại!");
+    } finally {
+      setIsCommentChecking(false);
     }
   };
 
@@ -279,8 +459,8 @@ export default function usePost(
               receiverId: articleOwner,
               message: notificationMessage,
               status: "unread",
-              articleId, 
-              relatedEntityType: "Article", 
+              articleId,
+              relatedEntityType: "Article",
             });
           } catch (notificationError: any) {
             console.error("🔴 Lỗi khi gửi thông báo:", {
@@ -311,6 +491,7 @@ export default function usePost(
       Alert.alert("Thông báo", "Vui lòng nhập nội dung bình luận!");
       return;
     }
+    setIsCommentChecking(true);
     try {
       const isTextSensitive = await checkTextContent(newReply.trim());
       if (isTextSensitive) {
@@ -348,8 +529,8 @@ export default function usePost(
               receiverId: currentArticle.createdBy._id,
               message: `đã bình luận bài viết của bạn`,
               status: "unread",
-              articleId: currentArticle._id, 
-              commentId: response.data._id, 
+              articleId: currentArticle._id,
+              commentId: response.data._id,
               relatedEntityType: "Comment",
             });
           } catch (notificationError) {
@@ -365,6 +546,8 @@ export default function usePost(
     } catch (error) {
       console.error("Lỗi khi gửi bình luận:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi bình luận. Vui lòng thử lại!");
+    } finally {
+      setIsCommentChecking(false);
     }
   };
 
@@ -373,6 +556,7 @@ export default function usePost(
       Alert.alert("Thông báo", "Vui lòng nhập nội dung trả lời!");
       return;
     }
+    setIsCommentChecking(true);
     try {
       const isTextSensitive = await checkTextContent(content.trim());
       if (isTextSensitive) {
@@ -410,8 +594,8 @@ export default function usePost(
               receiverId: parentComment._iduser._id,
               message: `đã trả lời bình luận của bạn`,
               status: "unread",
-              articleId: currentArticle._id, 
-              commentId: response.data._id, 
+              articleId: currentArticle._id,
+              commentId: response.data._id,
               relatedEntityType: "Comment",
             });
           } catch (notificationError) {
@@ -428,6 +612,8 @@ export default function usePost(
     } catch (error) {
       console.error("Lỗi khi gửi trả lời bình luận:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi gửi trả lời. Vui lòng thử lại!");
+    } finally {
+      setIsCommentChecking(false);
     }
   };
 
@@ -446,6 +632,14 @@ export default function usePost(
 
   const editArticle = async (articleId: string, newContent: string, newScope: string, newHashtags: string[]) => {
     try {
+      const isContentToxic = await checkTextContent(newContent);
+      if (isContentToxic) {
+        Alert.alert(
+          "Nội dung không hợp lệ",
+          "Nội dung bài viết chứa từ ngữ không phù hợp hoặc nhạy cảm. Vui lòng chỉnh sửa lại."
+        );
+        return;
+      }
       const response = await articlesClient.patch(articleId, {
         content: newContent,
         scope: newScope,
@@ -462,6 +656,9 @@ export default function usePost(
         if (currentArticle?._id === articleId) {
           setCurrentArticle({ ...currentArticle, content: newContent, scope: newScope, hashTag: newHashtags });
         }
+        Alert.alert("Thành công", "Bài viết đã được cập nhật!");
+      } else {
+        Alert.alert("Lỗi", "Không thể cập nhật bài viết. Vui lòng thử lại!");
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật bài viết:", error);
@@ -526,69 +723,66 @@ export default function usePost(
     }
   };
 
-    const [currentHashtags, setCurrentHashtags] = useState<string[]>([]);
+  const getArticles = useCallback(
+    async (page: number = 1, limit: number = 5, hashtags: string[] = []) => {
+      if (loadingMore) return { success: false, messages: "Đang tải dữ liệu" };
+      setLoadingMore(true);
+      try {
+        if (!userId) {
+          console.error("Lỗi: userId không tồn tại");
+          setLoadingMore(false);
+          return { success: false, messages: "Lỗi: userId không tồn tại" };
+        }
+        if (hashtags.length === 0) {
+          setArticles([]);
+          setTotalPages(1);
+          setCurrentPage(1);
+          setLoadingMore(false);
+          return { success: true, data: [], total: 0, messages: "Không có hashtag để tìm kiếm" };
+        }
 
-  const getArticles = async (page: number = 1, limit: number = 5, hashtags: string[] = []) => {
-    if (loadingMore) return { success: false, messages: "Đang tải dữ liệu" };
-    setLoadingMore(true);
-    try {
-      if (!userId) {
-        console.error("Lỗi: userId không tồn tại");
-        setLoadingMore(false);
-        return { success: false, messages: "Lỗi: userId không tồn tại" };
-      }
-      if (hashtags.length === 0) {
-        setArticles([]);
-        setTotalPages(1);
-        setCurrentPage(1);
-        setCurrentHashtags([]);
-        setLoadingMore(false);
-        return { success: true, data: [], total: 0, messages: "Không có hashtag để tìm kiếm" };
-      }
-
-      const result = await articlesClient.find({
+        const result = await articlesClient.find({
           hashtag: hashtags,
           $limit: limit,
           $skip: (page - 1) * limit,
-      });
-
-      if (result.success) {
-        const newArticles = Array.isArray(result.data) ? result.data : [];
-        setArticles((prevArticles) => {
-          if (page === 1) {
-            return newArticles;
-          }
-          const filteredArticles = newArticles.filter(
-            (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
-          );
-          return [...prevArticles, ...filteredArticles];
         });
-        setCurrentPage(page);
-        setTotalPages(Math.ceil(result.total / limit));
-        if (page === 1) {
-          setCurrentHashtags(hashtags); // Lưu hashtag hiện tại
+
+        if (result.success) {
+          const newArticles = Array.isArray(result.data) ? result.data : [];
+          setArticles((prevArticles) => {
+            if (page === 1) {
+              return newArticles;
+            }
+            const filteredArticles = newArticles.filter(
+              (newArticle: Article) => !prevArticles.some((prevArticle) => prevArticle._id === newArticle._id)
+            );
+            return [...prevArticles, ...filteredArticles];
+          });
+          setCurrentPage(page);
+          setTotalPages(Math.ceil(result.total / limit));
+          setLoadingMore(false);
+          return result;
+        } else {
+          console.error("Lỗi API:", result.message || result.messages);
+          setLoadingMore(false);
+          return { success: false, messages: result.message || result.messages || "Lỗi khi lấy bài viết" };
         }
+      } catch (error: any) {
+        console.error("Lỗi khi gọi API:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
         setLoadingMore(false);
-        return result;
-      } else {
-        console.error("Lỗi API:", result.message || result.messages);
-        setLoadingMore(false);
-        return { success: false, messages: result.message || result.messages || "Lỗi khi lấy bài viết" };
+        return { success: false, messages: error.message || "Lỗi kết nối với server" };
       }
-    } catch (error: any) {
-      console.error("Lỗi khi gọi API:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      setLoadingMore(false);
-      return { success: false, messages: error.message || "Lỗi kết nối với server" };
-    }
-  };
+    },
+    [userId, loadingMore]
+  );
 
   const loadMoreArticles = async () => {
     if (currentPage < totalPages && !loadingMore) {
-      await getArticles(currentPage + 1, 5, currentHashtags);
+      await getArticles(currentPage + 1);
     }
   };
 
@@ -608,7 +802,6 @@ export default function usePost(
       return null;
     }
   };
-
 
   const recordView = async (articleId: string) => {
     if (!userId) {
@@ -662,6 +855,38 @@ export default function usePost(
     }
   };
 
+  const updateNestedComment = (comments: Comment[], commentId: string, newEmoticons: string[]): Comment[] => {
+    return comments.map((c) => {
+      if (c._id === commentId) {
+        console.log(`Cập nhật emoticons cho bình luận: ${c._id}, emoticons mới:`, newEmoticons);
+        return { ...c, emoticons: newEmoticons };
+      }
+      if (c.replyComment && c.replyComment.length > 0) {
+        return {
+          ...c,
+          replyComment: updateNestedComment(c.replyComment, commentId, newEmoticons),
+        };
+      }
+      return c;
+    });
+  };
+
+  const addNestedReply = (comments: Comment[], parentCommentId: string, newComment: Comment): Comment[] => {
+    return comments.map((c) => {
+      if (c._id === parentCommentId) {
+        console.log(`Thêm bình luận trả lời vào: ${parentCommentId}`);
+        return { ...c, replyComment: [...(c.replyComment || []), newComment] };
+      }
+      if (c.replyComment && c.replyComment.length > 0) {
+        return {
+          ...c,
+          replyComment: addNestedReply(c.replyComment, parentCommentId, newComment),
+        };
+      }
+      return c;
+    });
+  };
+
   return {
     getArticles,
     getArticleById,
@@ -690,6 +915,7 @@ export default function usePost(
     totalPages,
     loadingMore,
     loadMoreArticles,
-    setCurrentPage
+    setCurrentPage,
+    isCommentChecking,
   };
 }

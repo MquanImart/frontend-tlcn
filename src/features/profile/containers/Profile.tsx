@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   View,
@@ -44,7 +44,7 @@ const Profile = () => {
   const [showFormAddFriend, setShowFormAddFriend] = useState<boolean>(false);
   const [canViewProfile, setCanViewProfile] = useState<boolean>(true);
   const [isFriend, setIsFriend] = useState<boolean>(false);
-  useTheme()
+  useTheme();
 
   const tabs: TabProps[] = [
     { label: "Hình ảnh" },
@@ -117,7 +117,6 @@ const Profile = () => {
     }
   };
 
-  // Kiểm tra isFriend và canViewProfile khi user hoặc currentUserId thay đổi
   useEffect(() => {
     if (user && currentUserId) {
       const friendStatus = user.friends?.includes(currentUserId) || false;
@@ -174,13 +173,12 @@ const Profile = () => {
                       ...prev,
                       friends: (prev.friends || []).filter((id: string) => id !== currentUserId),
                     }));
-                    setIsFriend(false); // Cập nhật trạng thái bạn bè
+                    setIsFriend(false);
                     setFriendRequestSent(false);
                     setFriendRequestId(null);
                     setHasReceivedRequest(false);
                     setReceivedRequestId(null);
                     Alert.alert("Thành công", "Đã hủy kết bạn!");
-                    // Cập nhật quyền xem hồ sơ
                     setCanViewProfile(user?.setting?.profileVisibility || currentUserId === userId);
                   } else {
                     throw new Error("Không thể hủy kết bạn");
@@ -208,13 +206,13 @@ const Profile = () => {
                   });
 
                   if (result.success) {
-                    await getUser(userId); // Làm mới dữ liệu user để cập nhật friends
+                    await getUser(userId);
                     setHasReceivedRequest(false);
                     setReceivedRequestId(null);
                     setFriendRequestSent(false);
                     setFriendRequestId(null);
-                    setIsFriend(true); // Cập nhật trạng thái bạn bè
-                    setCanViewProfile(true); // Cập nhật quyền xem hồ sơ
+                    setIsFriend(true);
+                    setCanViewProfile(true);
                     Alert.alert("Thành công", `Bạn và ${user.displayName} đã trở thành bạn bè!`);
                   } else {
                     throw new Error("Không thể xác nhận yêu cầu");
@@ -354,11 +352,11 @@ const Profile = () => {
           displayName: user.displayName,
         },
       });
-    } 
+    }
   };
 
-  return (
-    <ScrollView style={[styles.container, { backgroundColor: Color.background }]}>
+  const renderHeader = () => (
+    <View>
       <CHeader label={user?.displayName || "Hồ sơ"} backPress={() => navigation.goBack()} />
       <View style={styles.profileInfo}>
         {loading ? (
@@ -371,7 +369,7 @@ const Profile = () => {
           </View>
         ) : !canViewProfile ? (
           <View style={styles.emptyContainer}>
-            <Image source={avt? { uri: avt }: require('@/src/assets/images/default/default_user.png')} style={styles.profileImage} />
+            <Image source={avt ? { uri: avt } : require('@/src/assets/images/default/default_user.png')} style={styles.profileImage} />
             <Text style={[styles.name, { color: Color.textPrimary }]}>{user?.displayName || "Không có tên"}</Text>
             <Text style={[styles.emptyText, { color: Color.textSecondary }]}>
               Hồ sơ này không công khai. Vui lòng kết bạn để xem thêm thông tin.
@@ -396,7 +394,7 @@ const Profile = () => {
         ) : (
           <>
             <Image
-              source={avt? { uri: avt }: require('@/src/assets/images/default/default_user.png')}
+              source={avt ? { uri: avt } : require('@/src/assets/images/default/default_user.png')}
               style={styles.profileImage}
             />
             <Text style={[styles.name, { color: Color.textPrimary }]}>{user?.displayName || "Không có tên"}</Text>
@@ -481,29 +479,42 @@ const Profile = () => {
           </View>
         </View>
       )}
-      {!loading && !error && user && canViewProfile && (
-        <View style={{ flex: 1, backgroundColor: Color.background, top: 10 }}>
-          <View style={{ width: "100%", height: "100%" }}>
-            <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
-            {currTab === tabs[0].label ? (
-              <ProfileImages userId={userId || ""} />
-            ) : currTab === tabs[1].label ? (
-              <ViewAllVideo userId={userId} />
-            ) : (
-              <ProfilePost userId={userId} />
-            )}
-          </View>
-        </View>
-      )}
+    </View>
+  );
+
+  const renderContent = () => (
+    <View style={{ flex: 1, backgroundColor: Color.background, paddingTop: 10 }}>
+      <View style={{ width: "100%", height: "100%" }}>
+        <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
+        {currTab === tabs[0].label ? (
+          <ProfileImages userId={userId || ""} />
+        ) : currTab === tabs[1].label ? (
+          <ViewAllVideo userId={userId} />
+        ) : (
+          <ProfilePost userIdProfile={userId} />
+        )}
+      </View>
+    </View>
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: Color.background }}>
+      <FlatList
+        ListHeaderComponent={renderHeader}
+        data={(!loading && !error && user && canViewProfile) ? [{}] : []} // Only render content if profile is viewable
+        renderItem={() => renderContent()}
+        keyExtractor={() => 'profile-content'}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.flatListContainer}
+      />
       <MessageModal visible={showFormAddFriend} onClose={() => setShowFormAddFriend(false)} onSend={formAddMessage} />
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor moved to inline style
   },
   container2: {
     flexDirection: "row",
@@ -511,7 +522,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
     gap: 10,
-    // backgroundColor moved to inline style
     paddingHorizontal: 10,
   },
   profileInfo: {
@@ -527,14 +537,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginTop: 10,
-    // color moved to inline style
   },
   bio: {
     textAlign: "center",
     fontSize: 16,
     width: "70%",
     marginVertical: 10,
-    // color moved to inline style
   },
   stats: {
     flexDirection: "row",
@@ -548,12 +556,10 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 14,
-    // color moved to inline style
   },
   statValue: {
     fontSize: 16,
     fontWeight: "bold",
-    // color moved to inline style
   },
   emptyContainer: {
     flex: 1,
@@ -563,7 +569,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    // color moved to inline style
     fontStyle: "italic",
     textAlign: "center",
     marginVertical: 10,
@@ -571,6 +576,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "30%",
     alignSelf: "center",
+  },
+  flatListContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
 });
 

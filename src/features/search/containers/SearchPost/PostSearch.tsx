@@ -12,6 +12,7 @@ import { Image } from 'expo-image';
 import debounce from "lodash.debounce";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Keyboard,
@@ -74,6 +75,7 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
     loadingMore,
     loadMoreArticles,
     setCurrentPage,
+    isCommentChecking
   } = usePost(articles, setArticles);
 
   useEffect(() => {
@@ -218,77 +220,79 @@ const PostSearch: React.FC<PostSearchProps> = ({ route }) => {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        onSwipeComplete={closeComments}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        useNativeDriver={true}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
-              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
-                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
-                  {calculateTotalComments(currentArticle?.comments || [])} bình luận
-                </Text>
-                <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textPrimary} />
-                </TouchableOpacity>
-              </View>
-              <FlatList
-                data={currentArticle?.comments || []}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => (
-                  <CommentItem
-                    userId={userId || ""}
-                    comment={item}
-                    onLike={likeComment}
-                    onReply={replyToComment}
-                  />
-                )}
-                showsVerticalScrollIndicator={true}
-                contentContainerStyle={styles.commentList}
-                keyboardShouldPersistTaps="handled"
-                initialNumToRender={10}
-                maxToRenderPerBatch={10}
-                windowSize={5}
-                removeClippedSubviews={true}
-                getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
-                nestedScrollEnabled={true}
-                onScrollBeginDrag={() => Keyboard.dismiss()}
+          <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
+            <View style={styles.commentHeader}>
+              <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
+                {calculateTotalComments(currentArticle?.comments || [])} bình luận
+              </Text>
+              <TouchableOpacity onPress={closeComments}>
+                <Ionicons name="close" size={24} color={Color.textPrimary} />
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={currentArticle?.comments || []}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <CommentItem
+                  userId={userId || ""}
+                  comment={item}
+                  onLike={likeComment}
+                  onReply={replyToComment}
+                />
+              )}
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={styles.commentList}
+              keyboardShouldPersistTaps="handled"
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              removeClippedSubviews={true}
+              getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+              nestedScrollEnabled={true}
+              onScrollBeginDrag={() => Keyboard.dismiss()}
             />
 
-              {selectedMedia.length > 0 && (
-                <View style={styles.mediaPreviewContainer}>
-                  {selectedMedia.map((media, index) => (
-                    <Image key={index} source={{ uri: media.uri }} style={styles.mediaPreview} />
-                  ))}
-                </View>
-              )}
+            {selectedMedia.length > 0 && (
+              <View style={styles.mediaPreviewContainer}>
+                {selectedMedia.map((media, index) => (
+                  <Image key={index} source={{ uri: media.uri }} style={styles.mediaPreview} />
+                ))}
+              </View>
+            )}
 
-              <View style={[
-                styles.commentInputContainer,
-                {
-                  borderTopColor: Color.border,
-                  backgroundColor: Color.background,
-                  borderColor: Color.border,
-                }
-              ]}>
-                <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor2} />
-                </TouchableOpacity>
-                <TextInput
-                  style={[styles.commentInput, { color: Color.textPrimary }]}
-                  placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textTertiary}
-                  value={newReply}
-                  onChangeText={setNewReply}
-                />
-                <TouchableOpacity onPress={handleAddComment}>
+            <View
+              style={[styles.commentInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}
+            >
+              <TouchableOpacity onPress={pickMedia} activeOpacity={0.7}>
+                <Ionicons name="image" size={24} color={Color.mainColor2} />
+              </TouchableOpacity>
+              <TextInput
+                style={[styles.commentInput, { color: Color.textPrimary }]}
+                placeholder="Viết bình luận..."
+                placeholderTextColor={Color.textTertiary}
+                value={newReply}
+                onChangeText={setNewReply}
+                multiline
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
+              {isCommentChecking ? (
+                <ActivityIndicator size="small" color={Color.mainColor2} />
+              ) : (
+                <TouchableOpacity onPress={handleAddComment} activeOpacity={0.7}>
                   <Ionicons name="send" size={20} color={Color.mainColor2} />
                 </TouchableOpacity>
-              </View>
+              )}
             </View>
-          </TouchableWithoutFeedback>
+          </View>
         </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
