@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   textInput: {
-    height: 100,
+    height: 300,
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
