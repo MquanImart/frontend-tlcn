@@ -62,7 +62,15 @@ export default function ReelDetail() {
     pickMedia,
     selectedMedia,
     isCommentChecking
-  } = useReels([reel].filter(Boolean) as Reels[], (reels) => setReel(reels[0] || null), setLoading);
+  } = useReels(
+    [reel].filter(Boolean) as Reels[],
+    (reels) => {
+      if (Array.isArray(reels)) {
+        setReel(reels[0] || null);
+      }
+    },
+    setLoading
+  );
 
   const getUserID = async () => {
     try {
