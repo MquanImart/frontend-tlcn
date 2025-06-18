@@ -13,6 +13,7 @@ import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import { useMenu } from "./useMenu";
+import { useAuth } from "@/AuthContext";
 
 type SettingNavigationProp = StackNavigationProp<TabbarStackParamList, "Menu">;
 type MenuNavigationProp = StackNavigationProp<MenuStackParamList, "Menu">;
@@ -24,7 +25,8 @@ interface CategoryItem {
 }
 
 const Menu = () => {
-  useTheme(); // Ensure theme context is used
+  useTheme();
+  const { logout } = useAuth();
   const navigation = useNavigation<SettingNavigationProp>();
   const navigationMenu = useNavigation<MenuNavigationProp>();
   const [userID, setUserID] = useState<string | null>(null);
@@ -52,24 +54,26 @@ const Menu = () => {
         return;
       }
 
-      // Clear all data from AsyncStorage
-      await AsyncStorage.multiRemove([
-        "token",
-        "userId",
-        "role",
-        "setting",
-        "displayName",
-        "hashtag",
-        "avt",
-        "hobbies",
-      ]);
+      const accountClient = restClient.apiClient.service("apis/accounts");
+      const result = await accountClient.logout();
+      if (result){
+        await AsyncStorage.multiRemove([
+          "token",
+          "userId",
+          "role",
+          "setting",
+          "displayName",
+          "hashtag",
+          "avt",
+          "hobbies",
+        ]);
 
-      // Reset client state and RestClient token
-      setUserID(null);
-      restClient.apiClient.token = "";
+        setUserID(null);
+        restClient.apiClient.token = "";
 
-      // Navigate to Login screen
-      navigationMenu.navigate("Login");
+        logout();
+
+      }
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi trong quá trình đăng xuất");

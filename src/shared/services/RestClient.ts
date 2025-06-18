@@ -140,20 +140,21 @@ class RestClient {
     }
   }
 
-  public async logout(p0: { userId: any; }) {
+  public async logout() {
     try {
       const userId = await AsyncStorage.getItem("userId");
-      if (!this.token) {
-        return { success: false, messages: "Token không tồn tại" };
+      if (!this.token || !userId) {
+        return true;
       }
-
-      const result = await axios.post(`${this.baseURL}/auths/logout/${userId}`, {}, {
+      console.log(`${this.baseURL}/${this.path}/logout`);
+      const result = await axios.post(`${this.baseURL}/${this.path}/logout`, {userId: userId}, {
         headers: { Authorization: `Bearer ${this.token}` },
       });
 
       if (result) {
         // Xóa token khỏi AsyncStorage
         await AsyncStorage.multiRemove(["token", "userId", "userName"]);
+        
         return { success: true, messages: result.data.messages };
       } else {
         return { success: false, messages: "Đang xuất thất bại" };
