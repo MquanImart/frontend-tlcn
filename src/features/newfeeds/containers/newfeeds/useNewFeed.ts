@@ -66,25 +66,28 @@ export default function useNewFeed(
   // Listen for new comments
   useEffect(() => {
     socket.on("newComment", ({ comment, articleId }) => {
-      if (currentArticle?._id === articleId) {
-        setCurrentArticle((prev) => {
-          if (!prev) return prev;
-          const commentExists = prev.comments?.some((c) => c._id === comment._id);
-          if (commentExists) return prev;
-          const updatedComments = prev.comments
-            ? prev.comments.filter((c) => !c._id.startsWith("temp-")).concat(comment)
-            : [comment];
-          return { ...prev, comments: updatedComments };
-        });
-        setArticles((prevArticles) =>
-          prevArticles.map((article) =>
-            article._id === articleId
-              ? { ...article, comments: [...(article.comments || []).filter((c) => !c._id.startsWith("temp-")), comment] }
-              : article
-          )
-        );
-      }
-    });
+    if (currentArticle?._id === articleId) {
+      setCurrentArticle((prev) => {
+        if (!prev || !prev.comments) return prev;
+        const commentExists = prev.comments.some((c) => c._id && c._id.startsWith("temp-"));
+        if (commentExists) return prev;
+        const updatedComments = prev.comments
+          ? prev.comments.filter((c) => c._id && !c._id.startsWith("temp-")).concat(comment)
+          : [comment];
+        return { ...prev, comments: updatedComments };
+      });
+      setArticles((prevArticles) =>
+        prevArticles.map((article) =>
+          article._id === articleId
+            ? {
+                ...article,
+                comments: [...(article.comments || []).filter((c) => c._id && !c._id.startsWith("temp-")), comment],
+              }
+            : article
+        )
+      );
+    }
+  });
 
     socket.on("newReplyComment", ({ comment, parentCommentId }) => {
       if (currentArticle) {
