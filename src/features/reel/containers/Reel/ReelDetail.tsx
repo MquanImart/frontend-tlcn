@@ -61,7 +61,16 @@ export default function ReelDetail() {
     setNewReply,
     pickMedia,
     selectedMedia,
-  } = useReels([reel].filter(Boolean) as Reels[], (reels) => setReel(reels[0] || null), setLoading);
+    isCommentChecking
+  } = useReels(
+    [reel].filter(Boolean) as Reels[],
+    (reels) => {
+      if (Array.isArray(reels)) {
+        setReel(reels[0] || null);
+      }
+    },
+    setLoading
+  );
 
   const getUserID = async () => {
     try {
@@ -147,12 +156,11 @@ export default function ReelDetail() {
       />
 
       <View style={styles.headerContainer}>
-        <CHeader
-          label="Reel"
-          backPress={() => navigation.goBack()}
-          labelColor={Color.white_white}
-          iconColor={Color.white_white}
-        />
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={35} color={Color.white_white} style={styles.headerIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <Modal
@@ -160,75 +168,79 @@ export default function ReelDetail() {
         onBackdropPress={closeComments}
         style={styles.modal}
         backdropOpacity={0.5}
-        onSwipeComplete={closeComments}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        useNativeDriver={true}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[styles.commentContainer, { backgroundColor: Color.backgroundSecondary }]}>
-              <View style={[styles.commentHeader, { borderBottomColor: Color.border }]}>
-                <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
-                  {totalComments} bình luận
-                </Text>
-                <TouchableOpacity onPress={closeComments}>
-                  <Ionicons name="close" size={24} color={Color.textPrimary} />
-                </TouchableOpacity>
-              </View>
-
-              <FlatList
-                data={currentReel?.comments || []}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => (
-                  <CommentItem
-                    userId={userID || ''}
-                    comment={item}
-                    onLike={likeComment}
-                    onReply={replyToComment}
-                  />
-                )}
-                showsVerticalScrollIndicator={true}
-                contentContainerStyle={styles.commentList}
-                keyboardShouldPersistTaps="handled"
-                initialNumToRender={10}
-                maxToRenderPerBatch={10}
-                windowSize={5}
-                removeClippedSubviews={true}
-                getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
-                nestedScrollEnabled={true}
-                onScrollBeginDrag={() => Keyboard.dismiss()}
-              />
-
-              {selectedMedia.length > 0 && (
-                <View style={styles.mediaPreviewContainer}>
-                  {selectedMedia.map((media, index) => (
-                    <Image key={index} source={{ uri: media.uri }} style={styles.mediaPreview} />
-                  ))}
-                </View>
-              )}
-
-              <View style={[styles.commentInputContainer, {backgroundColor: Color.backgroundSecondary, borderColor: Color.border, borderTopColor: Color.border}]}>
-                <TouchableOpacity onPress={pickMedia}>
-                  <Ionicons name="image" size={24} color={Color.mainColor2} />
-                </TouchableOpacity>
-                <TextInput
-                  style={[styles.commentInput, { color: Color.textPrimary }]}
-                  placeholder="Viết bình luận..."
-                  placeholderTextColor={Color.textTertiary}
-                  value={newReply}
-                  onChangeText={setNewReply}
-                />
-                <TouchableOpacity onPress={handleAddComment} disabled={isLoading}>
-                  {isLoading ? (
-                    <ActivityIndicator size="small" color={Color.mainColor2} />
-                  ) : (
-                    <Ionicons name="send" size={20} color={Color.mainColor2} />
-                  )}
-                </TouchableOpacity>
-              </View>
+          <View style={[styles.commentContainer, { backgroundColor: Color.background }]}>
+            <View style={styles.commentHeader}>
+              <Text style={[styles.commentTitle, { color: Color.textPrimary }]}>
+                {totalComments} bình luận
+              </Text>
+              <TouchableOpacity onPress={closeComments}>
+                <Ionicons name="close" size={24} color={Color.textPrimary} />
+              </TouchableOpacity>
             </View>
-          </TouchableWithoutFeedback>
+
+            <FlatList
+              data={currentReel?.comments || []}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <CommentItem
+                  userId={userID || ""}
+                  comment={item}
+                  onLike={likeComment}
+                  onReply={replyToComment}
+                />
+              )}
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={styles.commentList}
+              keyboardShouldPersistTaps="handled"
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              removeClippedSubviews={true}
+              getItemLayout={(data, index) => ({ length: 100, offset: 100 * index, index })}
+              nestedScrollEnabled={true}
+              onScrollBeginDrag={() => Keyboard.dismiss()}
+            />
+
+            {selectedMedia.length > 0 && (
+              <View style={styles.mediaPreviewContainer}>
+                {selectedMedia.map((media, index) => (
+                  <Image key={index} source={{ uri: media.uri }} style={styles.mediaPreview} />
+                ))}
+              </View>
+            )}
+
+            <View
+              style={[styles.commentInputContainer, { backgroundColor: Color.backgroundSecondary, borderColor: Color.border }]}
+            >
+              <TouchableOpacity onPress={pickMedia} activeOpacity={0.7}>
+                <Ionicons name="image" size={24} color={Color.mainColor2} />
+              </TouchableOpacity>
+              <TextInput
+                style={[styles.commentInput, { color: Color.textPrimary }]}
+                placeholder="Viết bình luận..."
+                placeholderTextColor={Color.textTertiary}
+                value={newReply}
+                onChangeText={setNewReply}
+                multiline
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
+              {isCommentChecking ? (
+                <ActivityIndicator size="small" color={Color.mainColor2} />
+              ) : (
+                <TouchableOpacity onPress={handleAddComment} activeOpacity={0.7}>
+                  <Ionicons name="send" size={20} color={Color.mainColor2} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
         </KeyboardAvoidingView>
       </Modal>
     </View>
@@ -316,5 +328,27 @@ const styles = StyleSheet.create({
     height: 50,
     marginRight: 10,
     borderRadius: 5,
+  },
+    headerLabel: {
+    color: Color.white_white,
+    fontSize: 25,
+    fontWeight: 'bold',
+    textShadowColor: Color.shadow,
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  headerIcon: {
+    shadowColor: Color.black_black,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.75,
+    shadowRadius: 2,
+  },
+    headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingTop: Platform.OS === 'ios' ? 50 : 30,
   },
 });

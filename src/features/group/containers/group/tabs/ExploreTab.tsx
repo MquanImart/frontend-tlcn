@@ -72,7 +72,7 @@ const ExploreTab = ({ userId, handleScroll }: ExploreTabProps) => {
           onScroll={handleScroll}
           scrollEventThrottle={16}
           onEndReached={loadMoreGroups}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={0.8}
           ListFooterComponent={
             isLoadingMore ? (
               <View style={styles.footer}>

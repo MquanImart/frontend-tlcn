@@ -19,7 +19,7 @@ export const usePostActions = (
   const [isEditModalVisible, setEditModalVisible] = useState(false);
   const [isReportModalVisible, setReportModalVisible] = useState(false);
   const [editContent, setEditContent] = useState<string>("");
-  const [editScope, setEditScope] = useState<string>("");
+  const [editScope, setEditScope] = useState<string>("Công khai");
   const [editHashtags, setEditHashtags] = useState<string[]>([]);
   const [isSaved, setIsSaved] = useState(false);
   const [selectedReportReason, setSelectedReportReason] = useState<string>("");
@@ -37,10 +37,14 @@ export const usePostActions = (
   }, []);
 
   const openEditModal = (currentContent: string, currentScope: string, currentHashtags: string[]) => {
+    const normalizedScope = ["Công khai", "Bạn bè", "Riêng tư"].includes(currentScope)
+      ? currentScope
+      : "Công khai";
     setEditContent(currentContent || "");
-    setEditScope(currentScope || "Công khai");
+    setEditScope(normalizedScope);
     setEditHashtags(currentHashtags || []);
     setEditModalVisible(true);
+    console.log("Opening EditModal with scope:", normalizedScope);
   };
 
   useEffect(() => {
@@ -69,7 +73,7 @@ export const usePostActions = (
     if (isOwnPost) {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Hủy", "Xóa bài viết", "Chỉnh sửa"], // Loại bỏ "Báo cáo"
+          options: ["Hủy", "Xóa bài viết", "Chỉnh sửa"],
           destructiveButtonIndex: 1,
           cancelButtonIndex: 0,
         },

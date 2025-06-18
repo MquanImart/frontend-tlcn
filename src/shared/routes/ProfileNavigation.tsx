@@ -4,6 +4,7 @@ import Profile from "@/src/features/profile/containers/Profile";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import Conversations from "@/src/features/messages/containers/conversations/Conversations";
+import { MapNavigation, MapStackParamList } from "./MapNavigation";
 
 export type ProfileStackParamList = {
     MyProfile: undefined;
@@ -15,6 +16,10 @@ export type ProfileStackParamList = {
         _id: string;
         displayName: string;
       }
+    };
+    MapNavigation: {
+              screen?: keyof MapStackParamList;
+              params?: MapStackParamList[keyof MapStackParamList];
     };
 };
 
@@ -29,6 +34,7 @@ export function ProfileNavigation() {
           <Stack.Screen name="EditProfile" component={EditProfile}/>
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Message" component={Conversations} />
+          <Stack.Screen name="MapNavigation" component={MapNavigation} />
       </Stack.Navigator>
   );
 }
