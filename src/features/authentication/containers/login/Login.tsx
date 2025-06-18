@@ -31,8 +31,8 @@ type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
   // Removed useTheme() since we are explicitly using lightColor
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("21110740@student.hcmute.edu.vn");
-  const [password, setPassword] = useState<string>("quan123");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("chauhuynhmai@gmail.com");
+  const [password, setPassword] = useState<string>("123456");
   const navigation = useNavigation<AuthNavigationProp>();
   const { fetchSuggested } = useSuggestedPages();
 
