@@ -1,4 +1,5 @@
 // src/features/authentication/screens/Login.tsx (Your Login component)
+import { useAuth } from "@/AuthContext";
 import CInput from "@/src/features/authentication/components/CInput";
 import CButton from "@/src/shared/components/button/CButton";
 import { AuthStackParamList } from "@/src/shared/routes/AuthNavigation";
@@ -30,7 +31,7 @@ const accountClient = restClient.apiClient.service("apis/accounts");
 type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
-  // Removed useTheme() since we are explicitly using lightColor
+  const { login } = useAuth();
   const [emailOrPhone, setEmailOrPhone] = useState<string>("21110740@student.hcmute.edu.vn");
   const [password, setPassword] = useState<string>("quan123");
   const navigation = useNavigation<AuthNavigationProp>();
@@ -53,7 +54,7 @@ const Login = () => {
           navigation.navigate("AdminDashboard");
         } else {
           fetchSuggested();
-          navigation.navigate("TabbarNavigation");
+          login();
         }
       } else {
         Alert.alert("Thông báo", response.messages || "Đăng nhập thất bại");
