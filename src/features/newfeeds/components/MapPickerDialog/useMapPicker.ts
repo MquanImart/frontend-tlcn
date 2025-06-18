@@ -1,3 +1,4 @@
+// src/shared/components/map/useMapPicker.ts
 import { Address } from "@/src/interface/interface_reference";
 import { MapStackParamList } from "@/src/shared/routes/MapNavigation";
 import { callGetGoogleApi, callPostGoogleApi } from "@/src/shared/services/API_Google";
@@ -121,14 +122,32 @@ const useMapPicker = (
       const result = await callPostGoogleApi<{ places: PlaceData[] }>(baseUrl, data, headers);
       if (result && result.places && result.places.length > 0) {
         setDetails(result.places[0]);
-        setSearch(result.places[0].displayName.text); // Cập nhật ô tìm kiếm với tên địa điểm
+        setSearch(result.places[0].displayName.text);
       } else {
+        // Cập nhật logic tại đây: Nếu không tìm thấy tên địa điểm, đặt tên tạm thời
         setDetails(null);
-        setSearch(""); // Xóa ô tìm kiếm nếu không tìm thấy địa điểm
-        console.log("Không tìm thấy địa điểm gần đây.");
+        // Lấy thông tin địa chỉ từ reverse geocoding để tạo tên tạm thời
+        const addressResponse = await Location.reverseGeocodeAsync({ latitude, longitude });
+        if (addressResponse.length > 0) {
+          const firstAddress = addressResponse[0];
+          const tempPlaceName = [
+            firstAddress.name,
+            firstAddress.street,
+            firstAddress.subregion, // Phường/Xã
+            firstAddress.district, // Quận/Huyện
+            firstAddress.region, // Tỉnh/Thành phố
+          ].filter(Boolean).join(", ");
+          setSearch(tempPlaceName || "Vị trí đã chọn"); // Sử dụng tên tạm thời hoặc fallback
+        } else {
+          setSearch("Vị trí đã chọn"); // Fallback nếu không có thông tin geocode
+        }
+        console.log("Không tìm thấy địa điểm gần đây, sử dụng tên tạm thời.");
       }
     } catch (error) {
       console.error("Lỗi khi lấy địa điểm gần đây:", error);
+      // Giữ tên tạm thời hoặc báo lỗi nhưng vẫn có thể xác nhận
+      setDetails(null);
+      setSearch("Vị trí đã chọn (Lỗi tải tên)");
       Alert.alert("Lỗi", "Không thể lấy thông tin địa điểm. Vui lòng thử lại!");
     }
   };
@@ -149,7 +168,8 @@ const useMapPicker = (
 
     try {
       const result = await callPostGoogleApi<{ suggestions: PlaceSuggestion[] }>(url, body);
-      if (result) {
+      // SỬA LỖI: Kiểm tra cả `result` và `result.suggestions`
+      if (result && result.suggestions) {
         setListSearch(result.suggestions);
       } else {
         setListSearch([]);
@@ -164,17 +184,18 @@ const useMapPicker = (
     const baseUrl = `https://places.googleapis.com/v1/places/${placeId}`;
     try {
       const result = await callGetGoogleApi<PlaceData>(baseUrl, {}, { "X-Goog-FieldMask": "*" });
-      if (result) {
+      // CẢI TIẾN: Kiểm tra `result` và các thuộc tính cần thiết
+      if (result && result.location) {
         setDetails(result);
         setSelectedMarker(result.location);
-        // Cập nhật ô tìm kiếm với nội dung của gợi ý được chọn
         const selectedSuggestion = listSearch.find(
           (item) => item.placePrediction.placeId === placeId
         );
         if (selectedSuggestion) {
           setSearch(selectedSuggestion.placePrediction.text.text);
         }
-        // Không gọi setIsSearch(false) để giữ danh sách gợi ý hiển thị
+        // Giữ danh sách gợi ý để người dùng có thể chọn lại
+        setIsSearch(false); // Ẩn danh sách gợi ý sau khi chọn
       }
     } catch (error) {
       console.error("Lỗi khi lấy chi tiết địa điểm:", error);
@@ -183,7 +204,7 @@ const useMapPicker = (
   };
 
   const confirmLocation = async () => {
-    if (selectedMarker && details) {
+    if (selectedMarker) {
       try {
         const addressResponse = await Location.reverseGeocodeAsync(selectedMarker);
         let address: Address = {
@@ -191,27 +212,38 @@ const useMapPicker = (
           district: "",
           ward: "",
           street: "",
-          placeName: details.displayName.text || "",
+          placeName: "",
           lat: selectedMarker.latitude,
           long: selectedMarker.longitude,
         };
 
         if (addressResponse.length > 0) {
           const firstAddress = addressResponse[0];
+          const placeNameFromDetails = details?.displayName?.text;
+
           address = {
             province: firstAddress.region || "",
             district: firstAddress.district || "",
             ward: firstAddress.subregion || "",
             street: firstAddress.street || "",
-            placeName: details.displayName.text || [
+            // Ưu tiên tên từ Google Places, sau đó đến reverse geocode, cuối cùng là tên hiện tại trong ô search
+            placeName: placeNameFromDetails || [
               firstAddress.name,
               firstAddress.street,
-              firstAddress.city,
+              firstAddress.subregion,
+              firstAddress.district,
               firstAddress.region,
-            ].filter(Boolean).join(", "),
+            ].filter(Boolean).join(", ") || search, // Fallback cuối cùng là giá trị hiện tại của 'search'
             lat: selectedMarker.latitude,
             long: selectedMarker.longitude,
           };
+        } else if (details) {
+          address.placeName = details.displayName.text;
+        }
+
+        // Đảm bảo placeName luôn có giá trị, nếu không có tên cụ thể thì lấy từ search hoặc tên mặc định
+        if (!address.placeName) {
+            address.placeName = search || "Vị trí không tên";
         }
 
         onConfirm(selectedMarker, address);
