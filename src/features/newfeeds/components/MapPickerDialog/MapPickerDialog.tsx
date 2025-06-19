@@ -37,6 +37,9 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
 
   if (!isVisible) return null;
 
+  // Nút xác nhận chỉ bị vô hiệu hóa nếu KHÔNG CÓ selectedMarker
+  const isConfirmButtonDisabled = !selectedMarker;
+
   return (
     <View style={[styles.container, { backgroundColor: Color.background }]}>
       <View style={[styles.searchContainer, isSearch && { backgroundColor: Color.background }]}>
@@ -51,7 +54,6 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
               }
             }}
           >
-            {/* White contrast for back button, assuming textOnMain2 is white on dark mainColor2 or dark on light mainColor2 */}
             <Icon name="chevron-left" size={30} color={Color.textPrimary} /> 
           </TouchableOpacity>
           <TextInput
@@ -127,8 +129,12 @@ const MapPickerDialog: React.FC<MapPickerDialogProps> = ({ isVisible, onClose, o
 
       {selectedMarker && (
         <TouchableOpacity
-          style={[styles.confirmButton, { backgroundColor: Color.mainColor2 }]}
+          style={[
+            styles.confirmButton,
+            { backgroundColor: isConfirmButtonDisabled ? Color.textTertiary : Color.mainColor2 }
+          ]}
           onPress={confirmLocation}
+          disabled={isConfirmButtonDisabled}
         >
           <Text style={[styles.buttonText, { color: Color.textOnMain2 }]}>Xác nhận vị trí này</Text>
         </TouchableOpacity>
@@ -145,9 +151,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    // Background color set dynamically in JSX
   },
-  closeButton: { // This style is defined but not used in MapPickerDialog component
+  closeButton: {
     position: "absolute",
     top: 40,
     left: 20,
@@ -163,7 +168,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
-  closeButtonText: { // This style is defined but not used in MapPickerDialog component
+  closeButtonText: {
     fontSize: 20,
     fontWeight: "600",
   },
@@ -182,7 +187,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   searchContainerFull: {
-    // backgroundColor handled directly in JSX using Color.background
   },
   searchBox: {
     flexDirection: "row",
@@ -206,7 +210,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   inputSearchFocus: {
-    // backgroundColor handled directly in JSX using Color.backgroundSecondary
   },
   deleteTextSearch: {
     position: "absolute",

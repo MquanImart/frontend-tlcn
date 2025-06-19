@@ -7,7 +7,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CHeader from '../../reel/components/Header';
 import ProfileImages from './images/ProfileImages';
 import ProfilePost from './post/ProfilePost';
@@ -20,7 +20,7 @@ const myPhotosClient = restClient.apiClient.service("apis/myphotos");
 type ProfileNavigationProp = StackNavigationProp<ProfileStackParamList, "Profile">;
 
 const MyProfile = () => {
-    useTheme()
+    useTheme();
     const navigation = useNavigation<ProfileNavigationProp>();
     const [user, setUser] = useState<any>(null);
     const [avt, setAvt] = useState<string | null>(null);
@@ -66,19 +66,16 @@ const MyProfile = () => {
         }
     };
 
-    // Lấy userId khi component mount
     useEffect(() => {
         getUserId();
     }, []);
 
-    // Tải dữ liệu người dùng khi userId thay đổi
     useEffect(() => {
         if (userId) {
             getUser(userId);
         }
     }, [userId]);
 
-    // Tải lại dữ liệu khi màn hình được focus
     useFocusEffect(
         React.useCallback(() => {
             if (userId) {
@@ -87,13 +84,12 @@ const MyProfile = () => {
         }, [userId])
     );
 
-    // Tính toán giá trị từ dữ liệu user
-    const followersCount = user?.followers?.length || 0; 
-    const friendsCount = user?.friends?.length || 0;   
-    const followingCount = user?.following?.length || 0;   
+    const followersCount = user?.followers?.length || 0;
+    const friendsCount = user?.friends?.length || 0;
+    const followingCount = user?.following?.length || 0;
 
-    return (
-        <ScrollView style={{ flex: 1, backgroundColor: Color.background }}>
+    const renderHeader = () => (
+        <View>
             <CHeader
                 label="My Profile"
                 backPress={() => navigation.goBack()}
@@ -109,15 +105,18 @@ const MyProfile = () => {
                     <Text style={{ textAlign: 'center', fontSize: 16, width: '70%', marginVertical: 10, color: Color.error }}>{error}</Text>
                 ) : (
                     <>
-                        <Image source={avt? { uri: avt } : require('@/src/assets/images/default/default_user.png')} 
-                            style={styles.profileImage} 
+                        <Image
+                            source={avt ? { uri: avt } : require('@/src/assets/images/default/default_user.png')}
+                            style={styles.profileImage}
                         />
                         <TouchableOpacity>
                             <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 10, color: Color.textPrimary }}>
                                 {user?.displayName || "Không có tên"}
                             </Text>
                         </TouchableOpacity>
-                        <Text style={{ textAlign: 'center', fontSize: 16, width: '70%', marginVertical: 10, color: Color.textSecondary }}>{user?.aboutMe || " "}</Text>
+                        <Text style={{ textAlign: 'center', fontSize: 16, width: '70%', marginVertical: 10, color: Color.textSecondary }}>
+                            {user?.aboutMe || " "}
+                        </Text>
                     </>
                 )}
                 <View style={styles.stats}>
@@ -135,27 +134,40 @@ const MyProfile = () => {
                     </View>
                 </View>
             </View>
+        </View>
+    );
 
-            <View style={{ flex: 1, backgroundColor: Color.background }}>
-                <View style={{ width: '100%', height: "100%" }}>
-                    <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
-                    {currTab === tabs[0].label ? (
-                        <ProfileImages userId={userId || ''} />
-                    ) : currTab === tabs[1].label ? (
-                        <ViewAllVideo userId={userId || ''} />
-                    ) : (
-                        <ProfilePost userId={userId || ''} />
-                    )}
-                </View>
+    const renderContent = () => (
+        <View style={{ flex: 1, backgroundColor: Color.background,padding: 10 }}>
+            <View style={{ width: '100%', height: "100%" }}>
+                <TabbarTop tabs={tabs} startTab={currTab} setTab={setCurrTab} />
+                {currTab === tabs[0].label ? (
+                    <ProfileImages userId={userId || ''} />
+                ) : currTab === tabs[1].label ? (
+                    <ViewAllVideo userId={userId || ''} />
+                ) : (
+                    <ProfilePost userIdProfile={userId || ''} />
+                )}
             </View>
-        </ScrollView>
+        </View>
+    );
+
+    return (
+        <FlatList
+            ListHeaderComponent={renderHeader}
+            data={[{}]} // Single item to render content once
+            renderItem={() => renderContent()}
+            keyExtractor={() => 'content'}
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}
+            contentContainerStyle={styles.flatListContainer}
+        />
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // Removed backgroundColor from here
     },
     profileInfo: {
         alignItems: 'center',
@@ -165,19 +177,6 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-    },
-    name: {
-        // Removed color from here
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginTop: 10,
-    },
-    bio: {
-        textAlign: 'center',
-        fontSize: 16,
-        width: '70%',
-        marginVertical: 10,
-        // Removed color from here
     },
     stats: {
         flexDirection: 'row',
@@ -189,13 +188,9 @@ const styles = StyleSheet.create({
     statItem: {
         alignItems: 'center',
     },
-    statLabel: {
-        fontSize: 14,
-        // Removed color from here
-    },
-    statValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
+    flatListContainer: {
+        backgroundColor: Color.background,
+        paddingBottom: 20,
     },
 });
 

@@ -181,9 +181,14 @@ const EditProfile = () => {
       ) : (
         <View style={styles.content}>
           <TouchableOpacity style={styles.avatarContainer} onPress={handleImageSelection}>
-            <Image source={newAvatarUri && avatar ?{ uri: newAvatarUri || avatar } 
-              : require('@/src/assets/images/default/default_user.png')} style={styles.avatar} 
-            />
+          <Image
+            source={
+              newAvatarUri ? { uri: newAvatarUri } :
+              avatar ? { uri: avatar } :
+              require('@/src/assets/images/default/default_user.png')
+            }
+            style={styles.avatar}
+          />
             <View style={[styles.cameraIcon, { backgroundColor: Color.white_white }]}>
               <MaterialIcons name="photo-camera" size={32} color={Color.mainColor2} />
             </View>

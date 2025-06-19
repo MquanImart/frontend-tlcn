@@ -50,7 +50,6 @@ export const useExplore = (currentUserId: string) => {
 
       console.log(`Fetching groups: Page ${newPage}, Append: ${append}`);
 
-      // Kiểm tra xem có đang trong quá trình load full hay load more không
       if (!append) { // Nếu không phải append, tức là load mới hoàn toàn
         setLoading(true);
       } else { // Nếu là append, tức là load thêm
@@ -62,11 +61,9 @@ export const useExplore = (currentUserId: string) => {
         const userSpecificClient = restClient.apiClient.service(`apis/users/${currentUserId}/not-joined-groups`);
 
         const response = await userSpecificClient.find({
-          query: {
-            page: newPage,
-            limit: 5,
-            currentUserId: currentUserId,
-          }
+          page: newPage,
+          limit: 5,
+          currentUserId: currentUserId,
         });
 
         if (response.success) {
@@ -111,7 +108,7 @@ export const useExplore = (currentUserId: string) => {
     if (!isLoadingMoreRef.current && page < totalPagesRef.current) {
       fetchGroups(page + 1, true);
     }
-  }, [page, fetchGroups]); // 'page' cần ở đây vì loadMoreGroups phụ thuộc vào trang hiện tại
+  }, [page, fetchGroups]); 
 
 
   const handleJoinGroup = async (groupId: string) => {
@@ -188,8 +185,6 @@ export const useExplore = (currentUserId: string) => {
 
   useEffect(() => {
     getUserDisplayName();
-    // Gọi fetchGroups chỉ một lần khi component mount hoặc currentUserId thay đổi.
-    // fetchGroups giờ đây ổn định hơn vì không phụ thuộc vào totalPages/isLoadingMore.
     fetchGroups();
   }, [currentUserId, fetchGroups]); // fetchGroups là ổn định, chỉ thay đổi khi currentUserId thay đổi
 

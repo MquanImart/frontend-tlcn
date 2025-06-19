@@ -1,11 +1,11 @@
-import { Animated, ScrollView, View, StyleSheet, ActivityIndicator } from "react-native";
+import { Animated, FlatList, View, StyleSheet, ActivityIndicator } from "react-native";
 import PreviewImages from "./PreviewImages";
 import { useEffect } from "react";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import useCollectionImages from "./useCollectionImages";
 
 interface ProfileImagesProps {
-  userId: string; // Thêm userId như một prop
+  userId: string;
 }
 
 const ProfileImages: React.FC<ProfileImagesProps> = ({ userId }) => {
@@ -20,7 +20,7 @@ const ProfileImages: React.FC<ProfileImagesProps> = ({ userId }) => {
     selectedPhoto,
     isModalVisible,
     closeModal
-  } = useCollectionImages(userId); // Truyền userId vào hook
+  } = useCollectionImages(userId);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -37,15 +37,23 @@ const ProfileImages: React.FC<ProfileImagesProps> = ({ userId }) => {
 
   if (dataImages === null || dataImagesAvt === null) return <ActivityIndicator />;
 
+  const renderItem = () => (
+    <PreviewImages
+      src={dataImages}
+      handleSelected={handleSelectedPhoto}
+    />
+  );
+
   return (
     <View style={{ flex: 1 }}>
       <Animated.View style={{ opacity: fadeAnim }}>
-        <ScrollView style={styles.scrollView}>
-          <PreviewImages
-            src={dataImages} // Hiển thị tất cả ảnh ngay từ đầu
-            handleSelected={handleSelectedPhoto}
-          />
-        </ScrollView>
+        <FlatList
+          data={[{}]} // Single item to render PreviewImages once
+          renderItem={renderItem}
+          keyExtractor={() => 'preview-images'}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.flatListContainer}
+        />
       </Animated.View>
       <DetailsPhoto
         source={selectedPhoto}
@@ -57,8 +65,8 @@ const ProfileImages: React.FC<ProfileImagesProps> = ({ userId }) => {
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1, // Làm cho ScrollView chiếm toàn bộ không gian có sẵn
+  flatListContainer: {
+    flexGrow: 1, // Ensure content takes available space
   },
 });
 
