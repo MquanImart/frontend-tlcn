@@ -201,7 +201,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
             longitude: myLocation.coords.longitude,
             displayName: "Vị trí của bạn"
         } : null;
-
+      
         const location = parseLatLong(messageContent);
         navigation.navigate('Map', {
             screen: 'Directions',
@@ -221,7 +221,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
             }
         })
     }
-
+    
     return (
         <View style={styles.container_send}>
             <View style={styles.boxContent_send}>
