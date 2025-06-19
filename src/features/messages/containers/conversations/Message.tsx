@@ -159,7 +159,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
     const videoRef = useRef<Video>(null);
     const [visiable, setVisiable] = useState<boolean>(false);
     const navigation = useNavigation<ChatNavigation>();
-
+    
     const getLocation = async () => {
       const { status } = await Location.getForegroundPermissionsAsync();
     
@@ -193,6 +193,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
       const loc = await Location.getCurrentPositionAsync({});
       return loc;
     }
+    
     const gotoMap = async (messageContent: string) => {
         const myLocation = await getLocation();
         const start = myLocation ? {
@@ -200,7 +201,7 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
             longitude: myLocation.coords.longitude,
             displayName: "Vị trí của bạn"
         } : null;
-
+      
         const location = parseLatLong(messageContent);
         navigation.navigate('Map', {
             screen: 'Directions',
