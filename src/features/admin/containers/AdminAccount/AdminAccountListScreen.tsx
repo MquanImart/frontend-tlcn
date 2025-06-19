@@ -1,12 +1,10 @@
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader';
-// Removed: import { useTheme } from '@/src/contexts/ThemeContext';
-// Removed: import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
 import { ActivityIndicator, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import TabBarCustom, { Tab } from '@/src/features/group/components/TabBarCustom';
-import { Account } from '@/src/interface/interface_reference'; // Make sure this path is correct
+import { Account } from '@/src/interface/interface_reference';
 import useAdminAccountList from './useAdminAccountList';
 import AccountRow from '../../components/AccountRow';
 
@@ -23,7 +21,7 @@ const AdminAccountListScreen: React.FC = () => {
     filter,
     setFilter,
     deleteAccount,
-  } = useAdminAccountList(); // <-- Warning points here, but cause is usually in JSX below
+  } = useAdminAccountList();
 
   const renderAccount = ({ item }: { item: Account }) => (
     <AccountRow account={item} onDelete={deleteAccount} />
@@ -41,11 +39,11 @@ const AdminAccountListScreen: React.FC = () => {
     }
   };
 
+  // --- START: Chỉnh sửa các tab ---
   const tabs: Tab[] = [
     { label: 'Tất cả tài khoản', icon: 'list' },
     { label: 'Đã xóa', icon: 'delete' },
-    { label: 'Trực tuyến', icon: 'wifi-tethering' },
-    { label: 'Ngoại tuyến', icon: 'wifi-off' },
+    // Đã bỏ tab 'Trực tuyến' và 'Ngoại tuyến'
   ];
 
   const getSelectedTabLabel = (currentFilter: string) => {
@@ -55,10 +53,7 @@ const AdminAccountListScreen: React.FC = () => {
         return 'Tất cả tài khoản';
       case 'deleted':
         return 'Đã xóa';
-      case 'online':
-        return 'Trực tuyến';
-      case 'offline':
-        return 'Ngoại tuyến';
+      // Đã bỏ case 'online' và 'offline'
       default:
         return 'Tất cả tài khoản';
     }
@@ -72,16 +67,12 @@ const AdminAccountListScreen: React.FC = () => {
       case 'Đã xóa':
         setFilter('deleted');
         break;
-      case 'Trực tuyến':
-        setFilter('online');
-        break;
-      case 'Ngoại tuyến':
-        setFilter('offline');
-        break;
+      // Đã bỏ case 'Trực tuyến' và 'Ngoại tuyến'
       default:
         setFilter('all_active');
     }
   };
+  // --- END: Chỉnh sửa các tab ---
 
   if (loading) {
     return (
@@ -108,12 +99,6 @@ const AdminAccountListScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: '#F5F5F5', maxHeight: height }]}>
       <CHeader label="Danh sách tài khoản" showBackButton={false} />
-      {/*
-        CRITICAL FIX: Remove ALL whitespace/newlines between these sibling JSX elements.
-        Even a single space or newline character outside a <Text> component can cause this warning.
-        This often involves making your JSX less readable in the editor,
-        but it's a common fix for this specific React Native warning.
-      */}
       <View style={styles.content}>
         <TabBarCustom
           tabs={tabs}
@@ -238,8 +223,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     color: '#9E9E9E',
   },
-  // These styles are for AccountRow and should ideally be in AccountRow.tsx's StyleSheet.
-  // Keeping them here as they were in your provided code for context.
   card: {
     marginVertical: 8,
     marginHorizontal: 16,
@@ -265,13 +248,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: '#9E9E9E', // textColor3
+    color: '#9E9E9E',
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: '#212121', // textColor1
+    color: '#212121',
   },
   actionButton: {
     paddingVertical: 8,

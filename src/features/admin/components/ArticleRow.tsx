@@ -158,7 +158,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({ article, onPress }) => {
             <View style={styles.infoRow}>
               <Text style={[styles.label, { color: '#9E9E9E' }]}>ID:</Text>
               <Text style={[styles.value, { color: '#212121' }]}>
-                {article._id.slice(-6)}
+                {article._id}
               </Text>
             </View>
             <View style={styles.infoRow}>
