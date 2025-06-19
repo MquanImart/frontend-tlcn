@@ -1,12 +1,10 @@
 import CButton from '@/src/shared/components/button/CButton';
 import CHeader from '@/src/shared/components/header/CHeader';
-// Removed: import { useTheme } from '@/src/contexts/ThemeContext';
-// Removed: import { colors as Color } from '@/src/styles/DynamicColors';
 import React from 'react';
 import { ActivityIndicator, Dimensions, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import TabBarCustom, { Tab } from '@/src/features/group/components/TabBarCustom';
-import { Account } from '@/src/interface/interface_reference'; // Make sure this path is correct
+import { Account } from '@/src/interface/interface_reference';
 import useAdminAccountList from './useAdminAccountList';
 import AccountRow from '../../components/AccountRow';
 
@@ -23,7 +21,10 @@ const AdminAccountListScreen: React.FC = () => {
     filter,
     setFilter,
     deleteAccount,
-  } = useAdminAccountList(); // <-- Warning points here, but cause is usually in JSX below
+  } = useAdminAccountList();
+
+  // Lọc tài khoản trên frontend: chỉ giữ tài khoản có role === "user"
+  const filteredAccounts = accounts.filter((account) => account.role === 'user');
 
   const renderAccount = ({ item }: { item: Account }) => (
     <AccountRow account={item} onDelete={deleteAccount} />
@@ -108,12 +109,6 @@ const AdminAccountListScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: '#F5F5F5', maxHeight: height }]}>
       <CHeader label="Danh sách tài khoản" showBackButton={false} />
-      {/*
-        CRITICAL FIX: Remove ALL whitespace/newlines between these sibling JSX elements.
-        Even a single space or newline character outside a <Text> component can cause this warning.
-        This often involves making your JSX less readable in the editor,
-        but it's a common fix for this specific React Native warning.
-      */}
       <View style={styles.content}>
         <TabBarCustom
           tabs={tabs}
@@ -126,7 +121,7 @@ const AdminAccountListScreen: React.FC = () => {
           inactiveTextStyle={[styles.inactiveTextStyle, { color: '#212121' }]}
         />
         <FlatList
-          data={accounts}
+          data={filteredAccounts} // Sử dụng filteredAccounts thay vì accounts
           renderItem={renderAccount}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContainer}
@@ -238,8 +233,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     color: '#9E9E9E',
   },
-  // These styles are for AccountRow and should ideally be in AccountRow.tsx's StyleSheet.
-  // Keeping them here as they were in your provided code for context.
   card: {
     marginVertical: 8,
     marginHorizontal: 16,
@@ -265,13 +258,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     marginRight: 6,
-    color: '#9E9E9E', // textColor3
+    color: '#9E9E9E',
   },
   value: {
     fontSize: 14,
     fontWeight: '400',
     flex: 1,
-    color: '#212121', // textColor1
+    color: '#212121',
   },
   actionButton: {
     paddingVertical: 8,
