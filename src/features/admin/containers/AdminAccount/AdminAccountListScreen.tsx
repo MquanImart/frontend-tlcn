@@ -23,6 +23,9 @@ const AdminAccountListScreen: React.FC = () => {
     deleteAccount,
   } = useAdminAccountList();
 
+  // Lọc tài khoản trên frontend: chỉ giữ tài khoản có role === "user"
+  const filteredAccounts = accounts.filter((account) => account.role === 'user');
+
   const renderAccount = ({ item }: { item: Account }) => (
     <AccountRow account={item} onDelete={deleteAccount} />
   );
@@ -39,11 +42,11 @@ const AdminAccountListScreen: React.FC = () => {
     }
   };
 
-  // --- START: Chỉnh sửa các tab ---
   const tabs: Tab[] = [
     { label: 'Tất cả tài khoản', icon: 'list' },
     { label: 'Đã xóa', icon: 'delete' },
-    // Đã bỏ tab 'Trực tuyến' và 'Ngoại tuyến'
+    { label: 'Trực tuyến', icon: 'wifi-tethering' },
+    { label: 'Ngoại tuyến', icon: 'wifi-off' },
   ];
 
   const getSelectedTabLabel = (currentFilter: string) => {
@@ -53,7 +56,10 @@ const AdminAccountListScreen: React.FC = () => {
         return 'Tất cả tài khoản';
       case 'deleted':
         return 'Đã xóa';
-      // Đã bỏ case 'online' và 'offline'
+      case 'online':
+        return 'Trực tuyến';
+      case 'offline':
+        return 'Ngoại tuyến';
       default:
         return 'Tất cả tài khoản';
     }
@@ -67,12 +73,16 @@ const AdminAccountListScreen: React.FC = () => {
       case 'Đã xóa':
         setFilter('deleted');
         break;
-      // Đã bỏ case 'Trực tuyến' và 'Ngoại tuyến'
+      case 'Trực tuyến':
+        setFilter('online');
+        break;
+      case 'Ngoại tuyến':
+        setFilter('offline');
+        break;
       default:
         setFilter('all_active');
     }
   };
-  // --- END: Chỉnh sửa các tab ---
 
   if (loading) {
     return (
@@ -111,7 +121,7 @@ const AdminAccountListScreen: React.FC = () => {
           inactiveTextStyle={[styles.inactiveTextStyle, { color: '#212121' }]}
         />
         <FlatList
-          data={accounts}
+          data={filteredAccounts} // Sử dụng filteredAccounts thay vì accounts
           renderItem={renderAccount}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContainer}

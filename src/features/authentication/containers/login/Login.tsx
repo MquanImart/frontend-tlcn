@@ -32,8 +32,8 @@ type AuthNavigationProp = StackNavigationProp<AuthStackParamList, "Login">;
 
 const Login = () => {
   const { login } = useAuth();
-  const [emailOrPhone, setEmailOrPhone] = useState<string>("21110740@student.hcmute.edu.vn");
-  const [password, setPassword] = useState<string>("quan123");
+  const [emailOrPhone, setEmailOrPhone] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigation = useNavigation<AuthNavigationProp>();
   const { fetchSuggested } = useSuggestedPages();
 
