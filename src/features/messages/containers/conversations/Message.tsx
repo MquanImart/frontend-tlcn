@@ -4,12 +4,13 @@ import { colors as Color } from '@/src/styles/DynamicColors';
 import { ResizeMode, Video } from "expo-av";
 import { Image } from 'expo-image';
 import { useRef, useState } from "react";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DetailsPhoto from "../../components/DetailsPhoto";
 import MapMessage from "./MapMessage";
 import { useNavigation } from "expo-router"; // Assuming expo-router is correctly set up for useNavigation
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ChatStackParamList } from "@/src/shared/routes/MessageNavigation";
+import * as Location from "expo-location";
 
 const WINDOW_WIDTH =  Dimensions.get('window').width;
 
@@ -41,13 +42,63 @@ const MessageReceive = ({user, message, showAvatar}: MessageProps) => {
     const [visiable, setVisiable] = useState<boolean>(false);
     const navigation = useNavigation<ChatNavigation>();
 
-    const gotoMap = (messageContent: string) => {
+    const getLocation = async () => {
+      const { status } = await Location.getForegroundPermissionsAsync();
+    
+      if (status === "denied") {
+        Alert.alert(
+          "Quyền vị trí bị từ chối",
+          "Bạn đã từ chối quyền vị trí. Hãy vào cài đặt để cấp lại quyền.",
+          [
+            { text: "Hủy", style: "cancel" },
+            { text: "Mở cài đặt", onPress: () => Linking.openSettings() }
+          ]
+        );
+        return;
+      }
+    
+      if (status !== "granted") {
+        const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+        if (newStatus !== "granted") {
+          Alert.alert(
+            "Không thể truy cập vị trí",
+            "Bạn cần cấp quyền vị trí trong cài đặt để sử dụng tính năng này.",
+            [
+              { text: "Hủy", style: "cancel" },
+              { text: "Mở cài đặt", onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
+      }
+    
+      const loc = await Location.getCurrentPositionAsync({});
+      return loc;
+    }
+    const gotoMap = async (messageContent: string) => {
+        const myLocation = await getLocation();
+        const start = myLocation ? {
+            latitude: myLocation.coords.latitude,
+            longitude: myLocation.coords.longitude,
+            displayName: "Vị trí của bạn"
+        } : null;
+
         const location = parseLatLong(messageContent);
         navigation.navigate('Map', {
-            screen: 'CustomMap',
-            params: {
-                lat: location.lat,
-                long: location.long
+            screen: 'Directions',
+            params: start? {
+                start: start,
+                end: {
+                    latitude: location.lat,
+                    longitude: location.long,
+                    displayName: "Người gặp nạp"
+                }
+            }: {
+                end: {
+                    latitude: location.lat,
+                    longitude: location.long,
+                    displayName: "Người gặp nạp"
+                }
             }
         })
     }
@@ -108,17 +159,69 @@ const MessageSend = ({user, message, showAvatar}: MessageProps) => {
     const videoRef = useRef<Video>(null);
     const [visiable, setVisiable] = useState<boolean>(false);
     const navigation = useNavigation<ChatNavigation>();
+    
+    const getLocation = async () => {
+      const { status } = await Location.getForegroundPermissionsAsync();
+    
+      if (status === "denied") {
+        Alert.alert(
+          "Quyền vị trí bị từ chối",
+          "Bạn đã từ chối quyền vị trí. Hãy vào cài đặt để cấp lại quyền.",
+          [
+            { text: "Hủy", style: "cancel" },
+            { text: "Mở cài đặt", onPress: () => Linking.openSettings() }
+          ]
+        );
+        return;
+      }
+    
+      if (status !== "granted") {
+        const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+        if (newStatus !== "granted") {
+          Alert.alert(
+            "Không thể truy cập vị trí",
+            "Bạn cần cấp quyền vị trí trong cài đặt để sử dụng tính năng này.",
+            [
+              { text: "Hủy", style: "cancel" },
+              { text: "Mở cài đặt", onPress: () => Linking.openSettings() }
+            ]
+          );
+          return;
+        }
+      }
+    
+      const loc = await Location.getCurrentPositionAsync({});
+      return loc;
+    }
+    
+    const gotoMap = async (messageContent: string) => {
+        const myLocation = await getLocation();
+        const start = myLocation ? {
+            latitude: myLocation.coords.latitude,
+            longitude: myLocation.coords.longitude,
+            displayName: "Vị trí của bạn"
+        } : null;
 
-    const gotoMap = (messageContent: string) => {
         const location = parseLatLong(messageContent);
         navigation.navigate('Map', {
-            screen: 'CustomMap',
-            params: {
-                lat: location.lat,
-                long: location.long
+            screen: 'Directions',
+            params: start? {
+                start: start,
+                end: {
+                    latitude: location.lat,
+                    longitude: location.long,
+                    displayName: "Người gặp nạp"
+                }
+            }: {
+                end: {
+                    latitude: location.lat,
+                    longitude: location.long,
+                    displayName: "Người gặp nạp"
+                }
             }
         })
     }
+
     return (
         <View style={styles.container_send}>
             <View style={styles.boxContent_send}>
